@@ -1,0 +1,15 @@
+{
+  "main_keys": ["CLASS", "CLASS_LM", "SN", "MOD"],
+
+  "lppdb_classes": ["FA", "AL",
+                    "TG", "DG", "MG",
+                    "PA", "PC", "PE", "PG", "PI", "PS",
+                    "SM", "CR", "CL", "ST"],
+
+  "lm_classes": {"FA": ["FA", "AL"],
+                 "GL": ["TG", "DG", "MG"],
+                 "GP": ["PA", "PC", "PE", "PG", "PI", "PS", "CL"],
+                 "SP": ["SM", "CR"],
+                 "ST": ["ST"]
+                }
+}
