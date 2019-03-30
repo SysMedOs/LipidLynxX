@@ -4,16 +4,15 @@
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
-#     SysMedOs_team: oxlpp@bbz.uni-leipzig.de
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import LibNomenclature.AbbrElemCalc
-from LibNomenclature.LipidNomenclature import NameParserFA
+import LibLION.AbbrElemCalc
+from LibLION.LipidNomenclature import ParserFA
 
 
 def get_lpp_info(lpp_name):
-    name_parser = NameParserFA()
-    lpp_info = name_parser.get_fa_info(lpp_name)
+    name_parser = ParserFA()
+    lpp_info = name_parser.get_sum_info(lpp_name)
     print(lpp_info)
 
 

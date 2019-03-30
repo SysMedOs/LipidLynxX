@@ -1,7 +1,7 @@
 {
   "main_keys": ["CLASS", "CLASS_LM", "SN", "MOD"],
 
-  "lppdb_classes": ["FA", "AL",
+  "lipid_classes": ["FA", "AL",
                     "TG", "DG", "MG",
                     "PA", "PC", "PE", "PG", "PI", "PS",
                     "SM", "CR", "CL", "ST"],

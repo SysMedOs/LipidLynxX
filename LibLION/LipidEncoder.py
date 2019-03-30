@@ -4,7 +4,6 @@
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
-#     SysMedOs_team: oxlpp@bbz.uni-leipzig.de
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import re
@@ -32,11 +31,13 @@ class LipidEncoder(object):
         self.lipid_class_dct['ST'] = {}
 
         self.id_level_dct = {'B': 'Bulk residues level', 'D': 'Discrete residues level',
-                             'E': 'Exact position of residues level', 'P': 'Position specific modifications level',
+                             'E': 'Exact position of residues level',
+                             'P': 'Position specific modifications level',
                              'S': 'Stereospecific modifications level'}
 
     def get_class_set(self, lipid_info):
         pass
+
 
 if __name__ == '__main__':
     pass
