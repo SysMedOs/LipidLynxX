@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2017  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
@@ -15,11 +17,14 @@ logging.basicConfig(format='%(asctime)s-%(levelname)s - %(message)s', datefmt='%
 logger = logging.getLogger('log')
 
 # Define default values
+try:
+    mod_cfg_csv = r'../Configurations/Mod_cfg.csv'
+    mod_cfg_df = pd.read_csv(mod_cfg_csv, index_col=0, na_values=None)
+except FileNotFoundError:
+    mod_cfg_csv = r'Configurations/Mod_cfg.csv'
+    mod_cfg_df = pd.read_csv(mod_cfg_csv, index_col=0, na_values=None)
 
-mod_cfg_csv = r'../Configurations/Mod_cfg.csv'
-mod_cfg_df = pd.read_csv(mod_cfg_csv, index_col=0, na_values=None)
-
-logger.debug(mod_cfg_df)
+# logger.debug(mod_cfg_df)
 
 pa_hg_elem_dct = {'C': 0, 'H': 3, 'O': 4, 'P': 1, 'N': 0}
 pc_hg_elem_dct = {'C': 5, 'H': 14, 'O': 4, 'P': 1, 'N': 1}
@@ -50,3 +55,18 @@ elem_info = {'H': [(1.0078250321, 0.999885), (2.0141017780, 0.0001157)],
              'S': [(31.97207069, 0.9493), (32.97145850, 0.0076), (33.96786683, 0.0429), (35.96708088, 0.0002)],
              'K': [(38.9637069, 0.932581), (39.96399867, 0.000117), (40.96182597, 0.067302)],
              }
+
+pl_smi_info = {'PA': r'OP(O)(OCC(',
+               'PC': r'[O-]P(OCC[N+](C)(C)C)(OCC(',
+               'PC-CH3': r'[O]P(OCC[N](C)C)(OCC(',
+               'PE': r'OP(OCCN)(OCC(',
+               'PG': r'OP(OCC(O)CO)(OCC(',
+               'PS': r'OP(OCC(C(O)=O)N)(OCC(',
+               'PI': r'OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](O)[C@@H](O)[C@H]1O))(OCC(',
+               'PIP': r'OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(',
+               'PI4P': r'OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(',
+               'gly_part': r')C', 'pl_end': r')=O'
+               }
+
+
+tg_smi_info = {'gly_part_a': r'[H]C(C', 'gly_part_b': r')(', 'gly_part_c': r')C'}
