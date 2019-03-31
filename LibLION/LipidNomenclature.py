@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2017  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from functools import wraps
 import re
 
 from rdkit import Chem
 
-from DefaultParams import elem_info, elem_shifts, logger, mod_cfg_df
+from LibLION.DefaultParams import elem_info, elem_shifts, logger, mod_cfg_df, pl_smi_info
 
 
 class ParserMOD:
@@ -59,6 +58,7 @@ class ParserMOD:
                 mod_dct['SITE'] = None
             fin_mod_info_lst.append(mod_dct)
 
+        logger.debug('MOD info:')
         logger.debug(fin_mod_info_lst)
 
         return fin_mod_info_lst
@@ -72,6 +72,14 @@ class ParserFA:
                                  r'(?P<MOD_INFO>\[.*\])?(?P<REP_INFO><.*>)?')
 
         self.mod_parser = ParserMOD()
+
+    def is_fa(self, abbr):
+        is_fa = False
+        fa_match = re.match(self.fa_rgx, abbr)
+        if fa_match:
+            is_fa = True
+
+        return is_fa
 
     def decode_fa(self, abbr: str) -> dict:
 
@@ -148,7 +156,7 @@ class ParserFA:
                         c_mod_idx = c_idx_lst[0]
                         _counter = 1
                         c_shift = 3
-                        if c_shift * _mod_count < int(fa_info_dct['NUM_C']) - 2:
+                        if c_shift * _mod_count > int(fa_info_dct['NUM_C']) - 2:
                             c_shift = 2  # if more C=C in chain and no bis-allylic position
                             logger.info('Too many C=C, try to remove bis-allylic positions')
                         while _counter <= _mod_count:
@@ -189,6 +197,9 @@ class ParserFA:
 
         if c_chain_lst:
             smi = ''.join(c_chain_lst)
+
+        smi = re.sub(r'\\/', r'\\', smi)
+        smi = re.sub(r'/\\', r'/', smi)
 
         return smi
 
@@ -269,6 +280,14 @@ class ParserPL(ParserFA):
         self.pl_rgx = re.compile(r'(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)'
                                  r'\((?P<FA1>[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>.*)?\)(?P<HGMOD><.*>)?')
 
+    def is_pl(self, abbr):
+        is_pl = False
+        pl_match = re.match(self.pl_rgx, abbr)
+        if pl_match:
+            is_pl = True
+
+        return is_pl
+
     def decode_pl(self, abbr: str) -> dict:
 
         pl_info_dct = {}
@@ -281,10 +300,33 @@ class ParserPL(ParserFA):
             pl_info_dct['FA1_INFO'] = self.decode_fa(pl_info_dct['LIPID_INFO']['FA1'])
             pl_info_dct['FA2_INFO'] = self.decode_fa(pl_info_dct['LIPID_INFO']['FA2'])
 
+        pl_info_dct['LIPID_INFO']['CLASS'] = pl_info_dct['LIPID_INFO']['PL']
+        if pl_info_dct['LIPID_INFO']['LYSO']:
+            if isinstance(pl_info_dct['LIPID_INFO']['LYSO'], str):
+                pl_info_dct['LIPID_INFO']['CLASS'] = (pl_info_dct['LIPID_INFO']['LYSO']
+                                                      + pl_info_dct['LIPID_INFO']['CLASS'])
+
         return pl_info_dct
 
-    def get_formula_pl(self, fa_info_dct: dict, decimal: int = 6) -> float:
-        pass
+    def get_smi_pl(self, abbr: str) -> str:
+
+        pl_smi = ''
+
+        pl_info_dct = self.decode_pl(abbr)
+        pl_info_dct['FA1_SMILES'] = self.get_smi_fa(pl_info_dct['LIPID_INFO']['FA1'])
+        pl_info_dct['FA2_SMILES'] = self.get_smi_fa(pl_info_dct['LIPID_INFO']['FA2'])
+        pl_class = pl_info_dct['LIPID_INFO']['CLASS']
+        if pl_class in pl_smi_info:
+            pl_hg_smi = pl_smi_info[pl_class]
+            gly_part = r')C'
+            pl_end = r')=O'
+            # the following order is important!!
+            pl_smi = ''.join([pl_hg_smi, pl_info_dct['FA2_SMILES'],
+                              gly_part, pl_info_dct['FA1_SMILES'], pl_end])
+        else:
+            pl_smi = ''
+
+        return pl_smi
 
 
 if __name__ == '__main__':
@@ -307,10 +349,17 @@ if __name__ == '__main__':
         _smi = fa_decoder.get_smi_fa(_abbr)
         logger.info(_abbr + ': ' + _smi)
 
-    # pl_lst = [r'PC(O-16:0/18:1)', r'PC(P-16:0_18:1)', r'PC(P-16:0/18:1)',
-    #           r'PC(16:0/10:1[1DB{6E},1OH{5}]<COOH{@10C}>)']
-    # for _abbr in pl_lst:
-    #     pl = pl_decoder.decode_pl(_abbr)
-    #     print(pl)
-    # _smi = pl_decoder.get_smi_pl(_abbr)
-    # print(_smi)
+    pl_lst = [
+        r'PC(O-16:0/18:1)', r'PC(P-16:0_18:1)', r'PC(P-16:0/18:1)',
+        'PC(16:0/20:4[4DB,2OH,1Ke])',
+        'PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}])',
+        'PC(16:0/20:4[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}])',
+    ]
+
+    for _abbr in pl_lst:
+        logger.info(_abbr)
+        pl = pl_decoder.decode_pl(_abbr)
+        logger.info(pl)
+        _smi = pl_decoder.get_smi_pl(_abbr)
+        logger.info(_abbr)
+        logger.info(_smi)
