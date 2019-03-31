@@ -9,13 +9,15 @@
 from functools import wraps
 import re
 
-from LibLION.DefaultParams import elem_info, elem_shifts, logger
+from rdkit import Chem
+
+from DefaultParams import elem_info, elem_shifts, logger, mod_cfg_df
 
 
 class ParserMOD:
 
     def __init__(self):
-        self.mod_rgx = re.compile(r'(?P<NUM>\d{1,2})(?P<MOD>\w\w)(?P<SITE_INFO>{[^\[\]{}]*})?')
+        self.mod_rgx = re.compile(r'(?P<NUM>\d{1,2})?(?P<MOD>\w\w[\dA-M]?)(?P<SITE_INFO>{[^\[\]{}]*})?')
         self.site_rgx = re.compile(r'(?P<SITE>\d{1,2})(?P<INFO>[EZRSab])?')
 
     def find_all(self, abbr: str, mode: str) -> list:
@@ -33,8 +35,6 @@ class ParserMOD:
             if mod_match_itr:
                 for mod_match in mod_match_itr:
                     matched_lst.append(mod_match.groupdict())
-        logger.debug('matched_lst')
-        logger.debug(matched_lst)
 
         return matched_lst
 
@@ -55,7 +55,9 @@ class ParserMOD:
         for mod_dct in mod_info_lst:
             if mod_dct['SITE_INFO']:
                 mod_dct['SITE'] = self.decode_site(mod_dct['SITE_INFO'])
-                fin_mod_info_lst.append(mod_dct)
+            else:
+                mod_dct['SITE'] = None
+            fin_mod_info_lst.append(mod_dct)
 
         logger.debug(fin_mod_info_lst)
 
@@ -101,25 +103,93 @@ class ParserFA:
         fa_info_dct = self.decode_fa(abbr)
 
         if fa_info_dct['NUM_C']:
-            c_chain_lst = ['C'] * int(fa_info_dct['NUM_C'])
+            c_chain_lst = [''] + ['C'] * int(fa_info_dct['NUM_C'])
+            c_term_lst = []
 
             if fa_info_dct['LINK']:
                 if fa_info_dct['LINK'] == 'O-':
-                    c_chain_lst[0] = 'OC'
+                    c_chain_lst[0] = 'O'
                 elif fa_info_dct['LINK'] == 'P-':
-                    c_chain_lst[0] = r'O\C='
-                    c_chain_lst[1] = r'C/'
+                    c_chain_lst[0] = r'O'
+                    c_chain_lst[1] = r'\C='
+                    c_chain_lst[2] = r'C/'
                 else:
-                    c_chain_lst[0] = 'OC('
-                    c_chain_lst.append(')=O')
+                    c_chain_lst[0] = 'O'
+                    c_chain_lst[1] = 'C('
+                    c_term_lst.append(')=O')
             else:
-                c_chain_lst[0] = 'OC('
-                c_chain_lst.append(')=O')
+                c_chain_lst[0] = 'O'
+                c_chain_lst[1] = 'C('
+                c_term_lst.append(')=O')
+
+            c_idx_lst = list(range(3, int(fa_info_dct['NUM_C']) + 1))
+            idx_pos = 3
+
+            for _mod in fa_info_dct['MOD']:
+                _mod_code = _mod['MOD']
+                if _mod['SITE']:
+                    for _site in _mod['SITE']:
+                        _idx = int(_site['SITE'])
+                        site_code = mod_cfg_df.loc[_mod_code, 'SMI_SITE']
+                        site_post_code = mod_cfg_df.loc[_mod_code, 'SMI_POST']
+                        site_term_code = mod_cfg_df.loc[_mod_code, 'SMI_TERMINAL']
+                        if isinstance(site_code, str):
+                            c_chain_lst[_idx] = site_code
+                        if isinstance(site_post_code, str):
+                            c_chain_lst[_idx + 1] = site_post_code
+                        if isinstance(site_term_code, str):
+                            c_term_lst.append(site_term_code)
+                else:
+                    if _mod_code in ['DB', 'Ep']:
+                        site_code = mod_cfg_df.loc[_mod_code, 'SMI_SITE']
+                        site_post_code = mod_cfg_df.loc[_mod_code, 'SMI_POST']
+                        _mod_count = int(_mod['NUM'])
+                        _used_idx_lst = []
+                        c_mod_idx = c_idx_lst[0]
+                        _counter = 1
+                        c_shift = 3
+                        if c_shift * _mod_count < int(fa_info_dct['NUM_C']) - 2:
+                            c_shift = 2  # if more C=C in chain and no bis-allylic position
+                            logger.info('Too many C=C, try to remove bis-allylic positions')
+                        while _counter <= _mod_count:
+                            if c_mod_idx in c_idx_lst and c_mod_idx + 1 in c_idx_lst:
+                                logger.info(c_mod_idx)
+                                c_chain_lst[c_mod_idx] = site_code
+                                c_chain_lst[c_mod_idx + 1] = site_post_code
+                                _used_idx_lst.extend([c_mod_idx, c_mod_idx + 1])
+                                c_idx_lst = [x for x in c_idx_lst if x not in _used_idx_lst]
+                                c_mod_idx += c_shift
+                                _counter += 1
+                            else:
+                                c_mod_idx += 1
+                    else:
+                        site_code = mod_cfg_df.loc[_mod_code, 'SMI_SITE']
+                        site_term_code = mod_cfg_df.loc[_mod_code, 'SMI_TERMINAL']
+                        _mod_count = int(_mod['NUM'])
+                        _used_idx_lst = []
+                        c_mod_idx = c_idx_lst[0]
+                        _counter = 1
+                        while _counter <= _mod_count:
+                            if c_mod_idx in c_idx_lst:
+                                c_chain_lst[c_mod_idx] = site_code
+                                if isinstance(site_term_code, str):
+                                    c_term_lst.append(site_term_code)
+                                c_idx_lst.remove(c_mod_idx)
+                                _counter += 1
+                            else:
+                                c_mod_idx += 1
+
         else:
             c_chain_lst = []
+            c_term_lst = []
+
+        logger.debug(c_term_lst)
+        if c_term_lst:
+            c_chain_lst.extend(sorted(c_term_lst, reverse=True))
 
         if c_chain_lst:
             smi = ''.join(c_chain_lst)
+
         return smi
 
     def get_formula(self, fa_str) -> dict:
@@ -222,23 +292,25 @@ if __name__ == '__main__':
     fa_decoder = ParserFA()
     pl_decoder = ParserPL()
 
-    fa_lst = ['FA18:0', '18:1', 'O-16:0', 'P-18:0',
-              '20:4[4DB,2OH,1Ke]',
-              '20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]',
-              '20:4[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}',
-              '20:4[4DB{5Z,9E,11Z,14Z},1OH{8S}]', '9:0<CHO{@9C}>'
-              ]
+    fa_lst = [
+        'FA18:0', '18:1', 'O-16:0', 'P-18:0',
+        '20:4[4DB,2OH,1Ke]',
+        '20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]',
+        '20:4[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}]',
+        '20:4[4DB{5Z,9E,11Z,14Z},1OH{8S}]', '9:0<CHO{@9C}>',
+        # '20:1[PGA{8a,12b},1DB{13Z},1OH{15S}]'
+    ]
 
     for _abbr in fa_lst:
         fa = fa_decoder.decode_fa(_abbr)
-        print(fa)
+        logger.info(fa)
         _smi = fa_decoder.get_smi_fa(_abbr)
-        print(_smi)
+        logger.info(_abbr + ': ' + _smi)
 
     # pl_lst = [r'PC(O-16:0/18:1)', r'PC(P-16:0_18:1)', r'PC(P-16:0/18:1)',
     #           r'PC(16:0/10:1[1DB{6E},1OH{5}]<COOH{@10C}>)']
     # for _abbr in pl_lst:
     #     pl = pl_decoder.decode_pl(_abbr)
     #     print(pl)
-        # _smi = pl_decoder.get_smi_pl(_abbr)
-        # print(_smi)
+    # _smi = pl_decoder.get_smi_pl(_abbr)
+    # print(_smi)
