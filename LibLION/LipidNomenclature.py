@@ -133,6 +133,12 @@ class ParserFA:
             c_idx_lst = list(range(3, int(fa_info_dct['NUM_C']) + 1))
             idx_pos = 3
 
+            if int(fa_info_dct['NUM_DB']) > 0 and fa_info_dct['MOD_INFO'] is None:
+                fa_info_dct['MOD'] = [{'NUM': fa_info_dct['NUM_DB'], 'MOD': 'DB',
+                                      'SITE_INFO': None, 'SITE': None}]
+
+            logger.info(fa_info_dct['MOD'])
+
             for _mod in fa_info_dct['MOD']:
                 _mod_code = _mod['MOD']
                 if _mod['SITE']:
@@ -191,7 +197,6 @@ class ParserFA:
             c_chain_lst = []
             c_term_lst = []
 
-        logger.debug(c_term_lst)
         if c_term_lst:
             c_chain_lst.extend(sorted(c_term_lst, reverse=True))
 
