@@ -21,7 +21,7 @@ in the epilipidome.
 
     + `DB`: C=C bond
     + `OH`: hydroxy
-    + `Hp`: Hydroperoxy
+    + `Hp`: hydroperoxy
     + `NH2`: amino
     + `Me`: methyl
     + `Ke`: keto/oxo
@@ -34,21 +34,23 @@ in the epilipidome.
     + `CN`: cyano
 
 * Example of epiLION abbreviations
-
-    + FA18:0
-    + O-16:0
-    + P-18:0
-    + 20:4[4DB,2OH,1Ke]
-    + 20:4[4DB{5Z,9E,11Z,14Z},1OH{8S}]
-    + 20:4[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}]
-    + PC(O-16:0/18:1)
-    + PC(P-16:0_18:1)
-    + PC(16:0/20:4[4DB,2OH,1Ke])
-    + PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
+    
+    + Fatty acids
+        - FA18:0
+        - O-16:0
+        - P-18:0
+        - 20:4[4DB,2OH,1Ke]
+        - 20:4[4DB{5Z,9E,11Z,14Z},1OH{8S}]
+        - 20:4[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}]
+    + Phospholipids
+        - PC(O-16:0/18:1)
+        - PC(P-16:0_18:1)
+        - PC(16:0/20:4[4DB,2OH,1Ke])
+        - PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
 
 ## Instructions ##
 
-### How to install epiLION 2 from source code ###
+### How to install epiLION from source code ###
 * Download the source code as zip file for your system
     + Download epiLION source Code as .zip. Please notice the date and version of LipidHunter source code.
     + Professional users can use `git` to clone the whole repository, please make sure that you switched to the correct branch.
