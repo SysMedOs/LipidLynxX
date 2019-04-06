@@ -29,15 +29,18 @@ def main(argv):
 
     in_file = ''
     out_file = ''
+
+    is_output = False
+
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
     except getopt.GetoptError:
         logger.info('epiLION.py -i <input_file> -o <output_file>')
-        sys.exit()
+        return is_output
     for opt, arg in opts:
         if opt == '-h':
             logger.info('epiLION.py -i <input_file> -o <output_file>')
-            sys.exit()
+            return is_output
         elif opt in ("-i", "--infile"):
             in_file = arg
         elif opt in ("-o", "--outfile"):
@@ -50,9 +53,13 @@ def main(argv):
             epilion2sdf(in_lst, out_file)
         logger.info(f'Save output file: {out_file}')
         logger.info('FINISHED')
+        is_output = True
     else:
-        logger.error(f'Can NOT open input file: {in_file}')
+        logger.error(f'Can NOT open input file:')
+        logger.error(in_file)
         logger.error('!!! FAILED to PROCESS !!!')
+
+    return is_output
 
 
 if __name__ == "__main__":
