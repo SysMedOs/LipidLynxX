@@ -53,9 +53,9 @@ class Converter:
 
         return abbr_dct
 
-    def convert_table(self, file: str):
+    def convert_table(self, input_file: str, output_file: str):
 
-        abbr_dct = self.load_file(file)
+        abbr_dct = self.load_file(input_file)
         abbr_parser = AbbrParser(self.cfg)
         epilion_dct = {}
         for k in abbr_dct:
@@ -64,38 +64,59 @@ class Converter:
             for abbr in tmp_abbr_lst:
                 abbr = re.sub(r' ', '', abbr)
                 epilion_abbr = ''
-
                 # Try to parse to software generated abbreviations
+                abbr_epilion_lst = []
                 if abbr_parser.is_lpptiger(abbr):
-                    # logger.debug(f'LPPtiger: {abbr}')
-                    epilion_abbr = abbr_parser.parse_lpptiger(abbr)
-                elif abbr_parser.is_lipostar(abbr)[0]:
-                    # logger.debug(f'Lipostar: {abbr}')
-                    epilion_abbr = abbr_parser.parse_lipostar(abbr)
-                else:
-                    pass
+                    epilion_lpptiger_abbr = abbr_parser.parse_lpptiger(abbr)
+                    logger.debug(f'{k} - LPPtiger: {abbr} -> {epilion_lpptiger_abbr}')
+                    abbr_epilion_lst.append(epilion_lpptiger_abbr)
+                if abbr_parser.is_lipostar(abbr)[0]:
+                    epilion_lipostar_abbr = abbr_parser.parse_lipostar(abbr)
+                    logger.debug(f'{k} - Lipostar: {abbr} -> {epilion_lipostar_abbr}')
+                    abbr_epilion_lst.append(epilion_lipostar_abbr)
+                if abbr_parser.is_lipidmaps(abbr)[0]:
+                    epilion_lipidmaps_abbr = abbr_parser.parse_lipidmaps(abbr)
+                    logger.debug(f'{k} - LIPIDMAPS: {abbr} -> {epilion_lipidmaps_abbr}')
+                    abbr_epilion_lst.append(epilion_lipidmaps_abbr)
 
-                # Try to parse to legacy manual abbreviations
-                if epilion_abbr:
-                    pass
+                if abbr_parser.is_legacy(abbr)[0]:
+                    # logger.info(f'Try to parse in Legacy mode for {k} - {abbr}')
+                    epilion_legacy_abbr = abbr_parser.parse_legacy(abbr)
+                    logger.debug(f'{k} - Legacy: {abbr} -> {epilion_legacy_abbr}')
+                    abbr_epilion_lst.append(epilion_legacy_abbr)
+
+                if abbr_epilion_lst:
+                    epilion_abbr = sorted(abbr_epilion_lst, key=len)[-1]
                 else:
-                    logger.debug(f'Try to parse in Legacy mode for {abbr}')
-                    if abbr_parser.is_legacy(abbr)[0]:
-                        logger.debug(f'Legacy: {abbr}')
-                        epilion_abbr = abbr_parser.parse_legacy(abbr)
+                    epilion_abbr = ''
+
+                if not epilion_abbr:
+                    logger.warning(f'! Can NOT convert Column {k} - {abbr}')
 
                 epilion_lst.append(epilion_abbr)
-            logger.info(epilion_lst)
+            # logger.info(epilion_lst)
             epilion_dct[k] = epilion_lst
 
-        logger.info(epilion_dct)
+        # logger.info(epilion_dct)
+
+        out_df = pd.DataFrame.from_dict(epilion_dct, orient='index').T
+
+        if output_file.endswith('.xlsx'):
+            out_df.to_excel(output_file, index=False)
+        elif output_file.endswith('.csv'):
+            out_df.to_csv(output_file, index=False)
+        else:
+            out_df.to_excel(output_file + '.xlsx', index=False)
 
 
 if __name__ == '__main__':
 
-    test_file = r'../Test/TestInput/test_crosscheck.xlsx'
+    test_in_file = r'../Test/TestInput/test_crosscheck.xlsx'
+    test_out_file = r'../Test/TestOutput/test_crosscheck_output.xlsx'
     cfg_file = r'../Configurations/LinearFA_abbreviations.xlsx'
 
     converter = Converter(cfg_file)
 
-    converter.convert_table(test_file)
+    converter.convert_table(test_in_file, test_out_file)
+
+    logger.info('epiLion converter finished.')
