@@ -51,23 +51,26 @@ def epilion2sdf(abbr_lst, save_sdf):
 
     sdf_writer = Chem.SDWriter(open(save_sdf, mode='w'))
 
-    for m in info_dct:
-        smi = info_dct[m]
-        try:
-            mol = Chem.MolFromSmiles(smi)
-            AllChem.Compute2DCoords(mol)
-            mol.SetProp('_Name', m)
-            m_mass = Descriptors.MolWt(mol)
-            m_exactmass = rdMolDescriptors.CalcExactMolWt(mol)
-            m_formula = rdMolDescriptors.CalcMolFormula(mol)
-            mol.SetProp('EXACT_MASS', '%.6f' % m_exactmass)
-            mol.SetProp('NOMINAL_MASS', '%.3f' % m_mass)
-            mol.SetProp('FORMULA', m_formula)
-            sdf_writer.write(mol)
-        except Exception as e:
-            logger.error(f'FAILED: {m}')
-            logger.error(f'FAILED: {smi}')
-            logger.error(e)
+    for m in abbr_lst:
+        if m in info_dct:
+            smi = info_dct[m]
+            try:
+                mol = Chem.MolFromSmiles(smi)
+                AllChem.Compute2DCoords(mol)
+                mol.SetProp('_Name', m)
+                m_mass = Descriptors.MolWt(mol)
+                m_exactmass = rdMolDescriptors.CalcExactMolWt(mol)
+                m_formula = rdMolDescriptors.CalcMolFormula(mol)
+                mol.SetProp('EXACT_MASS', '%.6f' % m_exactmass)
+                mol.SetProp('NOMINAL_MASS', '%.3f' % m_mass)
+                mol.SetProp('FORMULA', m_formula)
+                sdf_writer.write(mol)
+            except Exception as e:
+                logger.error(f'! FAILED: {m}')
+                logger.error(f'! FAILED to generate structure from SMILES: {smi}')
+                logger.error(e)
+        else:
+            logger.warning(f'!! Can NOT parse: {m}')
 
 
 if __name__ == '__main__':
@@ -75,10 +78,11 @@ if __name__ == '__main__':
     test_file = r'../Test/TestInput/test_names.txt'
     output_file = r'../Test/TestOutput/test_sdf.sdf'
 
-    # with open(test_file, 'r') as input_obj:
-    #     input_lst = input_obj.readlines()
-    #     epilion2sdf(input_lst, output_file)
+    with open(test_file, 'r') as input_obj:
+        input_lst = input_obj.readlines()
+        epilion2sdf(input_lst, output_file)
 
     epilion2sdf(test_file, output_file)
+    epilion2sdf(input_lst, output_file)
 
     logger.info('FINISHED!')

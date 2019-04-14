@@ -1,7 +1,7 @@
 CODE,REMARK,SMI_SITE,SMI_POST,SMI_TERMINAL
 DB,C=C bond,\C=,C/,
 OH,hydroxy,C(O),,
-Hp,Hyroperoxyl,C(OO),,
+Hp,Hydroperoxy,C(OO),,
 NH2,amino,C(N),,
 Me,methyl,C(C),,
 Ke,keto/oxo,C(,,)=O
