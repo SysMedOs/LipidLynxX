@@ -9,11 +9,11 @@
 import os.path
 import unittest
 
-import epiLionConverter
+import convLION
 from LibLION.DefaultParams import logger
 
 
-class epiLionConverterTestCase(unittest.TestCase):
+class epiLION_ConverterTestCase(unittest.TestCase):
 
     def setUp(self):
         logger.debug('SETUP TESTS...')
@@ -23,27 +23,27 @@ class epiLionConverterTestCase(unittest.TestCase):
         self.pass_params = ['-i', in_file, '-o', out_file]
         self.fail_input_params = ['-i', bad_in_file, '-o', out_file]
 
-    def test_epiLionConverter_help(self):
+    def test_epiLION_Converter_help(self):
         logger.debug('Test help...')
-        assert epiLionConverter.main(['-h']) is False
+        assert convLION.main(['-h']) is False
 
-    def test_epiLionConverter_bad_params(self):
+    def test_epiLION_Converter_bad_params(self):
         logger.debug('Test bad params...')
-        assert epiLionConverter.main(['-test']) is False
+        assert convLION.main(['-test']) is False
 
-    def test_epiLionConverter_bad_input(self):
+    def test_epiLION_Converter_bad_input(self):
         logger.debug('Test bad input...')
-        assert epiLionConverter.main(self.fail_input_params) is False
+        assert convLION.main(self.fail_input_params) is False
 
-    def test_epiLionConverter_good_input(self):
+    def test_epiLION_Converter_good_input(self):
         logger.debug('Test sample data...')
-        assert epiLionConverter.main(self.pass_params) is True
+        assert convLION.main(self.pass_params) is True
 
     def tearDown(self):
         logger.debug('TEST END!')
 
 
 if __name__ == '__main__':
-    # python epiLionConverter.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx
+    # python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx
     unittest.main()
     logger.info('TESTS FINISHED!')

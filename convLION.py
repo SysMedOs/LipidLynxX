@@ -49,6 +49,10 @@ def main(argv):
     if os.path.isfile(in_file):
         logger.info(f'Load input file: {in_file}')
         cfg_file = r'Configurations/LinearFA_abbreviations.xlsx'
+        if os.path.isfile(cfg_file):
+            pass
+        elif os.path.isfile(f'../{cfg_file}'):
+            cfg_file = f'../{cfg_file}'
         converter = Converter(cfg_file)
         converter.convert_table(in_file, out_file)
 

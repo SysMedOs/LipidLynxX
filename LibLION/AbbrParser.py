@@ -116,7 +116,12 @@ class AbbrParser:
             if int(fa_info_dct['NUM_DB']) > 0:
                 mod_lst.append(f'{fa_info_dct["NUM_DB"]}DB')
             if fa_info_dct['MOD_INFO']:
-                mod_lst.append(str(fa_info_dct['MOD_INFO']).strip('()'))
+                mod_info = fa_info_dct['MOD_INFO'].strip('()')
+                mod_info_lst = mod_info.split(',')
+                for mod in mod_info_lst:
+                    if re.match(r'\d\d.*', mod):
+                        return epilion_id
+                mod_lst.append(mod_info)
             if mod_lst:
                 mod_str = f"[{','.join(mod_lst)}]"
             else:
@@ -340,6 +345,8 @@ class AbbrParser:
                 pl_info_dct['PL'] = pl_info_dct['PL1']
             elif pl_info_dct['PL1'] is None and pl_info_dct['PL2'] is not None:
                 pl_info_dct['PL'] = pl_info_dct['PL2'].strip('-')
+            else:
+                return ''
 
             fa1_str = self.parse_legacy_fa(pl_info_dct['FA1'].strip('()')).strip('FA')
             fa2_str = self.parse_legacy_fa(pl_info_dct['FA2'].strip('()')).strip('FA')
