@@ -17,9 +17,9 @@ class epiLIONTestCase(unittest.TestCase):
 
     def setUp(self):
         logger.debug('SETUP TESTS...')
-        in_file = r'TestInput/test_names.txt'
+        in_file = r'Test/TestInput/test_names.txt'
         bad_in_file = r'Test/TestInput/test_names_x.txt'
-        out_file = r'TestOutput/test_sdf.sdf'
+        out_file = r'Test/TestOutput/test_sdf.sdf'
         self.pass_params = ['-i', in_file, '-o', out_file]
         self.fail_input_params = ['-i', bad_in_file, '-o', out_file]
 

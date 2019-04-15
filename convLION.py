@@ -59,6 +59,7 @@ def main(argv):
         logger.info(f'Save output file: {out_file}')
         logger.info('FINISHED')
         is_output = True
+        logger.info(f'is_output {is_output}')
     else:
         logger.error(f'Can NOT open input file:')
         logger.error(in_file)

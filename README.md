@@ -1,5 +1,5 @@
 # About epi<span style="color:orange">LION</span> #
-# # epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature #
+# # epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature #
 
 The epiLION project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
