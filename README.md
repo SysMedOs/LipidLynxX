@@ -13,14 +13,17 @@ in the epilipidome.
     + Suitable for head group modified phospholipids
     + Hierarchical abbreviation system  
     + Capable to parse fuzzy site unspecific annotations
+
 ![epiLION_levels](doc/images/epiLION_levels.png)
     
 * epiLION abbreviation converter
     + Convert different abbreviations to uniformed epiLION abbreviations
+
 ![epiLION_converter](doc/images/fig_converter.png)
 
 * epiLION structure and MS property generator
     + Abbreviation to SMILES/ MOL / SDF conversion using python
+
 ![epiLION_generator](doc/images/fig_generator.png)
 
 * Currently supported modifications
@@ -56,7 +59,7 @@ in the epilipidome.
         - PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
 
 ## Instructions ##
-
+![Travis (.org) branch](https://img.shields.io/travis/SysMedOs/epiLION/master.svg?style=flat-square)  ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg?style=flat-square)  ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg?style=flat-square) 
 ### How to install epiLION from source code ###
 * Download the source code as zip file for your system
     + Download epiLION source Code as .zip. Please notice the date and version of LipidHunter source code.
@@ -83,8 +86,10 @@ in the epilipidome.
     and generate the converted epiLION abbreviations in the output file.
     + convLION can read an write both `.xlsx` and `.csv` file.
     + sample input
+    
     ![epiLION_converter_input](doc/images/inLION.PNG)
     + sample output
+    
     ![epiLION_converter_output](doc/images/outLION.PNG)
             
 * Run epiLION generator
