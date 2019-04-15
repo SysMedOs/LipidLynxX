@@ -9,7 +9,6 @@ install:
   - export PATH="/home/travis/miniconda/bin:$PATH"
   - export PATH="/home/travis/miniconda/envs"
   - hash -r
-  - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
   - conda create -c rdkit -n testenv rdkit python=$TRAVIS_PYTHON_VERSION

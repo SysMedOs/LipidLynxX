@@ -59,7 +59,11 @@ in the epilipidome.
         - PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
 
 ## Instructions ##
-![Travis (.org) branch](https://img.shields.io/travis/SysMedOs/epiLION/master.svg?style=flat-square)  ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg?style=flat-square)  ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg?style=flat-square) 
+![Travis (.org) branch](https://img.shields.io/travis/SysMedOs/epiLION/master.svg?style=flat-square)
+![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg?style=flat-square)
+![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
+![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
 ### How to install epiLION from source code ###
 * Download the source code as zip file for your system
     + Download epiLION source Code as .zip. Please notice the date and version of LipidHunter source code.
