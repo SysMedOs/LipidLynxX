@@ -1,7 +1,6 @@
 language: python
 python:
   - "3.6"
-  - "3.7"
 install:
   # Install Anaconda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -13,8 +12,12 @@ install:
   - conda info -a
   - conda create -c rdkit -n test-env rdkit python=$TRAVIS_PYTHON_VERSION
   - source activate test-env
-  - conda install pandas natsort openpyxl xlrd xlwt
+  - pip install -r requirements.txt
+  - pip install codecov
 
 # command to run tests
 script:
-  - nosetests
+  - nosetests --with-coverage  --cover-package=epiLION LibLION/*.py
+
+after_success:
+- codecov
