@@ -6,8 +6,12 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os.path
+import os
+import sys
 import unittest
+
+epiLION_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, epiLION_Path + '/../')
 
 import epiLION
 from LibLION.DefaultParams import logger
