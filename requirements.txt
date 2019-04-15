@@ -1,0 +1,9 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+
+natsort
+openpyxl
+pandas
+xlrd
+xlwt
