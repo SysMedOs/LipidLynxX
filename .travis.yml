@@ -1,6 +1,8 @@
 language: python
 python:
   - "3.6"
+virtualenv:
+  system_site_packages: true
 install:
   # Install Anaconda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -10,14 +12,14 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda create -c rdkit -n test-env rdkit python=$TRAVIS_PYTHON_VERSION
-  - source activate test-env
+  - conda create -c rdkit -n testenv rdkit python=$TRAVIS_PYTHON_VERSION
+  - source activate testenv
   - pip install -r requirements.txt
-  - pip install codecov
-
+  - conda install codecov
+  - conda install nosetests
 # command to run tests
 script:
-  - nosetests --with-coverage  --cover-package=epiLION LibLION/*.py
+  - nosetests --with-coverage --cover-package=epiLION LibLION/*.py
 
 after_success:
 - codecov
