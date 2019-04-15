@@ -6,8 +6,12 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os.path
+import os
+import sys
 import unittest
+
+epiLION_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, epiLION_Path + '/../')
 
 import convLION
 from LibLION.DefaultParams import logger
@@ -17,9 +21,9 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def setUp(self):
         logger.debug('SETUP TESTS...')
-        in_file = r'TestInput/test_crosscheck.xlsx'
+        in_file = r'Test/TestInput/test_crosscheck.xlsx'
         bad_in_file = r'Test/TestInput/test_crosscheck_x.txt'
-        out_file = r'TestOutput/test_crosscheck_output.xlsx'
+        out_file = r'Test/TestOutput/test_crosscheck_output.xlsx'
         self.pass_params = ['-i', in_file, '-o', out_file]
         self.fail_input_params = ['-i', bad_in_file, '-o', out_file]
 
