@@ -2,7 +2,7 @@
 # $ conda create --name <env> --file <this file>
 # platform: win-64
 
-natsort
+natsort==6.0.0
 openpyxl
 pandas
 xlrd
