@@ -24,6 +24,7 @@ matrix:
     - pytest --cov=./
     after_success:
     - codecov
+
   - os: osx
     language: sh
     install:
@@ -66,6 +67,5 @@ matrix:
     # command to run tests
     script:
       - pytest --cov=./
-
     after_success:
       - codecov
