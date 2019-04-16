@@ -1,5 +1,14 @@
-# About epi<span style="color:orange">LION</span> #
+![epiLION_Logo](doc/images/epiLION_Logo.png)
 # # epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature #
+
+[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
+![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
+![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
+![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
+![Platform macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
+![Platform Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)
+![Platform Windows](https://img.shields.io/badge/Platform-Windows-blue.svg) 
 
 The epiLION project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
@@ -59,15 +68,6 @@ in the epilipidome.
         - PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
 
 ## Instructions ##
-
-[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
-![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
-![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
-![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
-![Platform macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
-![Platform Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)
-![Platform Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)
 
 ### How to install epiLION from source code ###
 * Download the source code as zip file for your system
