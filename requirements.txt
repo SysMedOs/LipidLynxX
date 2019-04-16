@@ -6,4 +6,4 @@ natsort
 openpyxl
 pandas
 xlrd
-xlwt
+xlwt==1.3.0
