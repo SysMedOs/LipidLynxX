@@ -59,12 +59,18 @@ in the epilipidome.
         - PC(16:0/20:4[4DB{5,9,12,15},2OH{8,11},1Ke{14}]) 
 
 ## Instructions ##
-![Travis (.com) branch](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)
+
+| Platform | py.test status|
+| --- | --- |
+| Windows | ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)|
+| Linux | ![Travis (.com) Linux](http://travis-ci-job-status.herokuapp.com/badge/SysMedOs/epiLION/master/linux)|
+| macOS | ![Travis (.com) macOS](http://travis-ci-job-status.herokuapp.com/badge/SysMedOs/epiLION/master/osx)|
+
 ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
 ![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
 ![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
-[![PEP8](https://img.shields.io/badge/code%20style-pep8-geen.svg)](https://www.python.org/dev/peps/pep-0008/)
+
 ### How to install epiLION from source code ###
 * Download the source code as zip file for your system
     + Download epiLION source Code as .zip. Please notice the date and version of LipidHunter source code.
