@@ -3,7 +3,7 @@
 # platform: win-64
 
 natsort
-openpyxl
+openpyxl==2.6.2
 pandas
 xlrd
 xlwt
