@@ -4,6 +4,6 @@
 
 natsort
 openpyxl
-pandas
+pandas==0.24.2
 xlrd
 xlwt
