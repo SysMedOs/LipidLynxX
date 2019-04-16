@@ -60,16 +60,14 @@ in the epilipidome.
 
 ## Instructions ##
 
-| Platform | py.test status|
-| --- | --- |
-| Windows | ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)|
-| Linux | ![Travis (.com) Linux](http://travis-ci-job-status.herokuapp.com/badge/SysMedOs/epiLION/master/linux)|
-| macOS | ![Travis (.com) macOS](http://travis-ci-job-status.herokuapp.com/badge/SysMedOs/epiLION/master/osx)|
-
+[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
 ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
 ![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
 ![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
+![Platform macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
+![Platform Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)
+![Platform Windows](https://img.shields.io/badge/Platform-Windows-blue.svg)
 
 ### How to install epiLION from source code ###
 * Download the source code as zip file for your system
@@ -88,8 +86,11 @@ in the epilipidome.
         - Data processing: `pandas`
         - SDF generation: `rdkit`
     + Test source code installation
-        - unit test for epiLION converter is provided in [`Test/test_convLION.py`](Test/test_convLION.py)
-        - unit test for epiLION generator is provided in [`Test/test_epiLION.py`](Test/test_epiLION.py)
+        - epiLION is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS. 
+        - [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION/branches)
+        - you can also use py.test to test epiLION in your python environment
+            - unit test for epiLION converter is provided in [`Test/test_convLION.py`](Test/test_convLION.py)
+            - unit test for epiLION generator is provided in [`Test/test_epiLION.py`](Test/test_epiLION.py)
 
 * Run epiLION converter
     + Run `python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx` 
@@ -128,6 +129,7 @@ in the epilipidome.
 + LipidHunter is Dual-licensed
     * For academic and non-commercial use: `GPLv2 License`: 
     
+        [![License: GPL v2](https://img.shields.io/badge/License%20for%20academic%20and%20non--commercial%20use-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) 
         [The GNU General Public License version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
     * For commercial use: please contact the develop team by email.
