@@ -70,3 +70,5 @@ pl_smi_info = {'PA': r'OP(O)(OCC(',
 
 
 tg_smi_info = {'gly_part_a': r'[H]C(C', 'gly_part_b': r')(', 'gly_part_c': r')C'}
+
+mod_order_lst = ['DB', 'OH', 'Hp', 'Ke', 'Ep', 'Me', 'My', 'NH2', 'SH', 'Br', 'Cl', 'F', 'CN']

@@ -15,7 +15,7 @@ import time
 import configparser
 
 from LibLION.DefaultParams import logger
-from LibLION.epiLION_Core import epilion2sdf
+from LibLION.Converter import Converter
 
 
 # required to perform multiprocessing
@@ -35,11 +35,11 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
     except getopt.GetoptError:
-        logger.info('epiLION.py -i <input_file> -o <output_file>')
+        logger.info('epiLIONConverter.py -i <input_file> -o <output_file>')
         return is_output
     for opt, arg in opts:
         if opt == '-h':
-            logger.info('epiLION.py -i <input_file> -o <output_file>')
+            logger.info('epiLIONConverter.py -i <input_file> -o <output_file>')
             return is_output
         elif opt in ("-i", "--infile"):
             in_file = arg
@@ -48,12 +48,18 @@ def main(argv):
 
     if os.path.isfile(in_file):
         logger.info(f'Load input file: {in_file}')
-        with open(in_file, 'r') as in_obj:
-            in_lst = in_obj.readlines()
-            epilion2sdf(in_lst, out_file)
+        cfg_file = r'Configurations/LinearFA_abbreviations.xlsx'
+        if os.path.isfile(cfg_file):
+            pass
+        elif os.path.isfile(f'../{cfg_file}'):
+            cfg_file = f'../{cfg_file}'
+        converter = Converter(cfg_file)
+        converter.convert_table(in_file, out_file)
+
         logger.info(f'Save output file: {out_file}')
         logger.info('FINISHED')
         is_output = True
+        logger.info(f'is_output {is_output}')
     else:
         logger.error(f'Can NOT open input file:')
         logger.error(in_file)

@@ -1,0 +1,43 @@
+{
+  "epiLION_version" : "0.0.1",
+  "abbreviation" : "PC(16:0/20:4[4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}])",
+  "formula": "CxHyOzNP",
+  "lipid_class": "PC",
+  "residues": [
+    {"abbreviation": "16:0",
+      "link": "",
+      "formula": "CxHyOz",
+      "modifications": [],
+      "position": 1,
+      "smiles": ""
+    },
+    {
+      "abbreviation": "16:0",
+      "link": "",
+      "formula": "CxHyOz",
+      "modifications": [
+        {
+          "type": "DB",
+          "count": 4,
+          "sites": [5,9,12,15],
+          "info": ["Z","E","E","E"]
+        },
+        {
+          "type": "OH",
+          "count": 2,
+          "sites": [8,11],
+          "info": ["R","S"]
+        },
+        {
+          "type": "Ke",
+          "count": 1,
+          "sites": [14],
+          "info": []
+        }
+      ],
+      "position": 2,
+      "smiles": ""
+    }
+    ],
+  "smiles": ""
+}

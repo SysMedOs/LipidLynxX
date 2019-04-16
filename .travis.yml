@@ -1,0 +1,71 @@
+language: python
+
+python:
+- 3.6
+
+matrix:
+  include:
+  - os: linux
+    python: 3.6
+    install:
+      - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      - bash miniconda.sh -b -p $HOME/miniconda
+      - export PATH="$HOME/miniconda/bin:$PATH"
+      - hash -r
+      - conda config --set always_yes yes --set changeps1 no
+      - conda update -q conda
+      - conda info -a
+      - conda create -c rdkit -n testenv rdkit python=$TRAVIS_PYTHON_VERSION
+      - source activate testenv
+      - pip install -r requirements.txt
+      - pip install codecov
+      - pip install pytest pytest-cov
+    script:
+    - pytest --cov=./
+    after_success:
+    - codecov
+  - os: osx
+    language: sh
+    install:
+      - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
+      - bash miniconda.sh -b -p $HOME/miniconda
+      - export PATH="$HOME/miniconda/bin:$PATH"
+      - hash -r
+      - conda config --set always_yes yes --set changeps1 no
+      - conda update -q conda
+      - conda info -a
+      - conda create -c rdkit -n testenv rdkit python=$TRAVIS_PYTHON_VERSION
+      - source activate testenv
+      - pip install -r requirements.txt
+      - pip install codecov
+      - pip install pytest pytest-cov
+    # command to run tests
+    script:
+      - pytest --cov=./
+    after_success:
+      - codecov
+
+  - os: windows
+    language: sh
+    env: PATH="/c/tools/miniconda3/:/c/tools/miniconda3/Scripts:/c/tools/miniconda3/bin:/c/tools/miniconda3/envs/testenv/Lib/site-packages/rdkit:$PATH"
+    before_install:
+    - choco install openssl.light
+    - choco install miniconda3 --params="'/AddToPath:1'"
+    install:
+      - hash -r
+      - conda config --set always_yes yes --set changeps1 no
+      - conda update -q conda
+      - conda info -a
+      - conda create -c rdkit -n testenv rdkit python=$TRAVIS_PYTHON_VERSION
+      - source activate testenv
+      - conda list
+      - echo $PATH
+      - pip install -r requirements.txt
+      - pip install codecov
+      - pip install pytest pytest-cov
+    # command to run tests
+    script:
+      - pytest --cov=./
+
+    after_success:
+      - codecov
