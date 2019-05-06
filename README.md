@@ -1,14 +1,12 @@
 ![epiLION_Logo](doc/images/epiLION_Logo.png)
 # # epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature #
 
+![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
+![CodeFactor](https://www.codefactor.io/repository/github/signalr/signalr/badge)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/epiLION?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/epiLION&utm_campaign=Badge_Grade_Dashboard)
 ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
-![pyup dependencies](https://pyup.io/repos/github/SysMedOs/epiLION/shield.svg)
-![pyup python3 check](https://pyup.io/repos/github/SysMedOs/epiLION/python-3-shield.svg)
-![Platform macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)
-![Platform Linux](https://img.shields.io/badge/Platform-Linux-orange.svg)
-![Platform Windows](https://img.shields.io/badge/Platform-Windows-blue.svg) 
 
 The epiLION project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
@@ -129,7 +127,6 @@ in the epilipidome.
 + LipidHunter is Dual-licensed
     * For academic and non-commercial use: `GPLv2 License`: 
     
-        [![License: GPL v2](https://img.shields.io/badge/License%20for%20academic%20and%20non--commercial%20use-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) 
         [The GNU General Public License version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
     * For commercial use: please contact the develop team by email.
