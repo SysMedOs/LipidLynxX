@@ -27,21 +27,39 @@ class epiLION_ConverterTestCase(unittest.TestCase):
         self.pass_params = ['-i', in_file, '-o', out_file]
         self.fail_input_params = ['-i', bad_in_file, '-o', out_file]
 
-    def test_epiLION_Converter_help(self):
+    @staticmethod
+    def test_epiLION_Converter_help():
         logger.debug('Test help...')
-        assert convLION.main(['-h']) is False
+        result = convLION.main(['-h'])
+        if result is False:
+            logger.debug('Test help... PASSED')
+        else:
+            raise Exception('Test help... Failed')
 
-    def test_epiLION_Converter_bad_params(self):
+    @staticmethod
+    def test_epiLION_Converter_bad_params():
         logger.debug('Test bad params...')
-        assert convLION.main(['-test']) is False
+        result = convLION.main(['-test'])
+        if result is False:
+            logger.debug('Test bad parameter... PASSED')
+        else:
+            raise Exception('Test bad parameter... Failed')
 
     def test_epiLION_Converter_bad_input(self):
         logger.debug('Test bad input...')
-        assert convLION.main(self.fail_input_params) is False
+        result = convLION.main(self.fail_input_params)
+        if result is False:
+            logger.debug('Test bad input... PASSED')
+        else:
+            raise Exception('Test bad input... Failed')
 
     def test_epiLION_Converter_good_input(self):
         logger.debug('Test sample data...')
-        assert convLION.main(self.pass_params) is True
+        result = convLION.main(self.pass_params)
+        if result is True:
+            logger.debug('Test sample data... PASSED')
+        else:
+            raise Exception('Test sample data... Failed')
 
     def tearDown(self):
         logger.debug('TEST END!')

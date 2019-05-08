@@ -6,13 +6,12 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os
 import re
 
 import pandas as pd
 from natsort import natsorted
 
-from LibLION.DefaultParams import logger, mod_order_lst
+from LibLION.DefaultParams import mod_order_lst
 
 
 class AbbrParser:

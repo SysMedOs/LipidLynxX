@@ -27,21 +27,39 @@ class epiLIONTestCase(unittest.TestCase):
         self.pass_params = ['-i', in_file, '-o', out_file]
         self.fail_input_params = ['-i', bad_in_file, '-o', out_file]
 
-    def test_epiLION_help(self):
-        logger.debug('Test bad input...')
-        assert epiLION.main(['-h']) is False
+    @staticmethod
+    def test_epiLION_help():
+        logger.debug('Test help...')
+        result = epiLION.main(['-h'])
+        if result is False:
+            logger.debug('Test help... PASSED')
+        else:
+            raise Exception('Test help... Failed')
 
-    def test_epiLION_bad_params(self):
-        logger.debug('Test bad input...')
-        assert epiLION.main(['-test']) is False
+    @staticmethod
+    def test_epiLION_bad_params():
+        logger.debug('Test bad parameter...')
+        result = epiLION.main(['-test'])
+        if result is False:
+            logger.debug('Test bad parameter... PASSED')
+        else:
+            raise Exception('Test bad parameter... Failed')
 
     def test_epiLION_bad_input(self):
         logger.debug('Test bad input...')
-        assert epiLION.main(self.fail_input_params) is False
+        result = epiLION.main(self.fail_input_params)
+        if result is False:
+            logger.debug('Test bad input... PASSED')
+        else:
+            raise Exception('Test bad input... Failed')
 
     def test_epiLION_good_input(self):
         logger.debug('Test sample data...')
-        assert epiLION.main(self.pass_params) is True
+        result = epiLION.main(self.pass_params)
+        if result is True:
+            logger.debug('Test sample data... PASSED')
+        else:
+            raise Exception('Test sample data... Failed')
 
     def tearDown(self):
         logger.debug('TEST END!')

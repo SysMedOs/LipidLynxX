@@ -23,7 +23,9 @@ class Converter:
         self.cfg = cfg
         self.abbr_dct = dict(zip(abbr_df['Abbreviation'].tolist(), abbr_df['epiLION'].tolist()))
 
-    def load_file(self, file: str) -> dict:
+    @staticmethod
+    def load_file(file: str) -> dict:
+
         if os.path.isfile(file):
             if file.lower().endswith('.xlsx'):
                 abbr_df = pd.read_excel(file)
@@ -35,8 +37,7 @@ class Converter:
                 abbr_df = pd.DataFrame()
                 logger.error(f'Can Not load file: {file}')
         else:
-            assert FileNotFoundError
-            abbr_df = pd.DataFrame()
+            raise FileNotFoundError
         abbr_df.fillna('', inplace=True)
         groups_lst = abbr_df.columns.tolist()
         logger.info(f'Input {len(groups_lst)} abbreviation groups: {", ".join(groups_lst)}')
