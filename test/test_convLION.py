@@ -6,12 +6,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os
-import sys
 import unittest
-
-epiLION_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, epiLION_Path + '/../')
 
 from epilion.controllers import convLION
 from epilion.LibLION.DefaultParams import logger
@@ -67,5 +62,12 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     # python convLION.py -i test/TestInput/test_crosscheck.xlsx -o test/TestOutput/test_crosscheck_output.xlsx
+
+    import os
+    import sys
+
+    epiLION_Path = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, epiLION_Path + '/../')
+
     unittest.main()
     logger.info('TESTS FINISHED!')
