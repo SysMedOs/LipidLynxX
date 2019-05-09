@@ -10,7 +10,7 @@ import re
 
 # from rdkit import Chem
 
-from epilion.LibLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from epilion.libLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
 
 class ParserMOD:

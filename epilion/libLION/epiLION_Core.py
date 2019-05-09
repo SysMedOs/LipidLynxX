@@ -11,8 +11,8 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from epilion.LibLION.DefaultParams import logger
-from epilion.LibLION.LipidNomenclature import ParserFA, ParserPL
+from epilion.libLION.DefaultParams import logger
+from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
 
 
 def epilion2sdf(abbr_lst, save_sdf):

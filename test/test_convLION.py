@@ -8,8 +8,8 @@
 
 import unittest
 
-from epilion.controllers import convLION
-from epilion.LibLION.DefaultParams import logger
+import convLION
+from epilion.libLION.DefaultParams import logger
 
 
 class epiLION_ConverterTestCase(unittest.TestCase):

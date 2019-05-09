@@ -11,8 +11,8 @@ import re
 
 import pandas as pd
 
-from epilion.LibLION.DefaultParams import logger
-from epilion.LibLION.AbbrParser import AbbrParser
+from epilion.libLION.DefaultParams import logger
+from epilion.libLION.AbbrParser import AbbrParser
 
 
 class Converter:
@@ -108,6 +108,55 @@ class Converter:
             out_df.to_csv(output_file, index=False)
         else:
             out_df.to_excel(output_file + '.xlsx', index=False)
+
+    def convert_list(self, input_list: list) -> list:
+
+        abbr_parser = AbbrParser(self.cfg)
+
+        epilion_lst = []
+        for abbr in input_list:
+            abbr = re.sub(r' ', '', abbr)
+            epilion_abbr = ''
+            # Try to parse to software generated abbreviations
+            abbr_epilion_lst = []
+            if abbr_parser.is_lpptiger(abbr):
+                epilion_lpptiger_abbr = abbr_parser.parse_lpptiger(abbr)
+                logger.debug(f'LPPtiger: {abbr} -> {epilion_lpptiger_abbr}')
+                abbr_epilion_lst.append(epilion_lpptiger_abbr)
+            if abbr_parser.is_lipostar(abbr)[0]:
+                epilion_lipostar_abbr = abbr_parser.parse_lipostar(abbr)
+                logger.debug(f'Lipostar: {abbr} -> {epilion_lipostar_abbr}')
+                abbr_epilion_lst.append(epilion_lipostar_abbr)
+            if abbr_parser.is_lipidmaps(abbr)[0]:
+                epilion_lipidmaps_abbr = abbr_parser.parse_lipidmaps(abbr)
+                logger.debug(f'LIPIDMAPS: {abbr} -> {epilion_lipidmaps_abbr}')
+                abbr_epilion_lst.append(epilion_lipidmaps_abbr)
+
+            if abbr_parser.is_legacy(abbr)[0]:
+                # logger.info(f'Try to parse in Legacy mode for {k} - {abbr}')
+                epilion_legacy_abbr = abbr_parser.parse_legacy(abbr)
+                logger.debug(f'Legacy: {abbr} -> {epilion_legacy_abbr}')
+                abbr_epilion_lst.append(epilion_legacy_abbr)
+
+            if abbr_epilion_lst:
+                epilion_abbr = sorted(abbr_epilion_lst, key=len)[-1]
+            else:
+                epilion_abbr = ''
+
+            if not epilion_abbr:
+                logger.warning(f'! Can NOT convert {abbr}')
+
+            epilion_lst.append(epilion_abbr)
+
+        return epilion_lst
+
+    def convert_text(self, input_text: str) -> list:
+
+        usr_abbr_lst = input_text.split('\n')
+
+        epilion_lst = self.convert_list(usr_abbr_lst)
+
+        return epilion_lst
 
 
 if __name__ == '__main__':

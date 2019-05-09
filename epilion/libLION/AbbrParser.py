@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from epilion.LibLION.DefaultParams import mod_order_lst
+from epilion.libLION.DefaultParams import mod_order_lst
 
 
 class AbbrParser:
