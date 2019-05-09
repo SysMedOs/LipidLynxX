@@ -11,8 +11,8 @@ import re
 
 import pandas as pd
 
-from LibLION.DefaultParams import logger
-from LibLION.AbbrParser import AbbrParser
+from epilion.LibLION.DefaultParams import logger
+from epilion.LibLION.AbbrParser import AbbrParser
 
 
 class Converter:
@@ -112,9 +112,9 @@ class Converter:
 
 if __name__ == '__main__':
 
-    test_in_file = r'../Test/TestInput/test_crosscheck.xlsx'
-    test_out_file = r'../Test/TestOutput/test_crosscheck_output.xlsx'
-    cfg_file = r'../Configurations/LinearFA_abbreviations.xlsx'
+    test_in_file = r'../test/TestInput/test_crosscheck.xlsx'
+    test_out_file = r'../test/TestOutput/test_crosscheck_output.xlsx'
+    cfg_file = r'../configurations/LinearFA_abbreviations.xlsx'
 
     converter = Converter(cfg_file)
 

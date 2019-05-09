@@ -10,8 +10,8 @@ import getopt
 import os.path
 import sys
 
-from LibLION.DefaultParams import logger
-from LibLION.epiLION_Core import epilion2sdf
+from epilion.LibLION.DefaultParams import logger
+from epilion.LibLION.epiLION_Core import epilion2sdf
 
 
 # required to perform multiprocessing

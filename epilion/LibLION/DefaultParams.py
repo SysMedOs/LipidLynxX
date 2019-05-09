@@ -9,20 +9,35 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import logging
+import os
 
 import pandas as pd
-
 log_level = logging.DEBUG
 logging.basicConfig(format='%(asctime)s-%(levelname)s - %(message)s', datefmt='%b-%d@%H:%M:%S', level=log_level)
 logger = logging.getLogger('log')
 
 # Define default values
-try:
-    mod_cfg_csv = r'../Configurations/Mod_cfg.csv'
-    mod_cfg_df = pd.read_csv(mod_cfg_csv, index_col=0, na_values=None)
-except FileNotFoundError:
-    mod_cfg_csv = r'Configurations/Mod_cfg.csv'
-    mod_cfg_df = pd.read_csv(mod_cfg_csv, index_col=0, na_values=None)
+cfg_path_lst = [r'epilion/configurations/Mod_cfg.csv', r'../configurations/Mod_cfg.csv', r'configurations/Mod_cfg.csv']
+mod_cfg_path = ''
+for cfg_path in cfg_path_lst:
+    if os.path.isfile(cfg_path):
+        mod_cfg_path = cfg_path
+if mod_cfg_path:
+    mod_cfg_df = pd.read_csv(mod_cfg_path, index_col=0, na_values=None)
+else:
+    raise FileNotFoundError
+
+abbr_cfg_path_list = [
+    r'epilion/configurations/LinearFA_abbreviations.xlsx',
+    r'../configurations/LinearFA_abbreviations.xlsx',
+    r'configurations/LinearFA_abbreviations.xlsx'
+]
+abbr_cfg_path = ''
+for a_cfg_path in abbr_cfg_path_list:
+    if os.path.isfile(a_cfg_path):
+        abbr_cfg_path = a_cfg_path
+if not abbr_cfg_path:
+    raise FileNotFoundError
 
 # logger.debug(mod_cfg_df)
 

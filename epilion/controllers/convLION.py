@@ -10,8 +10,8 @@ import getopt
 import os.path
 import sys
 
-from LibLION.DefaultParams import logger
-from LibLION.Converter import Converter
+from epilion.LibLION.DefaultParams import abbr_cfg_path, logger
+from epilion.LibLION.Converter import Converter
 
 
 # required to perform multiprocessing
@@ -45,12 +45,7 @@ def main(argv):
 
     if os.path.isfile(in_file):
         logger.info(f'Load input file: {in_file}')
-        cfg_file = r'Configurations/LinearFA_abbreviations.xlsx'
-        if os.path.isfile(cfg_file):
-            pass
-        elif os.path.isfile(f'../{cfg_file}'):
-            cfg_file = f'../{cfg_file}'
-        converter = Converter(cfg_file)
+        converter = Converter(abbr_cfg_path)
         converter.convert_table(in_file, out_file)
 
         logger.info(f'Save output file: {out_file}')

@@ -10,7 +10,7 @@ import re
 
 # from rdkit import Chem
 
-from LibLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from epilion.LibLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
 
 class ParserMOD:
@@ -239,7 +239,8 @@ class ParserFA:
 
         return fa_info_dct
 
-    def get_exactmass(self, lipid_info_dct: dict, decimal: int = 6) -> float:
+    @staticmethod
+    def get_exactmass(lipid_info_dct: dict, decimal: int = 6) -> float:
 
         exactmass = 0.0
 
