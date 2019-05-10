@@ -11,8 +11,8 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from LibLION.DefaultParams import logger
-from LibLION.LipidNomenclature import ParserFA, ParserPL
+from epilion.libLION.DefaultParams import logger
+from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
 
 
 def epilion2sdf(abbr_lst, save_sdf):
@@ -75,8 +75,8 @@ def epilion2sdf(abbr_lst, save_sdf):
 
 if __name__ == '__main__':
 
-    test_file = r'../Test/TestInput/test_names.txt'
-    output_file = r'../Test/TestOutput/test_sdf.sdf'
+    test_file = r'../../test/TestInput/test_names.txt'
+    output_file = r'../../test/TestOutput/test_names_sdf.sdf'
 
     with open(test_file, 'r') as input_obj:
         input_lst = input_obj.readlines()

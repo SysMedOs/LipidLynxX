@@ -11,8 +11,8 @@ import re
 
 import pandas as pd
 
-from LibLION.DefaultParams import logger
-from LibLION.AbbrParser import AbbrParser
+from epilion.libLION.DefaultParams import logger
+from epilion.libLION.AbbrParser import AbbrParser
 
 
 class Converter:
@@ -22,8 +22,11 @@ class Converter:
         abbr_df = pd.read_excel(cfg)
         self.cfg = cfg
         self.abbr_dct = dict(zip(abbr_df['Abbreviation'].tolist(), abbr_df['epiLION'].tolist()))
+        self.abbr_parser = AbbrParser(self.cfg)
 
-    def load_file(self, file: str) -> dict:
+    @staticmethod
+    def load_file(file: str) -> dict:
+
         if os.path.isfile(file):
             if file.lower().endswith('.xlsx'):
                 abbr_df = pd.read_excel(file)
@@ -35,8 +38,7 @@ class Converter:
                 abbr_df = pd.DataFrame()
                 logger.error(f'Can Not load file: {file}')
         else:
-            assert FileNotFoundError
-            abbr_df = pd.DataFrame()
+            raise FileNotFoundError
         abbr_df.fillna('', inplace=True)
         groups_lst = abbr_df.columns.tolist()
         logger.info(f'Input {len(groups_lst)} abbreviation groups: {", ".join(groups_lst)}')
@@ -56,7 +58,6 @@ class Converter:
     def convert_table(self, input_file: str, output_file: str):
 
         abbr_dct = self.load_file(input_file)
-        abbr_parser = AbbrParser(self.cfg)
         epilion_dct = {}
         for k in abbr_dct:
             tmp_abbr_lst = abbr_dct[k]
@@ -66,22 +67,22 @@ class Converter:
                 epilion_abbr = ''
                 # Try to parse to software generated abbreviations
                 abbr_epilion_lst = []
-                if abbr_parser.is_lpptiger(abbr):
-                    epilion_lpptiger_abbr = abbr_parser.parse_lpptiger(abbr)
+                if self.abbr_parser.is_lpptiger(abbr):
+                    epilion_lpptiger_abbr = self.abbr_parser.parse_lpptiger(abbr)
                     logger.debug(f'{k} - LPPtiger: {abbr} -> {epilion_lpptiger_abbr}')
                     abbr_epilion_lst.append(epilion_lpptiger_abbr)
-                if abbr_parser.is_lipostar(abbr)[0]:
-                    epilion_lipostar_abbr = abbr_parser.parse_lipostar(abbr)
+                if self.abbr_parser.is_lipostar(abbr)[0]:
+                    epilion_lipostar_abbr = self.abbr_parser.parse_lipostar(abbr)
                     logger.debug(f'{k} - Lipostar: {abbr} -> {epilion_lipostar_abbr}')
                     abbr_epilion_lst.append(epilion_lipostar_abbr)
-                if abbr_parser.is_lipidmaps(abbr)[0]:
-                    epilion_lipidmaps_abbr = abbr_parser.parse_lipidmaps(abbr)
+                if self.abbr_parser.is_lipidmaps(abbr)[0]:
+                    epilion_lipidmaps_abbr = self.abbr_parser.parse_lipidmaps(abbr)
                     logger.debug(f'{k} - LIPIDMAPS: {abbr} -> {epilion_lipidmaps_abbr}')
                     abbr_epilion_lst.append(epilion_lipidmaps_abbr)
 
-                if abbr_parser.is_legacy(abbr)[0]:
+                if self.abbr_parser.is_legacy(abbr)[0]:
                     # logger.info(f'Try to parse in Legacy mode for {k} - {abbr}')
-                    epilion_legacy_abbr = abbr_parser.parse_legacy(abbr)
+                    epilion_legacy_abbr = self.abbr_parser.parse_legacy(abbr)
                     logger.debug(f'{k} - Legacy: {abbr} -> {epilion_legacy_abbr}')
                     abbr_epilion_lst.append(epilion_legacy_abbr)
 
@@ -108,12 +109,73 @@ class Converter:
         else:
             out_df.to_excel(output_file + '.xlsx', index=False)
 
+    def convert_abbr(self, abbr: str) -> str:
+
+        abbr = re.sub(r' ', '', abbr)
+        # Try to parse to software generated abbreviations
+        abbr_epilion_lst = []
+        if self.abbr_parser.is_lpptiger(abbr):
+            epilion_lpptiger_abbr = self.abbr_parser.parse_lpptiger(abbr)
+            logger.debug(f'LPPtiger: {abbr} -> {epilion_lpptiger_abbr}')
+            abbr_epilion_lst.append(epilion_lpptiger_abbr)
+        if self.abbr_parser.is_lipostar(abbr)[0]:
+            epilion_lipostar_abbr = self.abbr_parser.parse_lipostar(abbr)
+            logger.debug(f'Lipostar: {abbr} -> {epilion_lipostar_abbr}')
+            abbr_epilion_lst.append(epilion_lipostar_abbr)
+        if self.abbr_parser.is_lipidmaps(abbr)[0]:
+            epilion_lipidmaps_abbr = self.abbr_parser.parse_lipidmaps(abbr)
+            logger.debug(f'LIPIDMAPS: {abbr} -> {epilion_lipidmaps_abbr}')
+            abbr_epilion_lst.append(epilion_lipidmaps_abbr)
+
+        if self.abbr_parser.is_legacy(abbr)[0]:
+            # logger.info(f'Try to parse in Legacy mode for {k} - {abbr}')
+            epilion_legacy_abbr = self.abbr_parser.parse_legacy(abbr)
+            logger.debug(f'Legacy: {abbr} -> {epilion_legacy_abbr}')
+            abbr_epilion_lst.append(epilion_legacy_abbr)
+
+        if abbr_epilion_lst:
+            epilion_abbr = sorted(abbr_epilion_lst, key=len)[-1]
+        else:
+            epilion_abbr = ''
+
+        if not epilion_abbr:
+            logger.warning(f'! Can NOT convert {abbr}')
+
+        return epilion_abbr
+
+    def convert_list(self, input_list: list) -> list:
+
+        epilion_lst = []
+        for abbr in input_list:
+            abbr = re.sub(r' ', '', abbr)
+            epilion_abbr = self.convert_abbr(abbr)
+
+            epilion_lst.append(epilion_abbr)
+
+        return epilion_lst
+
+    def convert_text(self, input_text: str) -> (dict, list):
+
+        usr_abbr_lst = input_text.split('\n')
+
+        epilion_dct = {}
+        bad_input_lst = []
+
+        for abbr in usr_abbr_lst:
+            epilion_id = self.convert_abbr(abbr)
+            if epilion_id:
+                epilion_dct[abbr] = epilion_id
+            else:
+                bad_input_lst.append(abbr)
+
+        return epilion_dct, bad_input_lst
+
 
 if __name__ == '__main__':
 
-    test_in_file = r'../Test/TestInput/test_crosscheck.xlsx'
-    test_out_file = r'../Test/TestOutput/test_crosscheck_output.xlsx'
-    cfg_file = r'../Configurations/LinearFA_abbreviations.xlsx'
+    test_in_file = r'../test/TestInput/test_crosscheck.xlsx'
+    test_out_file = r'../test/TestOutput/test_crosscheck_output.xlsx'
+    cfg_file = r'../configurations/LinearFA_abbreviations.xlsx'
 
     converter = Converter(cfg_file)
 

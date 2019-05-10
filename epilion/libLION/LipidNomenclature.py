@@ -8,9 +8,9 @@
 
 import re
 
-from rdkit import Chem
+# from rdkit import Chem
 
-from LibLION.DefaultParams import elem_info, elem_shifts, logger, mod_cfg_df, pl_smi_info
+from epilion.libLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
 
 class ParserMOD:
@@ -131,7 +131,6 @@ class ParserFA:
                 c_term_lst.append(')=O')
 
             c_idx_lst = list(range(3, int(fa_info_dct['NUM_C']) + 1))
-            idx_pos = 3
 
             if int(fa_info_dct['NUM_DB']) > 0 and fa_info_dct['MOD_INFO'] is None:
                 fa_info_dct['MOD'] = [{'NUM': fa_info_dct['NUM_DB'], 'MOD': 'DB',
@@ -240,7 +239,8 @@ class ParserFA:
 
         return fa_info_dct
 
-    def get_exactmass(self, lipid_info_dct: dict, decimal: int = 6) -> float:
+    @staticmethod
+    def get_exactmass(lipid_info_dct: dict, decimal: int = 6) -> float:
 
         exactmass = 0.0
 
