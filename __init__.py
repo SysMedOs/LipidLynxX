@@ -26,7 +26,7 @@ class ConverterInputForm(Form):
 
 class ParserInputForm(Form):
 
-    lion_id_str = StringField(u'Paste epiLION id here:', validators=[DataRequired(), Length(max=255)])
+    lion_id_str = StringField(u'Paste one lipid abbreviation here:', validators=[DataRequired(), Length(max=255)])
 
 
 epilion_blueprint = Blueprint(

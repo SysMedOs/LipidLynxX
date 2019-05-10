@@ -17,7 +17,11 @@ logging.basicConfig(format='%(asctime)s-%(levelname)s - %(message)s', datefmt='%
 logger = logging.getLogger('log')
 
 # Define default values
-cfg_path_lst = [r'epilion/configurations/Mod_cfg.csv', r'../configurations/Mod_cfg.csv', r'configurations/Mod_cfg.csv']
+cfg_path_lst = [
+    r'../epilion/configurations/Mod_cfg.csv',
+    r'epilion/configurations/Mod_cfg.csv',
+    r'../configurations/Mod_cfg.csv',
+    r'configurations/Mod_cfg.csv']
 mod_cfg_path = ''
 for cfg_path in cfg_path_lst:
     if os.path.isfile(cfg_path):
@@ -28,6 +32,7 @@ else:
     raise FileNotFoundError
 
 abbr_cfg_path_list = [
+    r'../epilion/configurations/LinearFA_abbreviations.xlsx',
     r'epilion/configurations/LinearFA_abbreviations.xlsx',
     r'../configurations/LinearFA_abbreviations.xlsx',
     r'configurations/LinearFA_abbreviations.xlsx'

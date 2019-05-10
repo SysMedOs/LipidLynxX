@@ -4,7 +4,6 @@
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
-![CodeFactor](https://www.codefactor.io/repository/github/signalr/signalr/badge)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/epiLION?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/epiLION&utm_campaign=Badge_Grade_Dashboard)
 ![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
@@ -19,7 +18,7 @@ in the epilipidome.
     -   Unified position specific annotations
     -   Special optimization for prostane containing lipids
     -   Suitable for head group modified phospholipids
-    -   Hierarchical abbreviation system  
+    -   Hierarchical abbreviation system
     -   Capable to parse fuzzy site unspecific annotations
 
 ![epiLION_levels](doc/images/epiLION_levels.png)
@@ -55,19 +54,19 @@ in the epilipidome.
 -   Example of epiLION abbreviations
 
     -   Fatty acids
-    
+
         -   FA18:0
         -   O-16:0
         -   P-18:0
         -   20:4\[4DB,2OH,1Ke\]
         -   20:4\[4DB{5Z,9E,11Z,14Z},1OH{8S}\]
         -   20:4\[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}\]
-        
+
     -   Phospholipids
         -   PC\(O-16:0/18:1\)
         -   PC\(P-16:0_18:1\)
         -   PC\(16:0/20:4\[4DB,2OH,1Ke\]\)
-        -   PC\(16:0/20:4\[4DB{5,9,12,15},2OH{8,11},1Ke{14}\]\) 
+        -   PC\(16:0/20:4\[4DB{5,9,12,15},2OH{8,11},1Ke{14}\]\)
 
 ## Instructions
 
@@ -86,17 +85,17 @@ in the epilipidome.
 -   Install epiLION source code
 
     -   epiLION is developed under python 3.6+.
-    
+
     -   The best way is to use virtual environment such as `conda`
 
     -   Main dependencies are:
-    
+
         -   Data processing: `pandas`
         -   SDF generation: `rdkit`
-        
+
     -   Test source code installation
-    
-        -   epiLION is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS. 
+
+        -   epiLION is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS.
         -   [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION/branches)
         -   you can also use py.test to test epiLION in your python environment
 
@@ -105,12 +104,12 @@ in the epilipidome.
 
 -   Run epiLION converter
 
-    -   Run `python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx` 
-    -   convLION read list of different abbreviations in the `test_crosscheck.xlsx` 
+    -   Run `python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx`
+    -   convLION read list of different abbreviations in the `test_crosscheck.xlsx`
         and generate the converted epiLION abbreviations in the output file.
-    
+
     -   convLION can read an write both `.xlsx` and `.csv` file.
-    
+
     -   sample input
 
         ![epiLION_converter_input](doc/images/inLION.PNG)
@@ -118,11 +117,11 @@ in the epilipidome.
     -   sample output
 
         ![epiLION_converter_output](doc/images/outLION.PNG)
-                
+
 -   Run epiLION generator
 
-    -   Run `python epiLION.py -i Test/TestInput/test_names.txt -o Test/TestOutput/test_sdf.sdf` 
-    -   epiLION read list of epiLION abbreviations in the `test_names.txt` 
+    -   Run `python epiLION.py -i Test/TestInput/test_names.txt -o Test/TestOutput/test_sdf.sdf`
+    -   epiLION read list of epiLION abbreviations in the `test_names.txt`
         and generate the structure in a combined sdf file.
 
 -   SDF output
@@ -133,7 +132,7 @@ in the epilipidome.
         -   Progenesis SDF studio, free for academic use:
             <http://www.nonlinear.com/progenesis/sdf-studio/>
 
-        -   ChemAxon Instant Jchem, academic license available: 
+        -   ChemAxon Instant Jchem, academic license available:
             <https://chemaxon.com/products/instant-jchem>
 
 -   Errors/bugs
@@ -146,8 +145,8 @@ in the epilipidome.
 
 -   LipidHunter is Dual-licensed
 
-    -   For academic and non-commercial use: `GPLv2 License`: 
-    
+    -   For academic and non-commercial use: `GPLv2 License`:
+
         -   [The GNU General Public License version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
     -   For commercial use: please contact the develop team by email.
@@ -168,6 +167,6 @@ We acknowledge all projects that supports the development of LipidHunter:
 
     <http://www.sys-med.de/en/>
 
--   SysMedOS Project : 
+-   SysMedOS Project :
 
     <https://home.uni-leipzig.de/fedorova/sysmedos/>

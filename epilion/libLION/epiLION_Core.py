@@ -76,7 +76,7 @@ def epilion2sdf(abbr_lst, save_sdf):
 if __name__ == '__main__':
 
     test_file = r'../../test/TestInput/test_names.txt'
-    output_file = r'../../test/TestOutput/test_sdf.sdf'
+    output_file = r'../../test/TestOutput/test_names_sdf.sdf'
 
     with open(test_file, 'r') as input_obj:
         input_lst = input_obj.readlines()
