@@ -275,35 +275,13 @@ class ElemCalc:
 
         formula_str = 'C{c}H{h}'.format(c=elem_dct['C'], h=elem_dct['H'])
 
-        if 'N' in elem_dct.keys():
-            if elem_dct['N'] == 1:
-                formula_str += 'N'
-            elif elem_dct['N'] > 1:
-                formula_str += 'N%i' % elem_dct['N']
+        for elem in ['N', 'O', 'P', 'Na', 'K']:
 
-        if 'O' in elem_dct.keys():
-            if elem_dct['O'] == 1:
-                formula_str += 'O'
-            elif elem_dct['O'] > 1:
-                formula_str += 'O%i' % elem_dct['O']
-
-        if 'P' in elem_dct.keys():
-            if elem_dct['P'] == 1:
-                formula_str += 'P'
-            elif elem_dct['P'] > 1:
-                formula_str += 'P%i' % elem_dct['P']
-
-        if 'Na' in elem_dct.keys():
-            if elem_dct['Na'] == 1:
-                formula_str += 'Na'
-            elif elem_dct['Na'] > 1:
-                formula_str += 'Na%i' % elem_dct['Na']
-
-        if 'K' in elem_dct.keys():
-            if elem_dct['K'] == 1:
-                formula_str += 'K'
-            elif elem_dct['K'] > 1:
-                formula_str += 'K%i' % elem_dct['K']
+            if elem in elem_dct:
+                if elem_dct[elem] == 1:
+                    formula_str += elem
+                elif elem_dct[elem] > 1:
+                    formula_str += f'{elem}{elem_dct[elem]}'
 
         if charge in ['neutral', 'Neutral', '', None]:
             pass

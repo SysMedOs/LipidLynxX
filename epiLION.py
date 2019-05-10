@@ -9,13 +9,9 @@
 import getopt
 import os.path
 import sys
-from sys import platform
-import time
 
-import configparser
-
-from LibLION.DefaultParams import logger
-from LibLION.epiLION_Core import epilion2sdf
+from epilion.libLION.DefaultParams import logger
+from epilion.libLION.epiLION_Core import epilion2sdf
 
 
 # required to perform multiprocessing
@@ -34,6 +30,7 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
+        logger.debug(f'User input: {opts}, {args}')
     except getopt.GetoptError:
         logger.info('epiLION.py -i <input_file> -o <output_file>')
         return is_output

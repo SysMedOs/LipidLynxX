@@ -9,13 +9,9 @@
 import getopt
 import os.path
 import sys
-from sys import platform
-import time
 
-import configparser
-
-from LibLION.DefaultParams import logger
-from LibLION.Converter import Converter
+from epilion.libLION.DefaultParams import abbr_cfg_path, logger
+from epilion.libLION.Converter import Converter
 
 
 # required to perform multiprocessing
@@ -34,6 +30,7 @@ def main(argv):
 
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
+        logger.debug(f'User input: {opts}, {args}')
     except getopt.GetoptError:
         logger.info('epiLIONConverter.py -i <input_file> -o <output_file>')
         return is_output
@@ -48,12 +45,7 @@ def main(argv):
 
     if os.path.isfile(in_file):
         logger.info(f'Load input file: {in_file}')
-        cfg_file = r'Configurations/LinearFA_abbreviations.xlsx'
-        if os.path.isfile(cfg_file):
-            pass
-        elif os.path.isfile(f'../{cfg_file}'):
-            cfg_file = f'../{cfg_file}'
-        converter = Converter(cfg_file)
+        converter = Converter(abbr_cfg_path)
         converter.convert_table(in_file, out_file)
 
         logger.info(f'Save output file: {out_file}')
