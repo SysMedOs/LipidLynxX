@@ -54,12 +54,19 @@ def home():
 @epilion_blueprint.route('/converter', methods=('GET', 'POST'))
 def converter():
     conv_in_form = ConverterInputForm()
+    submitted = 0
     if conv_in_form.validate_on_submit():
-        out_lst = web_converter(conv_in_form.input_id_str.data)
+        out_dct, bad_in_lst = web_converter(conv_in_form.input_id_str.data)
+        submitted = 1
     else:
-        out_lst = ['']
+        out_dct = {}
+        bad_in_lst = []
 
-    return render_template('converter.html', out_lst=out_lst, in_form=conv_in_form)
+    if not out_dct:
+        bad_in_lst = ['']
+
+    return render_template('converter.html', out_dct=out_dct, bad_in_lst=bad_in_lst,
+                           in_form=conv_in_form, submitted=submitted)
 
 
 @epilion_blueprint.route('/parser', methods=('GET', 'POST'))

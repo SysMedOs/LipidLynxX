@@ -6,7 +6,11 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 import os
+import sys
 import unittest
+
+epiLION_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, epiLION_Path + '/../')
 
 import epiLION
 from epilion.libLION.DefaultParams import logger
@@ -89,11 +93,6 @@ class epiLIONTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     # python epiLION.py -i test/TestInput/test_names.txt -o test/TestOutput/test_names_sdf.sdf
-
-    import sys
-
-    epiLION_Path = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, epiLION_Path + '/../')
 
     unittest.main()
     logger.info('TESTS FINISHED!')

@@ -8,10 +8,8 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from epilion.libLION.DefaultParams import abbr_cfg_path
 from io import BytesIO
 import base64
-from flask import send_file
 
 from rdkit import Chem
 from rdkit.Chem import Draw

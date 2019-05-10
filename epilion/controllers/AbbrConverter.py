@@ -14,6 +14,6 @@ from epilion.libLION.Converter import Converter
 
 def web_converter(usr_input: str) -> list:
     converter = Converter(abbr_cfg_path)
-    epilion_lst = converter.convert_text(usr_input)
+    epilion_dct, bad_input_lst = converter.convert_text(usr_input)
 
-    return epilion_lst
+    return epilion_dct, bad_input_lst

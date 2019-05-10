@@ -26,17 +26,20 @@
               </form>
           </div>
           <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
-              <h2>Corresponding information</h2>
-              <p>epiLION ID: {{ out_dct.id }}</p>
-              <p>Formula: {{ out_dct.formula }}</p>
-              <p>Exact mass: {{ out_dct.exactmass }}</p>
-
+              {% if out_dct != {} %}
+                <h2>Corresponding information</h2>
+                <p>epiLION ID: {{ out_dct.id }}</p>
+                <p>Formula: {{ out_dct.formula }}</p>
+                <p>Exact mass: {{ out_dct.exactmass }}</p>
+              {% endif %}
           </div>
         </div><div class="row align-items-center">
           <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
           </div>
           <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
+            {% if out_dct != {} %}
               <img alt="image" class="img-fluid" src=" {{ out_dct.img }} ">
+            {% endif %}
           </div>
         </div>
       </div>

@@ -6,8 +6,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+
 import os
+import sys
 import unittest
+
+epiLION_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, epiLION_Path + '/../')
 
 import convLION
 from epilion.libLION.DefaultParams import logger
@@ -17,7 +22,6 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def setUp(self):
         logger.debug('SETUP TESTS...')
-        import os
 
         in_file_lst = [
             r'../test/TestInput/test_crosscheck.xlsx',

@@ -142,7 +142,7 @@ class Converter:
             logger.warning(f'! Can NOT convert {abbr}')
 
         return epilion_abbr
-    
+
     def convert_list(self, input_list: list) -> list:
 
         epilion_lst = []
@@ -154,13 +154,21 @@ class Converter:
 
         return epilion_lst
 
-    def convert_text(self, input_text: str) -> list:
+    def convert_text(self, input_text: str) -> (dict, list):
 
         usr_abbr_lst = input_text.split('\n')
 
-        epilion_lst = self.convert_list(usr_abbr_lst)
+        epilion_dct = {}
+        bad_input_lst = []
 
-        return epilion_lst
+        for abbr in usr_abbr_lst:
+            epilion_id = self.convert_abbr(abbr)
+            if epilion_id:
+                epilion_dct[abbr] = epilion_id
+            else:
+                bad_input_lst.append(abbr)
+
+        return epilion_dct, bad_input_lst
 
 
 if __name__ == '__main__':

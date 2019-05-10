@@ -27,9 +27,23 @@
           </div>
           <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
               <h2>epiLION output</h2>
-              {% for epi_id in out_lst %}
-              <br>{{epi_id}}</br>
-              {% endfor %}
+              <h2> </h2>
+              {% if out_dct != {} %}
+                <h4>Converted abbreviations</h4>
+                {% for epi_id in out_dct %}
+                <p>{{epi_id}}  ->  {{out_dct[epi_id]}}</p>
+                {% endfor %}
+              {% endif %}
+              {% if bad_in_lst != [] %}
+                {% if submitted == 1 and out_dct == {} %}
+                  <h5>Not able to convert any lipid abbreviation, please check your input.</h5>
+                {% elif submitted == 1 and out_dct != {} %}
+                    <h4>Not able to convert following abbreviations:</h4>
+                    {% for bad_abbr in bad_in_lst %}
+                    <p>{{bad_abbr}}</p>
+                    {% endfor %}
+                {% endif %}
+              {% endif %}
           </div>
         </div>
       </div>
