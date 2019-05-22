@@ -95,8 +95,6 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 if __name__ == '__main__':
     # python convLION.py -i test/TestInput/test_crosscheck.xlsx -o test/TestOutput/test_crosscheck_output.xlsx
 
-    import sys
-
     epiLION_Path = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, epiLION_Path + '/../')
 

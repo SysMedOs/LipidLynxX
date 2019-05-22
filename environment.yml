@@ -3,6 +3,7 @@ channels:
   - rdkit
   - defaults
 dependencies:
+  - flask=1.0.3=py_0
   - natsort=5.4.0=py_0
   - nose=1.3.7=py36_2
   - numba=0.39.0=py36h830ac7b_0
