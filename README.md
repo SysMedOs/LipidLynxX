@@ -1,11 +1,10 @@
-![epiLION_Logo](doc/images/epiLION_Logo.png)
+# ![epiLION_Logo](doc/images/epiLION_Logo.png)
 
-# # epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature
+## epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/epiLION?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/epiLION&utm_campaign=Badge_Grade_Dashboard)
-![Codecov](https://img.shields.io/codecov/c/github/SysMedOs/epiLION.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
 
 The epiLION project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -58,15 +57,15 @@ in the epilipidome.
         -   FA18:0
         -   O-16:0
         -   P-18:0
-        -   20:4\[4DB,2OH,1Ke\]
-        -   20:4\[4DB{5Z,9E,11Z,14Z},1OH{8S}\]
-        -   20:4\[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}\]
+        -   20:4\[4DB,2OH,1Ke]
+        -   20:4\[4DB{5Z,9E,11Z,14Z},1OH{8S}]
+        -   20:4\[4DB{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}]
 
     -   Phospholipids
-        -   PC\(O-16:0/18:1\)
-        -   PC\(P-16:0_18:1\)
-        -   PC\(16:0/20:4\[4DB,2OH,1Ke\]\)
-        -   PC\(16:0/20:4\[4DB{5,9,12,15},2OH{8,11},1Ke{14}\]\)
+        -   PC(O-16:0/18:1)
+        -   PC(P-16:0_18:1)
+        -   PC(16:0/20:4\[4DB,2OH,1Ke])
+        -   PC(16:0/20:4\[4DB{5,9,12,15},2OH{8,11},1Ke{14}])
 
 ## Instructions
 
@@ -93,7 +92,7 @@ in the epilipidome.
     -   Main dependencies are:
 
         -   Data processing: `pandas`
- 
+
         -   SDF generation: `rdkit`
 
     -   Test source code installation
@@ -105,7 +104,7 @@ in the epilipidome.
         -   you can also use py.test to test epiLION in your python environment
 
             -   unit test for epiLION converter is provided in [`Test/test_convLION.py`](test/test_convLION.py)
- 
+
             -   unit test for epiLION generator is provided in [`Test/test_epiLION.py`](test/test_epiLION.py)
 
 -   Run epiLION converter
@@ -159,6 +158,13 @@ in the epilipidome.
         -   [The GNU General Public License version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
     -   For commercial use: please contact the develop team by email.
+
+-   Please cite our publication in an appropriate form.
+
+    -   Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
+        "Computational solutions in redox lipidomics–Current strategies and future perspectives."
+        Free Radical Biology and Medicine (2019).
+            \- DOI: [10.1016/j.freeradbiomed.2019.04.027](https://www.sciencedirect.com/science/article/pii/S0891584919303466)
 
 ### Report issues
 
