@@ -73,7 +73,7 @@ class ParserFA:
 
         self.mod_parser = ParserMOD()
 
-    def is_fa(self, abbr):
+    def is_fa(self, abbr: str) -> bool:
         is_fa = False
         fa_match = re.match(self.fa_rgx, abbr)
         if fa_match:

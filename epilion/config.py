@@ -6,9 +6,11 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from .configurations.cfg import secrete_key
+
 
 class Config(object):
-    SECRET_KEY = '1472130a246ecd04a61ef528fd5151de'
+    SECRET_KEY = secrete_key
 
 
 class ProdConfig(Config):
