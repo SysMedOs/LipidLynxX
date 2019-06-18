@@ -16,9 +16,13 @@ from epilion.libLION.DefaultParams import mod_order_lst
 
 class AbbrParser:
 
-    def __init__(self, cfg):
+    def __init__(self, cfg: str = None, abbr_df: pd.DataFrame = None):
 
-        abbr_df = pd.read_excel(cfg)
+        if isinstance(abbr_df, pd.DataFrame):
+            pass
+        else:
+            abbr_df = pd.read_excel(cfg)
+
         self.abbr_dct = dict(zip(abbr_df['Abbreviation'].tolist(), abbr_df['epiLION'].tolist()))
 
         self.fa_rgx = re.compile(r'(?P<LINK>FA|O-|P-)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)'
@@ -29,6 +33,7 @@ class AbbrParser:
                                            r'(?P<DB_INFO>\([\dezEZ,]*\))?(?P<MOD_INFO>\(.*\))?')
         self.fa_legacy_rgx = re.compile(r'(?P<LINK1>FA|O-|P-)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)(?P<LINK2>[ape])?'
                                         r'(?P<MOD_INFO>\([^_/]*\))?')
+
         self.pl_rgx = re.compile(r'(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)'
                                  r'\((?P<FA1>P?O?-?\d[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>\d.*)?\)(?P<HGMOD><.*>)?')
         self.pl_lipidmaps_rgx = re.compile(r'(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)'
@@ -36,6 +41,10 @@ class AbbrParser:
         self.pl_legacy_rgx = re.compile(r'(?P<LYSO>L)?(?P<PL1>P[ACEGIS]|PIP[1-3]?)?'
                                         r'\(?(?P<FA1>[^_/-]*)(?P<POSITION>[_/\\])?(?P<FA2>[^_/-]*)?\)?'
                                         r'(?P<PL2>-L?P[ACEGIS]|-L?PIP[1-3]?)?')
+
+        self.gl_rgx = re.compile(r'(?P<PL>[MDT]G)'
+                                 r'\((?P<FA1>P?O?-?\d[^_/]*)(?P<POSITION1>[_/\\-])?'
+                                 r'(?P<FA2>\d.*)?(?P<POSITION2>[_/\\-])?(?P<FA3>\d.*)?\)')
 
         self.mod_lipidmaps_rgx = re.compile(r'(?P<MOD_SITE>\d{1,2})(?P<MOD_TYPE>[\w\d]{1,4})'
                                             r'(?P<MOD_STEREO>\[[RSab]\])?')

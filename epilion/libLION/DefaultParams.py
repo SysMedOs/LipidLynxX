@@ -12,6 +12,7 @@ import logging
 import os
 
 import pandas as pd
+
 log_level = logging.DEBUG
 logging.basicConfig(format='%(asctime)s-%(levelname)s - %(message)s', datefmt='%b-%d@%H:%M:%S', level=log_level)
 logger = logging.getLogger('log')
@@ -37,12 +38,16 @@ abbr_cfg_path_list = [
     r'../configurations/LinearFA_abbreviations.xlsx',
     r'configurations/LinearFA_abbreviations.xlsx'
 ]
+
 abbr_cfg_path = ''
 for a_cfg_path in abbr_cfg_path_list:
     if os.path.isfile(a_cfg_path):
         abbr_cfg_path = a_cfg_path
 if not abbr_cfg_path:
     raise FileNotFoundError
+
+abbr_cfg_df = pd.read_excel(abbr_cfg_path)
+
 
 # logger.debug(mod_cfg_df)
 
