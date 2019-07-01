@@ -42,6 +42,9 @@ class ElemCalc:
                                    'K': [(38.9637069, 0.932581), (39.96399867, 0.000117), (40.96182597, 0.067302)],
                                    }
 
+        self.elem_rgx = re.compile(r'([CDHNOPKS]|Na)(\d{0,3})')
+        self.elem_range_check_rgx = re.compile(r'\d{4,}')
+
     @staticmethod
     def decode_abbr(abbr):
 
@@ -238,44 +241,61 @@ class ElemCalc:
         else:
             return {'C': 0, 'H': 0, 'O': 0, 'P': 0}
 
+    @staticmethod
+    def get_elem_with_charge(elem_dct, charge='[M-H]-'):
+
+        chg_elem_dct = elem_dct.copy()
+        if charge == '[M-H]-':
+            chg_elem_dct['H'] += -1
+        elif charge == '[M+HCOO]-' or charge == '[M+FA-H]-':
+            chg_elem_dct['H'] += 1
+            chg_elem_dct['C'] += 1
+            chg_elem_dct['O'] += 2
+        elif charge == '[M+CH3COO]-':
+            chg_elem_dct['H'] += 3
+            chg_elem_dct['C'] += 2
+            chg_elem_dct['O'] += 2
+        elif charge == '[M+OAc]-':
+            chg_elem_dct['H'] += 3
+            chg_elem_dct['C'] += 2
+            chg_elem_dct['O'] += 2
+        elif charge == '[M+H]+':
+            chg_elem_dct['H'] += 1
+        elif charge == '[M+NH4]+':
+            chg_elem_dct['H'] += 4
+            if 'N' in chg_elem_dct:
+                chg_elem_dct['N'] += 1
+            else:
+                chg_elem_dct['N'] = 1
+        elif charge in ['[M+H-H2O]+', '[M-H2O+H]+']:
+            chg_elem_dct['O'] += -1
+            chg_elem_dct['H'] += -1
+        elif charge == '[M+Na]+':
+            if 'Na' in chg_elem_dct:
+                chg_elem_dct['Na'] += 1
+            else:
+                chg_elem_dct['Na'] = 1
+        elif charge == '[M+K]+':
+            if 'K' in chg_elem_dct:
+                chg_elem_dct['K'] += 1
+            else:
+                chg_elem_dct['K'] = 1
+
+        return chg_elem_dct
+
     def get_charged_elem(self, abbr, charge='[M-H]-'):
 
-        lipid_elem_dct = self.get_neutral_elem(abbr)
-        if charge == '[M-H]-':
-            lipid_elem_dct['H'] += -1
-        elif charge == '[M+HCOO]-' or charge == '[M+FA-H]-':
-            lipid_elem_dct['H'] += 1
-            lipid_elem_dct['C'] += 1
-            lipid_elem_dct['O'] += 2
-        elif charge == '[M+CH3COO]-':
-            lipid_elem_dct['H'] += 3
-            lipid_elem_dct['C'] += 2
-            lipid_elem_dct['O'] += 2
-        elif charge == '[M+OAc]-':
-            lipid_elem_dct['H'] += 3
-            lipid_elem_dct['C'] += 2
-            lipid_elem_dct['O'] += 2
-        elif charge == '[M+H]+':
-            lipid_elem_dct['H'] += 1
-        elif charge == '[M+NH4]+':
-            lipid_elem_dct['N'] += 1
-            lipid_elem_dct['H'] += 4
-        elif charge == '[M+Na]+':
-            lipid_elem_dct['Na'] = 1
+        neutral_elem_dct = self.get_neutral_elem(abbr)
+        lipid_elem_dct = self.get_elem_with_charge(neutral_elem_dct, charge)
 
         return lipid_elem_dct
 
-    def get_formula(self, abbr, charge=''):
-
-        if charge in ['neutral', 'Neutral', '', None]:
-
-            elem_dct = self.get_neutral_elem(abbr)
-        else:
-            elem_dct = self.get_charged_elem(abbr, charge=charge)
+    @staticmethod
+    def elem_to_formula(elem_dct, charge='[M-H]-'):
 
         formula_str = 'C{c}H{h}'.format(c=elem_dct['C'], h=elem_dct['H'])
 
-        for elem in ['N', 'O', 'P', 'Na', 'K']:
+        for elem in ['N', 'O', 'P', 'S', 'Na', 'K']:
 
             if elem in elem_dct:
                 if elem_dct[elem] == 1:
@@ -285,10 +305,51 @@ class ElemCalc:
 
         if charge in ['neutral', 'Neutral', '', None]:
             pass
-        elif charge in ['[M-H]-', '[M+HCOO]-']:
+        elif charge in ['[M-H]-', '[M+HCOO]-', '[M+CH3HCOO]-']:
             formula_str += '-'
-        elif charge in ['[M+H]+', '[M+NH4]+', '[M+Na]+']:
+        elif charge in ['[M+H]+', '[M+NH4]+', '[M+Na]+', '[M+K]+', '[M+H-H2O]+', '[M-H2O+H]+']:
             formula_str += '+'
+
+        return formula_str
+
+    def formula_to_elem(self, formula):
+
+        if re.search(self.elem_range_check_rgx, formula):
+            raise ValueError(f'Can not parse formula {formula}: number of each element should < 999')
+
+        f_found_lst = re.findall(self.elem_rgx, formula)
+        re_str = ''.join([''.join(r) for r in f_found_lst])
+        if re_str != formula:
+            print(f'{re_str} != {formula}')
+            raise ValueError(f'Some elements not supported. Input-> {formula} != {re_str} <- Parsed')
+
+        elem_dct = {}
+        if f_found_lst:
+            for f_match in f_found_lst:
+                if f_match[0] in self.periodic_table_dct:
+                    if f_match[1]:
+                        try:
+                            elem_dct[f_match[0]] = int(f_match[1])
+                        except ValueError:
+                            raise ValueError
+                    else:
+                        elem_dct[f_match[0]] = 1
+                else:
+                    raise ValueError(f'Can not parse formula {formula}: Some elements not supported.')
+        else:
+            raise ValueError
+
+        return elem_dct
+
+    def get_formula(self, abbr, charge=''):
+
+        if charge in ['neutral', 'Neutral', '', None]:
+
+            elem_dct = self.get_neutral_elem(abbr)
+        else:
+            elem_dct = self.get_charged_elem(abbr, charge=charge)
+
+        formula_str = self.elem_to_formula(elem_dct, charge)
 
         return formula_str, elem_dct
 
@@ -316,3 +377,12 @@ if __name__ == '__main__':
             print(usr_abbr, _charge)
             print(usr_elem_dct)
             print(usr_formula)
+
+    f_lst = ['C48H93NO11S', 'C148H93NO11S', 'C1148H93NO11S', 'XC148H93NO11S']
+
+    for f in f_lst:
+        try:
+            print(f)
+            print(abbr2formula.formula_to_elem(f))
+        except Exception as e:
+            print(e)
