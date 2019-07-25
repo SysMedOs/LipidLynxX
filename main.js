@@ -3,8 +3,8 @@ const {app, BrowserWindow} = require('electron');
 function createWindow () {
 
     let python = require('child_process').spawn('python', ['./__init__.py']);
-    let window = new BrowserWindow({width: 1366, height: 768});
-    // window.loadURL('index.html');
+    let window = new BrowserWindow({width: 1366, height: 800});
+    window.setMenuBarVisibility(false);
     window.loadURL('http://127.0.0.1:5000/');
 }
 app.on('ready', createWindow);
