@@ -2,6 +2,7 @@ from dataclasses import dataclass, asdict, field
 
 from epilion.libLION.AbbrElemCalc import ElemCalc
 
+
 class ElemDict(dict):
 
     __str_val_keys = ('formula', 'charge_mode', 'adduct')
@@ -20,13 +21,13 @@ class ElemDict(dict):
             if key in self.__allowed_keys:
                 if key == 'formula':
                     if not isinstance(val, str):
-                        raise ValueError(f'{key} value be an str')
+                        raise ValueError(f'{key} value must be a str')
                 elif key == 'charge_mode':
                     if not isinstance(val, str):
-                        raise ValueError(f'{key} value be an str')
+                        raise ValueError(f'{key} value must be a str')
                 else:
                     if not isinstance(val, int):
-                        raise ValueError(f'{key} value be an int')
+                        raise ValueError(f'{key} value must be an int')
             else:
                 raise ValueError(f'key must be in list {self.__allowed_keys}')
         else:

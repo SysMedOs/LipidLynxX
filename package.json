@@ -1,0 +1,32 @@
+{
+  "name": "epilion",
+  "version": "0.0.1",
+  "description": "epiLipidome Identifier and Optimized Nomenclature\n\n",
+  "main": "main.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ZhixuNi",
+  "bugs": {
+    "url": "https://github.com/SysMedOs/epilion"
+  },
+  "homepage": "https://github.com/SysMedOs/epilion",
+  "devDependencies": {
+    "electron": "^5.0.8"
+  },
+  "dependencies": {
+    "python-shell": "^1.0.7",
+    "zerorpc": "git+https://github.com/fyears/zerorpc-node.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SysMedOs/epilion.git"
+  },
+  "keywords": [],
+  "license": "GPLv2 License for non-commercial use"
+}

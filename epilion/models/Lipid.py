@@ -19,12 +19,85 @@ from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
 from epilion.libLION.AbbrElemCalc import ElemCalc
 from epilion.libLION.Converter import Converter
 
-elem_calc = ElemCalc()
-converter = Converter(abbr_df=abbr_cfg_df)
+ELEM_CALC = ElemCalc()
+CONVERTER = Converter(abbr_df=abbr_cfg_df)
+
+
+@dataclass
+class SmallMolecule(object):
+
+    """
+    Data class for lipid related small molecules such as:
+    - phospholipid head groups
+    - sugars
+    - carnitine
+    """
+
+    _id: str = field(init=False, repr=False)
+    _lipidclass: str = field(init=False, repr=False)
+    _formula: str = field(init=False, repr=False)
+    _elements: dict = field(init=False, repr=False)
+    _exactmass: float = field(init=False, repr=False)
+    _smiles: str = field(init=False, repr=False)
+    _remarks: dict = field(init=False, repr=False)
+
+    input_abbr: str = None
+
+    def __post_init__(self):
+        self.__setattr__('_id', CONVERTER.convert_abbr(self.input_abbr))
+        self.__setattr__('_formula', ELEM_CALC.get_formula(self.id)[0])
+        self.__setattr__('_elements', ELEM_CALC.get_formula(self.id)[1])
+        self.__setattr__('_exactmass', ELEM_CALC.get_exactmass(self.elements))
+        self.smiles = ''
+        self.remarks = {}
+
+        self.__slots__ = ['id', 'lipidclass', 'formula', 'elements', 'exactmass', 'smiles', 'remarks']
+
+        self.input_abbr = self.input_abbr
+
+    @property
+    def id(self) -> str:
+        return self._id
+
+    @property
+    def lipidclass(self):
+        return self._lipidclass
+
+    @property
+    def elements(self):
+        return self._elements
+
+    @property
+    def formula(self):
+        return self._formula
+
+    @property
+    def exactmass(self):
+        return self._exactmass
+
+    @property
+    def smiles(self) -> str:
+        return self._smiles
+
+    @smiles.setter
+    def smiles(self, smi_str: str):
+        self._smiles = smi_str
+
+    @property
+    def remarks(self) -> dict:
+        return self._remarks
+
+    @remarks.setter
+    def remarks(self, remarks_dct: dict):
+        self._remarks = remarks_dct
 
 
 @dataclass
 class Lipid(object):
+
+    """
+    Basic Lipid class for all lipid classes
+    """
 
     _id: str = field(init=False, repr=False)
     _lipidclass: str = field(init=False, repr=False)
@@ -33,21 +106,28 @@ class Lipid(object):
     _exactmass: float = field(init=False, repr=False)
     _smiles: str = field(init=False, repr=False)
     _properties: dict = field(init=False, repr=False)
+    _adducts: dict = field(init=False, repr=False)
     _spectra: dict = field(init=False, repr=False)
+    _rt: dict = field(init=False, repr=False)
+    _remarks: dict = field(init=False, repr=False)
 
     input_abbr: str = None
 
     def __post_init__(self):
-        self.__setattr__('_id', converter.convert_abbr(self.input_abbr))
+        self.__setattr__('_id', CONVERTER.convert_abbr(self.input_abbr))
         self.__setattr__('_lipidclass', self.id.split('(')[0])
-        self.__setattr__('_formula', elem_calc.get_formula(self.id)[0])
-        self.__setattr__('_elements', elem_calc.get_formula(self.id)[1])
-        self.__setattr__('_exactmass', elem_calc.get_exactmass(self.elements))
+        self.__setattr__('_formula', ELEM_CALC.get_formula(self.id)[0])
+        self.__setattr__('_elements', ELEM_CALC.get_formula(self.id)[1])
+        self.__setattr__('_exactmass', ELEM_CALC.get_exactmass(self.elements))
         self.smiles = ''
-        self._properties = {}
-        self._spectra = {}
+        self.properties = {}
+        self.adducts = {}
+        self.spectra = {}
+        self.rt = {}
+        self.remarks = {}
 
-        self.__slots__ = ['id', 'lipidclass', 'formula', 'elements', 'exactmass', 'smiles', 'properties', 'spectra']
+        self.__slots__ = ['id', 'lipidclass', 'formula', 'elements', 'exactmass',
+                          'smiles', 'properties', 'adducts', 'spectra', 'remarks']
 
         self.input_abbr = self.input_abbr
 
@@ -88,12 +168,36 @@ class Lipid(object):
         self._properties = properties_dct
 
     @property
+    def adducts(self) -> dict:
+        return self._adducts
+
+    @adducts.setter
+    def adducts(self, adducts_dct: dict):
+        self._adducts = adducts_dct
+
+    @property
     def spectra(self) -> dict:
         return self._spectra
 
     @spectra.setter
     def spectra(self, spectra_dct: dict):
         self._spectra = spectra_dct
+
+    @property
+    def rt(self) -> dict:
+        return self._rt
+
+    @rt.setter
+    def rt(self, spectra_dct: dict):
+        self._rt = spectra_dct
+
+    @property
+    def remarks(self) -> dict:
+        return self._remarks
+
+    @remarks.setter
+    def remarks(self, remarks_dct: dict):
+        self._remarks = remarks_dct
 
 
 @dataclass
@@ -216,6 +320,9 @@ class GL(Lipid):
 
 
 class LipidEncoder(json.JSONEncoder):
+    """
+    Export lipid
+    """
     def default(self, obj):
         if is_dataclass(obj):
             return asdict(obj)
@@ -235,7 +342,7 @@ class LipidEncoderLite(json.JSONEncoder):
                 if isinstance(out_dct[l], dict):
                     if in_dct[l]:
                         for m in in_dct[l]:
-                            if m.strip('_') in ['smiles', 'properties', 'spectra']:
+                            if m.strip('_') in ['smiles', 'properties', 'adducts', 'spectra']:
                                 if not in_dct[l][m] or in_dct[l][m] == '':
                                     del out_dct[l][m]
                                 if isinstance(in_dct[l][m], dict):
@@ -247,7 +354,7 @@ class LipidEncoderLite(json.JSONEncoder):
                         print(f'del {l}')
                         del out_dct[l]
                 else:
-                    if l.strip('_') in ['smiles', 'properties', 'spectra']:
+                    if l.strip('_') in ['smiles', 'properties', 'adducts', 'spectra']:
                         if not in_dct[l] or in_dct[l] == '':
                             del out_dct[l]
                     elif l.strip('_') in ['input_abbr']:
@@ -287,4 +394,3 @@ if __name__ == '__main__':
 
     logger.info(json.dumps(tg, cls=LipidEncoder))
     logger.info(json.dumps(tg, cls=LipidEncoderLite))
-
