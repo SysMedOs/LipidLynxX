@@ -48,7 +48,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
             if os.path.isdir(p):
                 out_folder = os.path.abspath(p)
                 break
-        out_file = os.path.join(out_folder, 'test_crosscheck_output.csv')
+        out_file = os.path.join(out_folder, 'test_converter_output.csv')
         logger.info(f'Out put file will be: {out_file}')
 
         self.pass_params = ['-i', in_file, '-o', out_file]
