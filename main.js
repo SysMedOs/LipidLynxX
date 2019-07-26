@@ -1,17 +1,23 @@
 const {app, BrowserWindow} = require('electron');
 
-function createWindow () {
+python_worker = require('child_process').spawn('python', ['./__init__.py']);
 
-    let python = require('child_process').spawn('python', ['./__init__.py']);
+function createWindow () {
     let window = new BrowserWindow({width: 1366, height: 800});
     window.setMenuBarVisibility(false);
+    // load the local epiLION website powered by flask
     window.loadURL('http://127.0.0.1:5000/');
 }
-app.on('ready', createWindow);
-app.on('window-all-closed', () => {
-// On macOS it is common for applications and their menu bar
-// to stay active until the user quits explicitly with Cmd + Q
-if (process.platform !== 'darwin') {
-  app.quit()
+function startLION() {
+  console.log(`Start epiLION...`);
+  // Wait few seconds to let python flask web site fully functional
+    // before starting main window
+  setTimeout(createWindow, 3333);
 }
+
+app.on('ready', startLION);
+app.on('window-all-closed', () => {
+    app.quit();
+  // make sure that python & flask closed properly
+  python_worker.kill();
 });
