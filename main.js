@@ -1,12 +1,14 @@
 const {app, BrowserWindow} = require('electron');
 
 python_worker = require('child_process').spawn('python', ['./__init__.py']);
+console.log(`Start Python worker...`);
 
 function createWindow () {
     let window = new BrowserWindow({width: 1366, height: 800});
     window.setMenuBarVisibility(false);
     // load the local epiLION website powered by flask
     window.loadURL('http://127.0.0.1:5000/');
+    console.log(`local service ready...`);
 }
 function startLION() {
   console.log(`Start epiLION...`);
