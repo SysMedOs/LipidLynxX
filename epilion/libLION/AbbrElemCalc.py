@@ -421,7 +421,7 @@ class ElemCalc:
 
         return formula_str, elem_dct
 
-    def get_exactmass(self, elem_dct):
+    def get_exact_mass(self, elem_dct):
 
         mono_mz = 0.0
         for _elem in elem_dct.keys():

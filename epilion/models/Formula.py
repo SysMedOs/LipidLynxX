@@ -61,7 +61,7 @@ def calc_mz(abbr):
     if abbr:
         elem_calc = ElemCalc()
         formula_dct = elem_calc.get_formula(abbr)[1]
-        exactmass = elem_calc.get_exactmass(formula_dct)
+        exactmass = elem_calc.get_exact_mass(formula_dct)
 
     return exactmass
 

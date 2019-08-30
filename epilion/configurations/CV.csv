@@ -1,0 +1,30 @@
+CV,REMARKS
+OH,hydroxyl
+oxo,oxo(keto/aldehyde depending on position)
+ep,epoxy
+O,ether
+OO,endoperoxide
+OOH,hydroperoxide group
+COOH,carboxylic acid
+NO2,nitro
+Me,methyl branch
+Et,ethyl branch
+OMe,methoxy
+c3,cyclopropyl
+c3:1,cyclopropenyl
+c4,cyclobutyl
+c5,cyclopentyl
+P,Phosphate
+S,Sulfate
+G,Glycine
+T,Taurine
+GlcA,Glucuronic acid
+M,Mannose
+Glc,Glucose
+Gal,Galactose
+Hex,Hexose
+Neu,Neuraminic acid
+GlcNAc,N-acetyl glucosamine
+GalNAc,N-acetyl galactosamine
+HexNAc,N-acetyl hexosamine
+NeuNAc,N-acetyl neuraminic acid

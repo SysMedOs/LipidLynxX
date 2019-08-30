@@ -34,24 +34,32 @@ class SmallMolecule(object):
     """
 
     _id: str = field(init=False, repr=False)
-    _lipidclass: str = field(init=False, repr=False)
+    _lipid_class: str = field(init=False, repr=False)
     _formula: str = field(init=False, repr=False)
     _elements: dict = field(init=False, repr=False)
-    _exactmass: float = field(init=False, repr=False)
+    _exact_mass: float = field(init=False, repr=False)
     _smiles: str = field(init=False, repr=False)
     _remarks: dict = field(init=False, repr=False)
 
     input_abbr: str = None
 
     def __post_init__(self):
-        self.__setattr__('_id', CONVERTER.convert_abbr(self.input_abbr))
-        self.__setattr__('_formula', ELEM_CALC.get_formula(self.id)[0])
-        self.__setattr__('_elements', ELEM_CALC.get_formula(self.id)[1])
-        self.__setattr__('_exactmass', ELEM_CALC.get_exactmass(self.elements))
-        self.smiles = ''
+        self.__setattr__("_id", CONVERTER.convert_abbr(self.input_abbr))
+        self.__setattr__("_formula", ELEM_CALC.get_formula(self.id)[0])
+        self.__setattr__("_elements", ELEM_CALC.get_formula(self.id)[1])
+        self.__setattr__("_exact_mass", ELEM_CALC.get_exact_mass(self.elements))
+        self.smiles = ""
         self.remarks = {}
 
-        self.__slots__ = ['id', 'lipidclass', 'formula', 'elements', 'exactmass', 'smiles', 'remarks']
+        self.__slots__ = [
+            "id",
+            "lipid_class",
+            "formula",
+            "elements",
+            "exact_mass",
+            "smiles",
+            "remarks",
+        ]
 
         self.input_abbr = self.input_abbr
 
@@ -60,8 +68,8 @@ class SmallMolecule(object):
         return self._id
 
     @property
-    def lipidclass(self):
-        return self._lipidclass
+    def lipid_class(self):
+        return self._lipid_class
 
     @property
     def elements(self):
@@ -72,8 +80,8 @@ class SmallMolecule(object):
         return self._formula
 
     @property
-    def exactmass(self):
-        return self._exactmass
+    def exact_mass(self):
+        return self._exact_mass
 
     @property
     def smiles(self) -> str:
@@ -100,10 +108,11 @@ class Lipid(object):
     """
 
     _id: str = field(init=False, repr=False)
-    _lipidclass: str = field(init=False, repr=False)
+    _lm_id: str = field(init=False, repr=False)
+    _lipid_class: str = field(init=False, repr=False)
     _formula: str = field(init=False, repr=False)
     _elements: dict = field(init=False, repr=False)
-    _exactmass: float = field(init=False, repr=False)
+    _exact_mass: float = field(init=False, repr=False)
     _smiles: str = field(init=False, repr=False)
     _properties: dict = field(init=False, repr=False)
     _adducts: dict = field(init=False, repr=False)
@@ -114,20 +123,32 @@ class Lipid(object):
     input_abbr: str = None
 
     def __post_init__(self):
-        self.__setattr__('_id', CONVERTER.convert_abbr(self.input_abbr))
-        self.__setattr__('_lipidclass', self.id.split('(')[0])
-        self.__setattr__('_formula', ELEM_CALC.get_formula(self.id)[0])
-        self.__setattr__('_elements', ELEM_CALC.get_formula(self.id)[1])
-        self.__setattr__('_exactmass', ELEM_CALC.get_exactmass(self.elements))
-        self.smiles = ''
+        self.__setattr__("_id", CONVERTER.convert_abbr(self.input_abbr))
+        self.__setattr__("_lm_id", CONVERTER.convert_abbr(self.input_abbr))
+        self.__setattr__("_lipid_class", self.id.split("(")[0])
+        self.__setattr__("_formula", ELEM_CALC.get_formula(self.id)[0])
+        self.__setattr__("_elements", ELEM_CALC.get_formula(self.id)[1])
+        self.__setattr__("_exact_mass", ELEM_CALC.get_exact_mass(self.elements))
+        self.smiles = ""
+        self.remarks = {}
         self.properties = {}
         self.adducts = {}
         self.spectra = {}
         self.rt = {}
-        self.remarks = {}
 
-        self.__slots__ = ['id', 'lipidclass', 'formula', 'elements', 'exactmass',
-                          'smiles', 'properties', 'adducts', 'spectra', 'remarks']
+        self.__slots__ = [
+            "id",
+            "lm_id",
+            "lipid_class",
+            "formula",
+            "elements",
+            "exact_mass",
+            "smiles",
+            "properties",
+            "adducts",
+            "spectra",
+            "remarks",
+        ]
 
         self.input_abbr = self.input_abbr
 
@@ -136,8 +157,12 @@ class Lipid(object):
         return self._id
 
     @property
-    def lipidclass(self):
-        return self._lipidclass
+    def lm_id(self) -> str:
+        return self._id
+
+    @property
+    def lipid_class(self):
+        return self._lipid_class
 
     @property
     def elements(self):
@@ -148,8 +173,8 @@ class Lipid(object):
         return self._formula
 
     @property
-    def exactmass(self):
-        return self._exactmass
+    def exact_mass(self):
+        return self._exact_mass
 
     @property
     def smiles(self) -> str:
@@ -229,11 +254,11 @@ class PL(Lipid):
 
     def __post_init__(self):
         super().__post_init__()
-        _hg = self.lipidclass.strip('Lyso')
-        self.__setattr__('_headgroup', _hg.strip('L'))
-        self.__setattr__('_bulk', 'PC(34:2)')
-        self.__setattr__('_fa1', FA('FA16:0'))
-        self.__setattr__('_fa2', FA('FA18:2'))
+        _hg = self.lipid_class.strip("Lyso")
+        self.__setattr__("_headgroup", _hg.strip("L"))
+        self.__setattr__("_bulk", "PC(34:2)")
+        self.__setattr__("_fa1", FA("FA16:0"))
+        self.__setattr__("_fa2", FA("FA18:2"))
 
     @property
     def headgroup(self):
@@ -263,10 +288,10 @@ class SP(Lipid):
 
     def __post_init__(self):
         super().__post_init__()
-        self.__setattr__('_headgroup', self.lipidclass)
-        self.__setattr__('_bulk', 'SP(d-34:2)')
-        self.__setattr__('_lcb', LCB('d-16:0'))
-        self.__setattr__('_fa', FA('FA18:2'))
+        self.__setattr__("_headgroup", self.lipid_class)
+        self.__setattr__("_bulk", "SP(d-34:2)")
+        self.__setattr__("_lcb", LCB("d-16:0"))
+        self.__setattr__("_fa", FA("FA18:2"))
 
     @property
     def headgroup(self):
@@ -293,14 +318,14 @@ class GL(Lipid):
     _fa2: FA = field(init=False, repr=False)
     _fa3: FA = field(init=False, repr=False)
 
-    input_abbr: str = ''
+    input_abbr: str = ""
 
     def __post_init__(self):
         super().__post_init__()
-        self.__setattr__('_bulk', 'PC(34:2)')
-        self.__setattr__('_fa1', FA('FA16:0'))
-        self.__setattr__('_fa2', FA('FA18:2'))
-        self.__setattr__('_fa3', FA('FA18:2'))
+        self.__setattr__("_bulk", "PC(34:2)")
+        self.__setattr__("_fa1", FA("FA16:0"))
+        self.__setattr__("_fa2", FA("FA18:2"))
+        self.__setattr__("_fa3", FA("FA18:2"))
 
     @property
     def bulk(self):
@@ -323,6 +348,7 @@ class LipidEncoder(json.JSONEncoder):
     """
     Export lipid
     """
+
     def default(self, obj):
         if is_dataclass(obj):
             return asdict(obj)
@@ -342,36 +368,41 @@ class LipidEncoderLite(json.JSONEncoder):
                 if isinstance(out_dct[l], dict):
                     if in_dct[l]:
                         for m in in_dct[l]:
-                            if m.strip('_') in ['smiles', 'properties', 'adducts', 'spectra']:
-                                if not in_dct[l][m] or in_dct[l][m] == '':
+                            if m.strip("_") in [
+                                "smiles",
+                                "properties",
+                                "adducts",
+                                "spectra",
+                            ]:
+                                if not in_dct[l][m] or in_dct[l][m] == "":
                                     del out_dct[l][m]
                                 if isinstance(in_dct[l][m], dict):
                                     if not not in_dct[l][m]:
                                         del out_dct[l][m]
-                            elif m.strip('_') in ['input_abbr']:
+                            elif m.strip("_") in ["input_abbr"]:
                                 del out_dct[l][m]
                     else:
-                        print(f'del {l}')
+                        print(f"del {l}")
                         del out_dct[l]
                 else:
-                    if l.strip('_') in ['smiles', 'properties', 'adducts', 'spectra']:
-                        if not in_dct[l] or in_dct[l] == '':
+                    if l.strip("_") in ["smiles", "properties", "adducts", "spectra"]:
+                        if not in_dct[l] or in_dct[l] == "":
                             del out_dct[l]
-                    elif l.strip('_') in ['input_abbr']:
+                    elif l.strip("_") in ["input_abbr"]:
                         del out_dct[l]
 
             return out_dct
         return super().default(obj)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    usr_pl = r'PC(16:0_18:2)'
-    usr_tg = r'TG(14:0_16:0_18:2)'
+    usr_pl = r"PC(16:0_18:2)"
+    usr_tg = r"TG(14:0_16:0_18:2)"
     pl = PL(input_abbr=usr_pl)
     print(pl.input_abbr)
-    pl.input_abbr = 'x'
-    pl.smiles = r'CCCCCCCCCCCCCCCCCCCCCCO'
+    pl.input_abbr = "x"
+    pl.smiles = r"CCCCCCCCCCCCCCCCCCCCCCO"
     print(pl.input_abbr)
     print(pl.formula)
     print(pl.elements)
@@ -380,14 +411,14 @@ if __name__ == '__main__':
     print(type(pl.fa1), isinstance(pl.fa1, FA), isinstance(pl.fa1, Lipid))
     fa1 = pl.fa1
     print(type(pl.fa1.elements), pl.fa1.elements)
-    pl.charge = 'neg'
-    pl.bug = 'BUG'
+    pl.charge = "neg"
+    pl.bug = "BUG"
     logger.info(asdict(pl))
     print(pl.bug)
     tg = GL(input_abbr=usr_tg)
     logger.info(asdict(tg))
 
-    print(asdict(tg).get('smi', 'No SMILES'), type(tg.smiles))
+    print(asdict(tg).get("smi", "No SMILES"), type(tg.smiles))
 
     logger.info(json.dumps(pl, cls=LipidEncoder))
     logger.info(json.dumps(pl, cls=LipidEncoderLite))
