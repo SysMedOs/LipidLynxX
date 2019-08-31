@@ -1,7 +1,8 @@
-zerorpc
+flask>=1.0.3
 natsort==6.0.0
 openpyxl
 pandas>=0.24.2
+rdkit
 xlrd
 xlwt
-flask>=1.0.3
+zerorpc
