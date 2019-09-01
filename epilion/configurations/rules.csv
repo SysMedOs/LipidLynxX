@@ -1,6 +1,6 @@
 CLASS,REMARK,EXAMPLE,REGULAR_EXPRESSION
-FA,LipidMAPS,FA 20:4;O2,"""(?P<LINK>FA|O-|P-)?(\s*)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*;\s*)?(?P<MOD_INFO>\(.*\))?(?P<O_INFO>O?\d)?"""
-FA,LipidMAPS,"FA 20:4(6E,8E,10E,14E)(5OH,12OH)","""(?P<LINK>FA|O-|P-)?(\s*)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*;\s*)?(?P<MOD_INFO>\(.*\))?(?P<O_INFO>O?\d)?"""
+FA,LipidMAPS,FA 20:4;O2,"""(?P<LINK>FA|O-|P-)?(\s*)?(?P<C>\d{1,2})(:)(?P<DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*[;_]\s*)?(?P<MOD_INFO>\(.*\))?(?P<O_INFO>[CHON]{0,4}\d)?"""
+FA,LipidMAPS,"FA 20:4(6E,8E,10E,14E)(5OH,12OH)","""(?P<LINK>FA|O-|P-)?(\s*)?(?P<C>\d{1,2})(:)(?P<DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*[;_]\s*)?(?P<MOD_INFO>\(.*\))?(?P<O_INFO>[CHON]{0,4}\d)?"""
 FA,BAD,"FA BAD Test","""BAD rgx"""
 ,,,
 ,,,
