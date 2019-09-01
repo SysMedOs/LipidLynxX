@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# -*- coding: utf-8 -*-
-#
 # Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
@@ -44,7 +42,7 @@ def parse_epilion(abbr: str) -> dict:
         mol = Chem.MolFromSmiles(smi)
         AllChem.Compute2DCoords(mol)
         # m_mass = Descriptors.MolWt(mol)
-        m_exactmass = rdMolDescriptors.CalcExactMolWt(mol)
+        m_exact_mass = rdMolDescriptors.CalcExactMolWt(mol)
         m_formula = rdMolDescriptors.CalcMolFormula(mol)
         img = Draw.MolToImage(mol, size=(600, 400))
         img_io = BytesIO()
@@ -56,7 +54,7 @@ def parse_epilion(abbr: str) -> dict:
 
         info_dct['id'] = epilion_id
         info_dct['formula'] = m_formula
-        info_dct['exactmass'] = '%.4f' % m_exactmass
+        info_dct['exact_mass'] = '%.4f' % m_exact_mass
         info_dct['img'] = img_data_url
 
     except Exception as e:

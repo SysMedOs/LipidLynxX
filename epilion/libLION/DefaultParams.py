@@ -23,10 +23,10 @@ logger = logging.getLogger("log")
 
 # Define default values
 cfg_path_lst = [
-    r"../epilion/configurations/Mod_cfg.csv",
-    r"epilion/configurations/Mod_cfg.csv",
-    r"../configurations/Mod_cfg.csv",
-    r"configurations/Mod_cfg.csv",
+    r"../epilion/configurations/mod_cfg.csv",
+    r"epilion/configurations/mod_cfg.csv",
+    r"../configurations/mod_cfg.csv",
+    r"configurations/mod_cfg.csv",
 ]
 mod_cfg_path = ""
 for cfg_path in cfg_path_lst:
