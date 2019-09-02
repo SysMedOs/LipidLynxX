@@ -13,41 +13,19 @@ import pandas as pd
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-import epiLION
-from epilion.libLION.DefaultParams import logger
-from epilion.controllers.LionParser import parse_epilion
-from epilion.controllers.Parser import build_parser, parse
+from epilion.controllers.Logger import logger
+from epilion.controllers.Parser import parse
 from epilion.controllers.LionEncoder import lion_encode
+from epilion.controllers.GeneralFunctions import get_abs_path
 
 
 class ConvertTestCase(unittest.TestCase):
     def setUp(self):
         logger.debug("SETUP TESTS...")
 
-        in_file_lst = [
-            r"../test/TestInput/FA.csv",
-            r"test/TestInput/FA.csv",
-            r"../TestInput/FA.csv",
-            r"TestInput/FA.csv",
-        ]
-        in_file = ""
-        for f in in_file_lst:
-            if os.path.isfile(f):
-                in_file = os.path.abspath(f)
-                break
-        logger.debug("Got infile {in_file}")
+        in_file = get_abs_path("TestInput/FA.csv")
         self.in_df = pd.read_csv(in_file, names=["INPUT", "OUTPUT"], index_col=False)
-        logger.info(f"Input file is: {in_file}")
-        rules_file_lst = [
-            r"../epilion/configurations/rules.csv",
-            r"epilion/configurations/rules.csv",
-        ]
-        rules_file = ""
-        for rf in rules_file_lst:
-            if os.path.isfile(rf):
-                rules_file = os.path.abspath(rf)
-                break
-        self.class_rgx_dct, self.rgx_class_dct = build_parser(rules_file)
+        logger.debug(f"Got infile {in_file}")
 
     # def test_parse_epilion(self):
     #     logger.debug("test parse_epilion...")
@@ -67,13 +45,14 @@ class ConvertTestCase(unittest.TestCase):
     def test_lion_encode(self):
         logger.debug("test parse_lion ...")
         for i, r in self.in_df.iterrows():
-            parsed_dct = parse(r["INPUT"], self.class_rgx_dct, self.rgx_class_dct)
+            parsed_dct = parse(r["INPUT"])
             test_output = lion_encode(parsed_dct)
             correct_output = r["OUTPUT"].strip('"')
             correct_output = correct_output.strip('"')
             if test_output != correct_output:
                 raise Exception(
-                    f'input: {r["INPUT"]} -> {test_output} ' f'!= output: {correct_output}'
+                    f'input: {r["INPUT"]} -> {test_output} '
+                    f"!= output: {correct_output}"
                 )
             else:
                 logger.info(

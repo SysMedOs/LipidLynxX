@@ -11,9 +11,9 @@ import re
 
 # from rdkit import Chem
 
-from epilion.libLION.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from epilion.controllers.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
-from epilion.libLION.Lipids import Lipid, FA
+from epilion.libLION.Lipids import FA
 from epilion.libLION.AbbrElemCalc import ElemCalc
 
 

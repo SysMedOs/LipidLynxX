@@ -8,14 +8,9 @@
 
 import copy
 import json
-import os.path
 from dataclasses import dataclass, asdict, field, is_dataclass
 
-from rdkit import Chem
-from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
-
-from epilion.libLION.DefaultParams import logger, abbr_cfg_df
-from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
+from epilion.controllers.DefaultParams import logger, abbr_cfg_df
 from epilion.libLION.AbbrElemCalc import ElemCalc
 from epilion.libLION.Converter import Converter
 

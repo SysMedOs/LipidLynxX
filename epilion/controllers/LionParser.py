@@ -11,11 +11,11 @@ import base64
 
 from rdkit import Chem
 from rdkit.Chem import Draw
-from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
+from rdkit.Chem import AllChem, rdMolDescriptors
 
-from epilion.libLION.DefaultParams import logger
+from epilion.controllers.Logger import logger
 from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
-from epilion.libLION.DefaultParams import abbr_cfg_path
+from epilion.controllers.DefaultParams import abbr_cfg_path
 from epilion.libLION.Converter import Converter
 
 
@@ -31,12 +31,12 @@ def parse_epilion(abbr: str) -> dict:
 
     if fa_decoder.is_fa(epilion_id):
         smi = fa_decoder.get_smi_fa(epilion_id)
-        logger.info(epilion_id + ': ' + smi)
+        logger.info(epilion_id + ": " + smi)
     elif pl_decoder.is_pl(epilion_id):
         smi = pl_decoder.get_smi_pl(epilion_id)
-        logger.info(epilion_id + ': ' + smi)
+        logger.info(epilion_id + ": " + smi)
     else:
-        logger.info(f'Can NOT parse abbreviation: {epilion_id}')
+        logger.info(f"Can NOT parse abbreviation: {epilion_id}")
 
     try:
         mol = Chem.MolFromSmiles(smi)
@@ -46,20 +46,20 @@ def parse_epilion(abbr: str) -> dict:
         m_formula = rdMolDescriptors.CalcMolFormula(mol)
         img = Draw.MolToImage(mol, size=(600, 400))
         img_io = BytesIO()
-        img.save(img_io, format='png')
+        img.save(img_io, format="png")
         img_io.seek(0)
-        img.save(img_io, format='png')
+        img.save(img_io, format="png")
         img_data = base64.b64encode(img_io.getbuffer())
-        img_data_url = r'data:image/png;base64,' + img_data.decode("utf-8")
+        img_data_url = r"data:image/png;base64," + img_data.decode("utf-8")
 
-        info_dct['id'] = epilion_id
-        info_dct['formula'] = m_formula
-        info_dct['exact_mass'] = '%.4f' % m_exact_mass
-        info_dct['img'] = img_data_url
+        info_dct["id"] = epilion_id
+        info_dct["formula"] = m_formula
+        info_dct["exact_mass"] = "%.4f" % m_exact_mass
+        info_dct["img"] = img_data_url
 
     except Exception as e:
-        logger.error(f'! FAILED: {epilion_id}')
-        logger.error(f'! FAILED to generate structure from SMILES: {smi}')
+        logger.error(f"! FAILED: {epilion_id}")
+        logger.error(f"! FAILED to generate structure from SMILES: {smi}")
         logger.error(e)
 
     return info_dct

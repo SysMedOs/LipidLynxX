@@ -8,53 +8,15 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import logging
 import os
 
 import pandas as pd
 
-log_level = logging.DEBUG
-logging.basicConfig(
-    format="%(asctime)s-%(levelname)s - %(message)s",
-    datefmt="%b-%d@%H:%M:%S",
-    level=log_level,
-)
-logger = logging.getLogger("log")
+from epilion.controllers.Logger import logger
+from epilion.controllers.InitParams import load_cfg_info, build_parser
+
 
 # Define default values
-cfg_path_lst = [
-    r"../epilion/configurations/mod_cfg.csv",
-    r"epilion/configurations/mod_cfg.csv",
-    r"../configurations/mod_cfg.csv",
-    r"configurations/mod_cfg.csv",
-]
-mod_cfg_path = ""
-for cfg_path in cfg_path_lst:
-    if os.path.isfile(cfg_path):
-        mod_cfg_path = cfg_path
-if mod_cfg_path:
-    mod_cfg_df = pd.read_csv(mod_cfg_path, index_col=0, na_values=None)
-else:
-    raise FileNotFoundError
-
-abbr_cfg_path_list = [
-    r"../epilion/configurations/LinearFA_abbreviations.xlsx",
-    r"epilion/configurations/LinearFA_abbreviations.xlsx",
-    r"../configurations/LinearFA_abbreviations.xlsx",
-    r"configurations/LinearFA_abbreviations.xlsx",
-]
-
-abbr_cfg_path = ""
-for a_cfg_path in abbr_cfg_path_list:
-    if os.path.isfile(a_cfg_path):
-        abbr_cfg_path = a_cfg_path
-if not abbr_cfg_path:
-    raise FileNotFoundError
-
-abbr_cfg_df = pd.read_excel(abbr_cfg_path)
-
-
-# logger.debug(mod_cfg_df)
 
 pa_hg_elem_dct = {"C": 0, "H": 3, "O": 4, "P": 1, "N": 0}
 pc_hg_elem_dct = {"C": 5, "H": 14, "O": 4, "P": 1, "N": 1}
@@ -132,3 +94,13 @@ mod_order_lst = [
     "F",
     "CN",
 ]
+
+# load default values from files defined in config.ini
+default_cfg_path = "config.ini"
+cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
+class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
+mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
+abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+
+
+logger.info("Default parameters loaded successfully.")
