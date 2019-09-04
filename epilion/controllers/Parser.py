@@ -23,9 +23,14 @@ def parse(
     parsed_info_dct = {}
     rgx_lst = []
     detected_lipid_class = None
+    abbr = abbr.strip('"')  # remove possible side " from csv
+    rgx_white = re.compile(r"\s+")
+    abbr = re.sub(rgx_white, "", abbr)  # remove all white space
 
     if not lipid_class:
         if abbr.upper().startswith(("FA", "O-", "P-")):
+            rgx_lst = class_rules_dct.get("FA", [])
+        elif abbr[1:].upper().startswith(("O-", "P-")):  # for dO-, dP-
             rgx_lst = class_rules_dct.get("FA", [])
         elif abbr.upper().startswith(("PL", "PA", "PC", "PE", "PG", "PS", "PI")):
             rgx_lst = class_rules_dct.get("PL", [])
@@ -60,7 +65,7 @@ def parse(
         if parsed_info_dct:
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
-            logger.warning(f'Notable to parse abbreviation: "{abbr}"')
+            logger.warning(f'Not able to parse abbreviation: "{abbr}"')
 
     return parsed_info_dct
 
