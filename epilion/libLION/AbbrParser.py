@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from epilion.libLION.DefaultParams import mod_order_lst
+from epilion.controllers.DefaultParams import mod_order_lst
 
 
 class AbbrParser:
@@ -35,8 +35,7 @@ class AbbrParser:
             r"(?P<MOD_INFO>\(.*\))?"
         )
         self.fa_lipidmaps_rgx = re.compile(
-            r"(?P<LINK>FA|O-|P-)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)"
-            r"(?P<DB_INFO>\([\dezEZ,]*\))?(?P<MOD_INFO>\(.*\))?"
+            r"(?P<LINK>FA|O-|P-)?(\s*)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*;\s*)?(?P<MOD_INFO>\(.*\))?"
         )
         self.fa_legacy_rgx = re.compile(
             r"(?P<LINK1>FA|O-|P-)?(?P<NUM_C>\d{1,2})(:)(?P<NUM_DB>\d)(?P<LINK2>[ape])?"
@@ -44,12 +43,10 @@ class AbbrParser:
         )
 
         self.pl_rgx = re.compile(
-            r"(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)"
-            r"\((?P<FA1>P?O?-?\d[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>\d.*)?\)(?P<HGMOD><.*>)?"
+            r"(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)\((?P<FA1>P?O?-?\d[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>\d.*)?\)(?P<HGMOD><.*>)?"
         )
         self.pl_lipidmaps_rgx = re.compile(
-            r"(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)"
-            r"\((?P<FA1>[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>\d.*)?\)"
+            r"(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)\((?P<FA1>[^_/]*)(?P<POSITION>[_/\\])?(?P<FA2>\d.*)?\)"
         )
         self.pl_legacy_rgx = re.compile(
             r"(?P<LYSO>L)?(?P<PL1>P[ACEGIS]|PIP[1-3]?)?"

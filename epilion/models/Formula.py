@@ -56,43 +56,59 @@ class ElemDict(dict):
             raise AttributeError(f'key must be in list {self.__allowed_keys}')
 
 
-def calc_mz(abbr):
-    exactmass = 0.0
-    if abbr:
+def calc_mz(formula):
+    exact_mass = 0.0
+    print(formula)
+    if formula:
         elem_calc = ElemCalc()
-        formula_dct = elem_calc.get_formula(abbr)[1]
-        exactmass = elem_calc.get_exact_mass(formula_dct)
+        formula_dct = elem_calc.formula_to_elem(formula)
+        exact_mass = elem_calc.get_exact_mass(formula_dct)
+        print('exact_mass ', exact_mass)
 
-    return exactmass
+    return exact_mass
 
 
-@dataclass(frozen=True)
+@dataclass
 class FormulaDict:
 
     formula: str = None
-    mz: float = field(default_factory=calc_mz(formula))
+    exact_mass: float = 0.0
+
+    def __post_init__(self):
+        self.__setattr__("exact_mass", calc_mz(self.formula))
 
 
 if __name__ == '__main__':
 
-    fd = ElemDict()
+    elem_dct = ElemDict()
 
-    ffd = FormulaDict(formula='CHO')
+    usr_formula_dct = FormulaDict(formula='C1H2O3')
 
-    print(asdict(ffd))
-    print(ffd.mz)
-    ffd.mz = 2.5
-    print(ffd.Na)
+    print(asdict(usr_formula_dct))
+    print(usr_formula_dct.exact_mass)
+    try:
+        usr_formula_dct.exact_mass = 2.5
+        print(usr_formula_dct.exact_mass)
+    except Exception as e:
+        print(e)
 
-    fd['formula'] = 'CHO'
-    fd['C'] = 10
+    print(usr_formula_dct.exact_mass)
 
-    print(fd.C)
-    fd.C = 1
+    try:
+        usr_formula_dct.Na = 1
+        print('Na', usr_formula_dct.Na)
+    except Exception as e:
+        print(e)
 
-    print(fd.O)
+    elem_dct['formula'] = 'CHO'
+    elem_dct['C'] = 10
+
+    print('C', elem_dct.C)
+    elem_dct.C = 1
+
+    print('O', elem_dct.O)
     # print(fd)
     # fd.bug = 'bug1'
-    print(fd)
-    fd['BUG'] = 'bug'
-    print(fd)
+    print(elem_dct)
+    elem_dct['BUG'] = 'bug'
+    print(elem_dct)

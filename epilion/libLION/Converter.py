@@ -11,7 +11,7 @@ import re
 
 import pandas as pd
 
-from epilion.libLION.DefaultParams import logger
+from epilion.controllers.DefaultParams import logger
 from epilion.libLION.AbbrParser import AbbrParser
 
 

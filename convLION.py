@@ -10,7 +10,7 @@ import getopt
 import os.path
 import sys
 
-from epilion.libLION.DefaultParams import abbr_cfg_path, logger
+from epilion.controllers.DefaultParams import abbr_cfg_path, logger
 from epilion.libLION.Converter import Converter
 
 
