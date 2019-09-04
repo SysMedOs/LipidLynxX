@@ -27,21 +27,6 @@ class ConvertTestCase(unittest.TestCase):
         self.in_df = pd.read_csv(in_file, names=["INPUT", "OUTPUT"], index_col=False)
         logger.debug(f"Got infile {in_file}")
 
-    # def test_parse_epilion(self):
-    #     logger.debug("test parse_epilion...")
-    #     for i, r in self.in_df.iterrows():
-    #         test_output = parse_epilion(r["INPUT"])["id"]
-    #         correct_output = r["OUTPUT"].strip('"')
-    #         correct_output = correct_output.strip('"')
-    #         if test_output != correct_output:
-    #             raise Exception(
-    #                 f'input: {r["INPUT"]} -> {test_output} != output: {correct_output}'
-    #             )
-    #         else:
-    #             logger.info(
-    #                 f'input: {r["INPUT"]} -> {test_output} == output: {correct_output}'
-    #             )
-
     def test_lion_encode(self):
         logger.debug("test parse_lion ...")
         for i, r in self.in_df.iterrows():

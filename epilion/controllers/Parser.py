@@ -9,7 +9,7 @@
 import re
 
 from epilion.controllers.Logger import logger
-from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct
+from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct, cv_rgx_dct
 
 
 def parse(
@@ -74,9 +74,33 @@ def parse(
     return parsed_info_dct
 
 
+def parse_mod(abbr: str, cv_patterns_dct: dict = cv_rgx_dct) -> dict:
+    mod_dct = {}
+    for cv in cv_patterns_dct:
+        rgx = cv_patterns_dct[cv]
+        found_segments_lst = rgx.findall(abbr)
+        if found_segments_lst:
+            for segment_tpl in found_segments_lst:
+                segment_str = "".join(segment_tpl)
+                m = rgx.search(segment_str)
+                if m:
+                    g = m.groupdict()
+                    if cv not in mod_dct:
+                        mod_dct[g["MOD"]] = [g]
+                    else:
+                        mod_dct[g["MOD"]].append(g)
+
+    return mod_dct
+
+
 if __name__ == "__main__":
 
-    usr_abbr_lst = [r"FA 20:4;O2", r"fa 20:4;O2", r"Test"]
+    usr_abbr_lst = [
+        r"FA 20:4;O2",
+        r"fa 20:4;O2",
+        r"Test",
+        "FA 20:4(6E,8E,10E,14E)(5OH,12OH)",
+    ]
 
     for usr_abbr in usr_abbr_lst:
         usr_parsed_info_dct = parse(usr_abbr)

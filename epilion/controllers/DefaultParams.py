@@ -13,7 +13,12 @@ import os
 import pandas as pd
 
 from epilion.controllers.Logger import logger
-from epilion.controllers.InitParams import load_cfg_info, build_parser
+from epilion.controllers.InitParams import (
+    load_cfg_info,
+    build_parser,
+    build_mod_parser,
+    get_cv_lst,
+)
 
 
 # Define default values
@@ -99,6 +104,8 @@ mod_order_lst = [
 default_cfg_path = "config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
+cv_lst = get_cv_lst(cfg_info_dct["cv"])
+cv_rgx_dct = build_mod_parser(cfg_info_dct["cv"])
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 

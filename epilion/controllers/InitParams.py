@@ -93,3 +93,21 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
                     class_rules_dct[r["CLASS"]].append(rules)
 
     return class_rules_dct, rules_class_dct
+
+
+def get_cv_lst(cv_file: str) -> list:
+    cv_df = pd.read_csv(cv_file)
+    cv_lst = cv_df["CV"].tolist()
+
+    return cv_lst
+
+
+def build_mod_parser(cv_file: str) -> dict:
+    cv_lst = get_cv_lst(cv_file)
+    cv_patterns_dct = {}
+    for cv in cv_lst:
+        cv_patterns_dct[cv] = re.compile(
+            r"(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(mod=cv)
+        )
+
+    return cv_patterns_dct
