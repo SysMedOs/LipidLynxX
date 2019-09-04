@@ -107,7 +107,9 @@ def build_mod_parser(cv_file: str) -> dict:
     cv_patterns_dct = {}
     for cv in cv_lst:
         cv_patterns_dct[cv] = re.compile(
-            r"(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(mod=cv)
+            r"(\s*[;_]\s*)?(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(
+                mod=cv
+            )
         )
 
     return cv_patterns_dct

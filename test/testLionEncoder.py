@@ -23,13 +23,15 @@ class ConvertTestCase(unittest.TestCase):
     def setUp(self):
         logger.debug("SETUP TESTS...")
 
-        in_file = get_abs_path("TestInput/FA.csv")
-        self.in_df = pd.read_csv(in_file, names=["INPUT", "OUTPUT"], index_col=False)
+        in_file = get_abs_path("TestInput/Lipid_Abbreviations.csv")
+        self.in_df = pd.read_csv(in_file, header=0, index_col=False)
         logger.debug(f"Got infile {in_file}")
 
     def test_lion_encode(self):
         logger.debug("test parse_lion ...")
-        for i, r in self.in_df.iterrows():
+        in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
+        for i, r in in_df_test.iterrows():
+            logger.info(f'Process Lipid: {r["INPUT"]}')
             parsed_dct = parse(r["INPUT"])
             test_output = lion_encode(parsed_dct)
             correct_output = r["OUTPUT"].strip('"')

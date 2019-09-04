@@ -7,6 +7,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import os
+from typing import List
 
 
 def get_abs_path(file_path: str) -> str:
@@ -29,3 +30,10 @@ def get_abs_path(file_path: str) -> str:
         raise FileNotFoundError(f"Can not find file: {file_path}")
 
     return abs_path
+
+
+def seg_to_str(in_list: List[str], sep: str = ",") -> str:
+    in_list = filter(None, in_list)
+    out_str = sep.join(in_list)
+    out_str = out_str.strip(sep)
+    return out_str

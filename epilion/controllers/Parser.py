@@ -7,6 +7,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import re
+from typing import List
 
 from epilion.controllers.Logger import logger
 from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct, cv_rgx_dct
@@ -45,31 +46,49 @@ def parse(
     if not rgx_lst:
         rgx_lst = [r for k in class_rules_dct for r in class_rules_dct[k]]
 
-    if rgx_lst:
-        for rgx in rgx_lst:
-            if rgx.match(abbr):
-                rgx_match = rgx.match(abbr)
-                parsed_info_dct = rgx_match.groupdict()
-                if parsed_info_dct and parsed_info_dct.get("CLASS", None) is None:
-                    if rgx in rules_class_dct:
-                        parsed_info_dct["CLASS"] = rules_class_dct[rgx]
+    parsed_info_dct = get_match_info(
+        abbr, rgx_lst, parsed_info_dct, rules_class_dct=rules_class_dct
+    )
 
     if not parsed_info_dct:
         logger.warning(
             f'Can not parse abbreviation: "{abbr}", try to ignore case and try again...'
         )
-        for rgx in rgx_lst:
-            rgx_no_case = re.compile(rgx.pattern, flags=re.IGNORECASE)
-            if rgx_no_case.match(abbr):
-                rgx_match = rgx_no_case.match(abbr)
-                parsed_info_dct = rgx_match.groupdict()
-                if parsed_info_dct and parsed_info_dct.get("CLASS", None) is None:
-                    if rgx in rules_class_dct:
-                        parsed_info_dct["CLASS"] = rules_class_dct[rgx]
+        parsed_info_dct = get_match_info(
+            abbr, rgx_lst, parsed_info_dct, rules_class_dct=rules_class_dct
+        )
         if parsed_info_dct:
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
             logger.warning(f'Notable to parse abbreviation: "{abbr}"')
+
+    return parsed_info_dct
+
+
+def get_match_info(
+    abbr: str,
+    rgx_lst: List[re.compile],
+    parsed_info_dct: dict,
+    rules_class_dct: dict = rgx_class_dct,
+    ignore_case: bool = False,
+) -> dict:
+
+    if rgx_lst:
+
+        for rgx in rgx_lst:
+            if not ignore_case:
+                pass
+            else:
+                rgx = re.compile(rgx.pattern, flags=re.IGNORECASE)
+            if rgx.match(abbr):
+                rgx_match = rgx.match(abbr)
+                parsed_info_dct[rgx.pattern] = rgx_match.groupdict()
+                if (
+                    parsed_info_dct[rgx.pattern]
+                    and parsed_info_dct[rgx.pattern].get("CLASS", None) is None
+                ):
+                    if rgx in rules_class_dct:
+                        parsed_info_dct[rgx.pattern]["CLASS"] = rules_class_dct[rgx]
 
     return parsed_info_dct
 
