@@ -40,10 +40,16 @@ def parse(
             rgx_lst = class_rules_dct.get("Cer", [])
         elif abbr.upper().startswith(("MG", "MAG")):
             rgx_lst = class_rules_dct.get("MG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
         elif abbr.upper().startswith(("DG", "DAG")):
             rgx_lst = class_rules_dct.get("DG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
         elif abbr.upper().startswith(("TG", "TAG")):
             rgx_lst = class_rules_dct.get("TG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
     else:
         if lipid_class in class_rules_dct:
             rgx_lst = class_rules_dct.get(lipid_class, [])

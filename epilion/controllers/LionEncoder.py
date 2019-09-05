@@ -26,6 +26,8 @@ def lion_encode(parsed_dct: dict) -> str:
                 lion_code_candidates_lst.append(encode_fa(tmp_parsed_dct))
             if lipid_class == "PL":
                 lion_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
+            if lipid_class == "GL":
+                lion_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
 
     lion_code = get_best_abbreviation(lion_code_candidates_lst)
 
@@ -152,6 +154,12 @@ def encode_sub_fa(fa_abbr: str, add_mod: str = None):
     return fa_lion_code
 
 
+def check_fa(abbr: str) -> list:
+    no_fa_rgx = re.compile(r"[_/(\-]0:0")
+    no_fa_lst = no_fa_rgx.findall(abbr)
+    return no_fa_lst
+
+
 def encode_pl(parsed_info_dct: dict) -> str:
     lyso_prefix = parsed_info_dct.get("LYSO", None)
     if lyso_prefix is not None:
@@ -164,7 +172,7 @@ def encode_pl(parsed_info_dct: dict) -> str:
     fa1_mod_abbr = parsed_info_dct.get("FA1_MOD", None)
     fa2_mod_abbr = parsed_info_dct.get("FA2_MOD", None)
     position1_info = parsed_info_dct.get("POSITION1", None)
-    print(parsed_info_dct)
+
     fa1_lion_code, fa2_lion_code = "", ""
     if fa1_abbr is not None:
         fa1_lion_code = encode_sub_fa(fa1_abbr, add_mod=fa1_mod_abbr)
@@ -175,8 +183,46 @@ def encode_pl(parsed_info_dct: dict) -> str:
     else:
         lion_code += f"({fa1_lion_code})"
 
-    for no_fa in ["/0:0)", "_0:0)", "(0:0_", "(0:0/"]:
-        if no_fa in lion_code and not lion_code.startswith("L"):
-            lion_code = f"L{lion_code}"
+    if len(check_fa(lion_code)) == 1 and not lion_code.startswith("L"):
+        lion_code = f"L{lion_code}"
+
+    return lion_code
+
+
+def encode_gl(parsed_info_dct: dict) -> str:
+
+    lion_code = f'{parsed_info_dct["GL"].upper()}'
+    fa1_abbr = parsed_info_dct.get("FA1", None)
+    fa2_abbr = parsed_info_dct.get("FA2", None)
+    fa3_abbr = parsed_info_dct.get("FA3", None)
+    fa1_mod_abbr = parsed_info_dct.get("FA1_MOD", None)
+    fa2_mod_abbr = parsed_info_dct.get("FA2_MOD", None)
+    fa3_mod_abbr = parsed_info_dct.get("FA3_MOD", None)
+    position1_info = parsed_info_dct.get("POSITION1", None)
+    position2_info = parsed_info_dct.get("POSITION2", None)
+    logger.debug(parsed_info_dct)
+    fa1_lion_code, fa2_lion_code, fa3_lion_code = "", "", ""
+    if fa1_abbr is not None:
+        fa1_lion_code = encode_sub_fa(fa1_abbr, add_mod=fa1_mod_abbr)
+    if fa2_abbr is not None:
+        fa2_lion_code = encode_sub_fa(fa2_abbr, add_mod=fa2_mod_abbr)
+    if fa3_abbr is not None:
+        fa3_lion_code = encode_sub_fa(fa3_abbr, add_mod=fa3_mod_abbr)
+    if position1_info is not None:
+        if position2_info is not None and position2_info == position1_info:
+            lion_code += f"({fa1_lion_code}{position1_info}{fa2_lion_code}{position2_info}{fa3_lion_code})"
+        if position2_info is not None and position2_info != position1_info:
+            # force use _ when _ and / is mixed
+            lion_code += f"({fa1_lion_code}_{fa2_lion_code}_{fa3_lion_code})"
+        elif position2_info is None and fa3_abbr is None:
+            # e.g. DG(18:0_18:2)
+            lion_code += f"({fa1_lion_code}{position1_info}{fa2_lion_code})"
+    else:
+        lion_code += f"({fa1_lion_code})"
+
+    if len(check_fa(lion_code)) == 1 and not lion_code.startswith("DG"):
+        lion_code = f"DG{lion_code[3:]}"
+    elif len(check_fa(lion_code)) == 2 and not lion_code.startswith("MG"):
+        lion_code = f"MG{lion_code[3:]}"
 
     return lion_code

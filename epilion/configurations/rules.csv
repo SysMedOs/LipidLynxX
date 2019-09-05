@@ -4,5 +4,8 @@ FA,LipidMAPS,FA 20:2_OH3_oxo,"""(?P<LINK>FA|O-|P-)?(\s*)?(?P<C>\d{1,2})(:)(?P<DB
 FA,LipidMAPS,"FA 20:4(6E,8E,10E,14E)(5OH,12OH)","""(?P<LINK>FA|O-|P-)?(\s*)?(?P<C>\d{1,2})(:)(?P<DB>\d)(?P<DB_INFO>\([\dezEZ,]*\))?(\s*[;_]\s*)?(?P<MOD_INFO>\(.*\))?(?P<O_INFO>(\s*[;_]?\s*[a-zA-Z]{0,4}\d{0,2})*)?"""
 FA,BAD,"FA BAD Test","""BAD rgx"""
 ,,,
-PL,legacy,,"""(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?(?P<FA1>[mdt]?P?O?-?\d[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d.*)?(?P<FA2_MOD>_[a-zA-Z]{0,4}\d{0,2})?\)(?P<HGMOD><.*>)?\)?"""
-PL,LipidMAPS,,"""(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?(?P<FA1>[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d.*)?(?P<FA2_MOD>_[a-zA-Z]{0,4}\d{0,2})?\)?"""
+PL,legacy,,"""(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?(?P<FA1>[mdt]?P?O?-?\d[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d[^_/]*)?(?P<FA2_MOD>_[a-zA-Z]{2,4}\d{0,2})?\)(?P<HGMOD><.*>)?\)?"""
+PL,LipidMAPS,,"""(?P<LYSO>L)?(?P<PL>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?(?P<FA1>[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d[^_/]*)?(?P<FA2_MOD>_[a-zA-Z]{2,4}\d{0,2})?\)?"""
+,,,
+GL,legacy,,"""(?P<GL>[MDT]G)(\s*\(?)?(?P<FA1>[mdt]?P?O?-?\d[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d[^_/]*)?(?P<FA2_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION2>[_/\\])?(?P<FA3>[mdt]?P?O?-?\d[^_/]*)?(?P<FA3_MOD>_[a-zA-Z]{0,4}\d{0,2})?\)"""
+GL,LipidMAPS,,"""(?P<GL>[MDT]G)(\s*\(?)?(?P<FA1>[^_/]*)(?P<FA1_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION1>[_/\\])?(?P<FA2>[mdt]?P?O?-?\d[^_/]*)?(?P<FA2_MOD>_[a-zA-Z]{2,4}\d{0,2})?(?P<POSITION2>[_/\\])?(?P<FA3>[mdt]?P?O?-?\d[^_/]*)?(?P<FA3_MOD>_[a-zA-Z]{0,4}\d{0,2})?\)?"""
