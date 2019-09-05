@@ -18,8 +18,8 @@ from wtforms import StringField, TextAreaField
 from wtforms.validators import DataRequired, Length
 
 from epilion.config import DevConfig
-from epilion.controllers.AbbrConverter import web_converter
-from epilion.controllers.LionParser import parse_epilion
+from epilion.libLION.AbbrConverter import web_converter
+from epilion.libLION.LionParser import parse_epilion
 
 
 class ConverterInputForm(Form):

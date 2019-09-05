@@ -101,6 +101,7 @@ mod_order_lst = [
 ]
 
 # load default values from files defined in config.ini
+# following parameters generated will be used as global values
 default_cfg_path = "config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])

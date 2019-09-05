@@ -9,13 +9,14 @@ import os
 import sys
 import unittest
 import pandas as pd
+import pytest
 
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
 from epilion.controllers.Logger import logger
 from epilion.controllers.Parser import parse
-from epilion.controllers.LionEncoder import lion_encode
+from epilion.controllers.Encoder import lion_encode
 from epilion.controllers.GeneralFunctions import get_abs_path
 
 
@@ -45,3 +46,14 @@ class ConvertTestCase(unittest.TestCase):
                 logger.info(
                     f'input: {r["INPUT"]} -> {test_output} == output: {correct_output}'
                 )
+
+    @pytest.mark.skip(reason="Not yet finished")
+    def test_batch_encode(self):
+        logger.debug("test parse_lion ...")
+        in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
+        for i, r in in_df_test.iterrows():
+            logger.info(f'Process Lipid: {r["INPUT"]}')
+            parsed_dct = parse(r["INPUT"])
+            test_output = lion_encode(parsed_dct)
+            correct_output = r["OUTPUT"].strip('"')
+            correct_output = correct_output.strip('"')

@@ -11,6 +11,15 @@ from typing import List
 
 
 def get_abs_path(file_path: str) -> str:
+    """
+    check and get absolute file path from given file
+    Args:
+        file_path: The relative path to a file
+
+    Returns:
+        abs_path: the absolute path of input file
+
+    """
 
     abs_path = ""
 
@@ -33,6 +42,16 @@ def get_abs_path(file_path: str) -> str:
 
 
 def seg_to_str(in_list: List[str], sep: str = ",") -> str:
+    """
+    Combine multiple segments into one str without space and separator in the end
+    Args:
+        in_list: input list to be joined
+        sep: separator used to join str segments, default value is ","
+
+    Returns:
+        out_str: the joined str
+
+    """
     in_list = filter(None, in_list)
     out_str = sep.join(in_list)
     out_str = out_str.strip(sep)

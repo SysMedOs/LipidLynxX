@@ -7,7 +7,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import re
-from typing import List
+from typing import Dict, List, Union
 
 from epilion.controllers.Logger import logger
 from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct, cv_rgx_dct
@@ -15,19 +15,30 @@ from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct, cv_r
 
 def parse(
     abbr: str,
-    class_rules_dct: dict = class_rgx_dct,
-    rules_class_dct: dict = rgx_class_dct,
+    class_rules_dct: Dict[str, re.compile] = class_rgx_dct,
+    rules_class_dct: Dict[re.compile, str] = rgx_class_dct,
     lipid_class: str = None,
-) -> dict:
+) -> Dict[str, Union[str, dict]]:
 
-    parsed_info_dct = {}
+    """
+    Main parser to read input abbreviations
+    Args:
+        abbr: input lipid abbreviation to be converted
+        class_rules_dct: the predefined dict in the form of lipid_class: re.compile(r"rule")
+        rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
+        lipid_class: name of lipid_class
+
+    Returns:
+        parsed_info_dct: parsed information stored as dict
+
+    """
+
     rgx_lst = []
-    detected_lipid_class = None
     abbr = abbr.strip('"')  # remove possible side " from csv
     rgx_white = re.compile(r"\s+")
     abbr = re.sub(rgx_white, "", abbr)  # remove all white space
 
-    if not lipid_class:
+    if not lipid_class:  # try to get lipid class from abbr
         if abbr.upper().startswith(("FA", "O-", "P-")):
             rgx_lst = class_rules_dct.get("FA", [])
         elif abbr[1:].upper().startswith(("O-", "P-")):  # for dO-, dP-
@@ -53,21 +64,19 @@ def parse(
     else:
         if lipid_class in class_rules_dct:
             rgx_lst = class_rules_dct.get(lipid_class, [])
+        else:
+            raise ValueError(f"Lipid class {lipid_class} is not supported")
 
     if not rgx_lst:
         rgx_lst = [r for k in class_rules_dct for r in class_rules_dct[k]]
 
-    parsed_info_dct = get_match_info(
-        abbr, rgx_lst, parsed_info_dct, rules_class_dct=rules_class_dct
-    )
+    parsed_info_dct = get_match_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
 
     if not parsed_info_dct:
         logger.warning(
             f'Can not parse abbreviation: "{abbr}", try to ignore case and try again...'
         )
-        parsed_info_dct = get_match_info(
-            abbr, rgx_lst, parsed_info_dct, rules_class_dct=rules_class_dct
-        )
+        parsed_info_dct = get_match_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
         if parsed_info_dct:
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
@@ -79,13 +88,23 @@ def parse(
 def get_match_info(
     abbr: str,
     rgx_lst: List[re.compile],
-    parsed_info_dct: dict,
-    rules_class_dct: dict = rgx_class_dct,
+    rules_class_dct: Dict[re.compile, str] = rgx_class_dct,
     ignore_case: bool = False,
-) -> dict:
+) -> Dict[str, Union[str, dict]]:
+    """
+    General match function to find pattern by regular expression
+    Args:
+        abbr: input lipid abbreviation to be converted
+        rgx_lst: list of possible regular expression patterns for the input abbr in the form of List[re.compile]
+        rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
+        ignore_case: set to False by default to be strict with cases defined in the patterns
 
+    Returns:
+        the matched information as dict
+
+    """
+    matched_info_dct = {"INPUT_ABBR": abbr, "OUTPUT_INFO": {}}
     if rgx_lst:
-
         for rgx in rgx_lst:
             if not ignore_case:
                 pass
@@ -93,18 +112,38 @@ def get_match_info(
                 rgx = re.compile(rgx.pattern, flags=re.IGNORECASE)
             if rgx.match(abbr):
                 rgx_match = rgx.match(abbr)
-                parsed_info_dct[rgx.pattern] = rgx_match.groupdict()
+                rgx_pattern = str(rgx.pattern)
+                matched_info_dct["OUTPUT_INFO"][rgx_pattern] = rgx_match.groupdict()
                 if (
-                    parsed_info_dct[rgx.pattern]
-                    and parsed_info_dct[rgx.pattern].get("CLASS", None) is None
+                    matched_info_dct["OUTPUT_INFO"][rgx_pattern]
+                    and matched_info_dct["OUTPUT_INFO"][rgx_pattern].get("CLASS", None)
+                    is None
                 ):
                     if rgx in rules_class_dct:
-                        parsed_info_dct[rgx.pattern]["CLASS"] = rules_class_dct[rgx]
+                        matched_info_dct["OUTPUT_INFO"][rgx_pattern][
+                            "CLASS"
+                        ] = rules_class_dct[rgx]
+                    else:
+                        raise ValueError(f"Can not get the lipid class of {abbr}")
+                else:
+                    del matched_info_dct["OUTPUT_INFO"][rgx_pattern]
 
-    return parsed_info_dct
+    return matched_info_dct
 
 
-def parse_mod(abbr: str, cv_patterns_dct: dict = cv_rgx_dct) -> dict:
+def parse_mod(
+    abbr: str, cv_patterns_dct: Dict[str, re.compile] = cv_rgx_dct
+) -> Dict[str, list]:
+    """
+    parse the modifications based on predefined list of abbreviations
+    Args:
+        abbr: input lipid abbreviation to be converted
+        cv_patterns_dct: the predefined dict in the form of CV: re.compile(r"rule")
+
+    Returns:
+        the matched information as dict
+
+    """
     mod_dct = {}
     for cv in cv_patterns_dct:
         rgx = cv_patterns_dct[cv]
@@ -121,17 +160,3 @@ def parse_mod(abbr: str, cv_patterns_dct: dict = cv_rgx_dct) -> dict:
                         mod_dct[g["MOD"]].append(g)
 
     return mod_dct
-
-
-if __name__ == "__main__":
-
-    usr_abbr_lst = [
-        r"FA 20:4;O2",
-        r"fa 20:4;O2",
-        r"Test",
-        "FA 20:4(6E,8E,10E,14E)(5OH,12OH)",
-    ]
-
-    for usr_abbr in usr_abbr_lst:
-        usr_parsed_info_dct = parse(usr_abbr)
-        print(usr_parsed_info_dct)
