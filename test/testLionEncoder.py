@@ -9,13 +9,14 @@ import os
 import sys
 import unittest
 import pandas as pd
+import pytest
 
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
 from epilion.controllers.Logger import logger
 from epilion.controllers.Parser import parse
-from epilion.controllers.LionEncoder import lion_encode
+from epilion.controllers.Encoder import lion_encode
 from epilion.controllers.GeneralFunctions import get_abs_path
 
 
@@ -28,7 +29,7 @@ class ConvertTestCase(unittest.TestCase):
         logger.debug(f"Got infile {in_file}")
 
     def test_lion_encode(self):
-        logger.debug("test parse_lion ...")
+        logger.debug("test epiLION Encoder ...")
         in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
         for i, r in in_df_test.iterrows():
             logger.info(f'Process Lipid: {r["INPUT"]}')
@@ -38,10 +39,21 @@ class ConvertTestCase(unittest.TestCase):
             correct_output = correct_output.strip('"')
             if test_output != correct_output:
                 raise Exception(
-                    f'input: {r["INPUT"]} -> {test_output} '
-                    f"!= output: {correct_output}"
+                    f'FAILED: {r["INPUT"]} -> {test_output} != {correct_output}'
                 )
             else:
                 logger.info(
-                    f'input: {r["INPUT"]} -> {test_output} == output: {correct_output}'
+                    f'PASSED: {r["INPUT"]} -> {test_output} == {correct_output}'
                 )
+        logger.info(f"test PASSED")
+
+    @pytest.mark.skip(reason="Not yet finished")
+    def test_batch_encode(self):
+        logger.debug("test parse_lion ...")
+        in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
+        for i, r in in_df_test.iterrows():
+            logger.info(f'Process Lipid: {r["INPUT"]}')
+            parsed_dct = parse(r["INPUT"])
+            test_output = lion_encode(parsed_dct)
+            correct_output = r["OUTPUT"].strip('"')
+            correct_output = correct_output.strip('"')
