@@ -61,6 +61,8 @@ def parse(
             rgx_lst = class_rules_dct.get("TG", [])
             if not rgx_lst:
                 rgx_lst = class_rules_dct.get("GL", [])
+        elif re.match(r"\d{1,2}:.*", abbr):
+            rgx_lst = class_rules_dct.get("FA", [])
     else:
         if lipid_class in class_rules_dct:
             rgx_lst = class_rules_dct.get(lipid_class, [])
@@ -105,7 +107,7 @@ def get_matched_info(
         the matched information as dict
 
     """
-    matched_info_dct = {"INPUT_ABBR": abbr, "OUTPUT_INFO": {}}
+    matched_dct = {"INPUT_ABBR": abbr, "OUTPUT_INFO": {}}
     if rgx_lst:
         for rgx in rgx_lst:
             if not ignore_case:
@@ -115,22 +117,19 @@ def get_matched_info(
             if rgx.match(abbr):
                 rgx_match = rgx.match(abbr)
                 rgx_pattern = str(rgx.pattern)
-                matched_info_dct["OUTPUT_INFO"][rgx_pattern] = rgx_match.groupdict()
-                if (
-                    matched_info_dct["OUTPUT_INFO"][rgx_pattern]
-                    and matched_info_dct["OUTPUT_INFO"][rgx_pattern].get("CLASS", None)
-                    is None
-                ):
+                matched_dct["OUTPUT_INFO"][rgx_pattern] = rgx_match.groupdict()
+                matched_class = matched_dct["OUTPUT_INFO"][rgx_pattern].get("CLASS", "")
+                if matched_dct["OUTPUT_INFO"][rgx_pattern]:
                     if rgx in rules_class_dct:
-                        matched_info_dct["OUTPUT_INFO"][rgx_pattern][
-                            "CLASS"
+                        matched_dct["OUTPUT_INFO"][rgx_pattern][
+                            "RULE_CLASS"
                         ] = rules_class_dct[rgx]
                     else:
                         raise ValueError(f"Can not get the lipid class of {abbr}")
                 else:
-                    del matched_info_dct["OUTPUT_INFO"][rgx_pattern]
+                    del matched_dct["OUTPUT_INFO"][rgx_pattern]
 
-    return matched_info_dct
+    return matched_dct
 
 
 def parse_mod(

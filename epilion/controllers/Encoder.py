@@ -9,6 +9,8 @@
 import re
 from typing import Dict, List, Tuple, Union
 
+from natsort import natsorted
+
 from epilion.controllers.DefaultParams import cv_lst
 from epilion.controllers.Logger import logger
 from epilion.controllers.GeneralFunctions import seg_to_str
@@ -29,13 +31,17 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict]]) -> str:
     lion_code_candidates_lst = []
     for reg_pattern in parsed_dct["OUTPUT_INFO"]:
         tmp_parsed_dct = parsed_dct["OUTPUT_INFO"][reg_pattern]
-        lipid_class = tmp_parsed_dct.get("CLASS", None)
+        lipid_class = tmp_parsed_dct.get("RULE_CLASS", "")
 
         if lipid_class is not None:
-            if lipid_class == "FA":
+            if lipid_class in "FA":
                 lion_code_candidates_lst.append(encode_fa(tmp_parsed_dct))
+            elif lipid_class == "SPB":
+                lion_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
             elif lipid_class == "PL":
                 lion_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
+            elif lipid_class in ["Cer", "SM", "SP"]:
+                lion_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
             elif lipid_class == "GL":
                 lion_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
             elif lipid_class == "CL":
@@ -162,11 +168,12 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
 
 def encode_fa(parsed_info: dict, add_mod: str = None) -> str:
     logger.debug(parsed_info)
-    link_prefix = parsed_info.get("LINK", None)
-    if link_prefix is not None:
+    link_prefix = parsed_info.get("CLASS", None)
+    if link_prefix:
         link_prefix = link_prefix.upper()
     else:
-        link_prefix = ""
+        link_prefix = "FA"
+
     lion_code = f'{link_prefix}{parsed_info["C"]}:{parsed_info["DB"]}'
     db_info = parsed_info.get("DB_INFO", None)
     mod_info = parsed_info.get("MOD_INFO", None)
@@ -179,7 +186,10 @@ def encode_fa(parsed_info: dict, add_mod: str = None) -> str:
     if add_mod is not None:
         mod_lst.append(encode_mod(add_mod))
     if o_info is not None:
-        mod_lst.append(encode_mod(o_info))
+        if re.match(r"\d{1,2}", o_info):
+            mod_lst.append(f"{o_info}O")
+        else:
+            mod_lst.append(encode_mod(o_info))
     if mod_lst:
         mod_str = seg_to_str(mod_lst)
         if mod_str:
@@ -195,41 +205,108 @@ def encode_fa(parsed_info: dict, add_mod: str = None) -> str:
     return lion_code
 
 
+def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> str:
+    logger.debug(parsed_info)
+    link_prefix = parsed_info.get("CLASS", None)
+    if link_prefix:
+        link_prefix = link_prefix.upper()
+        if link_prefix == "SPBP":
+            link_prefix = "SPBP[PO4]"
+    else:
+        link_prefix = "SPB"
+
+    lion_code = f'{parsed_info["C"]}:{parsed_info["DB"]}'
+    db_info = parsed_info.get("DB_INFO", None)
+    mod_info = parsed_info.get("MOD_INFO", None)
+    o_info = parsed_info.get("O_INFO", None)
+    mod_lst = []
+    if db_info is not None:
+        mod_lst.append("{" + db_info.strip("()[]") + "}")
+    if mod_info is not None:
+        mod_lst.append(encode_mod(mod_info))
+    if add_mod is not None:
+        mod_lst.append(encode_mod(add_mod))
+    if o_info is not None:
+        o_info_len = len(o_info)
+        if o_info_len <= 2 and re.match(r"\d{1,2}", o_info):
+            mod_lst.append(f"{o_info}O")
+        elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
+            mod_lst.append(o_info)
+        elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
+            mod_lst.append(encode_mod(o_info[1:].strip("()[]")))
+        else:
+            mod_lst.append(encode_mod(o_info))
+    if mod_lst:
+        mod_str = seg_to_str(mod_lst)
+        if mod_str:
+            lion_code += f"[{mod_str}]"
+
+    if is_sub:
+        pass
+    else:
+        lion_code = f"{link_prefix}({lion_code})"
+
+    return lion_code
+
+
 def encode_sub_fa(fa_abbr: str, add_mod: str = None):
     fa_candidates_lst = []
     if fa_abbr:
         fa_dct = parse(fa_abbr)["OUTPUT_INFO"]
         for reg_pattern in fa_dct:
             tmp_parsed_dct = fa_dct[reg_pattern]
-            lipid_class = tmp_parsed_dct.get("CLASS", "")
+            lipid_class = tmp_parsed_dct.get("RULE_CLASS", "")
             if lipid_class == "FA":
                 fa_candidates_lst.append(encode_fa(tmp_parsed_dct, add_mod=add_mod))
+            if lipid_class == "SPB":
+                fa_candidates_lst.append(
+                    encode_spb(tmp_parsed_dct, add_mod=add_mod, is_sub=True)
+                )
     fa_lion_code = get_best_abbreviation(fa_candidates_lst).strip("FA")
 
     return fa_lion_code
 
 
-def encode_all_sub_fa(parsed_info: dict, fa_count: int, brackets: bool = True) -> str:
+def encode_all_sub_fa(
+    parsed_info: dict, fa_count: int, brackets: bool = True, sort_discrete: bool = True
+) -> str:
 
     fa_count_lst = list(range(1, fa_count + 1))
     position_lst = list(range(1, fa_count))
 
     fa_info_lst = []
+    position_info_lst = []
+    encode_info_lst = []
 
     for f in fa_count_lst:
         fa_abbr = parsed_info.get(f"FA{f}", "")
         if fa_abbr:
             fa_code = encode_sub_fa(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
-
         else:
             fa_code = ""
         fa_info_lst.append(fa_code)
+        encode_info_lst.append(fa_code)
         if f in position_lst:
-            fa_info_lst.append(parsed_info.get(f"POSITION{f}", ""))
-    if brackets:
-        fa_code = f'({seg_to_str(fa_info_lst,sep="")})'
+            position_info_lst.append(parsed_info.get(f"POSITION{f}", ""))
+            encode_info_lst.append(parsed_info.get(f"POSITION{f}", ""))
+
+    if position_info_lst == ["_"] * len(position_info_lst):
+        if sort_discrete is True:
+            sorted_fa_info_lst = natsorted(fa_info_lst)
+
+            for i in fa_count_lst:
+                if sorted_fa_info_lst[-1].startswith(("O-", "P-")):
+                    sorted_fa_info_lst = [sorted_fa_info_lst[-1]] + sorted_fa_info_lst[
+                        :-1
+                    ]
+            fa_code = f'{seg_to_str(sorted_fa_info_lst, sep="_")}'
+        else:
+            fa_code = f'{seg_to_str(fa_info_lst, sep="_")}'
     else:
-        fa_code = f'{seg_to_str(fa_info_lst, sep="")}'
+        fa_code = f'{seg_to_str(encode_info_lst, sep="")}'
+
+    if brackets:
+        fa_code = f"({fa_code})"
 
     return fa_code
 
@@ -242,13 +319,13 @@ def check_fa(abbr: str) -> list:
 
 def encode_pl(parsed_info: dict) -> str:
     logger.debug(parsed_info)
-    lyso_prefix = parsed_info.get("LYSO", None)
-    if lyso_prefix is not None:
+    lyso_prefix = parsed_info.get("CLASS_PREFIX", None)
+    if lyso_prefix:
         lyso_prefix = lyso_prefix.upper()
     else:
         lyso_prefix = ""
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=2)
-    lion_code = f'{lyso_prefix}{parsed_info["PL"].upper()}{fa_code}'
+    lion_code = f'{lyso_prefix}{parsed_info["CLASS"].upper()}{fa_code}'
 
     if len(check_fa(lion_code)) == 1 and not lion_code.startswith("L"):
         lion_code = f"L{lion_code}"
@@ -256,10 +333,30 @@ def encode_pl(parsed_info: dict) -> str:
     return lion_code
 
 
+def encode_sp(parsed_info: dict) -> str:
+    logger.debug(parsed_info)
+    spb_abbr = parsed_info["SPB"]
+    if not spb_abbr.startswith("SPB"):
+        spb_abbr = f"SPB{spb_abbr}"
+    spb_code = encode_sub_fa(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
+    fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=1, brackets=False)
+    class_code = parsed_info["CLASS"].upper()
+    if class_code == "CER":
+        class_code = "Cer"
+    if fa_code:
+        lion_code = f"{class_code}({spb_code}/{fa_code})"
+    else:
+        lion_code = f"{class_code}({spb_code})"
+    return lion_code
+
+
 def encode_gl(parsed_info: dict) -> str:
     logger.debug(parsed_info)
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=3)
-    lion_code = f'{parsed_info["GL"].upper()}{fa_code}'
+    class_code = parsed_info["CLASS"].upper()
+    if len(class_code) == 3 and class_code[1] == "A":
+        class_code = class_code[0] + class_code[2]
+    lion_code = f"{class_code}{fa_code}"
 
     if len(check_fa(lion_code)) == 1 and not lion_code.startswith("DG"):
         lion_code = f"DG{lion_code[3:]}"
@@ -271,12 +368,12 @@ def encode_gl(parsed_info: dict) -> str:
 
 def encode_cl(parsed_info: dict) -> str:
     logger.debug(parsed_info)
-    lion_code = "CL" + encode_all_sub_fa(parsed_info=parsed_info, fa_count=4)
+    lion_code = parsed_info["CLASS"] + encode_all_sub_fa(
+        parsed_info=parsed_info, fa_count=4
+    )
 
     return lion_code
 
 
 def encode_bmp(parsed_info: dict) -> str:
-    logger.debug(parsed_info)
-    lion_code = "BMP" + encode_all_sub_fa(parsed_info=parsed_info, fa_count=4)
-    return lion_code
+    return encode_cl(parsed_info)
