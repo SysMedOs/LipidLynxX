@@ -70,13 +70,15 @@ def parse(
     if not rgx_lst:
         rgx_lst = [r for k in class_rules_dct for r in class_rules_dct[k]]
 
-    parsed_info_dct = get_match_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
+    parsed_info_dct = get_matched_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
 
     if not parsed_info_dct:
         logger.warning(
             f'Can not parse abbreviation: "{abbr}", try to ignore case and try again...'
         )
-        parsed_info_dct = get_match_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
+        parsed_info_dct = get_matched_info(
+            abbr, rgx_lst, rules_class_dct=rules_class_dct
+        )
         if parsed_info_dct:
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
@@ -85,7 +87,7 @@ def parse(
     return parsed_info_dct
 
 
-def get_match_info(
+def get_matched_info(
     abbr: str,
     rgx_lst: List[re.compile],
     rules_class_dct: Dict[re.compile, str] = rgx_class_dct,

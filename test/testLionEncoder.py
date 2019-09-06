@@ -29,7 +29,7 @@ class ConvertTestCase(unittest.TestCase):
         logger.debug(f"Got infile {in_file}")
 
     def test_lion_encode(self):
-        logger.debug("test parse_lion ...")
+        logger.debug("test epiLION Encoder ...")
         in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
         for i, r in in_df_test.iterrows():
             logger.info(f'Process Lipid: {r["INPUT"]}')
@@ -39,13 +39,13 @@ class ConvertTestCase(unittest.TestCase):
             correct_output = correct_output.strip('"')
             if test_output != correct_output:
                 raise Exception(
-                    f'input: {r["INPUT"]} -> {test_output} '
-                    f"!= output: {correct_output}"
+                    f'FAILED: {r["INPUT"]} -> {test_output} != {correct_output}'
                 )
             else:
                 logger.info(
-                    f'input: {r["INPUT"]} -> {test_output} == output: {correct_output}'
+                    f'PASSED: {r["INPUT"]} -> {test_output} == {correct_output}'
                 )
+        logger.info(f"test PASSED")
 
     @pytest.mark.skip(reason="Not yet finished")
     def test_batch_encode(self):

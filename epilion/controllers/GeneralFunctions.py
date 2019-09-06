@@ -55,4 +55,6 @@ def seg_to_str(in_list: List[str], sep: str = ",") -> str:
     in_list = filter(None, in_list)
     out_str = sep.join(in_list)
     out_str = out_str.strip(sep)
+    if out_str is None:
+        out_str = ""
     return out_str
