@@ -100,6 +100,33 @@ mod_order_lst = [
     "CN",
 ]
 
+lipid_class_alias_info = {
+    "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
+    "O-p": {"CLASS": "P-", "RULE_CLASS": "FA"},
+    "cer": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "CER": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "GPA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "GPCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "PlsA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "PlsCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "PlsEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "PlsGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "PlsIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "PlsSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "GPC": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPE": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPG": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPI": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPS": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "MAG": {"CLASS": "MG", "RULE_CLASS": "GL"},
+    "DAG": {"CLASS": "DG", "RULE_CLASS": "GL"},
+    "TAG": {"CLASS": "TG", "RULE_CLASS": "GL"},
+}
+
 # load default values from files defined in config.ini
 # following parameters generated will be used as global values
 default_cfg_path = "config.ini"

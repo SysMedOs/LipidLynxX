@@ -10,7 +10,12 @@ import re
 from typing import Dict, List, Union
 
 from epilion.controllers.Logger import logger
-from epilion.controllers.DefaultParams import class_rgx_dct, rgx_class_dct, cv_rgx_dct
+from epilion.controllers.DefaultParams import (
+    class_rgx_dct,
+    rgx_class_dct,
+    cv_rgx_dct,
+    lipid_class_alias_info,
+)
 
 
 def parse(
@@ -34,9 +39,18 @@ def parse(
     """
 
     rgx_lst = []
+    input_abbr = abbr
     abbr = abbr.strip('"')  # remove possible side " from csv
     rgx_white = re.compile(r"\s+")
     abbr = re.sub(rgx_white, "", abbr)  # remove all white space
+
+    if "+" in abbr:
+        abbr_lst = abbr.split("+")
+        abbr = abbr_lst[0]
+        abbr_mod = "+" + "+".join(abbr_lst[1:])
+        logger.info(f"{input_abbr} contains additional modification {abbr_mod}.")
+    else:
+        abbr_mod = ""
 
     if not lipid_class:  # try to get lipid class from abbr
         if abbr.upper().startswith(("FA", "O-", "P-")):
@@ -63,6 +77,11 @@ def parse(
                 rgx_lst = class_rules_dct.get("GL", [])
         elif re.match(r"\d{1,2}:.*", abbr):
             rgx_lst = class_rules_dct.get("FA", [])
+        elif abbr.startswith(tuple(lipid_class_alias_info.keys())):
+            for tmp_class in lipid_class_alias_info:
+                if abbr.startswith(tmp_class):
+                    rule_class = lipid_class_alias_info[tmp_class]["RULE_CLASS"]
+                    rgx_lst = class_rules_dct.get(rule_class, [])
     else:
         if lipid_class in class_rules_dct:
             rgx_lst = class_rules_dct.get(lipid_class, [])
@@ -85,6 +104,8 @@ def parse(
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
             logger.warning(f'Not able to parse abbreviation: "{abbr}"')
+    if abbr_mod:
+        parsed_info_dct["ADDITIONAL_MOD"] = abbr_mod
 
     return parsed_info_dct
 
@@ -108,6 +129,7 @@ def get_matched_info(
 
     """
     matched_dct = {"INPUT_ABBR": abbr, "OUTPUT_INFO": {}}
+
     if rgx_lst:
         for rgx in rgx_lst:
             if not ignore_case:
@@ -118,7 +140,7 @@ def get_matched_info(
                 rgx_match = rgx.match(abbr)
                 rgx_pattern = str(rgx.pattern)
                 matched_dct["OUTPUT_INFO"][rgx_pattern] = rgx_match.groupdict()
-                matched_class = matched_dct["OUTPUT_INFO"][rgx_pattern].get("CLASS", "")
+
                 if matched_dct["OUTPUT_INFO"][rgx_pattern]:
                     if rgx in rules_class_dct:
                         matched_dct["OUTPUT_INFO"][rgx_pattern][
@@ -161,3 +183,11 @@ def parse_mod(
                         mod_dct[g["MOD"]].append(g)
 
     return mod_dct
+
+
+if __name__ == "__main__":
+
+    s = r"O-a36:2"
+
+    d = parse(s)
+    print(d)
