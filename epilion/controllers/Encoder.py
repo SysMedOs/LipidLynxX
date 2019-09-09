@@ -51,6 +51,12 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict]]) -> str:
 
     lion_code = get_best_abbreviation(lion_code_candidates_lst)
 
+    add_mod = parsed_dct.get("ADDITIONAL_MOD", None)
+    if add_mod:
+        add_mod_str = encode_mod(add_mod)
+        if add_mod_str:
+            lion_code += f"[{add_mod_str}]"
+
     return lion_code
 
 
@@ -116,6 +122,8 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
     mod_dct = parse_mod(mod_info)
     if front.lower().startswith("count") or "[" in mod_info:
         front = "count"
+    elif mod_info.startswith("+"):
+        front = "count"
     else:
         front = "position"
 
@@ -125,24 +133,32 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
         cv_info_lst = mod_dct[cv]
         cv_position_lst = []
         cv_count = 0
-        if len(cv_info_lst) == 1 and front == "count":
-            cv_info = cv_info_lst[0]
-            if cv_info["FRONT"]:
-                cv_count += int(cv_info["FRONT"])
-            else:
+
+        for cv_info in cv_info_lst:
+            tmp_front = cv_info.get("FRONT", None)
+            tmp_end = cv_info.get("END", None)
+            if tmp_front and tmp_end:
+                cv_position_lst.append(str(tmp_front))
                 cv_count += 1
-        else:
-            for cv_info in cv_info_lst:
-                if cv_info["FRONT"]:
-                    cv_position_lst.append(str(cv_info["FRONT"]))
-                if cv_info["END"] and end.lower() == "count":
+            elif tmp_front and not tmp_end:
+                if front == "position":
+                    cv_position_lst.append(str(tmp_front))
+                    cv_count += 1
+                else:
                     try:
-                        _count = int(cv_info["END"])
+                        _count = int(tmp_front)
                     except ValueError:
                         _count = 1
                     cv_count += _count
-                else:
-                    cv_count += 1
+            elif not tmp_front and tmp_end and end.lower() == "count":
+                try:
+                    _count = int(tmp_end)
+                except ValueError:
+                    _count = 1
+                cv_count += _count
+            else:
+                cv_count += 1
+
         if cv_count == 1:
             cv_count_str = ""
         else:
@@ -153,11 +169,14 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
         else:
             mod_encode_dct[cv] = f"{cv_count_str}{cv}"
 
+    # Sort modifications by order
+    encoded_mod_lst = []
     if "O" in mod_encode_dct:
-        for o_mod in ["OH", "oxo", "oxo", "ep", "OO", "OOH"]:
+        # remove replicated "O" if following modifications are detected
+        for o_mod in ["OH", "OXO", "oxo", "ep", "OO", "OOH"]:
             if o_mod in mod_encode_dct:
                 mod_encode_dct.pop("O", None)
-    encoded_mod_lst = []
+
     for c in cv_lst:
         if c in mod_encode_dct:
             encoded_mod_lst.append(mod_encode_dct[c])
@@ -377,3 +396,13 @@ def encode_cl(parsed_info: dict) -> str:
 
 def encode_bmp(parsed_info: dict) -> str:
     return encode_cl(parsed_info)
+
+
+if __name__ == "__main__":
+
+    # x = encode_mod("+2O")
+    # print(x)
+    # y = encode_mod("+O2")
+    # print(y)
+    z = encode_mod("+2OH")
+    print(z)

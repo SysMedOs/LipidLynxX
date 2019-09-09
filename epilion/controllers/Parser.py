@@ -34,9 +34,18 @@ def parse(
     """
 
     rgx_lst = []
+    input_abbr = abbr
     abbr = abbr.strip('"')  # remove possible side " from csv
     rgx_white = re.compile(r"\s+")
     abbr = re.sub(rgx_white, "", abbr)  # remove all white space
+
+    if "+" in abbr:
+        abbr_lst = abbr.split("+")
+        abbr = abbr_lst[0]
+        abbr_mod = "+" + "+".join(abbr_lst[1:])
+        logger.info(f"{input_abbr} contains additional modification {abbr_mod}.")
+    else:
+        abbr_mod = ""
 
     if not lipid_class:  # try to get lipid class from abbr
         if abbr.upper().startswith(("FA", "O-", "P-")):
@@ -85,6 +94,8 @@ def parse(
             logger.info(f'Successfully parsed abbreviation: "{abbr}"')
         else:
             logger.warning(f'Not able to parse abbreviation: "{abbr}"')
+    if abbr_mod:
+        parsed_info_dct["ADDITIONAL_MOD"] = abbr_mod
 
     return parsed_info_dct
 
