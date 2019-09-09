@@ -93,7 +93,7 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
                     class_rules_dct[r["CLASS"]].append(rules)
 
                 logger.debug(
-                    f'Rule added: "{r["CLASS"]}" - "{r["REMARK"]}" - "{r["EXAMPLE"]}" \n -> "{rules_str}"'
+                    f'Rule added: "{r["CLASS"]}" - "{r["REMARK"]}" - "{r["EXAMPLE"]}"'
                 )
 
     return class_rules_dct, rules_class_dct
