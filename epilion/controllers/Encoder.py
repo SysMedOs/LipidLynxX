@@ -12,7 +12,12 @@ from typing import Dict, List, Tuple, Union
 
 from natsort import natsorted
 
-from epilion.controllers.DefaultParams import cv_lst, lipid_class_alias_info
+from epilion.controllers.DefaultParams import (
+    cv_lst,
+    lipid_class_alias_info,
+    mod_order_lst,
+    mod_alias_info,
+)
 from epilion.controllers.Logger import logger
 from epilion.controllers.GeneralFunctions import seg_to_str
 from epilion.controllers.Parser import parse, parse_mod
@@ -54,8 +59,12 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
         parsed_dct["CLASS_INFO"].append(tmp_parsed_dct.get("PARSED_CLASS", ""))
 
     class_info_lst = parsed_dct["CLASS_INFO"]
-    best_class = str(Counter(class_info_lst).most_common(1)[0][0])
-    logger.debug(f"Best class is: {best_class}")
+    try:
+        best_class = str(Counter(class_info_lst).most_common(1)[0][0])
+        logger.debug(f"Best class is: {best_class}")
+    except IndexError:
+        best_class = None
+        logger.warning(f"Failed to propose best class for this lipid.")
     lion_code = get_best_abbreviation(
         lion_code_candidates_lst, target_class=best_class, abbr=input_abbr
     )
@@ -196,11 +205,11 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
 
     # Sort modifications by order
     encoded_mod_lst = []
-    if "O" in mod_encode_dct:
-        # remove replicated "O" if following modifications are detected
-        for o_mod in ["OH", "OXO", "oxo", "ep", "OO", "OOH"]:
-            if o_mod in mod_encode_dct:
-                mod_encode_dct.pop("O", None)
+    # if "O" in mod_encode_dct:
+    #     # remove replicated "O" if following modifications are detected
+    #     for o_mod in ["OH", "OXO", "oxo", "ep", "OO", "OOH"]:
+    #         if o_mod in mod_encode_dct:
+    #             mod_encode_dct.pop("O", None)
 
     for c in cv_lst:
         if c in mod_encode_dct:
@@ -235,10 +244,25 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
             mod_lst.append(encode_mod(o_info[1:].strip("()[]")))
         else:
             mod_lst.append(encode_mod(o_info))
+    sorted_mod_lst = []
+    mod_lst = [m for m in mod_lst if m is not None]
+    mod_lst = [m for m in mod_lst if m != ""]
     if mod_lst:
-        mod_code = seg_to_str(mod_lst)
-        if mod_code and brackets:
-            mod_code = f"[{mod_code}]"
+        for mod in mod_order_lst:
+            if mod in mod_alias_info:
+                mod_alias_lst = mod_alias_info[mod]
+                for mod_alia in mod_alias_lst:
+                    for obs_mod in mod_lst:
+                        if re.match(r"\d{0,2}%s[{]?\d*$" % mod_alia, obs_mod):
+                            sorted_mod_lst.append(obs_mod)
+                            print(mod_lst, sorted_mod_lst, obs_mod, mod_alia, mod)
+            else:
+                logger.warning(f"Modification {mod} do not have defined alias.")
+
+        if sorted_mod_lst:
+            mod_code = seg_to_str(sorted_mod_lst)
+            if mod_code and brackets:
+                mod_code = f"[{mod_code}]"
 
     return mod_code
 
@@ -340,13 +364,36 @@ def encode_all_sub_fa(
 
     if position_info_lst == ["_"] * len(position_info_lst):
         if sort_discrete is True:
-            sorted_fa_info_lst = natsorted(fa_info_lst)
+            sorted_fa_info_lst = []
+            mod_op_lst = []
+            unmod_op_lst = []
+            mod_fa_lst = []
+            unmod_fa_lst = []
 
-            for i in fa_count_lst:
-                if sorted_fa_info_lst[-1].startswith(("O-", "P-")):
-                    sorted_fa_info_lst = [sorted_fa_info_lst[-1]] + sorted_fa_info_lst[
-                        :-1
-                    ]
+            for fa in fa_info_lst:
+                if fa.startswith(("O-", "P-")):
+                    if "[" in fa:
+                        mod_op_lst.append(fa)
+                    else:
+                        unmod_op_lst.append(fa)
+                elif "[" in fa:
+                    mod_fa_lst.append(fa)
+                else:
+                    unmod_fa_lst.append(fa)
+
+            if natsorted(fa_info_lst) == natsorted(
+                mod_op_lst + unmod_op_lst + mod_fa_lst + unmod_fa_lst
+            ):
+                sorted_fa_info_lst = (
+                    natsorted(unmod_op_lst)
+                    + natsorted(mod_op_lst)
+                    + natsorted(unmod_fa_lst)
+                    + natsorted(mod_fa_lst)
+                )
+            else:
+                logger.warning("Failed to sort lipid.")
+                sorted_fa_info_lst = natsorted(fa_info_lst)
+
             fa_code = f'{seg_to_str(sorted_fa_info_lst, sep="_")}'
         else:
             fa_code = f'{seg_to_str(fa_info_lst, sep="_")}'
@@ -455,5 +502,5 @@ if __name__ == "__main__":
     # y = encode_mod("+O2")
     # print(y)
     # z = lion_encode(parse("PE O-18:1p/18:1"))
-    z = lion_encode(parse("PE O-18:1a/18:1"))
+    z = lion_encode(parse("OxTG(16:0_18:1_18:4(OOH))"))
     print(z)

@@ -15,7 +15,10 @@ from epilion.controllers.DefaultParams import (
     rgx_class_dct,
     cv_rgx_dct,
     lipid_class_alias_info,
+    mod_order_lst,
+    mod_alias_info,
 )
+from epilion.controllers.GeneralFunctions import seg_to_str
 
 
 def parse(
@@ -40,9 +43,7 @@ def parse(
 
     rgx_lst = []
     input_abbr = abbr
-    abbr = abbr.strip('"')  # remove possible side " from csv
-    rgx_white = re.compile(r"\s+")
-    abbr = re.sub(rgx_white, "", abbr)  # remove all white space
+    abbr = remove_prefix(abbr)
 
     if "+" in abbr:
         abbr_lst = abbr.split("+")
@@ -168,26 +169,99 @@ def parse_mod(
 
     """
     mod_dct = {}
-    for cv in cv_patterns_dct:
-        rgx = cv_patterns_dct[cv]
-        found_segments_lst = rgx.findall(abbr)
-        if found_segments_lst:
-            for segment_tpl in found_segments_lst:
-                segment_str = "".join(segment_tpl)
-                m = rgx.search(segment_str)
-                if m:
-                    g = m.groupdict()
-                    if cv not in mod_dct:
-                        mod_dct[g["MOD"]] = [g]
-                    else:
-                        mod_dct[g["MOD"]].append(g)
+
+    rgx_white = re.compile(r"\s*[,;\'_\-()+]\s*")
+    abbr_rep = re.sub(rgx_white, "|", abbr)
+    abbr_seg_lst = filter(None, abbr_rep.split("|"))
+    for abbr_seg in abbr_seg_lst:
+        seg_parsed = False
+        for mod in cv_patterns_dct:
+            obs_info = {}
+            rgx = cv_patterns_dct[mod]
+            found_segments_lst = rgx.findall(abbr_seg)
+            if found_segments_lst:
+                for segment_tpl in found_segments_lst:
+                    segment_str = "".join(segment_tpl)
+                    m = rgx.search(segment_str)
+                    if m and seg_to_str(m.groups(), sep="") == abbr_seg:
+                        obs_info = m.groupdict()
+                        seg_parsed = True
+            if seg_parsed and obs_info:
+                cv = get_mod_cv(mod)
+                obs_info["MOD"] = cv
+                if cv not in mod_dct:
+                    mod_dct[obs_info["MOD"]] = [obs_info]
+                else:
+                    mod_dct[obs_info["MOD"]].append(obs_info)
+        if not seg_parsed:
+            if re.match(r"O+", abbr_seg.upper()):
+                if "O" not in mod_dct:
+                    mod_dct["O"] = [{"FRONT": None, "MOD": "O", "END": len(abbr_seg)}]
+                else:
+                    mod_dct["O"].append(
+                        {"FRONT": None, "MOD": "O", "END": len(abbr_seg)}
+                    )
+            elif re.match(r"[aeop]", abbr_seg):
+                pass
+            elif len(abbr_seg) > 3:
+                for mod in cv_patterns_dct:
+                    rgx = cv_patterns_dct[mod]
+                    found_segments_lst = rgx.findall(abbr_seg)
+                    if found_segments_lst:
+                        for segment_tpl in found_segments_lst:
+                            segment_str = "".join(segment_tpl)
+                            m = rgx.search(segment_str)
+                            if m:
+                                obs_info = m.groupdict()
+                                cv = get_mod_cv(mod)
+                                obs_info["MOD"] = cv
+                                if cv not in mod_dct:
+                                    mod_dct[obs_info["MOD"]] = [obs_info]
+                                else:
+                                    mod_dct[obs_info["MOD"]].append(obs_info)
+                if "O" in mod_dct:
+                    # remove replicated "O" if following modifications are detected
+                    for o_mod in ["OH", "OXO", "oxo", "ep", "OO", "OOH", "Ke"]:
+                        if o_mod in mod_dct:
+                            mod_dct.pop("O", None)
+            else:
+                logger.error(
+                    f"Modification {abbr} contains unsupported segment: {abbr_seg}."
+                )
 
     return mod_dct
 
 
+def remove_prefix(abbr: str = None) -> str:
+    abbr = abbr.strip('"')  # remove possible side " from csv
+    rgx_white = re.compile(r"\s+")
+    abbr = re.sub(rgx_white, "", abbr)  # remove all white space
+    if abbr.upper().startswith("OXO"):
+        abbr = abbr[3:]
+    if abbr.upper().startswith("OX"):
+        abbr = abbr[2:]
+
+    return abbr
+
+
+def get_mod_cv(abbr: str = None) -> str:
+
+    cv = ""
+    for mod in mod_order_lst:
+        if mod in mod_alias_info:
+            mod_alias_lst = mod_alias_info[mod]
+            if abbr in mod_alias_lst:
+                cv = mod
+
+    return cv
+
+
 if __name__ == "__main__":
 
-    s = r"O-a36:2"
+    # s = r"O-a36:2"
+    # d = parse(s)
+    # print(d)
 
-    d = parse(s)
+    s = r"_O_OO,OOO_2OH_oxo2_OOH"
+    d = parse_mod(s)
     print(d)

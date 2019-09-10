@@ -86,6 +86,7 @@ tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"
 
 mod_order_lst = [
     "DB",
+    "O",
     "OH",
     "Hp",
     "Ke",
@@ -99,6 +100,23 @@ mod_order_lst = [
     "F",
     "CN",
 ]
+
+mod_alias_info = {
+    "DB": ["DB"],
+    "O": ["O", "o"],
+    "OH": ["OH", "oh"],
+    "Hp": ["Hp", "OOH"],
+    "Ke": ["Ke", "KETO", "OXO", "oxo"],
+    "Ep": ["Ep", "EPOXY"],
+    "Me": ["Me"],
+    "My": ["My"],
+    "NH2": ["NH2"],
+    "SH": ["SH"],
+    "Br": ["Br"],
+    "Cl": ["Cl"],
+    "F": ["F"],
+    "CN": ["CN"],
+}
 
 lipid_class_alias_info = {
     "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
