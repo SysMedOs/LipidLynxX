@@ -1,0 +1,12 @@
+[
+    {"CV": "DB", "REMARKS": "C=C bond", "ALIAS": ["DB"]},
+    {"CV": "O", "REMARKS": "Undefined oxygen addition", "ALIAS": ["O"]},
+    {"CV": "OH", "REMARKS": "hydroxyl", "ALIAS": ["OH"]},
+    {"CV": "Ke", "REMARKS": "oxo(keto/aldehyde depending on position)", "ALIAS": ["Ke", "oxo", "KETO"]},
+    {"CV": "ep", "REMARKS": "epoxy", "ALIAS": ["ep", "EPOXY"]},
+    {"CV": "Hp", "REMARKS": "hydroperoxide group", "ALIAS": ["Hp", "OOH"]},
+    {"CV": "CHO", "REMARKS": "Terminal carbonyl", "ALIAS": ["CHO"]},
+    {"CV": "COOH", "REMARKS": "carboxylic acid", "ALIAS": ["COOH"]},
+    {"CV": "NO2", "REMARKS": "nitro", "ALIAS": ["NO2"]},
+    {"CV": "NO3", "REMARKS": "nitrate", "ALIAS": ["NO3"]}
+]

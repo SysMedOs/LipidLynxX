@@ -21,9 +21,9 @@ from epilion.controllers.GeneralFunctions import get_abs_path
 
 
 test_files = [
-    # r"test/TestInput/Input_General.csv",
-    # r"test/TestInput/Input_ALEX.csv",
-    # r"test/TestInput/Input_LIPIDMAPS_ShortHand.csv",
+    r"test/TestInput/Input_General.csv",
+    r"test/TestInput/Input_ALEX.csv",
+    r"test/TestInput/Input_LIPIDMAPS_ShortHand.csv",
     r"test/TestInput/Input_LipidMatch.csv",
     # r"test/TestInput/Input_LPPtiger.csv",
 ]

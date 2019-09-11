@@ -15,8 +15,8 @@ from epilion.controllers.DefaultParams import (
     rgx_class_dct,
     cv_rgx_dct,
     lipid_class_alias_info,
-    mod_order_lst,
-    mod_alias_info,
+    cv_order_list,
+    cv_alias_info,
 )
 from epilion.controllers.GeneralFunctions import seg_to_str
 
@@ -194,7 +194,7 @@ def parse_mod(
                 else:
                     mod_dct[obs_info["MOD"]].append(obs_info)
         if not seg_parsed:
-            if re.match(r"O+", abbr_seg.upper()):
+            if re.match(r"O+$", abbr_seg.upper()):
                 if "O" not in mod_dct:
                     mod_dct["O"] = [{"FRONT": None, "MOD": "O", "END": len(abbr_seg)}]
                 else:
@@ -247,9 +247,9 @@ def remove_prefix(abbr: str = None) -> str:
 def get_mod_cv(abbr: str = None) -> str:
 
     cv = ""
-    for mod in mod_order_lst:
-        if mod in mod_alias_info:
-            mod_alias_lst = mod_alias_info[mod]
+    for mod in cv_order_list:
+        if mod in cv_alias_info:
+            mod_alias_lst = cv_alias_info[mod]
             if abbr in mod_alias_lst:
                 cv = mod
 

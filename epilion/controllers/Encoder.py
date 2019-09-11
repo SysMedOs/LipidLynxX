@@ -13,10 +13,9 @@ from typing import Dict, List, Tuple, Union
 from natsort import natsorted
 
 from epilion.controllers.DefaultParams import (
-    cv_lst,
     lipid_class_alias_info,
-    mod_order_lst,
-    mod_alias_info,
+    cv_order_list,
+    cv_alias_info,
 )
 from epilion.controllers.Logger import logger
 from epilion.controllers.GeneralFunctions import seg_to_str
@@ -103,7 +102,6 @@ def batch_encode(
         elif isinstance(sum_parsed_info, dict):
             parsed_dct = sum_parsed_info[p]
         else:
-            parsed_dct = {}
             raise TypeError(f"Can NOT process input type {type(sum_parsed_info)}")
         lion_code = lion_encode(parsed_dct)
         abbr = parsed_dct.get("INPUT_ABBR", None)
@@ -152,14 +150,23 @@ def get_best_abbreviation(
     return lion_code
 
 
-def encode_mod(mod_info, front: str = "position", end: str = "count"):
-    mod_dct = parse_mod(mod_info)
-    if front.lower().startswith("count") or "[" in mod_info:
-        front = "count"
-    elif mod_info.startswith("+"):
-        front = "count"
+def encode_mod(mod_info: str, front: str = "position", end: str = "count") -> str:
+    if mod_info:
+        mod_dct = parse_mod(mod_info)
+    else:
+        return ""
+
+    if front:
+        if front.lower().startswith("count") or "[" in mod_info:
+            front = "count"
+        elif mod_info.startswith("+"):
+            front = "count"
+        else:
+            front = "position"
     else:
         front = "position"
+    if not end:
+        end = "count"
 
     mod_encode_dct = {}
 
@@ -205,13 +212,8 @@ def encode_mod(mod_info, front: str = "position", end: str = "count"):
 
     # Sort modifications by order
     encoded_mod_lst = []
-    # if "O" in mod_encode_dct:
-    #     # remove replicated "O" if following modifications are detected
-    #     for o_mod in ["OH", "OXO", "oxo", "ep", "OO", "OOH"]:
-    #         if o_mod in mod_encode_dct:
-    #             mod_encode_dct.pop("O", None)
 
-    for c in cv_lst:
+    for c in cv_order_list:
         if c in mod_encode_dct:
             encoded_mod_lst.append(mod_encode_dct[c])
     encoded_mod_str = seg_to_str(encoded_mod_lst)
@@ -223,16 +225,23 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
 
     mod_code = ""
     mod_lst = []
+    c_count = parsed_info.get("C", None)
     db_info = parsed_info.get("DB_INFO", None)
     mod_info = parsed_info.get("MOD_INFO", None)
     o_info = parsed_info.get("O_INFO", None)
 
     if db_info is not None:
-        mod_lst.append("{" + db_info.strip("()[]") + "}")
+        mod_lst.append("DB{" + db_info.strip("()[]") + "}")
     if mod_info is not None:
-        mod_lst.append(encode_mod(mod_info))
+        if mod_info.strip("()") in ["COOH", "CHO"]:
+            mod_lst.append(encode_mod(mod_info) + "@{" + c_count.strip("()[]") + "}")
+        else:
+            mod_lst.append(encode_mod(mod_info))
     if add_mod is not None:
-        mod_lst.append(encode_mod(add_mod))
+        if add_mod.strip("()") in ["COOH", "CHO"]:
+            mod_lst.append(encode_mod(add_mod) + "@{" + c_count.strip("()[]") + "}")
+        else:
+            mod_lst.append(encode_mod(mod_info))
 
     if o_info is not None:
         o_info_len = len(o_info)
@@ -248,21 +257,35 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
     mod_lst = [m for m in mod_lst if m is not None]
     mod_lst = [m for m in mod_lst if m != ""]
     if mod_lst:
-        for mod in mod_order_lst:
-            if mod in mod_alias_info:
-                mod_alias_lst = mod_alias_info[mod]
+        for _obs_mod in mod_lst:
+            # check if still any not split modifications
+            if "{" not in _obs_mod:
+                if "," in _obs_mod or "_" in _obs_mod:
+                    if len(_obs_mod.split(",")) > 1:
+                        mod_lst.extend(_obs_mod.split(","))
+                    elif len(_obs_mod.split("_")) > 1:
+                        mod_lst.extend(_obs_mod.split("_"))
+                    mod_lst.remove(_obs_mod)
+
+        for mod in cv_order_list:
+            if mod in cv_alias_info:
+                mod_alias_lst = cv_alias_info[mod]
                 for mod_alia in mod_alias_lst:
                     for obs_mod in mod_lst:
-                        if re.match(r"\d{0,2}%s[{]?\d*$" % mod_alia, obs_mod):
+                        if re.match(
+                            r"\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
+                            obs_mod,
+                        ):
+                            if obs_mod.startswith("DB"):
+                                obs_mod = obs_mod.strip("DB")
                             sorted_mod_lst.append(obs_mod)
-                            print(mod_lst, sorted_mod_lst, obs_mod, mod_alia, mod)
             else:
                 logger.warning(f"Modification {mod} do not have defined alias.")
 
-        if sorted_mod_lst:
-            mod_code = seg_to_str(sorted_mod_lst)
-            if mod_code and brackets:
-                mod_code = f"[{mod_code}]"
+    if sorted_mod_lst:
+        mod_code = seg_to_str(sorted_mod_lst)
+        if mod_code and brackets:
+            mod_code = f"[{mod_code}]"
 
     return mod_code
 
@@ -502,5 +525,5 @@ if __name__ == "__main__":
     # y = encode_mod("+O2")
     # print(y)
     # z = lion_encode(parse("PE O-18:1p/18:1"))
-    z = lion_encode(parse("OxTG(16:0_18:1_18:4(OOH))"))
+    z = lion_encode(parse("PC (O-16:0/O-18:1_OH)"))
     print(z)

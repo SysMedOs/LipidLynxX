@@ -8,7 +8,7 @@
 
 import configparser
 import re
-from typing import Tuple, Dict
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
@@ -106,14 +106,15 @@ def get_cv_lst(cv_file: str) -> list:
     return cv_lst
 
 
-def build_mod_parser(cv_file: str) -> dict:
-    cv_lst = get_cv_lst(cv_file)
+def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
     cv_patterns_dct = {}
-    for cv in cv_lst:
-        cv_patterns_dct[cv] = re.compile(
-            r"(\s*[;_+]\s*)?(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(
-                mod=cv
+    for cv in cv_alias_info:
+        alias_lst = cv_alias_info[cv]
+        for alia in alias_lst:
+            cv_patterns_dct[alia] = re.compile(
+                r"(\s*[;_+]\s*)?(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(
+                    mod=alia
+                )
             )
-        )
 
     return cv_patterns_dct
