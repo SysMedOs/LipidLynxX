@@ -241,7 +241,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
         if add_mod.strip("()") in ["COOH", "CHO"]:
             mod_lst.append(encode_mod(add_mod) + "@{" + c_count.strip("()[]") + "}")
         else:
-            mod_lst.append(encode_mod(mod_info))
+            mod_lst.append(encode_mod(add_mod))
 
     if o_info is not None:
         o_info_len = len(o_info)
@@ -263,10 +263,18 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
                 if "," in _obs_mod or "_" in _obs_mod:
                     if len(_obs_mod.split(",")) > 1:
                         mod_lst.extend(_obs_mod.split(","))
+                        mod_lst.remove(_obs_mod)
                     elif len(_obs_mod.split("_")) > 1:
                         mod_lst.extend(_obs_mod.split("_"))
-                    mod_lst.remove(_obs_mod)
-
+                        mod_lst.remove(_obs_mod)
+            elif "}," in _obs_mod:
+                try:
+                    rep_obs_mod = re.sub(r'},', '}|', _obs_mod)
+                    if len(rep_obs_mod.split("|")) > 1:
+                        mod_lst.extend(rep_obs_mod.split("|"))
+                        mod_lst.remove(_obs_mod)
+                except TypeError:
+                    pass
         for mod in cv_order_list:
             if mod in cv_alias_info:
                 mod_alias_lst = cv_alias_info[mod]
@@ -525,5 +533,5 @@ if __name__ == "__main__":
     # y = encode_mod("+O2")
     # print(y)
     # z = lion_encode(parse("PE O-18:1p/18:1"))
-    z = lion_encode(parse("PC (O-16:0/O-18:1_OH)"))
+    z = lion_encode(parse("18:2(9Z,12Z)(8OH,11oxo)"))
     print(z)
