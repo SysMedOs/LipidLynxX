@@ -8,53 +8,20 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import logging
-import os
+import json
 
 import pandas as pd
 
-log_level = logging.DEBUG
-logging.basicConfig(
-    format="%(asctime)s-%(levelname)s - %(message)s",
-    datefmt="%b-%d@%H:%M:%S",
-    level=log_level,
+from epilion.controllers.Logger import logger
+from epilion.controllers.InitParams import (
+    load_cfg_info,
+    build_parser,
+    build_mod_parser,
+    get_cv_lst,
 )
-logger = logging.getLogger("log")
+from epilion.controllers.GeneralFunctions import get_abs_path
 
 # Define default values
-cfg_path_lst = [
-    r"../epilion/configurations/Mod_cfg.csv",
-    r"epilion/configurations/Mod_cfg.csv",
-    r"../configurations/Mod_cfg.csv",
-    r"configurations/Mod_cfg.csv",
-]
-mod_cfg_path = ""
-for cfg_path in cfg_path_lst:
-    if os.path.isfile(cfg_path):
-        mod_cfg_path = cfg_path
-if mod_cfg_path:
-    mod_cfg_df = pd.read_csv(mod_cfg_path, index_col=0, na_values=None)
-else:
-    raise FileNotFoundError
-
-abbr_cfg_path_list = [
-    r"../epilion/configurations/LinearFA_abbreviations.xlsx",
-    r"epilion/configurations/LinearFA_abbreviations.xlsx",
-    r"../configurations/LinearFA_abbreviations.xlsx",
-    r"configurations/LinearFA_abbreviations.xlsx",
-]
-
-abbr_cfg_path = ""
-for a_cfg_path in abbr_cfg_path_list:
-    if os.path.isfile(a_cfg_path):
-        abbr_cfg_path = a_cfg_path
-if not abbr_cfg_path:
-    raise FileNotFoundError
-
-abbr_cfg_df = pd.read_excel(abbr_cfg_path)
-
-
-# logger.debug(mod_cfg_df)
 
 pa_hg_elem_dct = {"C": 0, "H": 3, "O": 4, "P": 1, "N": 0}
 pc_hg_elem_dct = {"C": 5, "H": 14, "O": 4, "P": 1, "N": 1}
@@ -117,18 +84,52 @@ pl_smi_info = {
 
 tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 
-mod_order_lst = [
-    "DB",
-    "OH",
-    "Hp",
-    "Ke",
-    "Ep",
-    "Me",
-    "My",
-    "NH2",
-    "SH",
-    "Br",
-    "Cl",
-    "F",
-    "CN",
-]
+
+with open(get_abs_path(r"epilion/configurations/CV.json"), "r") as cv_js:
+    cv_alias_js = json.load(cv_js)
+
+cv_order_list = []
+cv_alias_info = {}
+
+for _mod in cv_alias_js:
+    cv_alias_info[_mod["CV"]] = _mod["ALIAS"]
+    cv_order_list.append(_mod["CV"])
+
+lipid_class_alias_info = {
+    "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
+    "O-p": {"CLASS": "P-", "RULE_CLASS": "FA"},
+    "cer": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "CER": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "GPA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "GPCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "PlsA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "PlsCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "PlsEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "PlsGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "PlsIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "PlsSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "GPC": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPE": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPG": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPI": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPS": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "MAG": {"CLASS": "MG", "RULE_CLASS": "GL"},
+    "DAG": {"CLASS": "DG", "RULE_CLASS": "GL"},
+    "TAG": {"CLASS": "TG", "RULE_CLASS": "GL"},
+}
+
+# load default values from files defined in config.ini
+# following parameters generated will be used as global values
+default_cfg_path = "config.ini"
+cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
+class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
+cv_rgx_dct = build_mod_parser(cv_alias_info)
+mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
+abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+
+
+logger.info("Default parameters loaded successfully.")

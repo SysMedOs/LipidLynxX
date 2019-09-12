@@ -10,7 +10,7 @@ import getopt
 import os.path
 import sys
 
-from epilion.libLION.DefaultParams import logger
+from epilion.controllers.DefaultParams import logger
 from epilion.libLION.epiLION_Core import epilion2sdf
 
 

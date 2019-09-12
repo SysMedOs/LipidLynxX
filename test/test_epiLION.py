@@ -13,7 +13,7 @@ epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
 import epiLION
-from epilion.libLION.DefaultParams import logger
+from epilion.controllers.DefaultParams import logger
 
 
 class epiLIONTestCase(unittest.TestCase):
@@ -51,6 +51,16 @@ class epiLIONTestCase(unittest.TestCase):
 
         self.pass_params = ["-i", in_file, "-o", out_file]
         self.fail_input_params = ["-i", bad_in_file, "-o", out_file]
+
+    def test_batch_encode(self):
+        logger.debug("test parse_lion ...")
+        in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
+        for i, r in in_df_test.iterrows():
+            logger.info(f'Process Lipid: {r["INPUT"]}')
+            parsed_dct = parse(r["INPUT"])
+            test_output = lion_encode(parsed_dct)
+            correct_output = r["OUTPUT"].strip('"')
+            correct_output = correct_output.strip('"')
 
     @staticmethod
     def test_epiLION_help():
