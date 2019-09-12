@@ -8,7 +8,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os
+import json
 
 import pandas as pd
 
@@ -19,7 +19,7 @@ from epilion.controllers.InitParams import (
     build_mod_parser,
     get_cv_lst,
 )
-
+from epilion.controllers.GeneralFunctions import get_abs_path
 
 # Define default values
 
@@ -84,21 +84,16 @@ pl_smi_info = {
 
 tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 
-mod_order_lst = [
-    "DB",
-    "OH",
-    "Hp",
-    "Ke",
-    "Ep",
-    "Me",
-    "My",
-    "NH2",
-    "SH",
-    "Br",
-    "Cl",
-    "F",
-    "CN",
-]
+
+with open(get_abs_path(r"epilion/configurations/CV.json"), "r") as cv_js:
+    cv_alias_js = json.load(cv_js)
+
+cv_order_list = []
+cv_alias_info = {}
+
+for _mod in cv_alias_js:
+    cv_alias_info[_mod["CV"]] = _mod["ALIAS"]
+    cv_order_list.append(_mod["CV"])
 
 lipid_class_alias_info = {
     "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
@@ -132,8 +127,7 @@ lipid_class_alias_info = {
 default_cfg_path = "config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
-cv_lst = get_cv_lst(cfg_info_dct["cv"])
-cv_rgx_dct = build_mod_parser(cfg_info_dct["cv"])
+cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 

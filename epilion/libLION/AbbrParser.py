@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from epilion.controllers.DefaultParams import mod_order_lst
+from epilion.controllers.DefaultParams import cv_order_list
 
 
 class AbbrParser:
@@ -255,8 +255,8 @@ class AbbrParser:
 
             if mod_lst:
                 s_mod_lst = []
-                m_order_lst = mod_order_lst.copy()
-                for m in mod_order_lst:
+                m_order_lst = cv_order_list.copy()
+                for m in cv_order_list:
                     for m_str in mod_lst:
                         if m in m_str:
                             s_mod_lst.append(m_str)
