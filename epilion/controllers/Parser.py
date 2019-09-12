@@ -170,7 +170,7 @@ def parse_mod(
     """
     mod_dct = {}
 
-    rgx_white = re.compile(r"\s*[,;\'_\-()+]\s*")
+    rgx_white = re.compile(r"\s*[,;\'_\-()+<>]\s*")
     abbr_rep = re.sub(rgx_white, "|", abbr)
     abbr_seg_lst = filter(None, abbr_rep.split("|"))
     for abbr_seg in abbr_seg_lst:
@@ -183,9 +183,11 @@ def parse_mod(
                 for segment_tpl in found_segments_lst:
                     segment_str = "".join(segment_tpl)
                     m = rgx.search(segment_str)
-                    if m and seg_to_str(m.groups(), sep="") == abbr_seg:
-                        obs_info = m.groupdict()
-                        seg_parsed = True
+                    if m:
+                        reconstruct_str = seg_to_str(m.groups(), sep="")
+                        if reconstruct_str == abbr_seg:
+                            obs_info = m.groupdict()
+                            seg_parsed = True
             if seg_parsed and obs_info:
                 cv = get_mod_cv(mod)
                 obs_info["MOD"] = cv

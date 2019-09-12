@@ -70,8 +70,9 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
 
     add_mod = parsed_dct.get("ADDITIONAL_MOD", None)
     if add_mod:
-        add_mod_str = encode_mod(add_mod)
-        if add_mod_str:
+        add_mod_lst = decode_mod(add_mod)
+        if add_mod_lst:
+            add_mod_str = seg_to_str(add_mod_lst).strip("[]")
             lion_code += f"[{add_mod_str}]"
 
     return lion_code
@@ -150,7 +151,7 @@ def get_best_abbreviation(
     return lion_code
 
 
-def encode_mod(mod_info: str, front: str = "position", end: str = "count") -> str:
+def decode_mod(mod_info: str, front: str = "position", end: str = "count") -> List[str]:
     if mod_info:
         mod_dct = parse_mod(mod_info)
     else:
@@ -173,11 +174,16 @@ def encode_mod(mod_info: str, front: str = "position", end: str = "count") -> st
     for cv in mod_dct:
         cv_info_lst = mod_dct[cv]
         cv_position_lst = []
+        cv_replace_lst = []
         cv_count = 0
 
         for cv_info in cv_info_lst:
             tmp_front = cv_info.get("FRONT", None)
             tmp_end = cv_info.get("END", None)
+            tmp_replace = cv_info.get("REPLACE", None)
+            if tmp_front and re.match(r"\d\d?[xX]$", tmp_front):
+                tmp_front = tmp_front[:-1]
+                front = "count"
             if tmp_front and tmp_end:
                 cv_position_lst.append(str(tmp_front))
                 cv_count += 1
@@ -200,13 +206,21 @@ def encode_mod(mod_info: str, front: str = "position", end: str = "count") -> st
             else:
                 cv_count += 1
 
+            if tmp_replace:
+                rep_pos = re.match(r"@[CHNOP](?P<REPLACE>\d\d?)", tmp_replace)
+                if rep_pos:
+                    cv_replace_lst.append(rep_pos.groupdict()["REPLACE"])
+
         if cv_count == 1:
             cv_count_str = ""
         else:
             cv_count_str = str(cv_count)
         if cv_position_lst:
-            position_str = "{" + ",".join(cv_position_lst) + "}"
+            position_str = "{" + seg_to_str(cv_position_lst) + "}"
             mod_encode_dct[cv] = f"{cv_count_str}{cv}{position_str}"
+        elif cv_replace_lst:
+            replace_str = "@{" + seg_to_str(cv_replace_lst) + "}"
+            mod_encode_dct[cv] = f"{cv_count_str}{cv}{replace_str}"
         else:
             mod_encode_dct[cv] = f"{cv_count_str}{cv}"
 
@@ -216,9 +230,9 @@ def encode_mod(mod_info: str, front: str = "position", end: str = "count") -> st
     for c in cv_order_list:
         if c in mod_encode_dct:
             encoded_mod_lst.append(mod_encode_dct[c])
-    encoded_mod_str = seg_to_str(encoded_mod_lst)
+    # encoded_mod_str = seg_to_str(encoded_mod_lst)
 
-    return encoded_mod_str
+    return encoded_mod_lst
 
 
 def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) -> str:
@@ -234,14 +248,30 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
         mod_lst.append("DB{" + db_info.strip("()[]") + "}")
     if mod_info is not None:
         if mod_info.strip("()") in ["COOH", "CHO"]:
-            mod_lst.append(encode_mod(mod_info) + "@{" + c_count.strip("()[]") + "}")
+            rep_str = "@{" + c_count.strip("()[]") + "}"
+            seg_mod_lst = decode_mod(mod_info)
+            seg_code_lst = []
+            for seg_mod in seg_mod_lst:
+                if "@{" in seg_mod:
+                    seg_code_lst.append(seg_mod)
+                else:
+                    seg_code_lst.append(seg_mod + rep_str)
+            mod_lst.extend(seg_code_lst)
         else:
-            mod_lst.append(encode_mod(mod_info))
+            mod_lst.extend(decode_mod(mod_info))
     if add_mod is not None:
         if add_mod.strip("()") in ["COOH", "CHO"]:
-            mod_lst.append(encode_mod(add_mod) + "@{" + c_count.strip("()[]") + "}")
+            rep_str = "@{" + c_count.strip("()[]") + "}"
+            seg_mod_lst = decode_mod(add_mod)
+            seg_code_lst = []
+            for seg_mod in seg_mod_lst:
+                if "@{" in seg_mod:
+                    seg_code_lst.append(seg_mod)
+                else:
+                    seg_code_lst.append(seg_mod + rep_str)
+            mod_lst.extend(seg_code_lst)
         else:
-            mod_lst.append(encode_mod(add_mod))
+            mod_lst.extend(decode_mod(add_mod))
 
     if o_info is not None:
         o_info_len = len(o_info)
@@ -250,43 +280,26 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
         elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
             mod_lst.append(o_info)
         elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
-            mod_lst.append(encode_mod(o_info[1:].strip("()[]")))
+            mod_lst.extend(decode_mod(o_info[1:].strip("()[]")))
         else:
-            mod_lst.append(encode_mod(o_info))
+            mod_lst.extend(decode_mod(o_info))
     sorted_mod_lst = []
     mod_lst = [m for m in mod_lst if m is not None]
     mod_lst = [m for m in mod_lst if m != ""]
     if mod_lst:
-        for _obs_mod in mod_lst:
-            # check if still any not split modifications
-            if "{" not in _obs_mod:
-                if "," in _obs_mod or "_" in _obs_mod:
-                    if len(_obs_mod.split(",")) > 1:
-                        mod_lst.extend(_obs_mod.split(","))
-                        mod_lst.remove(_obs_mod)
-                    elif len(_obs_mod.split("_")) > 1:
-                        mod_lst.extend(_obs_mod.split("_"))
-                        mod_lst.remove(_obs_mod)
-            elif "}," in _obs_mod:
-                try:
-                    rep_obs_mod = re.sub(r'},', '}|', _obs_mod)
-                    if len(rep_obs_mod.split("|")) > 1:
-                        mod_lst.extend(rep_obs_mod.split("|"))
-                        mod_lst.remove(_obs_mod)
-                except TypeError:
-                    pass
         for mod in cv_order_list:
             if mod in cv_alias_info:
                 mod_alias_lst = cv_alias_info[mod]
                 for mod_alia in mod_alias_lst:
                     for obs_mod in mod_lst:
-                        if re.match(
+                        if obs_mod and re.match(
                             r"\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
                             obs_mod,
                         ):
                             if obs_mod.startswith("DB"):
                                 obs_mod = obs_mod.strip("DB")
                             sorted_mod_lst.append(obs_mod)
+
             else:
                 logger.warning(f"Modification {mod} do not have defined alias.")
 
@@ -346,7 +359,6 @@ def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> 
 def encode_sub_fa(fa_abbr: str, add_mod: str = None):
     fa_candidates_lst = []
     class_info_lst = []
-    best_class = None
     if fa_abbr:
         fa_dct = parse(fa_abbr)["OUTPUT_INFO"]
 
@@ -395,7 +407,6 @@ def encode_all_sub_fa(
 
     if position_info_lst == ["_"] * len(position_info_lst):
         if sort_discrete is True:
-            sorted_fa_info_lst = []
             mod_op_lst = []
             unmod_op_lst = []
             mod_fa_lst = []
@@ -533,5 +544,5 @@ if __name__ == "__main__":
     # y = encode_mod("+O2")
     # print(y)
     # z = lion_encode(parse("PE O-18:1p/18:1"))
-    z = lion_encode(parse("18:2(9Z,12Z)(8OH,11oxo)"))
+    z = lion_encode(parse(r"FA (18:2) + O"))
     print(z)

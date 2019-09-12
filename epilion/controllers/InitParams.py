@@ -112,7 +112,7 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
         alias_lst = cv_alias_info[cv]
         for alia in alias_lst:
             cv_patterns_dct[alia] = re.compile(
-                r"(\s*[;_+]\s*)?(?P<FRONT>\d\d?)?(?P<MOD>{mod})(?P<END>\d\d?)?".format(
+                r"(\s*[;_+]\s*)?(?P<FRONT>\d\d?[xX]?)?(?P<MOD>{mod})(?P<END>\d\d?)?(?P<REPLACE>@[CHNOP]\d\d?)?".format(
                     mod=alia
                 )
             )
