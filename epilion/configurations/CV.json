@@ -3,7 +3,7 @@
     {"CV": "O", "REMARKS": "Undefined oxygen addition", "ALIAS": ["O"]},
     {"CV": "OH", "REMARKS": "hydroxyl", "ALIAS": ["OH"]},
     {"CV": "Ke", "REMARKS": "oxo(keto/aldehyde depending on position)", "ALIAS": ["Ke", "oxo", "KETO"]},
-    {"CV": "ep", "REMARKS": "epoxy", "ALIAS": ["ep", "EPOXY"]},
+    {"CV": "Ep", "REMARKS": "epoxy", "ALIAS": ["ep", "EPOXY"]},
     {"CV": "Hp", "REMARKS": "hydroperoxide group", "ALIAS": ["Hp", "OOH"]},
     {"CV": "CHO", "REMARKS": "Terminal carbonyl", "ALIAS": ["CHO"]},
     {"CV": "COOH", "REMARKS": "carboxylic acid", "ALIAS": ["COOH"]},

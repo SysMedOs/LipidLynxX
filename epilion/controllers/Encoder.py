@@ -73,7 +73,8 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
         add_mod_lst = decode_mod(add_mod)
         if add_mod_lst:
             add_mod_str = seg_to_str(add_mod_lst).strip("[]")
-            lion_code += f"[{add_mod_str}]"
+            add_mod_str = seg_to_str(add_mod_lst).strip("<>")
+            lion_code += f"<{add_mod_str}>"
 
     return lion_code
 
@@ -245,10 +246,10 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
     o_info = parsed_info.get("O_INFO", None)
 
     if db_info is not None:
-        mod_lst.append("DB{" + db_info.strip("()[]") + "}")
+        mod_lst.append("DB{" + db_info.strip("()[]<>") + "}")
     if mod_info is not None:
         if mod_info.strip("()") in ["COOH", "CHO"]:
-            rep_str = "@{" + c_count.strip("()[]") + "}"
+            rep_str = "@{" + c_count.strip("()[]<>") + "}"
             seg_mod_lst = decode_mod(mod_info)
             seg_code_lst = []
             for seg_mod in seg_mod_lst:
@@ -261,7 +262,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
             mod_lst.extend(decode_mod(mod_info))
     if add_mod is not None:
         if add_mod.strip("()") in ["COOH", "CHO"]:
-            rep_str = "@{" + c_count.strip("()[]") + "}"
+            rep_str = "@{" + c_count.strip("()[]<>") + "}"
             seg_mod_lst = decode_mod(add_mod)
             seg_code_lst = []
             for seg_mod in seg_mod_lst:
@@ -280,7 +281,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
         elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
             mod_lst.append(o_info)
         elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
-            mod_lst.extend(decode_mod(o_info[1:].strip("()[]")))
+            mod_lst.extend(decode_mod(o_info[1:].strip("()[]<>")))
         else:
             mod_lst.extend(decode_mod(o_info))
     sorted_mod_lst = []
@@ -306,7 +307,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
     if sorted_mod_lst:
         mod_code = seg_to_str(sorted_mod_lst)
         if mod_code and brackets:
-            mod_code = f"[{mod_code}]"
+            mod_code = f"<{mod_code}>"
 
     return mod_code
 
@@ -341,7 +342,7 @@ def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> 
     if link_prefix:
         link_prefix = link_prefix.upper()
         if link_prefix == "SPBP":
-            link_prefix = "SPBP[PO4]"
+            link_prefix = "SPBP<PO4>"
     else:
         link_prefix = "SPB"
 
@@ -416,9 +417,13 @@ def encode_all_sub_fa(
                 if fa.startswith(("O-", "P-")):
                     if "[" in fa:
                         mod_op_lst.append(fa)
+                    elif "<" in fa:
+                        mod_op_lst.append(fa)
                     else:
                         unmod_op_lst.append(fa)
                 elif "[" in fa:
+                    mod_fa_lst.append(fa)
+                elif "<" in fa:
                     mod_fa_lst.append(fa)
                 else:
                     unmod_fa_lst.append(fa)
