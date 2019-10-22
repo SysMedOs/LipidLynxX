@@ -11,7 +11,7 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from epilion.controllers.DefaultParams import logger
+from epilion.models.DefaultParams import logger
 from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
 
 

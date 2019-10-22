@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple, Union
 
 from natsort import natsorted
 
-from epilion.controllers.DefaultParams import (
+from epilion.models.DefaultParams import (
     lipid_class_alias_info,
     cv_order_list,
     cv_alias_info,
