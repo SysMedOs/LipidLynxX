@@ -9,6 +9,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
+import re
 
 import pandas as pd
 
@@ -130,5 +131,7 @@ class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
 cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+
+rgx_blank = re.compile(r"\W+")
 
 logger.info("Default parameters loaded successfully.")
