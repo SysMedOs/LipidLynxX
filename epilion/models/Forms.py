@@ -5,19 +5,24 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-from flask_wtf import Form
-from wtforms import StringField, TextAreaField
+from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Length
 
 
-class ConverterInputForm(Form):
+class ConverterTextInputForm(FlaskForm):
 
     input_id_str = TextAreaField(
         "Paste lipid abbreviations here:", validators=[DataRequired()]
     )
 
 
-class ParserInputForm(Form):
+class ConverterTableInputForm(FlaskForm):
+
+    input_file_str = FileField("Select input file:", validators=[DataRequired()])
+
+
+class ParserInputForm(FlaskForm):
 
     lion_id_str = StringField(
         "Paste one lipid abbreviation here:",

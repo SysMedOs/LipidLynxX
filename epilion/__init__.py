@@ -14,8 +14,8 @@ from epilion.controllers.Parser import parse
 
 app_cfg_dct = {
     "ABS_BASE_PATH": os.path.abspath(os.path.dirname(__file__)),
-    "UPLOAD_FOLDER": os.path.join("epilion", "uploads"),
-    "DOWNLOAD_FOLDER": os.path.join("epilion", "downloads"),
+    "UPLOAD_FOLDER": "uploads",
+    "DOWNLOAD_FOLDER": "downloads",
 }
 
 app_cfg_dct["ABS_UPLOAD_PATH"] = os.path.join(

@@ -12,12 +12,12 @@
             <div class="row align-items-center">
                 <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
                     <h2>Input lipid abbreviations</h2>
-                    <form method="POST" action="{{ url_for('.converter') }}">
+                    <form id="in_form" method="POST" action="{{ url_for('.convert_str') }}">
                         {{ in_form.hidden_tag() }}
                         <div class="form-group">
                             {{ in_form.input_id_str.label }}
                             {% if in_form.input_id_str.errors %}
-                                {% for e in form.input_id_str.errors %}
+                                {% for e in in_form.input_id_str.errors %}
                                     <p class="help-block">{{ e }}</p>
                                 {% endfor %}
                             {% endif %}
@@ -30,9 +30,9 @@
                         <h2>Upload table</h2>
                         <p>Support.csv or .xlsx format</p>
                         <div>
-                            <form id="form1" method="post" action="{{ url_for('.upload') }}"
+                            <form id="form1" method="post" action="{{ url_for('.convert_table') }}"
                                   enctype="multipart/form-data">
-                                <input id="File1" class="btn btn-primary mt-4" type="file" name="user_file">
+                                <input id="file1" class="btn btn-primary mt-4" type="file" name="user_file">
                                 <input class="btn btn-primary mt-4" type="submit" >
                             </form>
                         </div>

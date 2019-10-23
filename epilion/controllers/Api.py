@@ -9,19 +9,20 @@ import json
 import os
 import time
 
-from flask import Flask
-from flask import render_template, redirect, url_for
 from flask import request, abort, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
-from epilion.config import DevConfig
+
 from epilion import app_cfg_dct
 from epilion import epilion_blueprint
 from epilion.controllers.Encoder import lion_encode
+from epilion.controllers.FileIO import get_table
 from epilion.controllers.Parser import parse
 
 
-@epilion_blueprint.route("/api/convert/<input_abbreviation>", methods=["GET", "POST"])
-def convert(input_abbreviation):
+@epilion_blueprint.route(
+    "/api/single_convert/<input_abbreviation>", methods=["GET", "POST"]
+)
+def single_convert(input_abbreviation):
     print("input_abbreviation", input_abbreviation)
     if input_abbreviation:
         epilion_id = lion_encode(parse(input_abbreviation))
@@ -38,27 +39,25 @@ def convert(input_abbreviation):
         return jsonify({"code": 1002, "errmsg": "Input error!", "result": ""})
 
 
-@epilion_blueprint.route("/api/upload", methods=["POST"])
-def upload():
-    usr_file = request.files["user_file"]
-    if usr_file.filename:
-        usr_file_name = secure_filename(usr_file.filename)
-        unix_time = int(time.time())
-        if usr_file_name.endswith(".csv"):
-            masked_file_name = f"{unix_time}.csv"
-        elif usr_file_name.endswith(".xlsx"):
-            masked_file_name = f"{unix_time}.xlsx"
-        elif usr_file_name.endswith(".xls"):
-            masked_file_name = f"{unix_time}.xls"
-        else:
-            masked_file_name = ""
-            abort(400, "File tye not supported.")
-        usr_file.save(os.path.join(app_cfg_dct["ABS_UPLOAD_PATH"], masked_file_name))
+@epilion_blueprint.route("/api/table_input/<filename>", methods=["GET", "POST"])
+def table_input(filename):
+    abs_table_path = os.path.join(app_cfg_dct["ABS_UPLOAD_PATH"], filename)
+    if os.path.isfile(abs_table_path):
         return jsonify(
-            {"code": 0, "errmsg": "Upload success.", "fileName": masked_file_name}
+            {
+                "code": 0,
+                "errmsg": "Table convert success.",
+                "result": get_table(abs_table_path),
+            }
         )
     else:
-        return jsonify({"code": 1004, "errmsg": "Upload failure!"})
+        return jsonify(
+            {
+                "code": 1003,
+                "errmsg": "Input error!",
+                "result": get_table(abs_table_path),
+            }
+        )
 
 
 @epilion_blueprint.route("/api/download/<filename>", methods=["GET"])
