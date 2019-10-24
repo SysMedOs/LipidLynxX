@@ -6,7 +6,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from .configurations.cfg import secrete_key
+from .configurations.key_cfg import secrete_key
 
 
 class Config(object):

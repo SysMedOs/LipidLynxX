@@ -5,48 +5,68 @@
 {% endblock %}
 
 {% block body %}
-    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="true">
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="False">
         <h1>epiLION abbreviation converter</h1>
         <div class="container">
-        <div class="row align-items-center">
-          <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
-              <h2>Lipid abbreviations</h2>
-              <form method="POST" action="{{ url_for('.converter') }}">
-                  {{ in_form.hidden_tag() }}
-                  <div class="form-group">
-                      {{in_form.input_id_str.label}}
-                      {% if in_form.input_id_str.errors %}
-                        {% for e in form.input_id_str.errors %}
-                            <p class="help-block">{{ e }}</p>
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
+                    <h2>Input lipid abbreviations</h2>
+                    <form id="in_form" method="POST" action="{{ url_for('.convert_str') }}">
+                        {{ in_form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ in_form.input_id_str.label }}
+                            {% if in_form.input_id_str.errors %}
+                                {% for e in in_form.input_id_str.errors %}
+                                    <p class="help-block">{{ e }}</p>
+                                {% endfor %}
+                            {% endif %}
+                            {{ in_form.input_id_str(class_='form-control') }}
+                        </div>
+                        <input class="btn btn-primary" type="submit" value="Convert">
+                    </form>
+                    <h2></h2>
+                    <div>
+                        <h2>Upload table</h2>
+                        <p>Support.csv or .xlsx format</p>
+                        <div>
+                            <form id="form1" method="post" action="{{ url_for('.convert_table') }}"
+                                  enctype="multipart/form-data">
+                                <input id="file1" class="btn btn-primary mt-4" type="file" name="user_file">
+                                <input class="btn btn-primary mt-4" type="submit" >
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
+
+                    {% if out_dct != {} %}
+                        <h2>epiLION output</h2>
+                        <h2></h2>
+                        <h4>Converted abbreviations</h4>
+                        {% for epi_id in out_dct %}
+                            <p>{{ epi_id }} -> {{ out_dct[epi_id] }}</p>
                         {% endfor %}
-                      {% endif %}
-                      {{ in_form.input_id_str(class_='form-control') }}
-                  </div>
-                  <input class="btn btn-primary" type="submit" value="Convert">
-              </form>
-          </div>
-          <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
-              <h2>epiLION output</h2>
-              <h2> </h2>
-              {% if out_dct != {} %}
-                <h4>Converted abbreviations</h4>
-                {% for epi_id in out_dct %}
-                <p>{{epi_id}}  ->  {{out_dct[epi_id]}}</p>
-                {% endfor %}
-              {% endif %}
-              {% if bad_in_lst != [] %}
-                {% if submitted == 1 and out_dct == {} %}
-                  <h5>Not able to convert any lipid abbreviation, please check your input.</h5>
-                {% elif submitted == 1 and out_dct != {} %}
-                    <h4>Not able to convert following abbreviations:</h4>
-                    {% for bad_abbr in bad_in_lst %}
-                    <p>{{bad_abbr}}</p>
-                    {% endfor %}
-                {% endif %}
-              {% endif %}
-          </div>
+                        <a class="btn btn-secondary mt-4" href="{{ url_for('.download', filename=output_name) }}">
+                            Save output as .csv file
+                        </a>
+                    {% endif %}
+                    {% if bad_in_lst != [] %}
+                        {% if submitted == 1 and out_dct == {} %}
+                            <h5>Not able to convert any lipid abbreviation, please check your input.</h5>
+                        {% elif submitted == 1 and out_dct != {} %}
+                            <h2>epiLION output</h2>
+                            <h2></h2>
+                            <h4>Not able to convert following abbreviations:</h4>
+                            {% for bad_abbr in bad_in_lst %}
+                                <p>{{ bad_abbr }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
-      </div>
     </section>
 
 {% endblock %}

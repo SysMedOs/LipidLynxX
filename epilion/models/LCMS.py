@@ -6,18 +6,11 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_script import Manager, Server
-from __init__ import app
+from dataclasses import dataclass, field
+from typing import List
 
 
-manager = Manager(app)
-manager.add_command("server", Server())
-
-
-@manager.shell
-def make_shell_context():
-    return dict(app=app)
-
-
-if __name__ == "__main__":
-    manager.run()
+@dataclass
+class Spectrum:
+    mz: List[float] = field(default_factory=list)
+    i: List[float] = field(default_factory=list)
