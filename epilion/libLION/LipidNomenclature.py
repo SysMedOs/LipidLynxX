@@ -11,7 +11,7 @@ import re
 
 # from rdkit import Chem
 
-from epilion.controllers.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from epilion.models.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
 from epilion.libLION.Lipids import FA
 from epilion.libLION.AbbrElemCalc import ElemCalc
@@ -350,8 +350,8 @@ class ParserPL(ParserFA):
         if pl_info_dct["LIPID_INFO"]["LYSO"]:
             if isinstance(pl_info_dct["LIPID_INFO"]["LYSO"], str):
                 pl_info_dct["LIPID_INFO"]["CLASS"] = (
-                        pl_info_dct["LIPID_INFO"]["LYSO"]
-                        + pl_info_dct["LIPID_INFO"]["CLASS"]
+                    pl_info_dct["LIPID_INFO"]["LYSO"]
+                    + pl_info_dct["LIPID_INFO"]["CLASS"]
                 )
 
         return pl_info_dct

@@ -15,7 +15,7 @@ epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
 import convLION
-from epilion.controllers.DefaultParams import logger
+from epilion.models.DefaultParams import logger
 
 
 class epiLION_ConverterTestCase(unittest.TestCase):

@@ -9,6 +9,7 @@
 from dataclasses import dataclass
 from typing import List
 
+
 @dataclass
 class Lipid:
     code: str

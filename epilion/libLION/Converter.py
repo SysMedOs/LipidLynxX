@@ -11,18 +11,19 @@ import re
 
 import pandas as pd
 
-from epilion.controllers.DefaultParams import logger
+from epilion.models.DefaultParams import cfg_info_dct
+from epilion.models.DefaultParams import logger
 from epilion.libLION.AbbrParser import AbbrParser
 
 
 class Converter:
-    def __init__(self, cfg: str = None, abbr_df: pd.DataFrame = None):
+    def __init__(self, abbr_df: pd.DataFrame = None):
 
         if isinstance(abbr_df, pd.DataFrame):
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         else:
-            abbr_df = pd.read_excel(cfg)
-            self.abbr_parser = AbbrParser(cfg=cfg)
+            abbr_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+            self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         self.abbr_dct = dict(
             zip(abbr_df["Abbreviation"].tolist(), abbr_df["epiLION"].tolist())
         )

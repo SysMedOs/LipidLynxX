@@ -15,7 +15,7 @@ from rdkit.Chem import AllChem, rdMolDescriptors
 
 from epilion.controllers.Logger import logger
 from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
-from epilion.controllers.DefaultParams import abbr_cfg_path
+from epilion.models.DefaultParams import default_cfg_path
 from epilion.libLION.Converter import Converter
 
 
@@ -26,7 +26,7 @@ def parse_epilion(abbr: str) -> dict:
 
     info_dct = {}
 
-    converter = Converter(abbr_cfg_path)
+    converter = Converter(default_cfg_path)
     epilion_id = converter.convert_abbr(abbr)
 
     if fa_decoder.is_fa(epilion_id):
