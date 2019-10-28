@@ -244,35 +244,28 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
     db_info = parsed_info.get("DB_INFO", None)
     mod_info = parsed_info.get("MOD_INFO", None)
     o_info = parsed_info.get("O_INFO", None)
+    mod_info_lst = []
 
     if db_info is not None:
         mod_lst.append("DB{" + db_info.strip("()[]<>") + "}")
     if mod_info is not None:
-        if mod_info.strip("()") in ["COOH", "CHO"]:
-            rep_str = "@{" + c_count.strip("()[]<>") + "}"
-            seg_mod_lst = decode_mod(mod_info)
-            seg_code_lst = []
-            for seg_mod in seg_mod_lst:
-                if "@{" in seg_mod:
-                    seg_code_lst.append(seg_mod)
-                else:
-                    seg_code_lst.append(seg_mod + rep_str)
-            mod_lst.extend(seg_code_lst)
-        else:
-            mod_lst.extend(decode_mod(mod_info))
+        mod_info_lst.append(mod_info)
     if add_mod is not None:
-        if add_mod.strip("()") in ["COOH", "CHO"]:
-            rep_str = "@{" + c_count.strip("()[]<>") + "}"
-            seg_mod_lst = decode_mod(add_mod)
-            seg_code_lst = []
-            for seg_mod in seg_mod_lst:
-                if "@{" in seg_mod:
-                    seg_code_lst.append(seg_mod)
-                else:
-                    seg_code_lst.append(seg_mod + rep_str)
-            mod_lst.extend(seg_code_lst)
-        else:
-            mod_lst.extend(decode_mod(add_mod))
+        mod_info_lst.append(add_mod)
+    if mod_info_lst:
+        for mod_str in mod_info_lst:
+            if mod_str.strip("()") in ["COOH", "CHO"]:
+                rep_str = "@{" + c_count.strip("()[]<>") + "}"
+                seg_mod_lst = decode_mod(mod_str)
+                seg_code_lst = []
+                for seg_mod in seg_mod_lst:
+                    if "@{" in seg_mod:
+                        seg_code_lst.append(seg_mod)
+                    else:
+                        seg_code_lst.append(seg_mod + rep_str)
+                mod_lst.extend(seg_code_lst)
+            else:
+                mod_lst.extend(decode_mod(mod_str))
 
     if o_info is not None:
         o_info_len = len(o_info)

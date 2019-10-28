@@ -13,7 +13,7 @@ import pandas as pd
 from epilion.controllers.GeneralFunctions import get_abs_path
 
 
-def get_table(file_path):
+def get_table(file_path: str) -> dict:
 
     abs_path = get_abs_path(file_path)
 
@@ -32,3 +32,14 @@ def get_table(file_path):
         dct = {}
 
     return dct
+
+
+def save_table(df: pd.DataFrame, file_name: str):
+    is_output = False
+    abs_output_path = None
+    if not df.empty:
+        df.to_excel(file_name)
+        is_output = True
+        abs_output_path = get_abs_path(file_name)
+
+    return is_output, abs_output_path
