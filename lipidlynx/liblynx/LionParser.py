@@ -13,10 +13,10 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem, rdMolDescriptors
 
-from epilion.controllers.Logger import logger
-from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
-from epilion.models.DefaultParams import default_cfg_path
-from epilion.libLION.Converter import Converter
+from lipidlynx.controllers.Logger import logger
+from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
+from lipidlynx.models.DefaultParams import default_cfg_path
+from lipidlynx.liblynx.Converter import Converter
 
 
 def parse_epilion(abbr: str) -> dict:

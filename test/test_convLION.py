@@ -14,8 +14,8 @@ import unittest
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-import convLION
-from epilion.models.DefaultParams import logger
+import convLynx
+from lipidlynx.models.DefaultParams import logger
 
 
 class epiLION_ConverterTestCase(unittest.TestCase):
@@ -56,7 +56,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_Converter_help():
         logger.debug("test help...")
-        result = convLION.main(["-h"])
+        result = convLynx.main(["-h"])
         if result is False:
             logger.debug("test help... PASSED")
         else:
@@ -65,7 +65,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_Converter_bad_params():
         logger.debug("test bad params...")
-        result = convLION.main(["-test"])
+        result = convLynx.main(["-test"])
         if result is False:
             logger.debug("test bad parameter... PASSED")
         else:
@@ -73,7 +73,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def test_epiLION_Converter_bad_input(self):
         logger.debug("test bad input...")
-        result = convLION.main(self.fail_input_params)
+        result = convLynx.main(self.fail_input_params)
         if result is False:
             logger.debug("test bad input... PASSED")
         else:
@@ -81,7 +81,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def test_epiLION_Converter_good_input(self):
         logger.debug("test sample data...")
-        result = convLION.main(self.pass_params)
+        result = convLynx.main(self.pass_params)
         if result is True:
             logger.debug("test sample data... PASSED")
         else:
@@ -92,7 +92,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python convLION.py -i test/TestInput/test_crosscheck.xlsx -o test/TestOutput/test_crosscheck_output.xlsx
+    # python convLynx.py -i test/TestInput/test_crosscheck.xlsx -o test/TestOutput/test_crosscheck_output.xlsx
 
     epiLION_Path = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, epiLION_Path + "/../")

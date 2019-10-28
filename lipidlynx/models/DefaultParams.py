@@ -13,14 +13,14 @@ import re
 
 import pandas as pd
 
-from epilion.controllers.Logger import logger
-from epilion.controllers.InitParams import (
+from lipidlynx.controllers.Logger import logger
+from lipidlynx.controllers.InitParams import (
     load_cfg_info,
     build_parser,
     build_mod_parser,
     get_cv_lst,
 )
-from epilion.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 # Define default values
 
@@ -86,7 +86,7 @@ pl_smi_info = {
 tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 
 
-with open(get_abs_path(r"epilion/configurations/CV.json"), "r") as cv_js:
+with open(get_abs_path(r"lipidlynx/configurations/CV.json"), "r") as cv_js:
     cv_alias_js = json.load(cv_js)
 
 cv_order_list = []

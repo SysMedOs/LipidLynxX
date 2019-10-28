@@ -14,16 +14,16 @@ from flask import abort, jsonify, render_template, redirect, request, url_for
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 
-from epilion import app_cfg_dct
-from epilion import epilion_blueprint
-from epilion.config import DevConfig
-from epilion.controllers import Api
-from epilion.controllers.FileIO import get_table
-from epilion.models.DefaultParams import rgx_blank
-from epilion.models.Forms import ConverterTableInputForm
-from epilion.models.Forms import ConverterTextInputForm
-from epilion.models.Forms import ParserInputForm
-from epilion.libLION.LionParser import parse_epilion
+from lipidlynx import app_cfg_dct
+from lipidlynx import lipidlynx_blueprint
+from lipidlynx.config import DevConfig
+from lipidlynx.controllers import Api
+from lipidlynx.controllers.FileIO import get_table
+from lipidlynx.models.DefaultParams import rgx_blank
+from lipidlynx.models.Forms import ConverterTableInputForm
+from lipidlynx.models.Forms import ConverterTextInputForm
+from lipidlynx.models.Forms import ParserInputForm
+from lipidlynx.liblynx.LionParser import parse_epilion
 
 
 app = Flask(__name__)
@@ -32,15 +32,15 @@ app.config.from_object(DevConfig)
 
 @app.route("/")
 def index():
-    return redirect(url_for("epilion.home"))
+    return redirect(url_for("lipidlynx.home"))
 
 
-@epilion_blueprint.route("/")
+@lipidlynx_blueprint.route("/")
 def home():
     return render_template("home.html")
 
 
-@epilion_blueprint.route("/converter", methods=("GET", "POST"))
+@lipidlynx_blueprint.route("/converter", methods=("GET", "POST"))
 def converter():
     convert_in_form = ConverterTextInputForm()
     submitted = 0
@@ -55,7 +55,7 @@ def converter():
     )
 
 
-@epilion_blueprint.route("/converter/text", methods=("GET", "POST"))
+@lipidlynx_blueprint.route("/converter/text", methods=("GET", "POST"))
 def convert_str():
     convert_in_form = ConverterTextInputForm()
     submitted = 0
@@ -97,7 +97,7 @@ def convert_str():
     )
 
 
-@epilion_blueprint.route("/converter/table", methods=["POST"])
+@lipidlynx_blueprint.route("/converter/table", methods=["POST"])
 def convert_table():
     submitted = 0
     out_dct = {}
@@ -135,7 +135,7 @@ def convert_table():
     )
 
 
-@epilion_blueprint.route("/parser", methods=("GET", "POST"))
+@lipidlynx_blueprint.route("/parser", methods=("GET", "POST"))
 def parser():
     in_form = ParserInputForm()
     if in_form.validate_on_submit():
@@ -146,7 +146,7 @@ def parser():
     return render_template("parser.html", out_dct=out_dct, in_form=in_form)
 
 
-app.register_blueprint(epilion_blueprint)
+app.register_blueprint(lipidlynx_blueprint)
 
 if __name__ == "__main__":
     app.run()

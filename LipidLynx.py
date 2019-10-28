@@ -10,8 +10,8 @@ import getopt
 import os.path
 import sys
 
-from epilion.models.DefaultParams import default_cfg_path, logger
-from epilion.libLION.Converter import Converter
+from lipidlynx.models.DefaultParams import logger
+from lipidlynx.liblynx.Lipidlynx_core import lynx2sdf
 
 
 # required to perform multiprocessing
@@ -32,11 +32,11 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
         logger.debug(f"User input: {opts}, {args}")
     except getopt.GetoptError:
-        logger.info("epiLIONConverter.py -i <input_file> -o <output_file>")
+        logger.info("LipidLynx.py -i <input_file> -o <output_file>")
         return is_output
     for opt, arg in opts:
         if opt == "-h":
-            logger.info("epiLIONConverter.py -i <input_file> -o <output_file>")
+            logger.info("LipidLynx.py -i <input_file> -o <output_file>")
             return is_output
         elif opt in ("-i", "--infile"):
             in_file = arg
@@ -45,13 +45,12 @@ def main(argv):
 
     if os.path.isfile(in_file):
         logger.info(f"Load input file: {in_file}")
-        converter = Converter(default_cfg_path)
-        converter.convert_table(in_file, out_file)
-
+        with open(in_file, "r") as in_obj:
+            in_lst = in_obj.readlines()
+            lynx2sdf(in_lst, out_file)
         logger.info(f"Save output file: {out_file}")
         logger.info("FINISHED")
         is_output = True
-        logger.info(f"is_output {is_output}")
     else:
         logger.error(f"Can NOT open input file:")
         logger.error(in_file)

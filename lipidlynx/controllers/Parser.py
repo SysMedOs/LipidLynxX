@@ -9,8 +9,8 @@
 import re
 from typing import Dict, List, Union
 
-from epilion.controllers.Logger import logger
-from epilion.models.DefaultParams import (
+from lipidlynx.controllers.Logger import logger
+from lipidlynx.models.DefaultParams import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,
@@ -18,7 +18,7 @@ from epilion.models.DefaultParams import (
     cv_order_list,
     cv_alias_info,
 )
-from epilion.controllers.GeneralFunctions import seg_to_str
+from lipidlynx.controllers.GeneralFunctions import seg_to_str
 
 
 def parse(

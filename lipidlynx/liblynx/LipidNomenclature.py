@@ -11,10 +11,10 @@ import re
 
 # from rdkit import Chem
 
-from epilion.models.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from lipidlynx.models.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
 
-from epilion.libLION.Lipids import FA
-from epilion.libLION.AbbrElemCalc import ElemCalc
+from lipidlynx.liblynx.Lipids import FA
+from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
 
 
 class ParserMOD:

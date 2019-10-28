@@ -12,24 +12,24 @@ import time
 from flask import request, abort, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 
-from epilion import app_cfg_dct
-from epilion import epilion_blueprint
-from epilion.controllers.Encoder import lion_encode
-from epilion.controllers.FileIO import get_table
-from epilion.controllers.Parser import parse
+from lipidlynx import app_cfg_dct
+from lipidlynx import lipidlynx_blueprint
+from lipidlynx.controllers.Encoder import lynx_encode
+from lipidlynx.controllers.FileIO import get_table
+from lipidlynx.controllers.Parser import parse
 
 
-@epilion_blueprint.route(
+@lipidlynx_blueprint.route(
     "/api/single_convert/<input_abbreviation>", methods=["GET", "POST"]
 )
 def single_convert(input_abbreviation):
     print("input_abbreviation", input_abbreviation)
     if input_abbreviation:
-        epilion_id = lion_encode(parse(input_abbreviation))
-        print("converted_ID", epilion_id)
-        if epilion_id:
+        lipidlynx_id = lynx_encode(parse(input_abbreviation))
+        print("converted_ID", lipidlynx_id)
+        if lipidlynx_id:
             return jsonify(
-                {"code": 0, "errmsg": "Conversion success.", "result": epilion_id}
+                {"code": 0, "errmsg": "Conversion success.", "result": lipidlynx_id}
             )
         else:
             return jsonify(
@@ -39,7 +39,7 @@ def single_convert(input_abbreviation):
         return jsonify({"code": 1002, "errmsg": "Input error!", "result": ""})
 
 
-@epilion_blueprint.route("/api/table_input/<filename>", methods=["GET", "POST"])
+@lipidlynx_blueprint.route("/api/table_input/<filename>", methods=["GET", "POST"])
 def table_input(filename):
     abs_table_path = os.path.join(app_cfg_dct["ABS_UPLOAD_PATH"], filename)
     if os.path.isfile(abs_table_path):
@@ -60,7 +60,7 @@ def table_input(filename):
         )
 
 
-@epilion_blueprint.route("/api/download/<filename>", methods=["GET"])
+@lipidlynx_blueprint.route("/api/download/<filename>", methods=["GET"])
 def download(filename):
     if request.method == "GET":
         if os.path.isfile(os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], filename)):

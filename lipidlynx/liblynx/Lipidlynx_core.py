@@ -11,11 +11,11 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from epilion.models.DefaultParams import logger
-from epilion.libLION.LipidNomenclature import ParserFA, ParserPL
+from lipidlynx.models.DefaultParams import logger
+from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
 
 
-def epilion2sdf(abbr_lst, save_sdf):
+def lynx2sdf(abbr_lst, save_sdf):
 
     if isinstance(abbr_lst, str):
         try:
@@ -80,9 +80,9 @@ if __name__ == "__main__":
 
     with open(test_file, "r") as input_obj:
         input_lst = input_obj.readlines()
-        epilion2sdf(input_lst, output_file)
+        lynx2sdf(input_lst, output_file)
 
-    epilion2sdf(test_file, output_file)
-    epilion2sdf(input_lst, output_file)
+    lynx2sdf(test_file, output_file)
+    lynx2sdf(input_lst, output_file)
 
     logger.info("FINISHED!")

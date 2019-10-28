@@ -11,13 +11,13 @@ import unittest
 import pandas as pd
 import pytest
 
-epiLION_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, epiLION_Path + "/../")
+lipidlyx_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lipidlyx_Path + "/../")
 
-from epilion.controllers.Logger import logger
-from epilion.controllers.Parser import parse
-from epilion.controllers.Encoder import lion_encode
-from epilion.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.Logger import logger
+from lipidlynx.controllers.Parser import parse
+from lipidlynx.controllers.Encoder import lynx_encode
+from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 
 test_files = [
@@ -48,7 +48,7 @@ def test_lion_encode(test_file):
     for i, r in in_df_test.iterrows():
         logger.info(f'Process Lipid: {r["INPUT"]}')
         parsed_dct = parse(r["INPUT"])
-        test_output = lion_encode(parsed_dct)
+        test_output = lynx_encode(parsed_dct)
         correct_output = r["OUTPUT"].strip('"')
         correct_output = correct_output.strip('"')
         if test_output != correct_output:
