@@ -10,7 +10,7 @@ import getopt
 import os.path
 import sys
 
-from epilion.controllers.DefaultParams import abbr_cfg_path, logger
+from epilion.models.DefaultParams import default_cfg_path, logger
 from epilion.libLION.Converter import Converter
 
 
@@ -23,20 +23,20 @@ def main(argv):
     :param argv: -i <input epiLION abbreviation file in .txt format>
     """
 
-    in_file = ''
-    out_file = ''
+    in_file = ""
+    out_file = ""
 
     is_output = False
 
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
-        logger.debug(f'User input: {opts}, {args}')
+        logger.debug(f"User input: {opts}, {args}")
     except getopt.GetoptError:
-        logger.info('epiLIONConverter.py -i <input_file> -o <output_file>')
+        logger.info("epiLIONConverter.py -i <input_file> -o <output_file>")
         return is_output
     for opt, arg in opts:
-        if opt == '-h':
-            logger.info('epiLIONConverter.py -i <input_file> -o <output_file>')
+        if opt == "-h":
+            logger.info("epiLIONConverter.py -i <input_file> -o <output_file>")
             return is_output
         elif opt in ("-i", "--infile"):
             in_file = arg
@@ -44,18 +44,18 @@ def main(argv):
             out_file = arg
 
     if os.path.isfile(in_file):
-        logger.info(f'Load input file: {in_file}')
-        converter = Converter(abbr_cfg_path)
+        logger.info(f"Load input file: {in_file}")
+        converter = Converter(default_cfg_path)
         converter.convert_table(in_file, out_file)
 
-        logger.info(f'Save output file: {out_file}')
-        logger.info('FINISHED')
+        logger.info(f"Save output file: {out_file}")
+        logger.info("FINISHED")
         is_output = True
-        logger.info(f'is_output {is_output}')
+        logger.info(f"is_output {is_output}")
     else:
-        logger.error(f'Can NOT open input file:')
+        logger.error(f"Can NOT open input file:")
         logger.error(in_file)
-        logger.error('!!! FAILED to PROCESS !!!')
+        logger.error("!!! FAILED to PROCESS !!!")
 
     return is_output
 

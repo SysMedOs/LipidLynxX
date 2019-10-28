@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from epilion.controllers.DefaultParams import cv_order_list
+from epilion.models.DefaultParams import cv_order_list
 
 
 class AbbrParser:

@@ -10,7 +10,7 @@ import re
 from typing import Dict, List, Union
 
 from epilion.controllers.Logger import logger
-from epilion.controllers.DefaultParams import (
+from epilion.models.DefaultParams import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,

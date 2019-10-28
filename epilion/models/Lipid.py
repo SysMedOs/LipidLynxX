@@ -10,7 +10,7 @@ import copy
 import json
 from dataclasses import dataclass, asdict, field, is_dataclass
 
-from epilion.controllers.DefaultParams import logger, abbr_cfg_df
+from epilion.models.DefaultParams import logger, abbr_cfg_df
 from epilion.libLION.AbbrElemCalc import ElemCalc
 from epilion.libLION.Converter import Converter
 
