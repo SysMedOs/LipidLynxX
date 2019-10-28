@@ -12,8 +12,8 @@ import unittest
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-import epiLION
-from epilion.models.DefaultParams import logger
+import LipidLynx
+from lipidlynx.models.DefaultParams import logger
 
 
 class epiLIONTestCase(unittest.TestCase):
@@ -65,7 +65,7 @@ class epiLIONTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_help():
         logger.debug("test help...")
-        result = epiLION.main(["-h"])
+        result = LipidLynx.main(["-h"])
         if result is False:
             logger.debug("test help... PASSED")
         else:
@@ -74,7 +74,7 @@ class epiLIONTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_bad_params():
         logger.debug("test bad parameter...")
-        result = epiLION.main(["-test"])
+        result = LipidLynx.main(["-test"])
         if result is False:
             logger.debug("test bad parameter... PASSED")
         else:
@@ -82,7 +82,7 @@ class epiLIONTestCase(unittest.TestCase):
 
     def test_epiLION_bad_input(self):
         logger.debug("test bad input...")
-        result = epiLION.main(self.fail_input_params)
+        result = LipidLynx.main(self.fail_input_params)
         if result is False:
             logger.debug("test bad input... PASSED")
         else:
@@ -90,7 +90,7 @@ class epiLIONTestCase(unittest.TestCase):
 
     def test_epiLION_good_input(self):
         logger.debug("test sample data...")
-        result = epiLION.main(self.pass_params)
+        result = LipidLynx.main(self.pass_params)
         if result is True:
             logger.debug("test sample data... PASSED")
         else:
@@ -101,7 +101,7 @@ class epiLIONTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python epiLION.py -i test/TestInput/test_names.txt -o test/TestOutput/test_names_sdf.sdf
+    # python LipidLynx.py -i test/TestInput/test_names.txt -o test/TestOutput/test_names_sdf.sdf
 
     unittest.main()
     logger.info("TESTS FINISHED!")

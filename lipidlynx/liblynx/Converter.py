@@ -11,9 +11,9 @@ import re
 
 import pandas as pd
 
-from epilion.models.DefaultParams import cfg_info_dct
-from epilion.models.DefaultParams import logger
-from epilion.libLION.AbbrParser import AbbrParser
+from lipidlynx.models.DefaultParams import cfg_info_dct
+from lipidlynx.models.DefaultParams import logger
+from lipidlynx.liblynx.AbbrParser import AbbrParser
 
 
 class Converter:
@@ -25,7 +25,7 @@ class Converter:
             abbr_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         self.abbr_dct = dict(
-            zip(abbr_df["Abbreviation"].tolist(), abbr_df["epiLION"].tolist())
+            zip(abbr_df["Abbreviation"].tolist(), abbr_df["LipidLynx"].tolist())
         )
 
     @staticmethod
@@ -65,52 +65,52 @@ class Converter:
 
         abbr = re.sub(r" ", "", abbr)
         # Try to parse to software generated abbreviations
-        abbr_epilion_lst = []
+        abbr_lipidlynx_lst = []
         if self.abbr_parser.is_lpptiger(abbr):
-            epilion_lpptiger_abbr = self.abbr_parser.parse_lpptiger(abbr)
-            logger.debug(f"LPPtiger: {abbr} -> {epilion_lpptiger_abbr}")
-            abbr_epilion_lst.append(epilion_lpptiger_abbr)
+            lipidlynx_lpptiger_abbr = self.abbr_parser.parse_lpptiger(abbr)
+            logger.debug(f"LPPtiger: {abbr} -> {lipidlynx_lpptiger_abbr}")
+            abbr_lipidlynx_lst.append(lipidlynx_lpptiger_abbr)
         if self.abbr_parser.is_lipostar(abbr)[0]:
-            epilion_lipostar_abbr = self.abbr_parser.parse_lipostar(abbr)
-            logger.debug(f"Lipostar: {abbr} -> {epilion_lipostar_abbr}")
-            abbr_epilion_lst.append(epilion_lipostar_abbr)
+            lipidlynx_lipostar_abbr = self.abbr_parser.parse_lipostar(abbr)
+            logger.debug(f"Lipostar: {abbr} -> {lipidlynx_lipostar_abbr}")
+            abbr_lipidlynx_lst.append(lipidlynx_lipostar_abbr)
         if self.abbr_parser.is_lipidmaps(abbr)[0]:
-            epilion_lipidmaps_abbr = self.abbr_parser.parse_lipidmaps(abbr)
-            logger.debug(f"LIPIDMAPS: {abbr} -> {epilion_lipidmaps_abbr}")
-            abbr_epilion_lst.append(epilion_lipidmaps_abbr)
+            lipidlynx_lipidmaps_abbr = self.abbr_parser.parse_lipidmaps(abbr)
+            logger.debug(f"LIPIDMAPS: {abbr} -> {lipidlynx_lipidmaps_abbr}")
+            abbr_lipidlynx_lst.append(lipidlynx_lipidmaps_abbr)
 
         if self.abbr_parser.is_legacy(abbr)[0]:
             # logger.info(f'Try to parse in Legacy mode for {k} - {abbr}')
-            epilion_legacy_abbr = self.abbr_parser.parse_legacy(abbr)
-            logger.debug(f"Legacy: {abbr} -> {epilion_legacy_abbr}")
-            abbr_epilion_lst.append(epilion_legacy_abbr)
+            lipidlynx_legacy_abbr = self.abbr_parser.parse_legacy(abbr)
+            logger.debug(f"Legacy: {abbr} -> {lipidlynx_legacy_abbr}")
+            abbr_lipidlynx_lst.append(lipidlynx_legacy_abbr)
 
-        if abbr_epilion_lst:
-            epilion_abbr = sorted(abbr_epilion_lst, key=len)[-1]
+        if abbr_lipidlynx_lst:
+            lipidlynx_abbr = sorted(abbr_lipidlynx_lst, key=len)[-1]
         else:
-            epilion_abbr = ""
+            lipidlynx_abbr = ""
 
-        if not epilion_abbr:
+        if not lipidlynx_abbr:
             logger.warning(f"! Can NOT convert {abbr}")
 
-        return epilion_abbr
+        return lipidlynx_abbr
 
     def convert_table(self, input_file: str, output_file: str):
 
         abbr_dct = self.load_file(input_file)
-        epilion_dct = {}
+        lipidlynx_dct = {}
         for k in abbr_dct:
             tmp_abbr_lst = abbr_dct[k]
-            epilion_lst = []
+            lipidlynx_lst = []
             for abbr in tmp_abbr_lst:
-                epilion_abbr = self.convert_abbr(abbr)
-                epilion_lst.append(epilion_abbr)
-            # logger.info(epilion_lst)
-            epilion_dct[k] = epilion_lst
+                lipidlynx_abbr = self.convert_abbr(abbr)
+                lipidlynx_lst.append(lipidlynx_abbr)
+            # logger.info(lipidlynx_lst)
+            lipidlynx_dct[k] = lipidlynx_lst
 
-        # logger.info(epilion_dct)
+        # logger.info(lipidlynx_dct)
 
-        out_df = pd.DataFrame.from_dict(epilion_dct, orient="index").T
+        out_df = pd.DataFrame.from_dict(lipidlynx_dct, orient="index").T
 
         if output_file.endswith(".xlsx"):
             out_df.to_excel(output_file, index=False)
@@ -121,28 +121,28 @@ class Converter:
 
     def convert_list(self, input_list: list) -> list:
 
-        epilion_lst = []
+        lipidlynx_lst = []
         for abbr in input_list:
-            epilion_abbr = self.convert_abbr(abbr)
-            epilion_lst.append(epilion_abbr)
+            lipidlynx_abbr = self.convert_abbr(abbr)
+            lipidlynx_lst.append(lipidlynx_abbr)
 
-        return epilion_lst
+        return lipidlynx_lst
 
     def convert_text(self, input_text: str) -> (dict, list):
 
         usr_abbr_lst = input_text.split("\n")
 
-        epilion_dct = {}
+        lipidlynx_dct = {}
         bad_input_lst = []
 
         for abbr in usr_abbr_lst:
-            epilion_id = self.convert_abbr(abbr)
-            if epilion_id:
-                epilion_dct[abbr] = epilion_id
+            lipidlynx_id = self.convert_abbr(abbr)
+            if lipidlynx_id:
+                lipidlynx_dct[abbr] = lipidlynx_id
             else:
                 bad_input_lst.append(abbr)
 
-        return epilion_dct, bad_input_lst
+        return lipidlynx_dct, bad_input_lst
 
 
 if __name__ == "__main__":
@@ -155,4 +155,4 @@ if __name__ == "__main__":
 
     converter.convert_table(test_in_file, test_out_file)
 
-    logger.info("epiLion converter finished.")
+    logger.info("lipidlynx converter finished.")

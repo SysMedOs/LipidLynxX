@@ -10,7 +10,7 @@
 import os
 import pandas as pd
 
-from epilion.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 
 def get_table(file_path: str) -> dict:

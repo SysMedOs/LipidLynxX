@@ -9,8 +9,8 @@
 import os
 
 from flask import Blueprint
-from epilion.controllers.Encoder import lion_encode
-from epilion.controllers.Parser import parse
+from lipidlynx.controllers.Encoder import lynx_encode
+from lipidlynx.controllers.Parser import parse
 
 app_cfg_dct = {
     "ABS_BASE_PATH": os.path.abspath(os.path.dirname(__file__)),
@@ -25,10 +25,10 @@ app_cfg_dct["ABS_DOWNLOAD_PATH"] = os.path.join(
     app_cfg_dct["ABS_BASE_PATH"], app_cfg_dct["DOWNLOAD_FOLDER"]
 )
 
-epilion_blueprint = Blueprint(
-    "epilion",
+lipidlynx_blueprint = Blueprint(
+    "lipidlynx",
     __name__,
     template_folder=r"templates",
     static_folder=r"static",
-    url_prefix="/epilion",
+    url_prefix="/lipidlynx",
 )

@@ -10,9 +10,9 @@ import copy
 import json
 from dataclasses import dataclass, asdict, field, is_dataclass
 
-from epilion.models.DefaultParams import logger, abbr_cfg_df
-from epilion.libLION.AbbrElemCalc import ElemCalc
-from epilion.libLION.Converter import Converter
+from lipidlynx.models.DefaultParams import logger, abbr_cfg_df
+from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
+from lipidlynx.liblynx.Converter import Converter
 
 ELEM_CALC = ElemCalc()
 CONVERTER = Converter(abbr_df=abbr_cfg_df)

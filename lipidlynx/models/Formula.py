@@ -1,6 +1,6 @@
 from dataclasses import dataclass, asdict, field
 
-from epilion.libLION.AbbrElemCalc import ElemCalc
+from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
 
 
 class ElemDict(dict):

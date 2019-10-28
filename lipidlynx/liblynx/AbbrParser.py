@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from epilion.models.DefaultParams import cv_order_list
+from lipidlynx.models.DefaultParams import cv_order_list
 
 
 class AbbrParser:
@@ -23,7 +23,7 @@ class AbbrParser:
             abbr_df = pd.read_excel(cfg)
 
         self.abbr_dct = dict(
-            zip(abbr_df["Abbreviation"].tolist(), abbr_df["epiLION"].tolist())
+            zip(abbr_df["Abbreviation"].tolist(), abbr_df["LipidLynx"].tolist())
         )
 
         self.fa_rgx = re.compile(
@@ -96,11 +96,11 @@ class AbbrParser:
         is_match = self.is_lpptiger(abbr)
 
         if is_match:
-            epilion_id = abbr.replace("x", "")
+            lipidlynx_id = abbr.replace("x", "")
         else:
-            epilion_id = ""
+            lipidlynx_id = ""
 
-        return epilion_id
+        return lipidlynx_id
 
     def is_lipostar(self, abbr: str) -> (bool, str):
 
@@ -127,7 +127,7 @@ class AbbrParser:
         return is_correct, lipid_class
 
     def parse_lipostar_fa(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         fa_match = re.match(self.fa_lipostar_rgx, abbr)
         if fa_match:
             mod_lst = []
@@ -144,19 +144,19 @@ class AbbrParser:
                 mod_info_lst = mod_info.split(",")
                 for mod in mod_info_lst:
                     if re.match(r"\d\d.*", mod):
-                        return epilion_id
+                        return lipidlynx_id
                 mod_lst.append(mod_info)
             if mod_lst:
                 mod_str = f"[{','.join(mod_lst)}]"
             else:
                 mod_str = ""
 
-            epilion_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
+            lipidlynx_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_lipostar_pl(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         pl_match = re.match(self.pl_rgx, abbr)
         if pl_match:
             pl_info_dct = pl_match.groupdict()
@@ -167,21 +167,21 @@ class AbbrParser:
 
             fa1_str = self.parse_lipostar_fa(pl_info_dct["FA1"]).strip("FA")
             fa2_str = self.parse_lipostar_fa(pl_info_dct["FA2"]).strip("FA")
-            epilion_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
+            lipidlynx_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_lipostar(self, abbr: str) -> str:
 
         is_match, lipid_class = self.is_lipostar(abbr)
-        epilion_id = ""
+        lipidlynx_id = ""
         if is_match:
             if lipid_class == "FA":
-                epilion_id = self.parse_lipostar_fa(abbr)
+                lipidlynx_id = self.parse_lipostar_fa(abbr)
             if lipid_class == "PL":
-                epilion_id = self.parse_lipostar_pl(abbr)
+                lipidlynx_id = self.parse_lipostar_pl(abbr)
 
-        return epilion_id
+        return lipidlynx_id
 
     def is_lipidmaps(self, abbr: str) -> (bool, str):
 
@@ -204,7 +204,7 @@ class AbbrParser:
         return is_correct, lipid_class
 
     def parse_lipidmaps_fa(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         fa_match = re.match(self.fa_lipidmaps_rgx, abbr)
         if fa_match:
             mod_lst = []
@@ -266,12 +266,12 @@ class AbbrParser:
             else:
                 mod_str = ""
 
-            epilion_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
+            lipidlynx_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_lipidmaps_pl(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         pl_match = re.match(self.pl_rgx, abbr)
         if pl_match:
             pl_info_dct = pl_match.groupdict()
@@ -284,27 +284,27 @@ class AbbrParser:
             if "/" not in pl_info_dct["FA1"] and "_" not in pl_info_dct["FA1"]:
                 fa1_str = self.parse_lipidmaps_fa(pl_info_dct["FA1"]).strip("FA")
             else:
-                return epilion_id
+                return lipidlynx_id
             if "/" not in pl_info_dct["FA2"] and "_" not in pl_info_dct["FA2"]:
                 fa2_str = self.parse_lipidmaps_fa(pl_info_dct["FA2"]).strip("FA")
             else:
-                return epilion_id
+                return lipidlynx_id
             if fa1_str or fa2_str and pl_info_dct["POSITION"]:
-                epilion_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
+                lipidlynx_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_lipidmaps(self, abbr: str) -> str:
 
         is_match, lipid_class = self.is_lipidmaps(abbr)
-        epilion_id = ""
+        lipidlynx_id = ""
         if is_match:
             if lipid_class == "FA":
-                epilion_id = self.parse_lipidmaps_fa(abbr)
+                lipidlynx_id = self.parse_lipidmaps_fa(abbr)
             if lipid_class == "PL":
-                epilion_id = self.parse_lipidmaps_pl(abbr)
+                lipidlynx_id = self.parse_lipidmaps_pl(abbr)
 
-        return epilion_id
+        return lipidlynx_id
 
     def is_legacy(self, abbr: str) -> (bool, str):
 
@@ -329,7 +329,7 @@ class AbbrParser:
         return is_correct, lipid_class
 
     def parse_legacy_fa(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         fa_match = re.match(self.fa_legacy_rgx, abbr)
         if fa_match:
             mod_lst = []
@@ -352,15 +352,15 @@ class AbbrParser:
             else:
                 mod_str = ""
 
-            epilion_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
+            lipidlynx_id = f"{fa_info_dct['LINK']}{fa_info_dct['NUM_C']}:{fa_info_dct['NUM_DB']}{mod_str}"
         else:
             if abbr in self.abbr_dct:
-                epilion_id = self.abbr_dct[abbr]
+                lipidlynx_id = self.abbr_dct[abbr]
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_legacy_pl(self, abbr: str) -> str:
-        epilion_id = ""
+        lipidlynx_id = ""
         pl_match = re.match(self.pl_legacy_rgx, abbr)
         if pl_match:
             pl_info_dct = pl_match.groupdict()
@@ -380,23 +380,23 @@ class AbbrParser:
             fa2_str = self.parse_legacy_fa(pl_info_dct["FA2"].strip("()")).strip("FA")
             # logger.error(pl_info_dct)
             if fa1_str or fa2_str and pl_info_dct["POSITION"]:
-                epilion_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
+                lipidlynx_id = f"{pl_info_dct['LYSO']}{pl_info_dct['PL']}({fa1_str}{pl_info_dct['POSITION']}{fa2_str})"
             else:
                 pass
 
-        return epilion_id
+        return lipidlynx_id
 
     def parse_legacy(self, abbr: str) -> str:
 
         is_match, lipid_class = self.is_legacy(abbr)
-        epilion_id = ""
+        lipidlynx_id = ""
         if is_match:
             if lipid_class == "FA":
-                epilion_id = self.parse_legacy_fa(abbr)
+                lipidlynx_id = self.parse_legacy_fa(abbr)
             if lipid_class == "PL":
-                epilion_id = self.parse_legacy_pl(abbr)
+                lipidlynx_id = self.parse_legacy_pl(abbr)
 
-        return epilion_id
+        return lipidlynx_id
 
 
 if __name__ == "__main__":

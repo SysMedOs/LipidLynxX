@@ -12,17 +12,17 @@ from typing import Dict, List, Tuple, Union
 
 from natsort import natsorted
 
-from epilion.models.DefaultParams import (
+from lipidlynx.models.DefaultParams import (
     lipid_class_alias_info,
     cv_order_list,
     cv_alias_info,
 )
-from epilion.controllers.Logger import logger
-from epilion.controllers.GeneralFunctions import seg_to_str
-from epilion.controllers.Parser import parse, parse_mod
+from lipidlynx.controllers.Logger import logger
+from lipidlynx.controllers.GeneralFunctions import seg_to_str
+from lipidlynx.controllers.Parser import parse, parse_mod
 
 
-def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
+def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
     """
     The general encoder to generate lion code from parsed information
     Args:
@@ -33,7 +33,7 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
     """
     input_abbr = parsed_dct.get("INPUT_ABBR", None)
     logger.debug(f"Try to encode lipid: {input_abbr}")
-    lion_code_candidates_lst = []
+    lynx_code_candidates_lst = []
     parsed_dct["CLASS_INFO"] = []
     for reg_pattern in parsed_dct["OUTPUT_INFO"]:
         tmp_parsed_dct = parsed_dct["OUTPUT_INFO"][reg_pattern]
@@ -41,19 +41,19 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
 
         if lipid_class is not None:
             if lipid_class in "FA":
-                lion_code_candidates_lst.append(encode_fa(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_fa(tmp_parsed_dct))
             elif lipid_class == "SPB":
-                lion_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
             elif lipid_class == "PL":
-                lion_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
             elif lipid_class in ["Cer", "SM", "SP"]:
-                lion_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
             elif lipid_class == "GL":
-                lion_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
             elif lipid_class == "CL":
-                lion_code_candidates_lst.append(encode_cl(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_cl(tmp_parsed_dct))
             elif lipid_class == "BMP":
-                lion_code_candidates_lst.append(encode_bmp(tmp_parsed_dct))
+                lynx_code_candidates_lst.append(encode_bmp(tmp_parsed_dct))
 
         parsed_dct["CLASS_INFO"].append(tmp_parsed_dct.get("PARSED_CLASS", ""))
 
@@ -64,8 +64,8 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
     except IndexError:
         best_class = None
         logger.warning(f"Failed to propose best class for this lipid.")
-    lion_code = get_best_abbreviation(
-        lion_code_candidates_lst, target_class=best_class, abbr=input_abbr
+    lynx_code = get_best_abbreviation(
+        lynx_code_candidates_lst, target_class=best_class, abbr=input_abbr
     )
 
     add_mod = parsed_dct.get("ADDITIONAL_MOD", None)
@@ -74,9 +74,9 @@ def lion_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
         if add_mod_lst:
             add_mod_str = seg_to_str(add_mod_lst).strip("[]")
             add_mod_str = seg_to_str(add_mod_lst).strip("<>")
-            lion_code += f"<{add_mod_str}>"
+            lynx_code += f"<{add_mod_str}>"
 
-    return lion_code
+    return lynx_code
 
 
 def batch_encode(
@@ -95,7 +95,7 @@ def batch_encode(
 
     """
 
-    sum_lion_code_dct = {}
+    sum_lynx_code_dct = {}
 
     for p in sum_parsed_info:
 
@@ -105,20 +105,20 @@ def batch_encode(
             parsed_dct = sum_parsed_info[p]
         else:
             raise TypeError(f"Can NOT process input type {type(sum_parsed_info)}")
-        lion_code = lion_encode(parsed_dct)
+        lynx_code = lynx_encode(parsed_dct)
         abbr = parsed_dct.get("INPUT_ABBR", None)
         if not abbr:
-            abbr = lion_code
+            abbr = lynx_code
 
-        sum_lion_code_dct[abbr] = lion_code
+        sum_lynx_code_dct[abbr] = lynx_code
 
-    return sum_lion_code_dct
+    return sum_lynx_code_dct
 
 
 def get_best_abbreviation(
     candidates_lst: List[str], target_class: str = None, abbr: str = None
 ) -> str:
-    lion_code = ""
+    lynx_code = ""
     candidates_lst = list(filter(None, list(set(candidates_lst))))
     if abbr:
         if re.search(r":\d[oep]", abbr) or re.search(r"[OP]-\d{1,2}:\da?", abbr):
@@ -132,24 +132,24 @@ def get_best_abbreviation(
             if target_class:
                 if tmp_lion.startswith(target_class) and tmp_len > code_len:
                     code_len = tmp_len
-                    lion_code = tmp_lion
+                    lynx_code = tmp_lion
             else:
                 if tmp_len > code_len:
                     code_len = tmp_len
-                    lion_code = tmp_lion
+                    lynx_code = tmp_lion
                 elif tmp_len == code_len and tmp_lion.startswith(("O-", "P-")):
                     code_len = tmp_len
-                    lion_code = tmp_lion
+                    lynx_code = tmp_lion
 
     elif len(candidates_lst) == 1:
-        lion_code = candidates_lst[0]
+        lynx_code = candidates_lst[0]
     else:
         logger.warning("Failed to generate epiLION abbreviation for this lipid...")
 
-    if lion_code is None:
-        lion_code = ""
+    if lynx_code is None:
+        lynx_code = ""
 
-    return lion_code
+    return lynx_code
 
 
 def decode_mod(mod_info: str, front: str = "position", end: str = "count") -> List[str]:
@@ -322,11 +322,11 @@ def encode_fa(parsed_info: dict, add_mod: str = None) -> str:
     if link_code and class_code != link_code:
         class_code = link_code
 
-    lion_code = f'{class_code}{parsed_info["C"]}:{parsed_info["DB"]}'
-    lion_code += get_mod_code(parsed_info, add_mod)
+    lynx_code = f'{class_code}{parsed_info["C"]}:{parsed_info["DB"]}'
+    lynx_code += get_mod_code(parsed_info, add_mod)
     parsed_info["PARSED_CLASS"] = class_code
 
-    return lion_code
+    return lynx_code
 
 
 def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> str:
@@ -339,15 +339,15 @@ def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> 
     else:
         link_prefix = "SPB"
 
-    lion_code = f'{parsed_info["C"]}:{parsed_info["DB"]}'
-    lion_code += get_mod_code(parsed_info, add_mod)
+    lynx_code = f'{parsed_info["C"]}:{parsed_info["DB"]}'
+    lynx_code += get_mod_code(parsed_info, add_mod)
 
     if is_sub:
         pass
     else:
-        lion_code = f"{link_prefix}({lion_code})"
+        lynx_code = f"{link_prefix}({lynx_code})"
 
-    return lion_code
+    return lynx_code
 
 
 def encode_sub_fa(fa_abbr: str, add_mod: str = None):
@@ -368,12 +368,12 @@ def encode_sub_fa(fa_abbr: str, add_mod: str = None):
             class_info_lst.append(tmp_parsed_dct.get("PARSED_CLASS", ""))
     best_class = str(Counter(class_info_lst).most_common(1)[0][0])
     logger.debug(f"Best class for {fa_abbr} is: {best_class}")
-    fa_lion_code = get_best_abbreviation(
+    fa_lynx_code = get_best_abbreviation(
         fa_candidates_lst, target_class=best_class, abbr=fa_abbr
     )
-    fa_lion_code = fa_lion_code.strip("FA")
+    fa_lynx_code = fa_lynx_code.strip("FA")
 
-    return fa_lion_code
+    return fa_lynx_code
 
 
 def encode_all_sub_fa(
@@ -485,12 +485,12 @@ def encode_pl(parsed_info: dict) -> str:
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=2)
     # replace legacy pl class e.g. GPCho to PC
     class_code = check_lipid_class_alias(parsed_info["CLASS"])
-    lion_code = f"{lyso_prefix}{class_code}{fa_code}"
+    lynx_code = f"{lyso_prefix}{class_code}{fa_code}"
 
-    if len(check_empty_fa(lion_code)) == 1 and not lion_code.startswith("L"):
-        lion_code = f"L{lion_code}"
+    if len(check_empty_fa(lynx_code)) == 1 and not lynx_code.startswith("L"):
+        lynx_code = f"L{lynx_code}"
 
-    return lion_code
+    return lynx_code
 
 
 def encode_sp(parsed_info: dict) -> str:
@@ -502,33 +502,33 @@ def encode_sp(parsed_info: dict) -> str:
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=1, brackets=False)
     class_code = check_lipid_class_alias(parsed_info["CLASS"])
     if fa_code:
-        lion_code = f"{class_code}({spb_code}/{fa_code})"
+        lynx_code = f"{class_code}({spb_code}/{fa_code})"
     else:
-        lion_code = f"{class_code}({spb_code})"
-    return lion_code
+        lynx_code = f"{class_code}({spb_code})"
+    return lynx_code
 
 
 def encode_gl(parsed_info: dict) -> str:
     logger.debug(parsed_info)
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=3)
     class_code = check_lipid_class_alias(parsed_info["CLASS"])
-    lion_code = f"{class_code}{fa_code}"
+    lynx_code = f"{class_code}{fa_code}"
 
-    if len(check_empty_fa(lion_code)) == 1 and not lion_code.startswith("DG"):
-        lion_code = f"DG{lion_code[3:]}"
-    elif len(check_empty_fa(lion_code)) == 2 and not lion_code.startswith("MG"):
-        lion_code = f"MG{lion_code[3:]}"
+    if len(check_empty_fa(lynx_code)) == 1 and not lynx_code.startswith("DG"):
+        lynx_code = f"DG{lynx_code[3:]}"
+    elif len(check_empty_fa(lynx_code)) == 2 and not lynx_code.startswith("MG"):
+        lynx_code = f"MG{lynx_code[3:]}"
 
-    return lion_code
+    return lynx_code
 
 
 def encode_cl(parsed_info: dict) -> str:
     logger.debug(parsed_info)
-    lion_code = parsed_info["CLASS"] + encode_all_sub_fa(
+    lynx_code = parsed_info["CLASS"] + encode_all_sub_fa(
         parsed_info=parsed_info, fa_count=4
     )
 
-    return lion_code
+    return lynx_code
 
 
 def encode_bmp(parsed_info: dict) -> str:
@@ -541,6 +541,6 @@ if __name__ == "__main__":
     # print(x)
     # y = encode_mod("+O2")
     # print(y)
-    # z = lion_encode(parse("PE O-18:1p/18:1"))
-    z = lion_encode(parse(r"FA (18:2) + O"))
+    # z = lynx_encode(parse("PE O-18:1p/18:1"))
+    z = lynx_encode(parse(r"FA (18:2) + O"))
     print(z)
