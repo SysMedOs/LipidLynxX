@@ -366,8 +366,12 @@ def encode_sub_fa(fa_abbr: str, add_mod: str = None):
                     encode_spb(tmp_parsed_dct, add_mod=add_mod, is_sub=True)
                 )
             class_info_lst.append(tmp_parsed_dct.get("PARSED_CLASS", ""))
-    best_class = str(Counter(class_info_lst).most_common(1)[0][0])
+    try:
+        best_class = str(Counter(class_info_lst).most_common(1)[0][0])
+    except IndexError:
+        best_class = ""
     logger.debug(f"Best class for {fa_abbr} is: {best_class}")
+
     fa_lynx_code = get_best_abbreviation(
         fa_candidates_lst, target_class=best_class, abbr=fa_abbr
     )

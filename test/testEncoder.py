@@ -11,8 +11,8 @@ import unittest
 import pandas as pd
 import pytest
 
-lipidlyx_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, lipidlyx_Path + "/../")
+lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lipidlynx_Path + "/../")
 
 from lipidlynx.controllers.Logger import logger
 from lipidlynx.controllers.Parser import parse

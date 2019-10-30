@@ -9,8 +9,22 @@
 import os
 
 from flask import Blueprint
+
 from lipidlynx.controllers.Encoder import lynx_encode
 from lipidlynx.controllers.Parser import parse
+
+
+class Config(object):
+    SECRET_KEY = os.urandom(24).hex()
+
+
+class ProdConfig(Config):
+    pass
+
+
+class DevConfig(Config):
+    DEBUG = True
+
 
 app_cfg_dct = {
     "ABS_BASE_PATH": os.path.abspath(os.path.dirname(__file__)),

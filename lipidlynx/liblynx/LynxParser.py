@@ -19,7 +19,7 @@ from lipidlynx.models.DefaultParams import default_cfg_path
 from lipidlynx.liblynx.Converter import Converter
 
 
-def parse_epilion(abbr: str) -> dict:
+def parse_lipidlynx(abbr: str) -> dict:
 
     fa_decoder = ParserFA()
     pl_decoder = ParserPL()

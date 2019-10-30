@@ -5,25 +5,26 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import json
 import os
 import time
 
 from flask import Flask
 from flask import abort, jsonify, render_template, redirect, request, url_for
-from flask_wtf.csrf import CSRFProtect
+import pandas as pd
 from werkzeug.utils import secure_filename
 
 from lipidlynx import app_cfg_dct
 from lipidlynx import lipidlynx_blueprint
-from lipidlynx.config import DevConfig
+from lipidlynx import DevConfig
 from lipidlynx.controllers import Api
-from lipidlynx.controllers.FileIO import get_table
+from lipidlynx.controllers.FileIO import get_table, create_output
 from lipidlynx.models.DefaultParams import rgx_blank
 from lipidlynx.models.Forms import ConverterTableInputForm
 from lipidlynx.models.Forms import ConverterTextInputForm
 from lipidlynx.models.Forms import ParserInputForm
-from lipidlynx.liblynx.LionParser import parse_epilion
+from lipidlynx.liblynx.LynxParser import parse_lipidlynx
 
 
 app = Flask(__name__)
@@ -59,6 +60,7 @@ def converter():
 def convert_str():
     convert_in_form = ConverterTextInputForm()
     submitted = 0
+    out_df_dct = {"INPUT": [], "OUTPUT": [], "PAIRS": [], "NOT_CONVERTED": []}
     if convert_in_form.validate_on_submit():
         usr_abbr_lst = convert_in_form.input_id_str.data.strip("").split("\n")
         usr_abbr_lst = [s for s in usr_abbr_lst if s]
@@ -67,24 +69,24 @@ def convert_str():
         bad_input_lst = []
 
         for abbr in usr_abbr_lst:
-            converted_info = Api.single_convert(input_abbreviation=abbr).data
-            epilion_json = json.loads(converted_info)
-            epilion_id = epilion_json["result"]
-            if epilion_id:
-                out_dct[abbr] = epilion_id
+            converted_info = Api.convert_name(input_abbreviation=abbr).data
+            lipidlynx_json = json.loads(converted_info)
+            lipidlynx_id = lipidlynx_json["data"]
+            if lipidlynx_id:
+                out_dct[abbr] = lipidlynx_id
+                out_df_dct["INPUT"].append(abbr)
+                out_df_dct["OUTPUT"].append(lipidlynx_id)
+                out_df_dct["PAIR"].append([abbr, lipidlynx_id])
             else:
                 if not rgx_blank.match(abbr):
-                    bad_input_lst.append(abbr)
+                    out_df_dct["NOT_CONVERTED"].append(abbr)
 
         submitted = 1
     else:
         out_dct = {}
         bad_input_lst = []
 
-    if not out_dct:
-        bad_input_lst = [""]
-
-    output_name = "test_converter_output.csv"
+    output_name = create_output({"ABBREVIATIONS": out_df_dct})
 
     return render_template(
         "converter.html",
@@ -120,10 +122,22 @@ def convert_table():
             usr_file.save(masked_path)
             table_dct = get_table(masked_path)
             submitted = 1
-    output_name = "test_converter_output.csv"
+
     if table_dct:
-        out_dct = table_dct
-    print({"code": 0, "errmsg": "Upload success.", "result": table_dct})
+        print({"code": 0, "msg": "Upload success.", "data": table_dct})
+        output_info = Api.convert_json(json.dumps(table_dct)).data
+        output_json = json.loads(output_info)
+        output_dct = output_json["data"]
+        output_name = create_output(output_json["data"])
+        for k in output_dct:
+            pair_lst = output_dct[k].get("PAIR")
+            if pair_lst:
+                for p in pair_lst:
+                    if p[0] not in out_dct and len(p) == 2:
+                        out_dct[p[0]] = p[1]
+    else:
+        output_name = ""
+
     return render_template(
         "converter.html",
         out_dct=out_dct,
@@ -131,7 +145,7 @@ def convert_table():
         in_form=ConverterTextInputForm(),
         table_form=ConverterTableInputForm(),
         submitted=submitted,
-        output_name="",
+        output_name=output_name,
     )
 
 
@@ -139,7 +153,7 @@ def convert_table():
 def parser():
     in_form = ParserInputForm()
     if in_form.validate_on_submit():
-        out_dct = parse_epilion(in_form.lion_id_str.data)
+        out_dct = parse_lipidlynx(in_form.lion_id_str.data)
     else:
         out_dct = {}
 
