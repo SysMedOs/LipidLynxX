@@ -44,13 +44,13 @@
                     {% if out_dct != {} %}
                         <h2>LipidLynx output</h2>
                         <h2></h2>
+                        <a class="btn btn-secondary mt-4" href="{{ url_for('.download', filename=output_name) }}">
+                            Save output as .xlsx file
+                        </a>
                         <h4>Converted abbreviations</h4>
                         {% for epi_id in out_dct %}
                             <p>{{ epi_id }} -> {{ out_dct[epi_id] }}</p>
                         {% endfor %}
-                        <a class="btn btn-secondary mt-4" href="{{ url_for('.download', filename=output_name) }}">
-                            Save output as .xlsx file
-                        </a>
                     {% endif %}
                     {% if bad_in_lst != [] %}
                         {% if submitted == 1 and out_dct == {} %}

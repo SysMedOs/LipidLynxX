@@ -60,7 +60,7 @@ def converter():
 def convert_str():
     convert_in_form = ConverterTextInputForm()
     submitted = 0
-    out_df_dct = {"INPUT": [], "OUTPUT": [], "PAIRS": [], "NOT_CONVERTED": []}
+    out_df_dct = {"INPUT": [], "OUTPUT": [], "PAIR": [], "NOT_CONVERTED": []}
     if convert_in_form.validate_on_submit():
         usr_abbr_lst = convert_in_form.input_id_str.data.strip("").split("\n")
         usr_abbr_lst = [s for s in usr_abbr_lst if s]
@@ -163,4 +163,5 @@ def parser():
 app.register_blueprint(lipidlynx_blueprint)
 
 if __name__ == "__main__":
+
     app.run()

@@ -103,7 +103,7 @@ in the epilipidome.
 
         -   you can also use py.test to test LipidLynx in your python environment
 
-            -   unit test for LipidLynx converter is provided in [`Test/test_convLION.py`](test/test_convLION.py)
+            -   unit test for LipidLynx converter is provided in [`Test/test_convLION.py`](test/test_convLynx.py)
 
             -   unit test for LipidLynx generator is provided in [`Test/test_LipidLynx.py`](test/test_LipidLynx.py)
 
