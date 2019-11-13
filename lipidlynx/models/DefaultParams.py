@@ -85,7 +85,6 @@ pl_smi_info = {
 
 tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 
-
 with open(get_abs_path(r"lipidlynx/configurations/CV.json"), "r") as cv_js:
     cv_alias_js = json.load(cv_js)
 

@@ -9,14 +9,14 @@ import os
 import sys
 import unittest
 
-epiLION_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, epiLION_Path + "/../")
+lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lipidlynx_Path + "/../")
 
-import LipidLynx_cli
+from lynx_cli import LipidLynx_cli
 from lipidlynx.models.DefaultParams import logger
 
 
-class epiLIONTestCase(unittest.TestCase):
+class lipidlynxTestCase(unittest.TestCase):
     def setUp(self):
         logger.debug("SETUP TESTS...")
 
@@ -52,18 +52,8 @@ class epiLIONTestCase(unittest.TestCase):
         self.pass_params = ["-i", in_file, "-o", out_file]
         self.fail_input_params = ["-i", bad_in_file, "-o", out_file]
 
-    def test_batch_encode(self):
-        logger.debug("test parse_lion ...")
-        in_df_test = self.in_df[self.in_df["CONVERT"] == "T"]
-        for i, r in in_df_test.iterrows():
-            logger.info(f'Process Lipid: {r["INPUT"]}')
-            parsed_dct = parse(r["INPUT"])
-            test_output = lion_encode(parsed_dct)
-            correct_output = r["OUTPUT"].strip('"')
-            correct_output = correct_output.strip('"')
-
     @staticmethod
-    def test_epiLION_help():
+    def test_lipidlynx_help():
         logger.debug("test help...")
         result = LipidLynx_cli.main(["-h"])
         if result is False:
@@ -72,7 +62,7 @@ class epiLIONTestCase(unittest.TestCase):
             raise Exception("test help... Failed")
 
     @staticmethod
-    def test_epiLION_bad_params():
+    def test_lipidlynx_bad_params():
         logger.debug("test bad parameter...")
         result = LipidLynx_cli.main(["-test"])
         if result is False:
@@ -80,7 +70,7 @@ class epiLIONTestCase(unittest.TestCase):
         else:
             raise Exception("test bad parameter... Failed")
 
-    def test_epiLION_bad_input(self):
+    def test_lipidlynx_bad_input(self):
         logger.debug("test bad input...")
         result = LipidLynx_cli.main(self.fail_input_params)
         if result is False:
@@ -88,7 +78,7 @@ class epiLIONTestCase(unittest.TestCase):
         else:
             raise Exception("test bad input... Failed")
 
-    def test_epiLION_good_input(self):
+    def test_lipidlynx_good_input(self):
         logger.debug("test sample data...")
         result = LipidLynx_cli.main(self.pass_params)
         if result is True:

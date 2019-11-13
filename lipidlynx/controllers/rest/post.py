@@ -5,15 +5,17 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import json
 import os
 import time
 
 from flask import request, abort, jsonify, send_from_directory
+from flask_restful import Resource
 from werkzeug.utils import secure_filename
 
-from lipidlynx import app_cfg_dct
-from lipidlynx import lipidlynx_blueprint
+from lipidlynx.config import app_cfg_dct
+from lipidlynx.config import lipidlynx_blueprint
 from lipidlynx.controllers.Encoder import lynx_encode
 from lipidlynx.controllers.FileIO import get_table
 from lipidlynx.controllers.Parser import parse

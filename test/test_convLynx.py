@@ -14,7 +14,7 @@ import unittest
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-import convLynx
+from lynx_cli import convLynx
 from lipidlynx.models.DefaultParams import logger
 
 

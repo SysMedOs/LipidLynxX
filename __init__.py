@@ -11,19 +11,18 @@ import os
 import time
 
 from flask import Flask
-from flask import abort, jsonify, render_template, redirect, request, url_for
-import pandas as pd
+from flask import abort, render_template, redirect, request, url_for
 from werkzeug.utils import secure_filename
 
-from lipidlynx import app_cfg_dct
-from lipidlynx import lipidlynx_blueprint
-from lipidlynx import DevConfig
-from lipidlynx.controllers import Api
+from lipidlynx.config import app_cfg_dct
+from lipidlynx.config import lipidlynx_blueprint
+from lipidlynx.config import DevConfig
+from lipidlynx.controllers.rest import post
 from lipidlynx.controllers.FileIO import get_table, create_output
 from lipidlynx.models.DefaultParams import rgx_blank
-from lipidlynx.models.Forms import ConverterTableInputForm
-from lipidlynx.models.Forms import ConverterTextInputForm
-from lipidlynx.models.Forms import ParserInputForm
+from lipidlynx.forms import ConverterTableInputForm
+from lipidlynx.forms import ConverterTextInputForm
+from lipidlynx.forms import ParserInputForm
 from lipidlynx.liblynx.LynxParser import parse_lipidlynx
 
 
@@ -69,7 +68,7 @@ def convert_str():
         bad_input_lst = []
 
         for abbr in usr_abbr_lst:
-            converted_info = Api.convert_name(input_abbreviation=abbr).data
+            converted_info = post.convert_name(input_abbreviation=abbr).data
             lipidlynx_json = json.loads(converted_info)
             lipidlynx_id = lipidlynx_json["data"]
             if lipidlynx_id:
@@ -125,7 +124,7 @@ def convert_table():
 
     if table_dct:
         print({"code": 0, "msg": "Upload success.", "data": table_dct})
-        output_info = Api.convert_json(json.dumps(table_dct)).data
+        output_info = post.convert_json(json.dumps(table_dct)).data
         output_json = json.loads(output_info)
         output_dct = output_json["data"]
         output_name = create_output(output_json["data"])
