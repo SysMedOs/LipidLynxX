@@ -1,7 +1,7 @@
 {
-  "_version" : "0.0.1",
-  "id" : "PC(16:0/20:4[4DB{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}])",
-  "input_name" : "PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)",
+  "_version": "0.0.1",
+  "id": "PC(16:0/20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)",
+  "input_name": "PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)",
   "linked_ids": {
     "bulk_ids": [
       "PC(36:5<3O>)",
@@ -10,12 +10,12 @@
     "discrete_ids": [
       "PC(16:0_20:4<2OH,1Ke>)",
       "PC(16:0_20:4<{5,9,12,15},2OH{8,11},1Ke{14}>)",
-      "PC(16:0_20:4<[4DB>{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}>)"
+      "PC(16:0_20:4<4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}>)"
     ],
     "sn_position_ids": [
       "PC(16:0/20:4<2OH,1Ke>)",
       "PC(16:0/20:4<{5,9,12,15},2OH{8,11},1Ke{14}>)",
-      "PC(16:0/20:4<[4DB>{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}>)"
+      "PC(16:0/20:4<4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}>)"
     ]
   },
   "lipid_class": {
@@ -26,8 +26,7 @@
     "main_class": "PC",
     "sub_class": "PC"
   },
-  "residues": [
-    {
+  "residues": [{
       "id": "FA16:0",
       "position": "sn1"
     },
@@ -35,11 +34,9 @@
       "id": "FA20:4[4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}]",
       "position": "sn2"
     }
-    ],
-  "resource_ids": [
-    {
-      "db": "lipidmaps",
-      "ref_id": "LMGP01011234"
-    }
-  ]
+  ],
+  "resource_ids": [{
+    "db": "lipidmaps",
+    "ref_id": "LMGP01011234"
+  }]
 }

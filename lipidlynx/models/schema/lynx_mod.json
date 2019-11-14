@@ -1,0 +1,19 @@
+[
+  {
+  "cv": "DB",
+  "count": 4,
+  "positions": [5, 9, 12, 15],
+  "positions_info": ["5Z", "9E", "12E", "15E"]
+  },
+  {
+    "cv": "OH",
+    "count": 2,
+    "positions": [8, 11],
+    "positions_info": ["8R", "11S"]
+  },
+  {
+    "cv": "Ke",
+    "count": 1,
+    "positions": [14]
+  }
+]

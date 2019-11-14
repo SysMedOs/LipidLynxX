@@ -131,6 +131,11 @@ cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 
-rgx_blank = re.compile(r"\W+")
+
+lynx_schema = {
+    "lynx_core": r'lipidlynx/models/schema/lynx_core.schema.json',
+    "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json'
+}
+
 
 logger.info("Default parameters loaded successfully.")

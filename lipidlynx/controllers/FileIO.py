@@ -12,7 +12,7 @@ import time
 
 import pandas as pd
 
-from lipidlynx import app_cfg_dct
+from lipidlynx.config import app_cfg_dct
 from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 

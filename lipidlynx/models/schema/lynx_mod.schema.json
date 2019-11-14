@@ -1,0 +1,45 @@
+{
+  "$id": "https://example.com/lynx_mod.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The structure of LipidLynx modification",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["cv", "count"],
+    "properties": {
+      "cv": {
+        "description": "The controlled vocabulary of modification",
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 8
+      },
+      "count": {
+        "description": "The number of modification",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 99
+      },
+      "positions": {
+        "description": "The list of positions",
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 99
+        },
+        "maxItems": 99
+      },
+      "positions_info": {
+        "description": "The list of positions",
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 3
+        },
+        "maxItems": 99,
+        "uniqueItems": true
+      }
+    }
+  }
+}

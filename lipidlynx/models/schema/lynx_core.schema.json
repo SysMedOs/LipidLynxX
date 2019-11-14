@@ -1,5 +1,5 @@
 {
-    "$id": "https://example.com/card.schema.json",
+    "$id": "https://example.com/lynx_core_schema.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "The core structure of LipidLynx output",
     "type": "object",
