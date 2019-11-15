@@ -16,8 +16,8 @@ from jsonschema import Draft7Validator
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-from lipidlynx.models.DefaultParams import lynx_schema
-from lipidlynx.models.DefaultParams import logger
+from lipidlynx.models.defaults import lynx_schema
+from lipidlynx.models.defaults import logger
 from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 

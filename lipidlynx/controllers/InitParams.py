@@ -35,7 +35,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         user_cfg = "default"
     else:
         user_cfg = ""
-        raise ValueError(f"Can not load settings from file {config_path}")
+        raise ValueError(f"Cannot load settings from file {config_path}")
 
     if len(user_cfg) > 2:
         options = config.options(user_cfg)
@@ -93,7 +93,7 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
                     class_rules_dct[r["CLASS"]].append(rules)
 
                 logger.debug(
-                    f'Rule added: "{r["CLASS"]}" - "{r["REMARK"]}" - "{r["EXAMPLE"]}"'
+                    f'Rule added: "{r["CLASS"]}" -> "{r["REMARK"]}" -> "{r["EXAMPLE"]}"'
                 )
 
     return class_rules_dct, rules_class_dct

@@ -12,7 +12,7 @@ from typing import Dict, List, Tuple, Union
 
 from natsort import natsorted
 
-from lipidlynx.models.DefaultParams import (
+from lipidlynx.models.defaults import (
     lipid_class_alias_info,
     cv_order_list,
     cv_alias_info,

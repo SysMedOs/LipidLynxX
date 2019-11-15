@@ -11,8 +11,8 @@ import re
 
 import pandas as pd
 
-from lipidlynx.models.DefaultParams import cfg_info_dct
-from lipidlynx.models.DefaultParams import logger
+from lipidlynx.models.defaults import cfg_info_dct
+from lipidlynx.models.defaults import logger
 from lipidlynx.liblynx.AbbrParser import AbbrParser
 
 

@@ -69,6 +69,14 @@ elem_info = {
     "K": [(38.9637069, 0.932581), (39.96399867, 0.000117), (40.96182597, 0.067302)],
 }
 
+elem_nominal_info = {
+    "H": 1,
+    "N": 14,
+    "O": 16,
+    "S": 32,
+    "Na": 23
+}
+
 pl_smi_info = {
     "PA": r"OP(O)(OCC(",
     "PC": r"[O-]P(OCC[N+](C)(C)C)(OCC(",
@@ -86,14 +94,16 @@ pl_smi_info = {
 tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 
 with open(get_abs_path(r"lipidlynx/configurations/CV.json"), "r") as cv_js:
-    cv_alias_js = json.load(cv_js)
+    cv_alias_json = json.load(cv_js)
 
 cv_order_list = []
 cv_alias_info = {}
+cv_elements_info = {}
 
-for _mod in cv_alias_js:
-    cv_alias_info[_mod["CV"]] = _mod["ALIAS"]
-    cv_order_list.append(_mod["CV"])
+for _mod in cv_alias_json:
+    cv_alias_info[_mod["cv"]] = _mod["alias"]
+    cv_order_list.append(_mod["cv"])
+    cv_elements_info[_mod["cv"]] = _mod["elements"]
 
 lipid_class_alias_info = {
     "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},

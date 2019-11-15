@@ -10,7 +10,7 @@ import copy
 import json
 from dataclasses import dataclass, asdict, field, is_dataclass
 
-from lipidlynx.models.DefaultParams import logger, abbr_cfg_df
+from lipidlynx.models.defaults import logger, abbr_cfg_df
 from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
 from lipidlynx.liblynx.Converter import Converter
 

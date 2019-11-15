@@ -10,7 +10,7 @@ import getopt
 import os.path
 import sys
 
-from lipidlynx.models.DefaultParams import logger
+from lipidlynx.models.defaults import logger
 from lipidlynx.liblynx.Lipidlynx_core import lynx2sdf
 
 

@@ -11,7 +11,7 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from lipidlynx.models.DefaultParams import logger
+from lipidlynx.models.defaults import logger
 from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
 
 

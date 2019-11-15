@@ -10,7 +10,7 @@ import getopt
 import os.path
 import sys
 
-from lipidlynx.models.DefaultParams import default_cfg_path, logger
+from lipidlynx.models.defaults import default_cfg_path, logger
 from lipidlynx.liblynx.Converter import Converter
 
 

@@ -5,9 +5,8 @@ from typing import Union, List
 
 from jsonschema import Draft7Validator
 
-from lipidlynx.models.DefaultParams import lynx_schema
+from lipidlynx.models.defaults import lynx_schema, cv_elements_info, logger, elem_nominal_info
 from lipidlynx.models.patterns import mod_rgx, mod_db_rgx, mod_general_rgx, mod_position_rgx
-from lipidlynx.models.DefaultParams import logger
 from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 
@@ -78,6 +77,10 @@ class Modifications(object):
         return mod_info
 
     @staticmethod
+    def __add_angle_brackets__(mod_str: str) -> str:
+        return f'<{mod_str}>'
+
+    @staticmethod
     def get_positions(positions: Union[str, List[str]]) -> dict:
         position_info = {
             'positions': [],
@@ -96,6 +99,20 @@ class Modifications(object):
 
         return position_info
 
+    def get_elem_info(self):
+        sum_mod_elem_dct = {}
+        for mod in self.mod_info:
+            mod_cv = mod["cv"]
+            mod_count = mod['count']
+            mod_elem_dct = cv_elements_info[mod_cv]
+            for elem in mod_elem_dct:
+                if elem in sum_mod_elem_dct:
+                    sum_mod_elem_dct[elem] += mod_count * mod_elem_dct[elem]
+                else:
+                    sum_mod_elem_dct[elem] = mod_count * mod_elem_dct[elem]
+
+        return sum_mod_elem_dct
+
     def to_json(self):
         mod_json_str = json.dumps(self.mod_info)
         is_valid = self.validator.is_valid(json.loads(mod_json_str))
@@ -105,14 +122,85 @@ class Modifications(object):
         else:
             raise Exception(f"Schema check FAILED.")
 
-    def to_bulk(self):
+    def to_mass_shift(self, angle_brackets: bool = True) -> str:
+        sum_mod_elem_dct = self.get_elem_info()
+        delta = 0
+        for elem in sum_mod_elem_dct:
+            if elem in elem_nominal_info:
+                delta += elem_nominal_info[elem] * sum_mod_elem_dct[elem]
+
+        mod_str = f'{delta:+}'
+        if angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
+        return mod_str
+
+    def to_elem_shift(self, angle_brackets: bool = True) -> str:
+        sum_mod_elem_dct = self.get_elem_info()
+        mod_str_lst = []
+        mod_elem_lst = ["O", "N", "S", "H", 'Na']
+        for mod_elem in mod_elem_lst:
+            if mod_elem in sum_mod_elem_dct:
+                mod_str_lst.append(f'{sum_mod_elem_dct[mod_elem]:+}{mod_elem}')
+
+        mod_str = f'{",".join(mod_str_lst)}'
+        if angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
+        return mod_str
+
+    def to_mod_count(self, angle_brackets: bool = True) -> str:
         mod_output_lst = []
         for mod in self.mod_info:
             if mod["cv"] != 'DB':
                 mod_output_lst.append(f'{mod["count"]}{mod["cv"]}')
-        mod_str = f'<{",".join(mod_output_lst)}>'
-
+        mod_str = f'{",".join(mod_output_lst)}'
+        if angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
         return mod_str
+
+    def to_mod_position(self, angle_brackets: bool = True) -> str:
+        mod_output_lst = []
+        for mod in self.mod_info:
+            positions_lst = [str(i) for i in mod["positions"]]
+            positions = '{' + ','.join(positions_lst) + '}'
+            if mod["cv"] == 'DB':
+                mod_output_lst.append(positions)
+            else:
+                if mod["count"] > 1:
+                    mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
+                else:
+                    mod_output_lst.append(f'{mod["cv"]}{positions}')
+        mod_str = f'{",".join(mod_output_lst)}'
+        if angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
+        return mod_str
+
+    def to_mod_position_type(self, angle_brackets: bool = True) -> str:
+
+        mod_output_lst = []
+        for mod in self.mod_info:
+            positions = '{' + ','.join(mod["positions_type"]) + '}'
+            if mod["cv"] == 'DB':
+                mod_output_lst.append(positions)
+            else:
+                if mod["count"] > 1:
+                    mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
+                else:
+                    mod_output_lst.append(f'{mod["cv"]}{positions}')
+        mod_str = f'{",".join(mod_output_lst)}'
+        if angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
+        return mod_str
+
+    def to_all_levels(self, angle_brackets: bool = True) -> list:
+
+        mod_output_lst = []
+
+        mod_output_lst.append(mod_obj.to_mass_shift(angle_brackets=angle_brackets))
+        mod_output_lst.append(mod_obj.to_elem_shift(angle_brackets=angle_brackets))
+        mod_output_lst.append(mod_obj.to_mod_count(angle_brackets=angle_brackets))
+        mod_output_lst.append(mod_obj.to_mod_position(angle_brackets=angle_brackets))
+        mod_output_lst.append(mod_obj.to_mod_position_type(angle_brackets=angle_brackets))
+        return mod_output_lst
 
 
 if __name__ == '__main__':
@@ -122,4 +210,16 @@ if __name__ == '__main__':
     mod_obj = Modifications(usr_mod_code)
 
     print(mod_obj.to_json())
-    print('to sum modification', mod_obj.to_bulk())
+
+    print('to mass shift', mod_obj.to_mass_shift())
+    print('to elem shift', mod_obj.to_elem_shift())
+    print('to mod_count', mod_obj.to_mod_count())
+    print('to mod_position', mod_obj.to_mod_position())
+    print('to mod_position_type', mod_obj.to_mod_position_type())
+    print('to mass shift', mod_obj.to_mass_shift(angle_brackets=False))
+    print('to elem shift', mod_obj.to_elem_shift(angle_brackets=False))
+    print('to mod_count', mod_obj.to_mod_count(angle_brackets=False))
+    print('to mod_position', mod_obj.to_mod_position(angle_brackets=False))
+    print('to mod_position_type', mod_obj.to_mod_position_type(angle_brackets=False))
+    print('to all levels', mod_obj.to_all_levels())
+    print('to all levels', mod_obj.to_all_levels(angle_brackets=False))

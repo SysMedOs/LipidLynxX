@@ -10,7 +10,7 @@ import re
 from typing import Dict, List, Union
 
 from lipidlynx.controllers.Logger import logger
-from lipidlynx.models.DefaultParams import (
+from lipidlynx.models.defaults import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,

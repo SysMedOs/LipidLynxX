@@ -11,7 +11,7 @@ import re
 
 # from rdkit import Chem
 
-from lipidlynx.models.DefaultParams import elem_info, logger, mod_cfg_df, pl_smi_info
+from lipidlynx.models.defaults import elem_info, logger, mod_cfg_df, pl_smi_info
 
 from lipidlynx.liblynx.Lipids import FA
 from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
