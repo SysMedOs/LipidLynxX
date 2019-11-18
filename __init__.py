@@ -19,7 +19,7 @@ from lipidlynx.config import lipidlynx_blueprint
 from lipidlynx.config import DevConfig
 from lipidlynx.controllers.rest import post
 from lipidlynx.controllers.FileIO import get_table, create_output
-from lipidlynx.models.defaults import rgx_blank
+from lipidlynx.models.patterns import rgx_blank
 from lipidlynx.forms import ConverterTableInputForm
 from lipidlynx.forms import ConverterTextInputForm
 from lipidlynx.forms import ParserInputForm

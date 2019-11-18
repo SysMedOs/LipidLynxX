@@ -1,6 +1,8 @@
 [
+    {"cv":"Delta","remarks":"mass shift","alias":["Delta", "Mass shift"],"elements":{}},
     {"cv":"DB","remarks":"C=C bond","alias":["DB"],"elements":{"H":-2}},
     {"cv":"O","remarks":"Undefined oxygen addition","alias":["O"],"elements":{"O":1}},
+    {"cv":"H","remarks":"Undefined hydrogen addition","alias":["H"],"elements":{"H":1}},
     {"cv":"OH","remarks":"hydroxyl","alias":["OH"],"elements":{"O":1}},
     {"cv":"Ke","remarks":"oxo(keto/aldehyde depending on position)","alias":["Ke","oxo","KETO"],"elements":{"H":-2,"O":1}},
     {"cv":"Ep","remarks":"epoxy","alias":["ep","EPOXY"],"elements":{"H":-2,"O":1}},

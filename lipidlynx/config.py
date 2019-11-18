@@ -10,8 +10,8 @@ import os
 
 from flask import Blueprint
 
-from lipidlynx.controllers.Encoder import lynx_encode
-from lipidlynx.controllers.Parser import parse
+from .controllers.Encoder import lynx_encode
+from .controllers.Parser import parse
 
 
 class Config(object):
