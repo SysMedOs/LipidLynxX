@@ -2,43 +2,79 @@
   "$id": "https://example.com/lynx_mod.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The structure of LipidLynx modification",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "required": ["cv", "count"],
-    "properties": {
-      "cv": {
-        "description": "The controlled vocabulary of modification",
-        "type": "string",
-        "minLength": 2,
-        "maxLength": 8
+  "type": "object",
+  "required": ["mod_id", "mod_level", "mod_linked_ids"],
+  "properties": {
+    "mod_id": {
+      "description": "Modification code at highest level",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 256
+    },
+    "mod_level": {
+      "description": "The level of the modification code",
+      "type": "string",
+      "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)",
+      "minLength": 1,
+      "maxLength": 3
+    },
+    "mod_linked_ids": {
+      "description": "Collection of all linked ids",
+      "type": "object",
+      "uniqueItems": true,
+      "minProperties": 1,
+      "propertyNames": {
+       "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)"
       },
-      "count": {
-        "description": "The number of modification",
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 99
-      },
-      "positions": {
-        "description": "The list of positions",
-        "type": "array",
-        "items": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 99
-        },
-        "maxItems": 99
-      },
-      "positions_info": {
-        "description": "The list of positions",
-        "type": "array",
-        "items": {
+      "patternProperties": {
+        "(^[012]$)|(^[34](\\.[0-9])?$)" : {
           "type": "string",
           "minLength": 2,
-          "maxLength": 3
-        },
-        "maxItems": 99,
-        "uniqueItems": true
+          "maxLength": 256
+        }
+      }
+    },
+    "mod_list": {
+      "description": "Information of the modification as individual objects",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["cv", "count"],
+        "properties": {
+          "cv": {
+            "description": "The controlled vocabulary of modification",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 8
+          },
+          "count": {
+            "description": "The number of modification",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99
+          },
+          "positions": {
+            "description": "The list of positions",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "maxItems": 99
+          },
+          "positions_info": {
+            "description": "The list of positions",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 3
+            },
+            "maxItems": 99,
+            "uniqueItems": true
+          }
+        }
       }
     }
   }

@@ -22,10 +22,19 @@ class Modifications(object):
 
         self.db_count = db
 
-        self.mod_level = self.__identify_level__()  # type: int
-        print(self.mod_level)
-
+        self.mod_level = self.__identify_level__()
         self.mod_info = self.__post_init__()
+        for mod_seg in self.mod_info:
+            if mod_seg['positions']:
+                if self.mod_level < 3:
+                    self.mod_level = 3
+            if mod_seg['positions_info']:
+                for p_info_str in mod_seg['positions_info']:
+                    if re.match(r'\d{1,2}[EZRS]', p_info_str):
+                        if self.mod_level < 4:
+                            self.mod_level = 4
+
+        print(self.mod_level)
 
     def __parse_db__(self, db_str: str) -> dict:
         db_match = mod_db_rgx.match(db_str)
@@ -79,10 +88,8 @@ class Modifications(object):
         if mod_elem_rgx.match(self.mod_code):
             print(mod_elem_rgx.match(self.mod_code).groups())
             mod_level = 1
-        if mod_no_position_rgx.match(self.mod_code):
+        if mod_rgx.match(self.mod_code):
             mod_level = 2
-        if mod_w_position_rgx.match(self.mod_code):
-            mod_level = 3
         if mod_level >= 0:
             return mod_level
         else:
@@ -117,7 +124,7 @@ class Modifications(object):
     def get_positions(positions: Union[str, List[str]]) -> dict:
         position_info = {
             'positions': [],
-            'positions_type': []
+            'positions_info': []
         }
         if isinstance(positions, str):
             positions = positions.split(',')
@@ -128,7 +135,7 @@ class Modifications(object):
                 position = int(position_match_dct['position'])
                 # position_type = position_match_dct.get('position_type', '')
                 position_info['positions'].append(position)
-                position_info['positions_type'].append(position_seg.strip(','))
+                position_info['positions_info'].append(position_seg.strip(','))
 
         return position_info
 
@@ -192,7 +199,10 @@ class Modifications(object):
             mod_output_lst = []
             for mod in self.mod_info:
                 if mod["cv"] != 'DB':
-                    mod_output_lst.append(f'{mod["count"]}{mod["cv"]}')
+                    if mod["count"] > 1:
+                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}')
+                    else:
+                        mod_output_lst.append(f'{mod["cv"]}')
             mod_str = f'{",".join(mod_output_lst)}'
             if angle_brackets:
                 mod_str = self.__add_angle_brackets__(mod_str)
@@ -224,7 +234,7 @@ class Modifications(object):
         if self.mod_level >= 4:
             mod_output_lst = []
             for mod in self.mod_info:
-                positions = '{' + ','.join(mod["positions_type"]) + '}'
+                positions = '{' + ','.join(mod["positions_info"]) + '}'
                 if mod["cv"] == 'DB':
                     mod_output_lst.append(positions)
                 else:
@@ -258,13 +268,13 @@ class Modifications(object):
 if __name__ == '__main__':
 
     mod_code_lst = [
-        r'<+46>',
-        r'<+3O,-2H>',
-        r'<2OH,Ke>',
-        r'<2OH{8R,11S},Ke{14}>',
-        r'<{5,9,12,15},2OH{8,11},Ke{14}>',
-        r'<{5,9,12,15},2OH{8R,11S},Ke{14}>',
-        r'<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>',
+        # r'<+46>',
+        # r'<+3O,-2H>',
+        # r'<2OH,Ke>',
+        # r'<2OH{8R,11S},Ke{14}>',
+        # r'<{5,9,12,15},2OH{8,11},Ke{14}>',
+        # r'<{5,9,12,15},2OH{8R,11S},Ke{14}>',
+        # r'<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>',
         r'<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>',
     ]
 

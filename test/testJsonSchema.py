@@ -48,4 +48,7 @@ class JsonTestCase(unittest.TestCase):
                     if validator.is_valid(j_json):
                         logger.debug(f"Schema test PASSED:  {s}")
                     else:
+                        errors = sorted(validator.iter_errors(j_json), key=lambda e: e.path)
+                        for e in errors:
+                            logger.error(e)
                         raise Exception(f"Schema test FAILED:  {s}")
