@@ -1,11 +1,11 @@
 import json
 import pandas as pd
 import re
-from typing import Union, List
+from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
-from lipidlynx.models.defaults import lynx_schema, cv_elements_info, logger, elem_nominal_info
+from lipidlynx.models.defaults import lynx_schema, cv_elements_info, logger, elem_nominal_info, mod_level_lst
 from lipidlynx.models.patterns import mod_delta_rgx, mod_elem_rgx, mod_rgx, mod_db_rgx, mod_no_position_rgx, \
     mod_w_position_rgx, mod_position_rgx
 from lipidlynx.controllers.GeneralFunctions import get_abs_path
@@ -22,24 +22,17 @@ class Modifications(object):
 
         self.db_count = db
 
-        self.mod_level = self.__identify_level__()
         self.mod_info = self.__post_init__()
-        for mod_seg in self.mod_info:
-            if mod_seg['positions']:
-                if self.mod_level < 3:
-                    self.mod_level = 3
-            if mod_seg['positions_info']:
-                for p_info_str in mod_seg['positions_info']:
-                    if re.match(r'\d{1,2}[EZRS]', p_info_str):
-                        if self.mod_level < 4:
-                            self.mod_level = 4
+        self.mod_level = self.__identify_level__()
 
-        print(self.mod_level)
+        print(self.mod_level, type(self.mod_level))
+
+        print(self.mod_info)
 
     def __parse_db__(self, db_str: str) -> dict:
         db_match = mod_db_rgx.match(db_str)
         if db_match:
-            db_position_lst = db_match.groups()
+            db_position_lst = db_str.strip('{}').split(',')
 
             if len(db_position_lst) != self.db_count:
                 self.db_count = len(db_position_lst)
@@ -53,7 +46,7 @@ class Modifications(object):
             raise ValueError(f'Cannot parse DB info from string: {db_str}')
 
     def __parse_mod__(self, mod_str: str) -> dict:
-        if self.mod_level >= 1:
+        if not mod_delta_rgx.match(self.mod_code):
             mod_match = mod_w_position_rgx.match(mod_str)
             if mod_match:
                 mod_match_dct = mod_match.groupdict()
@@ -81,16 +74,36 @@ class Modifications(object):
             mod_dct = {"cv": "Delta", "count": 1, 'positions': [], 'positions_type': []}
             return mod_dct
 
-    def __identify_level__(self) -> int:
-        mod_level = -1
+    def __identify_level__(self) -> str:
+        mod_level = ""
         if mod_delta_rgx.match(self.mod_code):
-            mod_level = 0
+            mod_level = "0"
         if mod_elem_rgx.match(self.mod_code):
             print(mod_elem_rgx.match(self.mod_code).groups())
-            mod_level = 1
+            mod_level = "1"
         if mod_rgx.match(self.mod_code):
-            mod_level = 2
-        if mod_level >= 0:
+            mod_level = "2"
+        for mod_seg in self.mod_info:
+            if mod_seg.get('positions', None):
+                if float(mod_level) < 3:
+                    if mod_seg['cv'] == 'DB':
+                        mod_level = "3.1"
+                    else:
+                        mod_level = "3"
+            mod_position_info = mod_seg.get('positions_info', None)
+            if mod_position_info:
+                for p_info_str in mod_position_info:
+                    if re.match(r'\d{1,2}[EZRS]', p_info_str):
+                        if float(mod_level) < 4:
+                            if mod_seg['cv'] == 'DB':
+                                mod_level = "4.1"
+                                for db_info in mod_position_info:
+                                    if 'E' in db_info or 'Z' in db_info:
+                                        mod_level = "4.2"
+                                        break
+                            else:
+                                mod_level = "4"
+        if mod_level:
             return mod_level
         else:
             raise ValueError(f'Cannot parse the level of modification from string: {self.mod_code}')
@@ -164,7 +177,7 @@ class Modifications(object):
             raise ValueError(f"Schema check FAILED.")
 
     def to_mass_shift(self, angle_brackets: bool = True) -> str:
-        if self.mod_level >= 0:
+        if float(self.mod_level) >= 0:
             sum_mod_elem_dct = self.get_elem_info()
             delta = 0
             for elem in sum_mod_elem_dct:
@@ -179,7 +192,7 @@ class Modifications(object):
             raise ValueError(f'Modification level not fit. required level >= 0, received: {self.mod_level}')
 
     def to_elem_shift(self, angle_brackets: bool = True) -> str:
-        if self.mod_level >= 1:
+        if float(self.mod_level) >= 1:
             sum_mod_elem_dct = self.get_elem_info()
             mod_str_lst = []
             mod_elem_lst = ["O", "N", "S", "H", 'Na']
@@ -195,7 +208,7 @@ class Modifications(object):
             raise ValueError(f'Modification level not fit. required level >= 1, received: {self.mod_level}')
 
     def to_mod_count(self, angle_brackets: bool = True) -> str:
-        if self.mod_level >= 2:
+        if float(self.mod_level) >= 2:
             mod_output_lst = []
             for mod in self.mod_info:
                 if mod["cv"] != 'DB':
@@ -210,8 +223,8 @@ class Modifications(object):
         else:
             raise ValueError(f'Modification level not fit. required level >= 2, received: {self.mod_level}')
 
-    def to_mod_position(self, angle_brackets: bool = True) -> str:
-        if self.mod_level >= 3:
+    def to_mod_position(self, angle_brackets: bool = True, db_position: bool = False) -> str:
+        if float(self.mod_level) >= 3:
             mod_output_lst = []
             for mod in self.mod_info:
                 positions_lst = [str(i) for i in mod["positions"]]
@@ -219,7 +232,7 @@ class Modifications(object):
                 if mod["cv"] == 'DB':
                     mod_output_lst.append(positions)
                 else:
-                    if mod["count"] > 1:
+                    if mod["count"] > 1 and db_position:
                         mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
                     else:
                         mod_output_lst.append(f'{mod["cv"]}{positions}')
@@ -230,13 +243,21 @@ class Modifications(object):
         else:
             raise ValueError(f'Modification level not fit. required level >= 3, received: {self.mod_level}')
 
-    def to_mod_position_type(self, angle_brackets: bool = True) -> str:
-        if self.mod_level >= 4:
+    def to_mod_position_type(self, angle_brackets: bool = True,
+                             db_position: bool = False, db_position_info: bool = False) -> str:
+        if db_position_info and not db_position:
+            db_position = True
+
+        if float(self.mod_level) >= 4:
             mod_output_lst = []
             for mod in self.mod_info:
                 positions = '{' + ','.join(mod["positions_info"]) + '}'
                 if mod["cv"] == 'DB':
-                    mod_output_lst.append(positions)
+                    if db_position and db_position_info:
+                        mod_output_lst.append(positions)
+                    if db_position and not db_position_info:
+                        positions_lst = [str(i) for i in mod["positions"]]
+                        mod_output_lst.append('{' + ','.join(positions_lst) + '}')
                 else:
                     if mod["count"] > 1:
                         mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
@@ -249,32 +270,69 @@ class Modifications(object):
         else:
             raise ValueError(f'Modification level not fit. required level >= 4, received: {self.mod_level}')
 
-    def to_all_levels(self, angle_brackets: bool = True) -> list:
+    def to_mod_level(self, level: Union[int, float, str] = 0, angle_brackets: bool = True) -> str:
+        mod_str = ''
+        if not isinstance(level, str):
+            level = str(level)
+        if float(level) > float(self.mod_level):
+            raise ValueError(f'Cannot convert to higher level than the mod_level "{self.mod_level}". Input:{level}')
+        if level in mod_level_lst:
+            if level == '0':
+                mod_str = mod_obj.to_mass_shift(angle_brackets=angle_brackets)
+            elif level == '1':
+                mod_str = mod_obj.to_elem_shift(angle_brackets=angle_brackets)
+            elif level == '2':
+                mod_str = mod_obj.to_mod_count(angle_brackets=angle_brackets)
+            elif level == '3':
+                mod_str = mod_obj.to_mod_position(angle_brackets=angle_brackets, db_position=False)
+            elif level == '3.1':
+                mod_str = mod_obj.to_mod_position(angle_brackets=angle_brackets, db_position=True)
+            elif level == '4':
+                mod_str = mod_obj.to_mod_position_type(angle_brackets=angle_brackets,
+                                                       db_position=False, db_position_info=False)
+            elif level == '4.1':
+                mod_str = mod_obj.to_mod_position_type(angle_brackets=angle_brackets,
+                                                       db_position=True, db_position_info=False)
+            elif level == '4.2':
+                mod_str = mod_obj.to_mod_position_type(angle_brackets=angle_brackets,
+                                                       db_position=True, db_position_info=True)
+            else:
+                raise ValueError(f'Currently not supported modification level: {level}')
 
-        mod_output_lst = []
-        if self.mod_level >= 0:
-            mod_output_lst.append(mod_obj.to_mass_shift(angle_brackets=angle_brackets))
-        if self.mod_level >= 1:
-            mod_output_lst.append(mod_obj.to_elem_shift(angle_brackets=angle_brackets))
-        if self.mod_level >= 2:
-            mod_output_lst.append(mod_obj.to_mod_count(angle_brackets=angle_brackets))
-        if self.mod_level >= 3:
-            mod_output_lst.append(mod_obj.to_mod_position(angle_brackets=angle_brackets))
-        if self.mod_level >= 4:
-            mod_output_lst.append(mod_obj.to_mod_position_type(angle_brackets=angle_brackets))
-        return mod_output_lst
+        return mod_str
+
+    def to_all_levels(self, angle_brackets: bool = True, as_list: bool = False) -> Union[Dict[str, str], List[str]]:
+        all_levels_dct = {}
+        all_levels_lst = []
+        if self.mod_level in mod_level_lst:
+            mod_idx = mod_level_lst.index(self.mod_level)
+            output_levels_lst = mod_level_lst[:mod_idx + 1]
+        else:
+            raise ValueError(f'Currently not supported modification level: {self.mod_level}')
+        if self.mod_level == '4':
+            output_levels_lst.remove('3.1')
+        if as_list:
+            for level in output_levels_lst:
+                all_levels_lst.append(self.to_mod_level(level, angle_brackets=angle_brackets))
+            all_levels_info = all_levels_lst
+        else:
+            for level in output_levels_lst:
+                all_levels_dct[level] = self.to_mod_level(level, angle_brackets=angle_brackets)
+            all_levels_info = all_levels_dct
+
+        return all_levels_info
 
 
 if __name__ == '__main__':
 
     mod_code_lst = [
-        # r'<+46>',
-        # r'<+3O,-2H>',
-        # r'<2OH,Ke>',
-        # r'<2OH{8R,11S},Ke{14}>',
-        # r'<{5,9,12,15},2OH{8,11},Ke{14}>',
-        # r'<{5,9,12,15},2OH{8R,11S},Ke{14}>',
-        # r'<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>',
+        r'<+46>',
+        r'<+3O,-2H>',
+        r'<2OH,Ke>',
+        r'<2OH{8R,11S},Ke{14}>',
+        r'<{5,9,12,15},2OH{8,11},Ke{14}>',
+        r'<{5,9,12,15},2OH{8R,11S},Ke{14}>',
+        r'<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>',
         r'<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>',
     ]
 
@@ -283,7 +341,7 @@ if __name__ == '__main__':
 
         mod_obj = Modifications(usr_mod_code)
 
-        print(mod_obj.to_json())
+        # print(mod_obj.to_json())
 
         # print('to mass shift', mod_obj.to_mass_shift())
         # print('to elem shift', mod_obj.to_elem_shift())
@@ -295,5 +353,5 @@ if __name__ == '__main__':
         # print('to mod_count', mod_obj.to_mod_count(angle_brackets=False))
         # print('to mod_position', mod_obj.to_mod_position(angle_brackets=False))
         # print('to mod_position_type', mod_obj.to_mod_position_type(angle_brackets=False))
-        print('to all levels', mod_obj.to_all_levels())
-        print('to all levels', mod_obj.to_all_levels(angle_brackets=False))
+        print('to all levels: ', mod_obj.to_all_levels())
+        print('to all levels without <> : ', mod_obj.to_all_levels(angle_brackets=False))

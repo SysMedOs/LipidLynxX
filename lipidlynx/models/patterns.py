@@ -12,7 +12,7 @@ mod_elem_rgx = re.compile(r'((,?[-+])?(\d{0,2}[a-zA-Z]+))')
 
 mod_rgx = re.compile(r'((,)?(\d?\w{1,6})?([{][0-9EZRS,]{1,256}[}])?)')
 
-mod_db_rgx = re.compile(r'[{](\d{1,2}[EZ]?)?(,\d{1,2}[EZ]?)*[}]')
+mod_db_rgx = re.compile(r'[{](\d{1,2}[EZ]?)(,\d{1,2}[EZ]?)*[}]')
 
 mod_no_position_rgx = re.compile(r',?(?P<count>\d)?(?P<cv>\w{1,6})')
 
