@@ -147,6 +147,6 @@ lynx_schema = {
     "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json'
 }
 
-mod_level_lst = ["0", "1", "2", "3", "3.1", "4", "4.1", "4.2"]
+mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
 
 logger.info("Default parameters loaded successfully.")
