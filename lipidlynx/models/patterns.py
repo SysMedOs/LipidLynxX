@@ -21,10 +21,6 @@ mod_lv3_position_rgx = re.compile(r',?(?P<count>\d{0,2})(?P<cv>\w{1,6})'
 
 mod_lv4_position_rgx = re.compile(r'(?P<position>\d{1,2})(?P<position_type>[EZRS])?')
 
-mod_sub_lv1_db_rgx = re.compile(r'[{](,?\d{1,2})*[}]')
-
-mod_sub_lv2_db_rgx = re.compile(r'[{](,?\d{1,2}[EZ])*[}]')
-
 # lynx FA
 
 fa_rgx = re.compile(r'(?P<link>FA|[OP]-)?(?P<c>\d{1,2}):(?P<db>\d)(?P<mod><.*>)?')

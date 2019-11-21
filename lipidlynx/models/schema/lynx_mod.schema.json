@@ -6,13 +6,13 @@
   "required": ["mod_id", "mod_level", "mod_linked_ids"],
   "properties": {
     "mod_id": {
-      "description": "Modification code at highest level",
+      "description": "LipidLynx id of this modification at highest level",
       "type": "string",
       "minLength": 2,
       "maxLength": 256
     },
     "mod_level": {
-      "description": "The level of the modification code",
+      "description": "The max level of modification",
       "type": "string",
       "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)",
       "minLength": 1,
@@ -44,13 +44,13 @@
           "cv": {
             "description": "The controlled vocabulary of modification",
             "type": "string",
-            "minLength": 2,
+            "minLength": 1,
             "maxLength": 8
           },
           "count": {
             "description": "The number of modification",
             "type": "integer",
-            "minimum": 1,
+            "minimum": -99,
             "maximum": 99
           },
           "positions": {
@@ -68,7 +68,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 2,
+              "minLength": 1,
               "maxLength": 3
             },
             "maxItems": 99,

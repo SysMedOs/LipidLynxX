@@ -144,6 +144,7 @@ abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 
 lynx_schema = {
     "lynx_core": r'lipidlynx/models/schema/lynx_core.schema.json',
+    "lynx_fa": r'lipidlynx/models/schema/lynx_fa.schema.json',
     "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json'
 }
 

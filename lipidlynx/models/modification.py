@@ -5,10 +5,11 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
+from lipidlynx.controllers.Logger import logger
+
 from lipidlynx.models.defaults import (
     lynx_schema,
     cv_elements_info,
-    logger,
     elem_nominal_info,
     mod_level_lst,
 )
@@ -20,8 +21,6 @@ from lipidlynx.models.patterns import (
     mod_lv2_types_rgx,
     mod_lv3_position_rgx,
     mod_lv4_position_rgx,
-    mod_sub_lv1_db_rgx,
-    mod_sub_lv2_db_rgx,
 )
 from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
@@ -38,6 +37,7 @@ class Modifications(object):
 
         self.mod_info = self.__post_init__()
         self.mod_level = self.__identify_level__()
+        self.sum_mod_info = self.get_sum_info()
 
         logger.info(f"Level {self.mod_level:3s} modification created from: {self.mod_code}")
 
@@ -197,18 +197,29 @@ class Modifications(object):
 
         return sum_mod_elem_dct
 
+    def get_sum_info(self):
+        sum_mod_info_dct = {
+            "mod_id": self.mod_code,
+            "mod_level": self.mod_level,
+            "mod_linked_ids": self.to_all_levels(),
+            "mod_list": self.mod_info
+        }
+        return sum_mod_info_dct
+
     def to_json(self):
-        mod_json_str = json.dumps(self.mod_info)
-        print(mod_json_str)
-        is_valid = self.validator.is_valid(json.loads(mod_json_str))
-        if is_valid:
-            logger.debug(f"Schema check PASSED.")
+        mod_json_str = json.dumps(self.sum_mod_info)
+        j_json = json.loads(mod_json_str)
+        if self.validator.is_valid(j_json):
+            logger.debug(f"Schema test PASSED. Modification JSON:\n {mod_json_str}")
             return mod_json_str
         else:
-            raise ValueError(f"Schema check FAILED.")
+            errors = sorted(self.validator.iter_errors(j_json), key=lambda e: e.path)
+            for e in errors:
+                logger.error(e)
+            raise Exception(f"Schema test FAILED.")
 
     def to_mass_shift(self, angle_brackets: bool = True) -> str:
-        if float(self.mod_level) >= 0:
+        if float(self.mod_level) > 0:
             sum_mod_elem_dct = self.get_elem_info()
             delta = 0
             for elem in sum_mod_elem_dct:
@@ -218,6 +229,19 @@ class Modifications(object):
             mod_str = f"{delta:+}"
             if angle_brackets:
                 mod_str = self.__add_angle_brackets__(mod_str)
+            return mod_str
+        elif float(self.mod_level) == 0:
+            lv0_match = mod_lv0_delta_rgx.match(self.mod_code)
+            lv0_groups = []
+            if lv0_match:
+                lv0_matched_groups = lv0_match.groups()
+                lv0_groups = [int(i.strip(',')) for i in lv0_matched_groups]
+            if lv0_groups:
+                mod_str = f"{sum(lv0_groups):+}"
+                if angle_brackets:
+                    mod_str = self.__add_angle_brackets__(mod_str)
+            else:
+                mod_str = ''
             return mod_str
         else:
             raise ValueError(
@@ -339,39 +363,39 @@ class Modifications(object):
             )
         if level in mod_level_lst:
             if level == "0":
-                mod_str = mod_obj.to_mass_shift(angle_brackets=angle_brackets)
+                mod_str = self.to_mass_shift(angle_brackets=angle_brackets)
             elif level == "1":
-                mod_str = mod_obj.to_elem_shift(angle_brackets=angle_brackets)
+                mod_str = self.to_elem_shift(angle_brackets=angle_brackets)
             elif level == "2":
-                mod_str = mod_obj.to_mod_count(angle_brackets=angle_brackets)
+                mod_str = self.to_mod_count(angle_brackets=angle_brackets)
             elif level == "3":
-                mod_str = mod_obj.to_mod_position(
+                mod_str = self.to_mod_position(
                     angle_brackets=angle_brackets, db_position=False
                 )
             elif level == "3.1":
-                mod_str = mod_obj.to_mod_position(
+                mod_str = self.to_mod_position(
                     angle_brackets=angle_brackets, db_position=True
                 )
             elif level == "3.2":
-                mod_str = mod_obj.to_mod_position(
+                mod_str = self.to_mod_position(
                     angle_brackets=angle_brackets,
                     db_position=True,
                     db_position_info=True,
                 )
             elif level == "4":
-                mod_str = mod_obj.to_mod_position_type(
+                mod_str = self.to_mod_position_type(
                     angle_brackets=angle_brackets,
                     db_position=False,
                     db_position_info=False,
                 )
             elif level == "4.1":
-                mod_str = mod_obj.to_mod_position_type(
+                mod_str = self.to_mod_position_type(
                     angle_brackets=angle_brackets,
                     db_position=True,
                     db_position_info=False,
                 )
             elif level == "4.2":
-                mod_str = mod_obj.to_mod_position_type(
+                mod_str = self.to_mod_position_type(
                     angle_brackets=angle_brackets,
                     db_position=True,
                     db_position_info=True,
@@ -433,7 +457,7 @@ if __name__ == "__main__":
 
         mod_obj = Modifications(usr_mod_code)
 
-        # print(mod_obj.to_json())
+        print(mod_obj.to_json())
 
         # print('to mass shift', mod_obj.to_mass_shift())
         # print('to elem shift', mod_obj.to_elem_shift())

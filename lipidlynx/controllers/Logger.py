@@ -14,7 +14,7 @@ if not logger.handlers:
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.WARNING)
     formatter = logging.basicConfig(
-        format="%(asctime)s-%(levelname)s - %(message)s",
+        format="%(asctime)s[%(levelname)-5s] %(message)s",
         datefmt="%b-%d@%H:%M:%S",
         level=log_level,
     )
