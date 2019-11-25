@@ -1,129 +1,143 @@
 {
-    "$id": "https://example.com/lynx_core_schema.json",
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "The core structure of LipidLynx output",
-    "type": "object",
-    "required": ["_version", "id", "linked_ids", "lipid_class"],
-    "properties": {
-        "_version": {
-            "description": "Version of the LipidLynx api",
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 384
-        },
-        "id": {
-            "description": "The LipidLynx id",
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 384
-        },
-        "input_name": {
-            "description": "The abbreviation used for identification",
-            "type": "string",
-            "minLength": 2,
-            "maxLength": 384
-        },
-        "linked_ids": {
-            "description": "Collection of linked LipidLynx ids",
-            "type": "object",
-            "required": ["bulk_ids", "discrete_ids", "sn_position_ids"],
-            "properties": {
-                "bulk_ids": {
-                    "description": "List of LipidLynx id in the bulk level",
-                    "type": "array",
-                    "items": {"type": "string", "minLength": 2, "maxLength": 384},
-                    "minItems": 1,
-                    "maxItems": 16,
-                    "uniqueItems": true
-                },
-                "discrete_ids": {
-                    "description": "List of LipidLynx id in the discrete level",
-                    "type": "array",
-                    "items": {"type": "string", "minLength": 2, "maxLength": 384},
-                    "maxItems": 64,
-                    "uniqueItems": true
-                },
-                "sn_position_ids": {
-                    "description": "List of LipidLynx id in the sn_position level",
-                    "type": "array",
-                    "items": {"type": "string", "minLength": 2, "maxLength": 384},
-                    "maxItems": 256,
-                    "uniqueItems": true
-                }
-            }
-        },
-        "lipid_class": {
-            "description": "lipid class information",
-            "type": "object",
-            "required": ["lm_class", "main_class"],
-            "properties": {
-                "lm_class": {
-                    "description": "List of max 2 LIPID MAPS class e.g. GP01 and GP0101",
-                    "type": "array",
-                    "items": {"type": "string", "minLength": 2, "maxLength": 8},
-                    "minItems": 1,
-                    "maxItems": 2,
-                    "uniqueItems": true
-                },
-                "main_class": {
-                    "description": "main lipid class",
-                    "type": "string",
-                    "minLength": 2,
-                    "maxLength": 8
-                },
-                "sub_class": {
-                    "description": "sub_lipid class",
-                    "type": "string",
-                    "minLength": 2,
-                    "maxLength": 16
-                }
-            }
-        },
-        "residues": {
-            "description": "Information of sn residues",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": ["id"],
-                "properties": {
-                    "id": {
-                        "description": "The LipidLynx id of the residue",
-                        "type": "string",
-                        "minLength": 2,
-                        "maxLength": 384
-                    },
-                    "position": {
-                        "description": "The position of the residue",
-                        "type": "string",
-                        "minLength": 2,
-                        "maxLength": 384
-                    }
-                }
-              }
-        },
-        "resource_ids": {
-            "description": "Information of reference id in other databases",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "items": {
-                    "type": "object",
-                    "required": ["database", "ref_id"],
-                    "properties": {
-                        "db": {
-                            "description": "Name of the database",
-                            "type": "string",
-                            "enum": ["lipidmaps", "hmdb", "pubchem"]
-                        },
-                        "ref_id": {
-                            "description": "The corresponding id of this lipid",
-                            "type": "string",
-                            "minLength": 2,
-                            "maxLength": 32
-                        }
-                    }
-              }
-            }
+  "$id": "https://example.com/lynx_core_schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The core structure of LipidLynx output",
+  "type": "object",
+  "required": [
+    "_version",
+    "id",
+    "linked_ids",
+    "lipid_class"
+  ],
+  "properties": {
+    "_version": {
+      "description": "Version of the LipidLynx api",
+      "type": "string",
+      "pattern": "^[012]\\.[0-9]$"
+    },
+    "id": {
+      "description": "The LipidLynx id",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 384
+    },
+    "input_name": {
+      "description": "The abbreviation used for identification",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 384
+    },
+    "level": {
+      "description": "The max level of FA",
+      "type": "string",
+      "pattern": "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)",
+      "minLength": 1,
+      "maxLength": 4
+    },
+    "linked_ids": {
+      "description": "Collection of all linked ids",
+      "type": "object",
+      "uniqueItems": true,
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "(^[ABDES]?[012]$)|(^[ABDES]?[34](\\.[0-9])?$)"
+      },
+      "patternProperties": {
+        "(^[ABDES]?[012]$)|(^[ABDES]?[34](\\.[0-9])?$)": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 512
         }
+      }
+    },
+    "lipid_class": {
+      "description": "lipid class information",
+      "type": "object",
+      "required": [
+        "lm_class",
+        "main_class"
+      ],
+      "properties": {
+        "lm_class": {
+          "description": "List of max 2 LIPID MAPS class e.g. GP01 and GP0101",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 8
+          },
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "main_class": {
+          "description": "main lipid class",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 8
+        },
+        "sub_class": {
+          "description": "sub_lipid class",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 16
+        }
+      }
+    },
+    "residues": {
+      "description": "Information of sn residues",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "description": "The LipidLynx id of the residue",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 384
+          },
+          "position": {
+            "description": "The position of the residue",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 384
+          }
+        }
+      }
+    },
+    "resource_ids": {
+      "description": "Information of reference id in other databases",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "items": {
+          "type": "object",
+          "required": [
+            "database",
+            "ref_id"
+          ],
+          "properties": {
+            "db": {
+              "description": "Name of the database",
+              "type": "string",
+              "enum": [
+                "lipidmaps",
+                "hmdb",
+                "pubchem"
+              ]
+            },
+            "ref_id": {
+              "description": "The corresponding id of this lipid",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 32
+            }
+          }
+        }
+      }
     }
+  }
 }

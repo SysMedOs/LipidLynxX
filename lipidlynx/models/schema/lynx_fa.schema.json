@@ -14,7 +14,7 @@
     "fa_level": {
       "description": "The max level of FA",
       "type": "string",
-      "pattern": "(^[BDS][012]$)|(^[BDS][34](\\.[0-9])?$)",
+      "pattern": "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)",
       "minLength": 1,
       "maxLength": 4
     },
@@ -24,10 +24,10 @@
       "uniqueItems": true,
       "minProperties": 1,
       "propertyNames": {
-        "pattern": "(^[BDS][012]$)|(^[BDS][34](\\.[0-9])?$)"
+        "pattern": "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)"
       },
       "patternProperties": {
-        "(^[BDS][012]$)|(^[BDS][34](\\.[0-9])?$)" : {
+        "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)" : {
           "type": "string",
           "minLength": 2,
           "maxLength": 256

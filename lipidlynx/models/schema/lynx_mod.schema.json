@@ -3,8 +3,13 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The structure of LipidLynx modification",
   "type": "object",
-  "required": ["mod_id", "mod_level", "mod_linked_ids"],
+  "required": ["_version","mod_id", "mod_level", "mod_linked_ids"],
   "properties": {
+    "_version": {
+      "description": "Version of the LipidLynx api",
+      "type": "string",
+      "pattern": "^[012]\\.[0-9]$"
+    },
     "mod_id": {
       "description": "LipidLynx id of this modification at highest level",
       "type": "string",
@@ -24,10 +29,10 @@
       "uniqueItems": true,
       "minProperties": 1,
       "propertyNames": {
-       "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)"
+        "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)"
       },
       "patternProperties": {
-        "(^[012]$)|(^[34](\\.[0-9])?$)" : {
+        "(^[012]$)|(^[34](\\.[0-9])?$)": {
           "type": "string",
           "minLength": 2,
           "maxLength": 256
@@ -48,10 +53,10 @@
             "maxLength": 8
           },
           "count": {
-            "description": "The number of modification",
+            "description": "The number of modification, or mass shift if cv is Delta",
             "type": "integer",
-            "minimum": -99,
-            "maximum": 99
+            "minimum": -512,
+            "maximum": 512
           },
           "positions": {
             "description": "The list of positions",

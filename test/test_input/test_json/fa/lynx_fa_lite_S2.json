@@ -1,0 +1,13 @@
+{
+  "_version": "0.1",
+  "fa_id":"FA20:4<2OH,Ke>",
+  "fa_level":"S2",
+  "fa_linked_ids":{
+    "S0": "FA20:4<+44>",
+    "S1": "FA20:4<+3O,-6H>",
+    "S2": "FA20:4<2OH,Ke>"
+  },
+  "mod_info": {
+    "mod_id": "<2OH,Ke>"
+  }
+}

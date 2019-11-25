@@ -1,0 +1,19 @@
+{
+  "_version": "0.1",
+  "mod_id":"<+3O,-6H>",
+  "mod_level":"1",
+  "mod_linked_ids":{
+    "0": "<+44>",
+    "1": "<+3O,-6H>"
+  },
+  "mod_list": [
+    {
+      "cv": "O",
+      "count": 3
+    },
+    {
+      "cv": "H",
+      "count": -1
+    }
+  ]
+}

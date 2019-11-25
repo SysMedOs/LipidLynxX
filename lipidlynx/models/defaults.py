@@ -141,13 +141,14 @@ cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 
+lipid_level_lst = ["B", "D", "S"]
+mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
 
 lynx_schema = {
-    "lynx_core": r'lipidlynx/models/schema/lynx_core.schema.json',
+    "_version": r'0.1',
+    "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json',
     "lynx_fa": r'lipidlynx/models/schema/lynx_fa.schema.json',
-    "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json'
+    "lynx_core": r'lipidlynx/models/schema/lynx_core.schema.json'
 }
-
-mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
 
 logger.info("Default parameters loaded successfully.")

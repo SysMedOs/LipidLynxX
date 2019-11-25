@@ -23,10 +23,10 @@ class epiLION_ConverterTestCase(unittest.TestCase):
         logger.debug("SETUP TESTS...")
 
         in_file_lst = [
-            r"../test/TestInput/test_crosscheck.xlsx",
-            r"test/TestInput/test_crosscheck.xlsx",
-            r"../TestInput/test_crosscheck.xlsx",
-            r"TestInput/test_crosscheck.xlsx",
+            r"../test/test_input/test_crosscheck.xlsx",
+            r"test/test_input/test_crosscheck.xlsx",
+            r"../test_input/test_crosscheck.xlsx",
+            r"test_input/test_crosscheck.xlsx",
         ]
         in_file = ""
         for f in in_file_lst:
@@ -34,13 +34,13 @@ class epiLION_ConverterTestCase(unittest.TestCase):
                 in_file = os.path.abspath(f)
                 break
         logger.info(f"Input file {in_file}")
-        bad_in_file = r"test/TestInput/test_crosscheck_x.txt"
+        bad_in_file = r"test/test_input/test_crosscheck_x.txt"
 
         out_folder_lst = [
-            r"../test/TestOutput/",
-            r"test/TestOutput/",
-            r"../TestOutput/",
-            r"TestOutput/",
+            r"../test/test_output/",
+            r"test/test_output/",
+            r"../test_output/",
+            r"test_output/",
         ]
         out_folder = ""
         for p in out_folder_lst:
@@ -92,7 +92,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python convLynx.py -i test/TestInput/test_crosscheck.xlsx -o test/TestOutput/test_crosscheck_output.xlsx
+    # python convLynx.py -i test/test_input/test_crosscheck.xlsx -o test/test_output/test_crosscheck_output.xlsx
 
     epiLION_Path = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, epiLION_Path + "/../")

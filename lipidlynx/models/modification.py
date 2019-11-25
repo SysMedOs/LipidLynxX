@@ -38,6 +38,9 @@ class Modifications(object):
         self.mod_info = self.__post_init__()
         self.mod_level = self.__identify_level__()
         self.sum_mod_info = self.get_sum_info()
+        
+        self.mod_id = self.sum_mod_info.get('mod_id', '')
+        self.mod_linked_ids = self.sum_mod_info.get('mod_linked_ids', {})
 
         logger.info(f"Level {self.mod_level:3s} modification created from: {self.mod_code}")
 
@@ -57,7 +60,15 @@ class Modifications(object):
             raise ValueError(f"Cannot parse DB info from string: {db_str}")
 
     def __parse_mod__(self, mod_str: str) -> dict:
-        if not mod_lv0_delta_rgx.match(self.mod_code):
+        if mod_lv0_delta_rgx.match(self.mod_code):
+            lv0_seg_lst = mod_lv0_delta_rgx.match(self.mod_code).groups()
+            lv0_seg_lst = [s.strip(',') for s in lv0_seg_lst]
+            delta_i = 0
+            for s in lv0_seg_lst:
+                delta_i += int(s)
+            mod_dct = {"cv": "Delta", "count": delta_i, "positions": [], "positions_type": []}
+            return mod_dct
+        else:
             mod_match = mod_lv3_position_rgx.match(mod_str)
             if mod_match:
                 mod_match_dct = mod_match.groupdict()
@@ -93,9 +104,6 @@ class Modifications(object):
                     raise ValueError(
                         f"Cannot parse modification info from string: {mod_str}"
                     )
-        else:
-            mod_dct = {"cv": "Delta", "count": 1, "positions": [], "positions_type": []}
-            return mod_dct
 
     def __identify_level__(self) -> str:
         max_level = -1.0
@@ -198,24 +206,42 @@ class Modifications(object):
         return sum_mod_elem_dct
 
     def get_sum_info(self):
-        sum_mod_info_dct = {
-            "mod_id": self.mod_code,
-            "mod_level": self.mod_level,
-            "mod_linked_ids": self.to_all_levels(),
-            "mod_list": self.mod_info
-        }
+        linked_ids_lst = self.to_all_levels()
+        mod_id = linked_ids_lst.get(self.mod_level, '')
+        if mod_id:
+            if mod_id == self.mod_code:
+                sum_mod_info_dct = {
+                    "_version": lynx_schema.get('_version', "0.1"),
+                    "mod_id": self.mod_code,
+                    "mod_level": self.mod_level,
+                    "mod_linked_ids": self.to_all_levels(),
+                    "mod_list": self.mod_info
+                }
+            else:
+                sum_mod_info_dct = {
+                    "_version": lynx_schema.get('_version', "0.1"),
+                    "mod_id": mod_id,
+                    "input_mod_id": self.mod_code,
+                    "mod_level": self.mod_level,
+                    "mod_linked_ids": self.to_all_levels(),
+                    "mod_list": self.mod_info
+                }
+        else:
+            raise ValueError(f'Cannot format modification code to level {self.mod_level} '
+                             f'from input: {self.mod_code}')
+
         return sum_mod_info_dct
 
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
         j_json = json.loads(mod_json_str)
         if self.validator.is_valid(j_json):
-            logger.debug(f"Schema test PASSED. Modification JSON:\n {mod_json_str}")
+            logger.debug(f"Schema test PASSED. Modification JSON created.")
             return mod_json_str
         else:
-            errors = sorted(self.validator.iter_errors(j_json), key=lambda e: e.path)
-            for e in errors:
-                logger.error(e)
+            errors = sorted(self.validator.iter_errors(j_json), key=lambda e: err.path)
+            for err in errors:
+                logger.error(err)
             raise Exception(f"Schema test FAILED.")
 
     def to_mass_shift(self, angle_brackets: bool = True) -> str:
@@ -441,6 +467,7 @@ class Modifications(object):
 if __name__ == "__main__":
 
     mod_code_lst = [
+        r'<-18>',
         r'<+46>',
         r'<+3O,-2H>',
         r'<2OH,Ke>',
@@ -457,8 +484,6 @@ if __name__ == "__main__":
 
         mod_obj = Modifications(usr_mod_code)
 
-        print(mod_obj.to_json())
-
         # print('to mass shift', mod_obj.to_mass_shift())
         # print('to elem shift', mod_obj.to_elem_shift())
         # print('to mod_count', mod_obj.to_mod_count())
@@ -473,3 +498,8 @@ if __name__ == "__main__":
         logger.debug(
             f"to all levels without <> : {mod_obj.to_all_levels(angle_brackets=False)}"
         )
+
+        mod_json = mod_obj.to_json()
+        logger.debug(mod_json)
+
+    logger.info('FINISHED')

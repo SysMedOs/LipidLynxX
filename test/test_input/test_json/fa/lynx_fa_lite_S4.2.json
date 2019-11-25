@@ -1,6 +1,7 @@
 {
+  "_version": "0.1",
   "fa_id":"FA20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-  "fa_level":"S4.1",
+  "fa_level":"S4.2",
   "fa_linked_ids":{
     "S0": "FA20:4<+44>",
     "S1": "FA20:4<+3O,-6H>",

@@ -21,10 +21,10 @@ class lipidlynxTestCase(unittest.TestCase):
         logger.debug("SETUP TESTS...")
 
         in_file_lst = [
-            r"../test/TestInput/test_names.txt",
-            r"test/TestInput/test_names.txt",
-            r"../TestInput/test_names.txt",
-            r"TestInput/test_names.txt",
+            r"../test/test_input/test_names.txt",
+            r"test/test_input/test_names.txt",
+            r"../test_input/test_names.txt",
+            r"test_input/test_names.txt",
         ]
         in_file = ""
         for f in in_file_lst:
@@ -33,13 +33,13 @@ class lipidlynxTestCase(unittest.TestCase):
                 break
         logger.info(f"Input file is: {in_file}")
 
-        bad_in_file = r"test/TestInput/test_names_x.txt"
+        bad_in_file = r"test/test_input/test_names_x.txt"
 
         out_folder_lst = [
-            r"../test/TestOutput/",
-            r"test/TestOutput/",
-            r"../TestOutput/",
-            r"TestOutput/",
+            r"../test/test_output/",
+            r"test/test_output/",
+            r"../test_output/",
+            r"test_output/",
         ]
         out_folder = ""
         for p in out_folder_lst:
@@ -91,7 +91,7 @@ class lipidlynxTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python LipidLynx_cli.py -i test/TestInput/test_names.txt -o test/TestOutput/test_names_sdf.sdf
+    # python LipidLynx_cli.py -i test/test_input/test_names.txt -o test/test_output/test_names_sdf.sdf
 
     unittest.main()
     logger.info("TESTS FINISHED!")

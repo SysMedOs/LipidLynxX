@@ -21,11 +21,11 @@ from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 
 test_files = [
-    r"test/TestInput/Input_General.csv",
-    r"test/TestInput/Input_ALEX.csv",
-    r"test/TestInput/Input_LIPIDMAPS_ShortHand.csv",
-    r"test/TestInput/Input_LipidMatch.csv",
-    r"test/TestInput/Input_LPPtiger.csv",
+    r"test/test_input/Input_General.csv",
+    r"test/test_input/Input_ALEX.csv",
+    r"test/test_input/Input_LIPIDMAPS_ShortHand.csv",
+    r"test/test_input/Input_LipidMatch.csv",
+    r"test/test_input/Input_LPPtiger.csv",
 ]
 
 
@@ -33,12 +33,12 @@ test_files = [
 def test_lion_encode(test_file):
     logger.debug("SETUP TESTS...")
     logger.info(test_file)
-    # in_file = get_abs_path("TestInput/Input_LIPIDMAPS_ShortHand.csv")
+    # in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     in_file = None
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path("TestInput/Input_LIPIDMAPS_ShortHand.csv")
+        in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     logger.info(f"Test file {in_file}")
     in_df = pd.read_csv(in_file, header=0, index_col=False)
     logger.debug(f"Got infile {in_file}")
