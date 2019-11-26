@@ -1,0 +1,21 @@
+{
+  "$id": "https://example.com/lynx_mod.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The structure of LipidLynx modification",
+  "type": "object",
+  "required": ["hg_id"],
+  "properties": {
+    "_version": {
+      "description": "Version of the LipidLynx api",
+      "type": "string",
+      "pattern": "^[012]\\.[0-9]$"
+    },
+    "hg_id": {
+      "description": "LipidLynx abbreviation of the head group",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 16,
+      "pattern": "(^P[ACEGIS].{0,14})|(^S[MP]B?)|(^C[Le]r?)"
+    }
+  }
+}

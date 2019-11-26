@@ -3,7 +3,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The structure of LipidLynx FA with/without modification",
   "type": "object",
-  "required": ["fa_id", "fa_level", "fa_linked_ids"],
+  "required": [
+    "fa_id",
+    "fa_level",
+    "fa_linked_ids",
+    "fa_info"
+  ],
   "properties": {
     "fa_id": {
       "description": "LipidLynx id of this FA at highest level",
@@ -14,7 +19,7 @@
     "fa_level": {
       "description": "The max level of FA",
       "type": "string",
-      "pattern": "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)",
+      "pattern": "(^[ABDES]?[012]$)|(^[ABDES]?[34](\\.[0-9])?$)",
       "minLength": 1,
       "maxLength": 4
     },
@@ -24,21 +29,61 @@
       "uniqueItems": true,
       "minProperties": 1,
       "propertyNames": {
-        "pattern": "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)"
+        "pattern": "(^[ABDES]?[012]$)|(^[ABDES]?[34](\\.[0-9])?$)"
       },
       "patternProperties": {
-        "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)" : {
+        "(^[ABDES][012]$)|(^[ABDES][34](\\.[0-9])?$)": {
           "type": "string",
           "minLength": 2,
           "maxLength": 256
         }
       }
     },
+    "fa_info": {
+      "description": "The structure of Fatty acid",
+      "type": "object",
+      "required": [
+        "c",
+        "db",
+        "link",
+        "is_modified"
+      ],
+      "properties": {
+        "c": {
+          "description": "The Carbon number in FA",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "db": {
+          "description": "The Double bond equivalent of FA (without the COOH in FA)",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "link": {
+          "description": "The link type of FA",
+          "type": "string",
+          "pattern": "(^FA$)|(^[OP]-$)"
+        },
+        "is_modified": {
+          "description": "if the FA contains modification other than initial C=C bond",
+          "type": "boolean"
+        }
+      }
+    },
     "mod_info": {
       "description": "The structure of LipidLynx modification",
       "type": "object",
-      "required": ["mod_id"],
+      "required": [
+        "mod_id"
+      ],
       "properties": {
+        "_version": {
+          "description": "Version of the LipidLynx api",
+          "type": "string",
+          "pattern": "^[012]\\.[0-9]$"
+        },
         "mod_id": {
           "description": "LipidLynx id of this modification at highest level",
           "type": "string",
@@ -61,7 +106,7 @@
             "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)"
           },
           "patternProperties": {
-            "(^[012]$)|(^[34](\\.[0-9])?$)" : {
+            "(^[012]$)|(^[34](\\.[0-9])?$)": {
               "type": "string",
               "minLength": 2,
               "maxLength": 256
@@ -73,7 +118,10 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["cv", "count"],
+            "required": [
+              "cv",
+              "count"
+            ],
             "properties": {
               "cv": {
                 "description": "The controlled vocabulary of modification",

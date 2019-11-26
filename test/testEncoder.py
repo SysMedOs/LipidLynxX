@@ -7,17 +7,16 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 import os
 import sys
-import unittest
 import pandas as pd
 import pytest
 
 lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
-from lipidlynx.controllers.Logger import logger
+from lipidlynx.models.log import logger
 from lipidlynx.controllers.Parser import parse
 from lipidlynx.controllers.Encoder import lynx_encode
-from lipidlynx.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.general_functions import get_abs_path
 
 
 test_files = [

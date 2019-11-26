@@ -13,7 +13,7 @@ import time
 import pandas as pd
 
 from lipidlynx.config import app_cfg_dct
-from lipidlynx.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.general_functions import get_abs_path
 
 
 def get_table(file_path: str) -> dict:

@@ -1,18 +1,26 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# For more info please contact:
+#     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import json
-import pandas as pd
 import re
 from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
-from lipidlynx.controllers.Logger import logger
+from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
 from lipidlynx.models.defaults import (
-    lynx_schema,
     cv_elements_info,
     elem_nominal_info,
+    lynx_schema,
     mod_level_lst,
 )
+from lipidlynx.models.log import logger
 from lipidlynx.models.patterns import (
     mod_rgx,
     mod_db_rgx,
@@ -22,15 +30,14 @@ from lipidlynx.models.patterns import (
     mod_lv3_position_rgx,
     mod_lv4_position_rgx,
 )
-from lipidlynx.controllers.GeneralFunctions import get_abs_path
 
 
 class Modifications(object):
     def __init__(self, mod_code: str, db: int = 0):
 
         self.mod_code = mod_code.strip("<>")
-
-        with open(get_abs_path(lynx_schema["lynx_mod"]), "r") as s_obj:
+        self.schema = "lynx_mod"
+        with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(json.load(s_obj))
 
         self.db_count = db
@@ -38,11 +45,14 @@ class Modifications(object):
         self.mod_info = self.__post_init__()
         self.mod_level = self.__identify_level__()
         self.sum_mod_info = self.get_sum_info()
-        
-        self.mod_id = self.sum_mod_info.get('mod_id', '')
-        self.mod_linked_ids = self.sum_mod_info.get('mod_linked_ids', {})
 
-        logger.info(f"Level {self.mod_level:3s} modification created from: {self.mod_code}")
+        self.mod_id = self.sum_mod_info.get("mod_id", "")
+        self.mod_linked_ids = self.sum_mod_info.get("mod_linked_ids", {})
+        self.mod_list = self.sum_mod_info.get("mod_list", {})
+
+        logger.info(
+            f"Level {self.mod_level:3s} modification created from: {self.mod_code}"
+        )
 
     def __parse_db__(self, db_str: str) -> dict:
 
@@ -62,11 +72,16 @@ class Modifications(object):
     def __parse_mod__(self, mod_str: str) -> dict:
         if mod_lv0_delta_rgx.match(self.mod_code):
             lv0_seg_lst = mod_lv0_delta_rgx.match(self.mod_code).groups()
-            lv0_seg_lst = [s.strip(',') for s in lv0_seg_lst]
+            lv0_seg_lst = [s.strip(",") for s in lv0_seg_lst]
             delta_i = 0
             for s in lv0_seg_lst:
                 delta_i += int(s)
-            mod_dct = {"cv": "Delta", "count": delta_i, "positions": [], "positions_type": []}
+            mod_dct = {
+                "cv": "Delta",
+                "count": delta_i,
+                "positions": [],
+                "positions_type": [],
+            }
             return mod_dct
         else:
             mod_match = mod_lv3_position_rgx.match(mod_str)
@@ -85,7 +100,7 @@ class Modifications(object):
                     mod_dct.update(positions_info)
                 return mod_dct
             else:
-                if '+' in mod_str or '-' in mod_str:
+                if "+" in mod_str or "-" in mod_str:
                     mod_match = mod_lv1_elem_rgx.match(mod_str)
                 else:
                     mod_match = mod_lv2_types_rgx.match(mod_str)
@@ -136,8 +151,8 @@ class Modifications(object):
                             max_level = max(max_level, mod_level + 0.2)
                             break
 
-        mod_level = f'{max(max_level, mod_level):.1f}'
-        if mod_level.endswith('.0'):
+        mod_level = f"{max(max_level, mod_level):.1f}"
+        if mod_level.endswith(".0"):
             mod_level = mod_level[0]
 
         if float(mod_level) >= 0:
@@ -196,7 +211,7 @@ class Modifications(object):
             mod_cv = mod["cv"]
             mod_count = mod["count"]
             mod_elem_dct = cv_elements_info[mod_cv]
-            if mod_cv != 'DB':
+            if mod_cv != "DB":
                 for elem in mod_elem_dct:
                     if elem in sum_mod_elem_dct:
                         sum_mod_elem_dct[elem] += mod_count * mod_elem_dct[elem]
@@ -207,42 +222,39 @@ class Modifications(object):
 
     def get_sum_info(self):
         linked_ids_lst = self.to_all_levels()
-        mod_id = linked_ids_lst.get(self.mod_level, '')
+        mod_id = linked_ids_lst.get(self.mod_level, "")
         if mod_id:
             if mod_id == self.mod_code:
                 sum_mod_info_dct = {
-                    "_version": lynx_schema.get('_version', "0.1"),
+                    "_version": lynx_schema.get("_version", "0.1"),
                     "mod_id": self.mod_code,
                     "mod_level": self.mod_level,
                     "mod_linked_ids": self.to_all_levels(),
-                    "mod_list": self.mod_info
+                    "mod_list": self.mod_info,
                 }
             else:
                 sum_mod_info_dct = {
-                    "_version": lynx_schema.get('_version', "0.1"),
+                    "_version": lynx_schema.get("_version", "0.1"),
                     "mod_id": mod_id,
                     "input_mod_id": self.mod_code,
                     "mod_level": self.mod_level,
                     "mod_linked_ids": self.to_all_levels(),
-                    "mod_list": self.mod_info
+                    "mod_list": self.mod_info,
                 }
         else:
-            raise ValueError(f'Cannot format modification code to level {self.mod_level} '
-                             f'from input: {self.mod_code}')
+            raise ValueError(
+                f"Cannot format modification code to level {self.mod_level} "
+                f"from input: {self.mod_code}"
+            )
 
         return sum_mod_info_dct
 
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
-        j_json = json.loads(mod_json_str)
-        if self.validator.is_valid(j_json):
-            logger.debug(f"Schema test PASSED. Modification JSON created.")
+        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
             return mod_json_str
         else:
-            errors = sorted(self.validator.iter_errors(j_json), key=lambda e: err.path)
-            for err in errors:
-                logger.error(err)
-            raise Exception(f"Schema test FAILED.")
+            raise Exception(f"Schema test FAILED. Schema {self.schema}")
 
     def to_mass_shift(self, angle_brackets: bool = True) -> str:
         if float(self.mod_level) > 0:
@@ -261,13 +273,13 @@ class Modifications(object):
             lv0_groups = []
             if lv0_match:
                 lv0_matched_groups = lv0_match.groups()
-                lv0_groups = [int(i.strip(',')) for i in lv0_matched_groups]
+                lv0_groups = [int(i.strip(",")) for i in lv0_matched_groups]
             if lv0_groups:
                 mod_str = f"{sum(lv0_groups):+}"
                 if angle_brackets:
                     mod_str = self.__add_angle_brackets__(mod_str)
             else:
-                mod_str = ''
+                mod_str = ""
             return mod_str
         else:
             raise ValueError(
@@ -281,11 +293,11 @@ class Modifications(object):
             mod_elem_lst = ["O", "N", "S", "H", "Na"]
             for mod_elem in mod_elem_lst:
                 if mod_elem in sum_mod_elem_dct:
-                    mod_elem_count = f'{sum_mod_elem_dct[mod_elem]:+}'
-                    if mod_elem_count == '+1':
-                        mod_elem_count = '+'
-                    elif mod_elem_count == '-1':
-                        mod_elem_count = '-'
+                    mod_elem_count = f"{sum_mod_elem_dct[mod_elem]:+}"
+                    if mod_elem_count == "+1":
+                        mod_elem_count = "+"
+                    elif mod_elem_count == "-1":
+                        mod_elem_count = "-"
                     mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
 
             mod_str = f'{",".join(mod_str_lst)}'
@@ -316,7 +328,10 @@ class Modifications(object):
             )
 
     def to_mod_position(
-        self, angle_brackets: bool = True, db_position: bool = False, db_position_info=False,
+        self,
+        angle_brackets: bool = True,
+        db_position: bool = False,
+        db_position_info=False,
     ) -> str:
         if db_position_info and not db_position:
             db_position = True
@@ -327,7 +342,9 @@ class Modifications(object):
                 positions = "{" + ",".join(positions_lst) + "}"
                 if mod["cv"] == "DB":
                     if db_position and db_position_info:  # mod level 3.2
-                        mod_output_lst.append("{" + ",".join(mod["positions_info"]) + "}")
+                        mod_output_lst.append(
+                            "{" + ",".join(mod["positions_info"]) + "}"
+                        )
                     if db_position and not db_position_info:  # mod level 3.1
                         mod_output_lst.append(positions)
                 else:
@@ -467,10 +484,10 @@ class Modifications(object):
 if __name__ == "__main__":
 
     mod_code_lst = [
-        r'<-18>',
-        r'<+46>',
-        r'<+3O,-2H>',
-        r'<2OH,Ke>',
+        r"<-18>",
+        r"<+46>",
+        r"<+3O,-2H>",
+        r"<2OH,Ke>",
         r"<2OH{8,11},Ke{14}>",
         r"<{5,9,12,15},2OH{8,11},Ke{14}>",
         r"<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
@@ -480,7 +497,7 @@ if __name__ == "__main__":
     ]
 
     for usr_mod_code in mod_code_lst:
-        logger.info(f'Test mod str: {usr_mod_code}')
+        logger.info(f"Test mod str: {usr_mod_code}")
 
         mod_obj = Modifications(usr_mod_code)
 
@@ -502,4 +519,4 @@ if __name__ == "__main__":
         mod_json = mod_obj.to_json()
         logger.debug(mod_json)
 
-    logger.info('FINISHED')
+    logger.info("FINISHED")

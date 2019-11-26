@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# For more info please contact:
+#     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import re
 
 # general
@@ -18,12 +26,12 @@ mod_lv4_position_rgx = re.compile(r'(?P<position>\d{1,2})(?P<position_type>[EZRS
 fa_rgx = re.compile(r"(?P<link>[OP]-|FA|SBP)?(?P<c>\d{1,2})(:)(?P<db>\d)(?P<mod>[<].*[>])?")
 
 # lynx PL
-pl_rgx = re.compile(r"(?P<subclass>L)?(?P<class>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?"
+pl_rgx = re.compile(r"(?P<hg_subclass>L)?(?P<hg_class>P[ACEGIS]|PIP[1-3]?)(\s*\(?)?"
                     r"(?P<fa1>([OP]-|FA)?(\d{1,2})(:)(\d)([<].*[>])?)?(?P<position1>[_/\\])?"
                     r"(?P<fa2>([OP]-|FA)?(\d{1,2})(:)(\d)([<].*[>])?)?(\))")
 
 # lynx SP
-sp_rgx = re.compile(r"(?P<subclass>L)?(?P<class>Cer|SM|SP)(\s*\(?)?"
+sp_rgx = re.compile(r"(?P<hg_subclass>L)?(?P<hg_class>Cer|SM|SPB?)(\s*\(?)?"
                     r"(?P<fa1>([OP]-|FA|SBP)?(\d{1,2})(:)(\d)([<].*[>])?)?(?P<position1>[_/\\])?"
                     r"(?P<fa2>([OP]-|FA)?(\d{1,2})(:)(\d)([<].*[>])?)?(\))")
 

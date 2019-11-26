@@ -8,6 +8,12 @@
     "S2": "FA20:4<2OH,Ke>",
     "S3": "FA20:4<2OH{8,11},Ke{14}>"
   },
+  "fa_info": {
+    "c": 20,
+    "db": 4,
+    "link": "FA",
+    "is_modified": true
+  },
   "mod_info": {
     "mod_id": "<2OH{8,11},Ke{14}>"
   }

@@ -13,7 +13,7 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem, rdMolDescriptors
 
-from lipidlynx.controllers.Logger import logger
+from lipidlynx.models.log import logger
 from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
 from lipidlynx.models.defaults import default_cfg_path
 from lipidlynx.liblynx.Converter import Converter

@@ -1,10 +1,12 @@
 {
   "_version": "0.1",
-  "id":"PC(16:0/20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)",
-  "input_name":"PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)",
-  "alias":["PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)"],
-  "level":"S4.2",
-  "linked_ids":{
+  "id": "PC(16:0/20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)",
+  "input_name": "PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)",
+  "alias": [
+    "PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)"
+  ],
+  "level": "S4.2",
+  "linked_ids": {
     "B0": "PC(36:4<+44>)",
     "B1": "PC(36:4<+3O,-6H>)",
     "B2": "PC(36:4<2OH,Ke>)",
@@ -36,17 +38,24 @@
     "main_class": "PC",
     "sub_class": "PC"
   },
-  "residues": [{
-    "id": "FA16:0",
-    "position": "sn1"
-  },
+  "residues": [
     {
-      "id": "FA20:4[4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}]",
-      "position": "sn2"
+      "position": "sn1",
+      "residue_id": "FA16:0"
+    },
+    {
+      "position": "sn2",
+      "residue_id": "FA20:4[4DB{5Z,9E,12E,15E},2OH{8R,11S},1Ke{14}]"
+    },
+    {
+      "position": "sn3",
+      "residue_id": "PC"
     }
   ],
-  "resource_ids": [{
-    "db": "lipidmaps",
-    "ref_id": "LMGP01011234"
-  }]
+  "resource_ids": [
+    {
+      "db": "lipidmaps",
+      "ref_id": "LMGP01011234"
+    }
+  ]
 }

@@ -17,8 +17,16 @@ from lipidlynx.models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
-from lipidlynx.controllers.Logger import logger
-from lipidlynx.controllers.GeneralFunctions import seg_to_str
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# For more info please contact:
+#     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
+from lipidlynx.models.log import logger
+from lipidlynx.controllers.general_functions import seg_to_str
 from lipidlynx.controllers.Parser import parse, parse_mod
 
 

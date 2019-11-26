@@ -18,7 +18,7 @@ sys.path.insert(0, epiLION_Path + "/../")
 
 from lipidlynx.models.defaults import lynx_schema
 from lipidlynx.models.defaults import logger
-from lipidlynx.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.controllers.general_functions import get_abs_path
 
 
 JSON_SCHEMA_INFO = {

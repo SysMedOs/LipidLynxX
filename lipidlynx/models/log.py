@@ -5,18 +5,17 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import logging
 
-logger = logging.getLogger("log")
 log_level = logging.DEBUG
+date_fmt = "%b-%d@%H:%M:%S"
+log_fmt = "%(asctime)s[%(levelname)-5s] %(message)s"
+logger = logging.getLogger("log")
 logger.setLevel(log_level)
+
 if not logger.handlers:
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.WARNING)
-    formatter = logging.basicConfig(
-        format="%(asctime)s[%(levelname)-5s] %(message)s",
-        datefmt="%b-%d@%H:%M:%S",
-        level=log_level,
-    )
-    console_handler.setFormatter(formatter)
+    console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+    logger.info('Log started ...')
     logger.addHandler(console_handler)

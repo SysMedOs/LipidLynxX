@@ -6,8 +6,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import json
 import os
 from typing import List
+
+from jsonschema import Draft7Validator
+
+from lipidlynx.models.log import logger
 
 
 def get_abs_path(file_path: str) -> str:
@@ -45,7 +50,7 @@ def seg_to_str(in_list: List[str], sep: str = ",") -> str:
     """
     Combine multiple segments into one str without space and separator in the end
     Args:
-        in_list: input list to be joined
+        in_list: input list to be joined.
         sep: separator used to join str segments, default value is ","
 
     Returns:
@@ -58,3 +63,15 @@ def seg_to_str(in_list: List[str], sep: str = ",") -> str:
     if out_str is None:
         out_str = ""
     return out_str
+
+
+def check_json(validator: Draft7Validator, json_obj: json) -> bool:
+    is_valid = False
+    if validator.is_valid(json_obj):
+        logger.debug(f"JSON Schema check PASSED.")
+        is_valid = True
+    else:
+        for e in validator.iter_errors(json_obj):
+            logger.error(e)
+        raise Exception(f"JSON Schema check FAILED. Json string: {json_obj}")
+    return is_valid
