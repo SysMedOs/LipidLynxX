@@ -26,6 +26,7 @@ class HeadGroup(object):
             self.validator = Draft7Validator(json.load(s_obj))
 
         self.sum_info = {"hg_id": hg_code}
+        self.id = hg_code
 
     def to_json(self):
         mod_json_str = json.dumps(self.sum_info)
@@ -51,6 +52,7 @@ class FattyAcid(object):
             self.db_count = db
         else:
             self.db_count = self.fa_info_dct["fa_info"]["db"]
+        self.id = self.fa_info_dct.get("fa_id", "")
         self.fa_level = self.fa_info_dct.get("fa_level", "")
         self.is_modified = self.fa_info_dct["fa_info"].get("is_modified", False)
         self.fa_linked_ids = self.fa_info_dct.get("fa_linked_ids", {})
@@ -96,14 +98,28 @@ class FattyAcid(object):
                         ):
                             is_modified = True
             else:
-                fa_info_dct["fa_level"] = "4"
-                fa_info_dct["fa_linked_ids"] = {
-                    "0": fa_seg_str,
-                    "1": fa_seg_str,
-                    "2": fa_seg_str,
-                    "3": fa_seg_str,
-                    "4": fa_seg_str,
-                }
+                if fa_matched_dct.get("db", 0) == 0:
+                    fa_info_dct["fa_level"] = "4.2"
+                    fa_info_dct["fa_linked_ids"] = {
+                        "0": fa_seg_str,
+                        "1": fa_seg_str,
+                        "2": fa_seg_str,
+                        "3": fa_seg_str,
+                        "3.1": fa_seg_str,
+                        "3.2": fa_seg_str,
+                        "4": fa_seg_str,
+                        "4.1": fa_seg_str,
+                        "4.2": fa_seg_str,
+                    }
+                else:
+                    fa_info_dct["fa_level"] = "4"
+                    fa_info_dct["fa_linked_ids"] = {
+                        "0": fa_seg_str,
+                        "1": fa_seg_str,
+                        "2": fa_seg_str,
+                        "3": fa_seg_str,
+                        "4": fa_seg_str,
+                    }
                 if self.lipid_code != fa_seg_str:
                     self.lipid_code = fa_seg_str
             fa_info_dct["fa_info"] = {
@@ -150,6 +166,7 @@ if __name__ == "__main__":
     mod_code_lst = [
         r"16:0",
         r"18:1",
+        r"18:1<{9Z}>",
         r"20:4<-18>",
         r"20:4<+46>",
         r"20:4<+3O,-2H>",
@@ -162,6 +179,7 @@ if __name__ == "__main__":
         r"20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
         r"FA16:0",
         r"FA18:1",
+        r"FA18:1<{9Z}>",
         r"FA20:4<-18>",
         r"FA20:4<+46>",
         r"FA20:4<+3O,-2H>",
@@ -174,6 +192,7 @@ if __name__ == "__main__":
         r"FA20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
         r"O-16:0",
         r"O-18:1",
+        r"O-18:1<{9Z}>",
         r"O-20:4<-18>",
         r"O-20:4<+46>",
         r"O-20:4<+3O,-2H>",
@@ -186,6 +205,7 @@ if __name__ == "__main__":
         r"O-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
         r"P-16:0",
         r"P-18:1",
+        r"P-18:1<{9Z}>",
         r"P-20:4<-18>",
         r"P-20:4<+46>",
         r"P-20:4<+3O,-2H>",

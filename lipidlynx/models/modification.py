@@ -187,7 +187,10 @@ class Modifications(object):
 
     @staticmethod
     def __add_angle_brackets__(mod_str: str) -> str:
-        return f"<{mod_str}>"
+        if mod_str and mod_str not in ["+0", "-0", "0"]:
+            return f"<{mod_str}>"
+        else:
+            return ""
 
     @staticmethod
     def get_positions(positions: Union[str, List[str]]) -> dict:
@@ -457,9 +460,7 @@ class Modifications(object):
             mod_idx = mod_level_lst.index(self.mod_level)
             output_levels_lst = mod_level_lst[: mod_idx + 1]
         else:
-            raise ValueError(
-                f"Currently not supported modification level: {self.mod_level}"
-            )
+            raise ValueError(f"Modification level not supported: {self.mod_level}")
         if self.mod_level == "4":
             output_levels_lst.remove("3.2")
             output_levels_lst.remove("3.1")
@@ -494,6 +495,8 @@ if __name__ == "__main__":
         r"<2OH{8R,11S},Ke{14}>",
         r"<{5,9,12,15},2OH{8R,11S},Ke{14}>",
         r"<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
+        r"<{9Z}>",
+        r"<{9Z,12Z}>",
     ]
 
     for usr_mod_code in mod_code_lst:

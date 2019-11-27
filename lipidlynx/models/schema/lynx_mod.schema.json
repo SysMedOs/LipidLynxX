@@ -34,7 +34,6 @@
       "patternProperties": {
         "(^[012]$)|(^[34](\\.[0-9])?$)": {
           "type": "string",
-          "minLength": 2,
           "maxLength": 256
         }
       }
