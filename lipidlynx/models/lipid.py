@@ -161,6 +161,7 @@ class Lipid(object):
         other_pre_dct = {}
         lv_lst = self.get_levels()
         fa_res_dct = {}
+        fa_info_lst = []
         for mod_lv in lv_lst["mod_lv_lst"]:
             fa_res_dct[mod_lv] = []
         for res in res_lst:
@@ -182,9 +183,27 @@ class Lipid(object):
                     res_id_dct = fa_linked_ids
                 for mod_lv in res_id_dct:
                     fa_res_dct[mod_lv].append(res_id_dct[mod_lv].strip("FA"))
+                if float(res_level) > 2:
+                    bulk_level = "2"
+                else:
+                    bulk_level = res_level
+                fa_info_lst.append(res_obj.to_segments(mod_level=bulk_level))
             elif res_info.get("residue_type", None) == "HG":
                 res_obj = HeadGroup(res_info.get("hg_id", None))
                 other_pre_dct["HG"] = res_obj.id
+        bulk_linked_ids = {}
+        if lv_lst["lynx_lv_lst"][0].startswith("B"):
+            sum_c = 0
+            sum_db = 0
+            sum_link = []
+            sum_mod_lst = []
+            for info in fa_info_lst:
+                sum_c += int(info["c"])
+                sum_db += int(info["db"])
+                sum_link.append(info["link"].strip("FA"))
+                sum_mod_lst.append(info["mod_text"].strip("<>"))
+            sum_fa_str = f"{''.join(sum_link)}{sum_c}:{sum_db}<{','.join(sum_mod_lst).strip(',')}>"
+            bulk_linked_ids = FattyAcid(sum_fa_str).fa_linked_ids
 
         for lv in lv_lst["lynx_lv_lst"]:
             if lv[0] == "S":
@@ -192,6 +211,9 @@ class Lipid(object):
                 linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
             elif lv[0] == "D":
                 fa_seg_str = "_".join(fa_res_dct.get(lv[1:], []))
+                linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
+            elif lv[0] == "B" and int(lv[1]) <= 2:
+                fa_seg_str = bulk_linked_ids.get(lv[1:], "").strip("FA")
                 linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
         return linked_ids_dct
 

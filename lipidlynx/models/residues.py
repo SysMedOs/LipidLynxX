@@ -12,7 +12,7 @@ from jsonschema import Draft7Validator
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import lynx_schema
+from lipidlynx.models.defaults import lynx_schema, mod_level_lst
 from lipidlynx.models.log import logger
 from lipidlynx.models.modification import Modifications
 from lipidlynx.models.patterns import fa_rgx
@@ -46,6 +46,7 @@ class FattyAcid(object):
 
         self.fa_info_dct = self.__post_init__()
         self.fa_info_dct["fa_id"] = self.lipid_code
+        self.info = self.fa_info_dct["fa_info"]
 
         self.mod_info = self.fa_info_dct.get("mod_obj", None)
         if db and db < self.fa_info_dct["fa_info"]["db"]:
@@ -98,6 +99,7 @@ class FattyAcid(object):
                         ):
                             is_modified = True
             else:
+                mod_code = ""
                 if fa_matched_dct.get("db", 0) == 0:
                     fa_info_dct["fa_level"] = "4.2"
                     fa_info_dct["fa_linked_ids"] = {
@@ -127,6 +129,7 @@ class FattyAcid(object):
                 "db": int(fa_matched_dct.get("db", 0)),
                 "link": fa_link,
                 "is_modified": is_modified,
+                "mod_text": mod_code,
             }
             return fa_info_dct
         else:
@@ -140,6 +143,22 @@ class FattyAcid(object):
             return fa_json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
+
+    def to_segments(self, mod_level: str):
+
+        out_fa_info_dct = self.info
+        if (
+            self.mod_info
+            and self.mod_info.mod_linked_ids
+            and mod_level in mod_level_lst
+            and float(mod_level) <= float(mod_level)
+        ):
+            out_fa_info_dct["mod_text"] = self.mod_info.mod_linked_ids.get(
+                mod_level, ""
+            )
+        else:
+            out_fa_info_dct["mod_text"] = ""
+        return out_fa_info_dct
 
 
 if __name__ == "__main__":
