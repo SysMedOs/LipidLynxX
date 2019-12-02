@@ -10,14 +10,17 @@ import json
 import re
 from typing import Dict, List, Union
 
-from jsonschema import Draft7Validator
+from jsonschema import Draft7Validator, RefResolver
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
 from lipidlynx.models.defaults import (
+    api_version,
     cv_elements_info,
     elem_nominal_info,
     lynx_schema,
+    core_schema,
+    core_schema_path,
     mod_level_lst,
 )
 from lipidlynx.models.log import logger
@@ -37,8 +40,14 @@ class Modifications(object):
 
         self.mod_code = mod_code.strip("<>")
         self.schema = "lynx_mod"
+        self.mod_type = "Modification"
         with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
-            self.validator = Draft7Validator(json.load(s_obj))
+            self.validator = Draft7Validator(
+                json.load(s_obj),
+                resolver=RefResolver(
+                    f"file://{core_schema_path}", referrer=core_schema
+                ),
+            )
 
         self.db_count = db
 
@@ -46,9 +55,9 @@ class Modifications(object):
         self.mod_level = self.__identify_level__()
         self.sum_mod_info = self.get_sum_info()
 
-        self.mod_id = self.sum_mod_info.get("mod_id", "")
-        self.mod_linked_ids = self.sum_mod_info.get("mod_linked_ids", {})
-        self.mod_list = self.sum_mod_info.get("mod_list", {})
+        self.mod_id = self.sum_mod_info.get("id", "")
+        self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
+        self.mod_list = self.sum_mod_info.get("info", {})
 
         logger.info(
             f"Level {self.mod_level:3s} modification created from: {self.mod_code}"
@@ -229,20 +238,22 @@ class Modifications(object):
         if mod_id:
             if mod_id == self.mod_code:
                 sum_mod_info_dct = {
-                    "_version": lynx_schema.get("_version", "0.1"),
-                    "mod_id": self.mod_code,
-                    "mod_level": self.mod_level,
-                    "mod_linked_ids": self.to_all_levels(),
-                    "mod_list": self.mod_info,
+                    "api_version": api_version,
+                    "type": self.mod_type,
+                    "id": self.mod_code,
+                    "level": self.mod_level,
+                    "linked_ids": self.to_all_levels(),
+                    "info": self.mod_info,
                 }
             else:
                 sum_mod_info_dct = {
-                    "_version": lynx_schema.get("_version", "0.1"),
-                    "mod_id": mod_id,
+                    "api_version": api_version,
+                    "type": self.mod_type,
+                    "id": mod_id,
                     "input_mod_id": self.mod_code,
-                    "mod_level": self.mod_level,
-                    "mod_linked_ids": self.to_all_levels(),
-                    "mod_list": self.mod_info,
+                    "level": self.mod_level,
+                    "linked_ids": self.to_all_levels(),
+                    "info": self.mod_info,
                 }
         else:
             raise ValueError(
@@ -254,6 +265,7 @@ class Modifications(object):
 
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
+
         if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
             return mod_json_str
         else:

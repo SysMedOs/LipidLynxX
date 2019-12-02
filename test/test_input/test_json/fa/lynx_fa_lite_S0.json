@@ -1,11 +1,11 @@
 {
-  "_version": "0.1",
-  "fa_id":"FA20:4<+44>",
-  "fa_level":"S0",
-  "fa_linked_ids":{
+  "api_version": "0.1",
+  "id":"FA20:4<+44>",
+  "level":"S0",
+  "linked_ids":{
     "S0": "FA20:4<+44>"
   },
-  "fa_info": {
+  "info": {
     "c": 20,
     "db": 4,
     "link": "FA",

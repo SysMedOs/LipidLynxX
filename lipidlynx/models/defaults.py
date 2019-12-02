@@ -22,6 +22,7 @@ from lipidlynx.controllers.general_functions import get_abs_path
 
 # Define default values across LipidLynx
 
+api_version = "0.1"
 
 # load default values from files defined in config.ini
 # following parameters generated will be used as global values
@@ -47,21 +48,22 @@ abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
 
+core_schema_path = get_abs_path(r"lipidlynx/models/schema/lynx_core.schema.json")
+with open(core_schema_path, "r") as core_obj:
+    core_schema = json.load(core_obj)
+
+mod_schema_path = get_abs_path(r"lipidlynx/models/schema/lynx_mod.schema.json")
+with open(mod_schema_path, "r") as mod_json_obj:
+    mod_schema = json.load(mod_json_obj)
+
 lynx_schema = {
-    "_version": r'0.1',
-    "lynx_mod": r'lipidlynx/models/schema/lynx_mod.schema.json',
-    "lynx_fa": r'lipidlynx/models/schema/lynx_fa.schema.json',
-    "lynx_hg": r'lipidlynx/models/schema/lynx_hg.schema.json',
-    "lynx_core": r'lipidlynx/models/schema/lynx_core.schema.json'
+    "lynx_mod": r"lipidlynx/models/schema/lynx_mod.schema.json",
+    "lynx_fa": r"lipidlynx/models/schema/lynx_fa.schema.json",
+    "lynx_hg": r"lipidlynx/models/schema/lynx_hg.schema.json",
+    "lynx_core": r"lipidlynx/models/schema/lynx_core.schema.json",
 }
 
-elem_nominal_info = {
-    "H": 1,
-    "N": 14,
-    "O": 16,
-    "S": 32,
-    "Na": 23
-}
+elem_nominal_info = {"H": 1, "N": 14, "O": 16, "S": 32, "Na": 23}
 
 # # legacy params
 # pa_hg_elem_dct = {"C": 0, "H": 3, "O": 4, "P": 1, "N": 0}

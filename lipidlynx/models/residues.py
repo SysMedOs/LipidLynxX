@@ -8,11 +8,17 @@
 
 import json
 
-from jsonschema import Draft7Validator
+from jsonschema import Draft7Validator, RefResolver
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import lynx_schema, mod_level_lst
+from lipidlynx.models.defaults import (
+    api_version,
+    lynx_schema,
+    mod_level_lst,
+    mod_schema,
+    mod_schema_path,
+)
 from lipidlynx.models.log import logger
 from lipidlynx.models.modification import Modifications
 from lipidlynx.models.patterns import fa_rgx
@@ -22,10 +28,14 @@ class HeadGroup(object):
     def __init__(self, hg_code: str):
         self.hg = hg_code
         self.schema = "lynx_hg"
+        self.type = "HeadGroup"
         with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
-            self.validator = Draft7Validator(json.load(s_obj))
+            self.validator = Draft7Validator(
+                json.load(s_obj),
+                resolver=RefResolver(f"file://{mod_schema_path}", referrer=mod_schema),
+            )
 
-        self.sum_info = {"hg_id": hg_code}
+        self.sum_info = {"api_version": api_version, "id": hg_code, "type": self.type}
         self.id = hg_code
 
     def to_json(self):
@@ -41,29 +51,33 @@ class FattyAcid(object):
 
         self.lipid_code = lipid_code.strip("FA")
         self.schema = "lynx_fa"
+        self.type = "FattyAcid"
         with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
-            self.validator = Draft7Validator(json.load(s_obj))
+            self.validator = Draft7Validator(
+                json.load(s_obj),
+                resolver=RefResolver(f"file://{mod_schema_path}", referrer=mod_schema),
+            )
 
         self.fa_info_dct = self.__post_init__()
-        self.fa_info_dct["fa_id"] = self.lipid_code
-        self.info = self.fa_info_dct["fa_info"]
+        self.fa_info_dct["id"] = self.lipid_code
+        self.info = self.fa_info_dct["info"]
 
         self.mod_info = self.fa_info_dct.get("mod_obj", None)
-        if db and db < self.fa_info_dct["fa_info"]["db"]:
+        if db and db < self.fa_info_dct["info"]["db"]:
             self.db_count = db
         else:
-            self.db_count = self.fa_info_dct["fa_info"]["db"]
-        self.id = self.fa_info_dct.get("fa_id", "")
-        self.fa_level = self.fa_info_dct.get("fa_level", "")
-        self.is_modified = self.fa_info_dct["fa_info"].get("is_modified", False)
-        self.fa_linked_ids = self.fa_info_dct.get("fa_linked_ids", {})
+            self.db_count = self.fa_info_dct["info"]["db"]
+        self.id = self.fa_info_dct.get("id", "")
+        self.fa_level = self.fa_info_dct.get("level", "")
+        self.is_modified = self.fa_info_dct["info"].get("is_modified", False)
+        self.fa_linked_ids = self.fa_info_dct.get("linked_ids", {})
         logger.info(
             f"Level {self.fa_level:4s} FattyAcid created from: {self.lipid_code}"
         )
 
     def __post_init__(self):
 
-        fa_info_dct = {}
+        fa_info_dct = {"api_version": api_version, "type": self.type, "info": {}}
         fa_match = fa_rgx.match(self.lipid_code)
 
         is_modified = False
@@ -82,14 +96,14 @@ class FattyAcid(object):
             if mod_code:
                 mod_obj = Modifications(mod_code)
                 fa_info_dct["mod_obj"] = mod_obj
-                fa_info_dct["mod_info"] = mod_obj.sum_mod_info
-                fa_info_dct["mod_id"] = mod_obj.mod_id
-                fa_info_dct["fa_level"] = f"{mod_obj.mod_level}"
+                fa_info_dct["info"]["mod_info"] = mod_obj.sum_mod_info
+                fa_info_dct["info"]["mod_id"] = mod_obj.mod_id
+                fa_info_dct["level"] = f"{mod_obj.mod_level}"
                 fa_linked_ids_dct = {}
                 mod_linked_ids_dct = mod_obj.mod_linked_ids  # type: dict
                 for lv in mod_linked_ids_dct:
                     fa_linked_ids_dct[f"{lv}"] = f"{fa_seg_str}{mod_linked_ids_dct[lv]}"
-                fa_info_dct["fa_linked_ids"] = fa_linked_ids_dct
+                fa_info_dct["linked_ids"] = fa_linked_ids_dct
 
                 if mod_obj.mod_list:
                     for mod_seg in mod_obj.mod_list:
@@ -101,8 +115,8 @@ class FattyAcid(object):
             else:
                 mod_code = ""
                 if fa_matched_dct.get("db", 0) == 0:
-                    fa_info_dct["fa_level"] = "4.2"
-                    fa_info_dct["fa_linked_ids"] = {
+                    fa_info_dct["level"] = "4.2"
+                    fa_info_dct["linked_ids"] = {
                         "0": fa_seg_str,
                         "1": fa_seg_str,
                         "2": fa_seg_str,
@@ -114,8 +128,8 @@ class FattyAcid(object):
                         "4.2": fa_seg_str,
                     }
                 else:
-                    fa_info_dct["fa_level"] = "4"
-                    fa_info_dct["fa_linked_ids"] = {
+                    fa_info_dct["level"] = "4"
+                    fa_info_dct["linked_ids"] = {
                         "0": fa_seg_str,
                         "1": fa_seg_str,
                         "2": fa_seg_str,
@@ -124,12 +138,12 @@ class FattyAcid(object):
                     }
                 if self.lipid_code != fa_seg_str:
                     self.lipid_code = fa_seg_str
-            fa_info_dct["fa_info"] = {
+            fa_info_dct["info"] = {
                 "c": int(fa_matched_dct.get("c", 0)),
                 "db": int(fa_matched_dct.get("db", 0)),
                 "link": fa_link,
                 "is_modified": is_modified,
-                "mod_text": mod_code,
+                "mod_id": mod_code,
             }
             return fa_info_dct
         else:
@@ -153,11 +167,9 @@ class FattyAcid(object):
             and mod_level in mod_level_lst
             and float(mod_level) <= float(mod_level)
         ):
-            out_fa_info_dct["mod_text"] = self.mod_info.mod_linked_ids.get(
-                mod_level, ""
-            )
+            out_fa_info_dct["mod_id"] = self.mod_info.mod_linked_ids.get(mod_level, "")
         else:
-            out_fa_info_dct["mod_text"] = ""
+            out_fa_info_dct["mod_id"] = ""
         return out_fa_info_dct
 
 
@@ -249,7 +261,7 @@ if __name__ == "__main__":
         #
         fa_json = fa_obj.to_json()
         logger.debug(fa_json)
-        fa_ids_dct = json.loads(fa_json).get("fa_linked_ids")
+        fa_ids_dct = json.loads(fa_json).get("linked_ids")
         logger.info("".join([f"\n {s}: {fa_ids_dct[s]}" for s in fa_ids_dct]))
 
     logger.info("FINISHED")

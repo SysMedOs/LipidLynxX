@@ -1,0 +1,102 @@
+{
+  "$id": "#lynx_core.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The Lipid structure of LipidLynx output",
+  "$ref": "lynx_core.schema.json",
+  "info": {
+    "description": "The structure of Fatty acid",
+    "type": "object",
+    "required": [],
+    "properties": {
+      "lipid_class": {
+        "description": "lipid class information",
+        "type": "object",
+        "required": [
+          "main_class"
+        ],
+        "properties": {
+          "lm_class": {
+            "description": "List of max 2 LIPID MAPS class e.g. GP01 and GP0101",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 8
+            },
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true
+          },
+          "main_class": {
+            "description": "main lipid class",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 8
+          },
+          "sub_class": {
+            "description": "sub_lipid class",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 16
+          }
+        }
+      },
+      "residues": {
+        "description": "Information of sn residues",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "residue_id"
+          ],
+          "properties": {
+            "residue_id": {
+              "description": "The LipidLynx id of the residue",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 384
+            },
+            "position": {
+              "description": "The position of the residue",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 384
+            }
+          }
+        }
+      },
+      "resource_ids": {
+        "description": "Information of reference id in other databases",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "items": {
+            "type": "object",
+            "required": [
+              "database",
+              "ref_id"
+            ],
+            "properties": {
+              "db": {
+                "description": "Name of the database",
+                "type": "string",
+                "enum": [
+                  "lipidmaps",
+                  "hmdb",
+                  "pubchem"
+                ]
+              },
+              "ref_id": {
+                "description": "The corresponding id of this lipid",
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 32
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  }
+}

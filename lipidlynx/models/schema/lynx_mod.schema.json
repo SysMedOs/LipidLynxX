@@ -1,83 +1,64 @@
 {
-  "$id": "https://example.com/lynx_mod.schema.json",
+  "$id": "#lynx_core.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "The structure of LipidLynx modification",
-  "type": "object",
-  "required": ["_version","mod_id", "mod_level", "mod_linked_ids"],
-  "properties": {
-    "_version": {
-      "description": "Version of the LipidLynx api",
-      "type": "string",
-      "pattern": "^[012]\\.[0-9]$"
+  "description": "The Lipid structure of LipidLynx output",
+  "allOf": [
+    {"$ref": "lynx_core.schema.json"}
+  ],
+  "linked_ids": {
+    "description": "Collection of all linked ids",
+    "type": "object",
+    "uniqueItems": true,
+    "minProperties": 1,
+    "propertyNames": {
+      "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)"
     },
-    "mod_id": {
-      "description": "LipidLynx id of this modification at highest level",
-      "type": "string",
-      "minLength": 2,
-      "maxLength": 256
-    },
-    "mod_level": {
-      "description": "The max level of modification",
-      "type": "string",
-      "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)",
-      "minLength": 1,
-      "maxLength": 3
-    },
-    "mod_linked_ids": {
-      "description": "Collection of all linked ids",
-      "type": "object",
-      "uniqueItems": true,
-      "minProperties": 1,
-      "propertyNames": {
-        "pattern": "(^[012]$)|(^[34](\\.[0-9])?$)"
-      },
-      "patternProperties": {
-        "(^[012]$)|(^[34](\\.[0-9])?$)": {
-          "type": "string",
-          "maxLength": 256
-        }
+    "patternProperties": {
+      "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)": {
+        "type": "string",
+        "maxLength": 256
       }
-    },
-    "mod_list": {
-      "description": "Information of the modification as individual objects",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["cv", "count"],
-        "properties": {
-          "cv": {
-            "description": "The controlled vocabulary of modification",
+    }
+  },
+  "info": {
+    "description": "Information of the modification as individual objects",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "required": ["cv", "count"],
+      "properties": {
+        "cv": {
+          "description": "The controlled vocabulary of modification",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8
+        },
+        "count": {
+          "description": "The number of modification, or mass shift if cv is Delta",
+          "type": "integer",
+          "minimum": -512,
+          "maximum": 512
+        },
+        "positions": {
+          "description": "The list of positions",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99
+          },
+          "maxItems": 99
+        },
+        "positions_info": {
+          "description": "The list of positions",
+          "type": "array",
+          "items": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 8
+            "maxLength": 3
           },
-          "count": {
-            "description": "The number of modification, or mass shift if cv is Delta",
-            "type": "integer",
-            "minimum": -512,
-            "maximum": 512
-          },
-          "positions": {
-            "description": "The list of positions",
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 99
-            },
-            "maxItems": 99
-          },
-          "positions_info": {
-            "description": "The list of positions",
-            "type": "array",
-            "items": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 3
-            },
-            "maxItems": 99,
-            "uniqueItems": true
-          }
+          "maxItems": 99,
+          "uniqueItems": true
         }
       }
     }

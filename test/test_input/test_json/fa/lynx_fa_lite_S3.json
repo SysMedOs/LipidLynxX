@@ -1,14 +1,14 @@
 {
-  "_version": "0.1",
-  "fa_id":"FA20:4<2OH{8,11},Ke{14}>",
-  "fa_level":"S3",
-  "fa_linked_ids":{
+  "api_version": "0.1",
+  "id":"FA20:4<2OH{8,11},Ke{14}>",
+  "level":"S3",
+  "linked_ids":{
     "S0": "FA20:4<+44>",
     "S1": "FA20:4<+3O,-6H>",
     "S2": "FA20:4<2OH,Ke>",
     "S3": "FA20:4<2OH{8,11},Ke{14}>"
   },
-  "fa_info": {
+  "info": {
     "c": 20,
     "db": 4,
     "link": "FA",

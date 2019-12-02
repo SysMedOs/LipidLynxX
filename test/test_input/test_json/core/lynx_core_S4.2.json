@@ -1,5 +1,5 @@
 {
-  "_version": "0.1",
+  "api_version": "0.1",
   "id": "PC(16:0/20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)",
   "input_name": "PC(16:0/20:4(5Z,9E,12E,15E)(8[R]OH,11[S]OH)(14Ke)",
   "alias": [

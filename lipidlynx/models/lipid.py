@@ -82,7 +82,7 @@ class Lipid(object):
         return lipid_segments
 
     def __identify_fa__(self, lipid_segments, fa_count: int = 1):
-        fa_info_dct = {}
+        fa_info_dct: dict = {}
         fa = f"fa{fa_count}"
         sn = f"sn{fa_count}"
         if fa_count > 1:
