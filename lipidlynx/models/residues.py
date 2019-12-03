@@ -7,17 +7,20 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
+import os
 
-from jsonschema import Draft7Validator, RefResolver
+from jsonschema import Draft7Validator, RefResolver, validate
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
 from lipidlynx.models.defaults import (
     api_version,
-    lynx_schema,
+    lynx_schema_cfg,
     mod_level_lst,
-    mod_schema,
-    mod_schema_path,
+    hg_schema,
+    hg_schema_path,
+    fa_schema,
+    fa_schema_path,
 )
 from lipidlynx.models.log import logger
 from lipidlynx.models.modification import Modifications
@@ -28,14 +31,18 @@ class HeadGroup(object):
     def __init__(self, hg_code: str):
         self.hg = hg_code
         self.schema = "lynx_hg"
-        self.type = "HeadGroup"
-        with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
-            self.validator = Draft7Validator(
-                json.load(s_obj),
-                resolver=RefResolver(f"file://{mod_schema_path}", referrer=mod_schema),
-            )
+        self.lynx_type = "HeadGroup"
+        resolver = RefResolver(
+            referrer=hg_schema, base_uri=f"file://{os.path.dirname(hg_schema_path)}/"
+        )
+        self.validator = Draft7Validator(hg_schema, resolver=resolver)
 
-        self.sum_info = {"api_version": api_version, "id": hg_code, "type": self.type}
+        self.sum_info = {
+            "api_version": api_version,
+            "id": hg_code,
+            "type": self.lynx_type,
+            "level": "S",
+        }
         self.id = hg_code
 
     def to_json(self):
@@ -52,11 +59,10 @@ class FattyAcid(object):
         self.lipid_code = lipid_code.strip("FA")
         self.schema = "lynx_fa"
         self.type = "FattyAcid"
-        with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
-            self.validator = Draft7Validator(
-                json.load(s_obj),
-                resolver=RefResolver(f"file://{mod_schema_path}", referrer=mod_schema),
-            )
+        resolver = RefResolver(
+            referrer=fa_schema, base_uri=f"file://{os.path.dirname(fa_schema_path)}/"
+        )
+        self.validator = Draft7Validator(fa_schema, resolver=resolver)
 
         self.fa_info_dct = self.__post_init__()
         self.fa_info_dct["id"] = self.lipid_code
@@ -83,11 +89,17 @@ class FattyAcid(object):
         is_modified = False
 
         if fa_match:
+
             fa_matched_dct = fa_match.groupdict()
             mod_code = fa_matched_dct.get("mod", None)
             fa_link = fa_matched_dct.get("link", "")
             if not fa_link:
                 fa_link = "FA"
+            fa_info_dct["info"] = {
+                "c": int(fa_matched_dct.get("c", 0)),
+                "db": int(fa_matched_dct.get("db", 0)),
+                "link": fa_link,
+            }
             fa_seg_str = (
                 f'{fa_link}{fa_matched_dct.get("c", 0)}:{fa_matched_dct.get("db", 0)}'
             )
@@ -96,8 +108,6 @@ class FattyAcid(object):
             if mod_code:
                 mod_obj = Modifications(mod_code)
                 fa_info_dct["mod_obj"] = mod_obj
-                fa_info_dct["info"]["mod_info"] = mod_obj.sum_mod_info
-                fa_info_dct["info"]["mod_id"] = mod_obj.mod_id
                 fa_info_dct["level"] = f"{mod_obj.mod_level}"
                 fa_linked_ids_dct = {}
                 mod_linked_ids_dct = mod_obj.mod_linked_ids  # type: dict
@@ -112,6 +122,11 @@ class FattyAcid(object):
                             and mod_seg.get("count", 0) != 0
                         ):
                             is_modified = True
+                            fa_info_dct["info"]["is_modified"] = is_modified
+                            fa_info_dct["info"]["mod_info"] = mod_obj.sum_mod_info
+                            fa_info_dct["info"]["mod_id"] = mod_obj.mod_id
+                        else:
+                            fa_info_dct["info"]["is_modified"] = is_modified
             else:
                 mod_code = ""
                 if fa_matched_dct.get("db", 0) == 0:
@@ -138,13 +153,8 @@ class FattyAcid(object):
                     }
                 if self.lipid_code != fa_seg_str:
                     self.lipid_code = fa_seg_str
-            fa_info_dct["info"] = {
-                "c": int(fa_matched_dct.get("c", 0)),
-                "db": int(fa_matched_dct.get("db", 0)),
-                "link": fa_link,
-                "is_modified": is_modified,
-                "mod_id": mod_code,
-            }
+                fa_info_dct["info"]["is_modified"] = is_modified
+            fa_info_dct["is_modified"] = is_modified
             return fa_info_dct
         else:
             raise ValueError(f"Cannot parse FA sting: {self.lipid_code}")
@@ -153,7 +163,7 @@ class FattyAcid(object):
         fa_lite_info_dct = self.fa_info_dct
         fa_lite_info_dct.pop("mod_obj", None)
         fa_json_str = json.dumps(fa_lite_info_dct)
-        if check_json(validator=self.validator, json_obj=json.loads(fa_json_str)):
+        if check_json(self.validator, json.loads(fa_json_str)):
             return fa_json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
@@ -261,7 +271,7 @@ if __name__ == "__main__":
         #
         fa_json = fa_obj.to_json()
         logger.debug(fa_json)
-        fa_ids_dct = json.loads(fa_json).get("linked_ids")
+        fa_ids_dct = json.loads(fa_json).get("linked_ids", "")
         logger.info("".join([f"\n {s}: {fa_ids_dct[s]}" for s in fa_ids_dct]))
 
     logger.info("FINISHED")

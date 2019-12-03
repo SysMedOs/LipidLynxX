@@ -2,10 +2,8 @@
   "$id": "#lynx_core.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The core structure of LipidLynx output",
-  "type": "object",
   "required": [
     "api_version",
-    "type",
     "id",
     "level"
   ],

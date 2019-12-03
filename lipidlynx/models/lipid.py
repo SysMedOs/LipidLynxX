@@ -15,7 +15,7 @@ from natsort import natsorted
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import lynx_schema, lipid_level_lst, mod_level_lst
+from lipidlynx.models.defaults import lynx_schema_cfg, lipid_level_lst, mod_level_lst
 from lipidlynx.models.log import logger
 from lipidlynx.models.modification import Modifications
 from lipidlynx.models.patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
@@ -28,7 +28,7 @@ class Lipid(object):
         self.lipid_code = lipid_code
         self.lynx_class_lv0 = ""
         self.schema = "lynx_core"
-        with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
+        with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(json.load(s_obj))
 
         self.level = "B0"
@@ -223,7 +223,7 @@ class Lipid(object):
         if self.lynx_class_lv0 and lipid_segments:
             res_info_lst = self.__identify_level__(lipid_segments)
             lipid_info_dct = {
-                "_version": lynx_schema.get("_version", "0.1"),
+                "_version": lynx_schema_cfg.get("_version", "0.1"),
                 "id": self.lipid_code,
                 "level": self.level,
                 "residues": res_info_lst,

@@ -1,84 +1,118 @@
 {
-  "$id": "#lynx_mod.schema.json",
+  "$id": "#lynx_core.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The structure of LipidLynx FA with/without modification",
   "allOf": [
     {
       "$ref": "lynx_core.schema.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "linked_ids", "info"],
+      "properties": {
+        "type": {
+          "description": "Type of the LipidLynx object",
+          "type": "string",
+          "enum": [
+            "Residue",
+            "FattyAcid"
+          ]
+        },
+        "linked_ids": {
+          "description": "Collection of all linked ids",
+          "type": "object",
+          "uniqueItems": true,
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[ABDEMS]?[0-5](\\.[0-9])?$"
+          },
+          "patternProperties": {
+            "^[ABDEMS]?[0-5](\\.[0-9])?$": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 256
+            }
+          },
+          "additionalProperties": false
+        },
+        "info": {
+          "description": "The structure of Fatty acid",
+          "type": "object",
+          "required": [
+            "c",
+            "db",
+            "link"
+          ],
+          "properties": {
+            "c": {
+              "description": "The Carbon number in FA",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "db": {
+              "description": "The Double bond equivalent of FA (without the COOH in FA)",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 128
+            },
+            "link": {
+              "description": "The link type of FA",
+              "type": "string",
+              "pattern": "(^FA$)|(^[OP]-$)"
+            }
+          },
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "is_modified"
+              ],
+              "properties": {
+                "is_modified": {
+                  "description": "if the FA contains modification other than initial C=C bond",
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "is_modified",
+                "mod_id",
+                "mod_info"
+              ],
+              "properties": {
+                "is_modified": {
+                  "description": "if the FA contains modification other than initial C=C bond",
+                  "type": "boolean",
+                  "enum": [
+                    true
+                  ]
+                },
+                "mod_id": {
+                  "description": "The link type of FA",
+                  "type": "string",
+                  "minimum": 0,
+                  "maximum": 128
+                },
+                "mod_info": {
+                  "allOf": [
+                    {
+                      "$ref": "lynx_mod.schema.json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
     }
-  ],
-  "linked_ids": {
-    "description": "Collection of all linked ids",
-    "type": "object",
-    "uniqueItems": true,
-    "minProperties": 1,
-    "propertyNames": {
-      "pattern": "^[ABDEMS]?[0-5](\\.[0-9])?$"
-    },
-    "patternProperties": {
-      "^[ABDEMS]?[0-5](\\.[0-9])?$": {
-        "type": "string",
-        "minLength": 2,
-        "maxLength": 256
-      }
-    },
-    "additionalProperties": false
-  },
-  "info": {
-    "description": "The structure of Fatty acid",
-    "type": "object",
-    "required": [
-      "c",
-      "db",
-      "link",
-      "is_modified"
-    ],
-    "properties": {
-      "c": {
-        "description": "The Carbon number in FA",
-        "type": "integer",
-        "minimum": 0,
-        "maximum": 256
-      },
-      "db": {
-        "description": "The Double bond equivalent of FA (without the COOH in FA)",
-        "type": "integer",
-        "minimum": 0,
-        "maximum": 128
-      },
-      "link": {
-        "description": "The link type of FA",
-        "type": "string",
-        "pattern": "(^FA$)|(^[OP]-$)"
-      },
-      "is_modified": {
-        "description": "if the FA contains modification other than initial C=C bond",
-        "type": "boolean"
-      },
-      "mod_id": {
-        "description": "The link type of FA",
-        "type": "string",
-        "minimum": 0,
-        "maximum": 128
-      },
-      "mod_info": {
-        "allOf": [
-          {
-            "$ref": "lynx_mod.schema.json"
-          }
-        ]
-      }
-    },
-    "dependencies": {
-      "mod_id": [
-        "mod_info"
-      ],
-      "mod_info": [
-        "mod_id"
-      ]
-    },
-    "additionalProperties": false
-  }
+  ]
 }
 
 

@@ -16,7 +16,7 @@ from jsonschema import Draft7Validator, RefResolver
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-from lipidlynx.models.defaults import lynx_schema, core_schema, core_schema_path
+from lipidlynx.models.defaults import lynx_schema_cfg, core_schema, core_schema_path
 from lipidlynx.models.defaults import logger
 from lipidlynx.controllers.general_functions import get_abs_path
 
@@ -55,9 +55,9 @@ class JsonTestCase(unittest.TestCase):
     def setUp(self):
         logger.debug("SETUP TESTS...")
         self.schema_test_dct = {}
-        for s_name in lynx_schema:
+        for s_name in lynx_schema_cfg:
             if s_name != "_version":
-                f = get_abs_path(lynx_schema[s_name])
+                f = get_abs_path(lynx_schema_cfg[s_name])
                 if f.endswith(".schema.json"):
                     if os.path.isfile(f):
                         self.schema_test_dct[s_name] = f
@@ -66,11 +66,11 @@ class JsonTestCase(unittest.TestCase):
                             f"Cannot find schema.json file and json example: {f}"
                         )
             else:
-                logger.info(f"API schema version: {lynx_schema[s_name]}")
+                logger.info(f"API schema version: {lynx_schema_cfg[s_name]}")
 
         if not self.schema_test_dct:
             raise IOError(
-                f"Cannot find schema.json file and json example in settings: {json.dumps(lynx_schema)}"
+                f"Cannot find schema.json file and json example in settings: {json.dumps(lynx_schema_cfg)}"
             )
 
     def test_schema(self):

@@ -48,20 +48,25 @@ abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
 
-core_schema_path = get_abs_path(r"lipidlynx/models/schema/lynx_core.schema.json")
-with open(core_schema_path, "r") as core_obj:
-    core_schema = json.load(core_obj)
-
-mod_schema_path = get_abs_path(r"lipidlynx/models/schema/lynx_mod.schema.json")
-with open(mod_schema_path, "r") as mod_json_obj:
-    mod_schema = json.load(mod_json_obj)
-
-lynx_schema = {
+lynx_schema_cfg = {
     "lynx_mod": r"lipidlynx/models/schema/lynx_mod.schema.json",
     "lynx_fa": r"lipidlynx/models/schema/lynx_fa.schema.json",
     "lynx_hg": r"lipidlynx/models/schema/lynx_hg.schema.json",
     "lynx_core": r"lipidlynx/models/schema/lynx_core.schema.json",
 }
+
+core_schema_path = get_abs_path(lynx_schema_cfg["lynx_core"])
+with open(core_schema_path, "r") as core_obj:
+    core_schema = json.load(core_obj)
+hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_hg"])
+with open(hg_schema_path, "r") as hg_json_obj:
+    hg_schema = json.load(hg_json_obj)
+fa_schema_path = get_abs_path(lynx_schema_cfg["lynx_fa"])
+with open(fa_schema_path, "r") as fa_json_obj:
+    fa_schema = json.load(fa_json_obj)
+mod_schema_path = get_abs_path(lynx_schema_cfg["lynx_mod"])
+with open(mod_schema_path, "r") as mod_json_obj:
+    mod_schema = json.load(mod_json_obj)
 
 elem_nominal_info = {"H": 1, "N": 14, "O": 16, "S": 32, "Na": 23}
 

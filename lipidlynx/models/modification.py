@@ -18,7 +18,7 @@ from lipidlynx.models.defaults import (
     api_version,
     cv_elements_info,
     elem_nominal_info,
-    lynx_schema,
+    lynx_schema_cfg,
     core_schema,
     core_schema_path,
     mod_level_lst,
@@ -40,8 +40,8 @@ class Modifications(object):
 
         self.mod_code = mod_code.strip("<>")
         self.schema = "lynx_mod"
-        self.mod_type = "Modification"
-        with open(get_abs_path(lynx_schema[self.schema]), "r") as s_obj:
+        self.type = "Modification"
+        with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
                 resolver=RefResolver(
@@ -88,8 +88,8 @@ class Modifications(object):
             mod_dct = {
                 "cv": "Delta",
                 "count": delta_i,
-                "positions": [],
-                "positions_type": [],
+                # "positions": [],
+                # "positions_type": [],
             }
             return mod_dct
         else:
@@ -120,8 +120,8 @@ class Modifications(object):
                     mod_dct = {
                         "cv": cv,
                         "count": count,
-                        "positions": [],
-                        "positions_type": [],
+                        # "positions": [],
+                        # "positions_type": [],
                     }
                     return mod_dct
                 else:
@@ -239,7 +239,7 @@ class Modifications(object):
             if mod_id == self.mod_code:
                 sum_mod_info_dct = {
                     "api_version": api_version,
-                    "type": self.mod_type,
+                    "type": self.type,
                     "id": self.mod_code,
                     "level": self.mod_level,
                     "linked_ids": self.to_all_levels(),
@@ -248,9 +248,9 @@ class Modifications(object):
             else:
                 sum_mod_info_dct = {
                     "api_version": api_version,
-                    "type": self.mod_type,
+                    "type": self.type,
                     "id": mod_id,
-                    "input_mod_id": self.mod_code,
+                    "input_name": self.mod_code,
                     "level": self.mod_level,
                     "linked_ids": self.to_all_levels(),
                     "info": self.mod_info,
