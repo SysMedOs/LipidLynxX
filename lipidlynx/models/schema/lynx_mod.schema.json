@@ -1,85 +1,103 @@
 {
-  "$id": "#/lynx_core.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "The Modification structure of LipidLynx output",
-  "allOf": [
-    {
-      "$ref": "lynx_core.schema.json"
+  "type": "object",
+  "required": [
+    "api_version",
+    "type",
+    "id",
+    "level",
+    "linked_ids",
+    "info"
+  ],
+  "properties": {
+    "api_version": {
+      "description": "Version of the LipidLynx api",
+      "type": "string",
+      "pattern": "^[012]\\.[0-9]$"
     },
-    {
+    "id": {
+      "description": "The LipidLynx id",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 384
+    },
+    "type": {
+      "description": "Type of the LipidLynx object",
+      "type": "string",
+      "enum": [
+        "Modification"
+      ]
+    },
+    "level": {
+      "description": "The max level of lipid",
+      "type": "string",
+      "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)",
+      "minLength": 1,
+      "maxLength": 4
+    },
+    "linked_ids": {
+      "description": "Collection of all linked ids",
       "type": "object",
-      "required": ["type", "linked_ids", "info"],
-      "properties": {
-        "type": {
-          "description": "Type of the LipidLynx object",
+      "uniqueItems": true,
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)"
+      },
+      "patternProperties": {
+        "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)": {
           "type": "string",
-          "enum": [
-            "Modification"
-          ]
-        },
-        "linked_ids": {
-          "description": "Collection of all linked ids",
-          "type": "object",
-          "uniqueItems": true,
-          "minProperties": 1,
-          "propertyNames": {
-            "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)"
-          },
-          "patternProperties": {
-            "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)": {
-              "type": "string",
-              "maxLength": 256
-            }
-          }
-        },
-        "info": {
-          "description": "Information of the modification as individual objects",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "cv",
-              "count"
-            ],
-            "properties": {
-              "cv": {
-                "description": "The controlled vocabulary of modification",
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 8
-              },
-              "count": {
-                "description": "The number of modification, or mass shift if cv is Delta",
-                "type": "integer",
-                "minimum": -512,
-                "maximum": 512
-              },
-              "positions": {
-                "description": "The list of positions",
-                "type": "array",
-                "items": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 99
-                },
-                "maxItems": 99
-              },
-              "positions_info": {
-                "description": "The list of positions",
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 3
-                },
-                "maxItems": 99,
-                "uniqueItems": true
-              }
-            }
-          },
-          "minItems": 1
+          "maxLength": 256
         }
       }
+    },
+    "info": {
+      "description": "Information of the modification as individual objects",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "cv",
+          "count"
+        ],
+        "properties": {
+          "cv": {
+            "description": "The controlled vocabulary of modification",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8
+          },
+          "count": {
+            "description": "The number of modification, or mass shift if cv is Delta",
+            "type": "integer",
+            "minimum": -512,
+            "maximum": 512
+          },
+          "positions": {
+            "description": "The list of positions",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 99
+            },
+            "maxItems": 99
+          },
+          "positions_info": {
+            "description": "The list of positions",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 3
+            },
+            "maxItems": 99,
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
     }
-  ]
+  },
+  "additionalProperties": false
 }

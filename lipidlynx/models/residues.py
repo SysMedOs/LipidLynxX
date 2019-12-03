@@ -154,7 +154,6 @@ class FattyAcid(object):
                 if self.lipid_code != fa_seg_str:
                     self.lipid_code = fa_seg_str
                 fa_info_dct["info"]["is_modified"] = is_modified
-            fa_info_dct["is_modified"] = is_modified
             return fa_info_dct
         else:
             raise ValueError(f"Cannot parse FA sting: {self.lipid_code}")

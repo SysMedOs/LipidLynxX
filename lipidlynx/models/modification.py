@@ -250,7 +250,7 @@ class Modifications(object):
                     "api_version": api_version,
                     "type": self.type,
                     "id": mod_id,
-                    "input_name": self.mod_code,
+                    # "input_name": self.mod_code,
                     "level": self.mod_level,
                     "linked_ids": self.to_all_levels(),
                     "info": self.mod_info,
