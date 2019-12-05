@@ -9,6 +9,7 @@
 import itertools
 import json
 from operator import itemgetter
+import re
 
 from jsonschema import Draft7Validator
 from natsort import natsorted
@@ -111,7 +112,7 @@ class Lipid(object):
         max_unmod_level = 0
         res_info_lst = [
             self.__identify_fa__(lipid_segments, i)
-            for i in [1, 2, 3, 4]
+            for i in [1, 2, 3, 4, 5]
             if self.__identify_fa__(lipid_segments, i)
         ]
         if self._lipid_level != "S":  # Sort all residues by names in B and D level
@@ -186,10 +187,41 @@ class Lipid(object):
                             res_id_dct[lv] = fa_linked_ids[lv]
                 else:
                     res_id_dct = fa_linked_ids
-                for mod_lv in res_id_dct:
-                    fa_res_dct[mod_lv].append(res_id_dct[mod_lv].strip("FA"))
-                if float(res_level) > 2:
-                    bulk_level = "2"
+                if res_obj.is_modified:
+                    for mod_lv in fa_res_dct:
+                        fa_res_dct[mod_lv].append(res_id_dct[mod_lv].strip("FA"))
+                else:
+                    for mod_lv in fa_res_dct:
+                        if len(mod_lv) == 1:
+                            fa_res_dct[mod_lv].append(
+                                res_id_dct.get("0", "").strip("FA")
+                            )
+                        elif mod_lv.endswith(".1"):
+                            if res_id_dct.get("0.1", "").strip("FA"):
+                                fa_res_dct[mod_lv].append(
+                                    res_id_dct.get("0.1", "").strip("FA")
+                                )
+                            else:
+                                fa_res_dct[mod_lv].append(
+                                    res_id_dct.get("0", "").strip("FA")
+                                )
+
+                        elif mod_lv.endswith(".2"):
+                            if res_id_dct.get("0.2", "").strip("FA"):
+                                fa_res_dct[mod_lv].append(
+                                    res_id_dct.get("0.2", "").strip("FA")
+                                )
+                            elif res_id_dct.get("0.1", "").strip("FA"):
+                                fa_res_dct[mod_lv].append(
+                                    res_id_dct.get("0.1", "").strip("FA")
+                                )
+                            else:
+                                fa_res_dct[mod_lv].append(
+                                    res_id_dct.get("0", "").strip("FA")
+                                )
+
+                if float(res_level) > 3:
+                    bulk_level = "3"
                 else:
                     bulk_level = res_level
                 fa_info_lst.append(res_obj.to_segments(mod_level=bulk_level))
@@ -217,7 +249,7 @@ class Lipid(object):
             elif lv[0] == "D":
                 fa_seg_str = "_".join(fa_res_dct.get(lv[1:], []))
                 linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
-            elif lv[0] == "B" and int(lv[1]) <= 2:
+            elif lv[0] == "B" and int(lv[1]) <= 3:
                 fa_seg_str = bulk_linked_ids.get(lv[1:], "").strip("FA")
                 linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
         return linked_ids_dct
@@ -256,15 +288,9 @@ class Lipid(object):
             l_lv_idx = lipid_level_lst.index(self._lipid_level)
             out_lipid_levels_lst = lipid_level_lst[: l_lv_idx + 1]
 
-        # out_mod_levels_lst = []
-        # max_level_str = str(self._max_mod_level)
-        # if max_level_str in mod_level_lst:
-        #     mod_idx = mod_level_lst.index(max_level_str)
-        #     out_mod_levels_lst = mod_level_lst[: mod_idx + 1]
-        # else:
-        #     ValueError(f"Modification level not supported: {max_level_str}")
-
         max_level_str = str(self._max_mod_level)
+        if max_level_str.endswith(".0"):
+            max_level_str = max_level_str[:-2]
         if max_level_str in mod_db_level_lst:
             mod_idx = mod_db_level_lst.index(max_level_str)
             out_mod_levels_lst = mod_db_level_lst[: mod_idx + 1]
@@ -280,14 +306,18 @@ class Lipid(object):
                 for out_lv in out_mod_levels_lst
                 if len(out_lv) == 1 or out_lv.endswith(".1")
             ]
-
+        pre_lynx_lv_lst = [
+            "".join(s)
+            for s in itertools.product(out_lipid_levels_lst, out_mod_levels_lst)
+        ]
+        lynx_lv_lst = []
+        for lv in pre_lynx_lv_lst:
+            if not re.match(r"B\d\.\d", lv):
+                lynx_lv_lst.append(lv)
         lv_info_dct = {
             "lipid_lv_lst": out_lipid_levels_lst,
             "mod_lv_lst": out_mod_levels_lst,
-            "lynx_lv_lst": [
-                "".join(s)
-                for s in itertools.product(out_lipid_levels_lst, out_mod_levels_lst)
-            ],
+            "lynx_lv_lst": lynx_lv_lst,
         }
 
         return lv_info_dct
@@ -303,46 +333,47 @@ if __name__ == "__main__":
         "PI",
         "PS",
         "SM",
-        "SPB",
-        "Cer",
+        # "SPB",
+        # "Cer",
         "PIP",
         "PIP2",
         "PIP3",
     ]
 
     sn1_lst = ["18:1<{9Z}>", "18:1", "16:0", "O-16:0", "P-16:0", "O-18:1", "P-18:1"]
+    # sn1_lst = ["18:1<{9Z}>"]
 
     sn2_lst = [
-        # r"20:4<-18>",
-        # r"20:4<+46>",
-        # r"20:4<+3O,-2H>",
-        # r"20:4<2OH,Ke>",
-        # r"20:4<2OH{8,11},Ke{14}>",
-        # r"20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        # r"20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        # r"20:4<2OH{8R,11S},Ke{14}>",
-        # r"20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
+        r"20:4<-18>",
+        r"20:4<+46>",
+        r"20:4<+3O,-2H>",
+        r"20:4<2OH,Ke>",
+        r"20:4<2OH{8,11},Ke{14}>",
+        r"20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
+        r"20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
+        r"20:4<2OH{8R,11S},Ke{14}>",
+        r"20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
         r"20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-        r"O-20:4<-18>",
-        r"O-20:4<+46>",
-        r"O-20:4<+3O,-2H>",
-        r"O-20:4<2OH,Ke>",
-        r"O-20:4<2OH{8,11},Ke{14}>",
-        r"O-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"O-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"O-20:4<2OH{8R,11S},Ke{14}>",
-        r"O-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"O-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-        r"P-20:4<-18>",
-        r"P-20:4<+46>",
-        r"P-20:4<+3O,-2H>",
-        r"P-20:4<2OH,Ke>",
-        r"P-20:4<2OH{8,11},Ke{14}>",
-        r"P-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"P-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"P-20:4<2OH{8R,11S},Ke{14}>",
-        r"P-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"P-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
+        # r"O-20:4<-18>",
+        # r"O-20:4<+46>",
+        # r"O-20:4<+3O,-2H>",
+        # r"O-20:4<2OH,Ke>",
+        # r"O-20:4<2OH{8,11},Ke{14}>",
+        # r"O-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
+        # r"O-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
+        # r"O-20:4<2OH{8R,11S},Ke{14}>",
+        # r"O-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
+        # r"O-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
+        # r"P-20:4<-18>",
+        # r"P-20:4<+46>",
+        # r"P-20:4<+3O,-2H>",
+        # r"P-20:4<2OH,Ke>",
+        # r"P-20:4<2OH{8,11},Ke{14}>",
+        # r"P-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
+        # r"P-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
+        # r"P-20:4<2OH{8R,11S},Ke{14}>",
+        # r"P-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
+        # r"P-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
     ]
 
     pl_d_lst = []
