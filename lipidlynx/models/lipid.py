@@ -15,9 +15,15 @@ from natsort import natsorted
 
 from lipidlynx.controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import lynx_schema_cfg, lipid_level_lst, mod_level_lst
+from lipidlynx.models.defaults import (
+    api_version,
+    lynx_schema_cfg,
+    lipid_level_lst,
+    mod_level_lst,
+    mod_db_level_lst,
+)
 from lipidlynx.models.log import logger
-from lipidlynx.models.modification import Modifications
+from lipidlynx.models.modifications import Modifications
 from lipidlynx.models.patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
 from lipidlynx.models.residues import HeadGroup, FattyAcid
 
@@ -92,11 +98,11 @@ class Lipid(object):
         if fa_count > 0 and fa in lipid_segments and lipid_segments.get(fa, None):
             if lipid_segments.get(ps, None) == "/":
                 self._lipid_level = "S"
-                fa_info_dct = {"position": sn, "residue_id": lipid_segments[fa]}
+                fa_info_dct = {"position": sn, "id": lipid_segments[fa]}
             else:
                 if lipid_segments.get(ps, None) == "_":
                     self._lipid_level = "D"
-                fa_info_dct = {"residue_id": lipid_segments[fa]}
+                fa_info_dct = {"id": lipid_segments[fa]}
         return fa_info_dct
 
     def __identify_level__(self, lipid_segments):
@@ -109,7 +115,7 @@ class Lipid(object):
             if self.__identify_fa__(lipid_segments, i)
         ]
         if self._lipid_level != "S":  # Sort all residues by names in B and D level
-            res_info_lst = natsorted(res_info_lst, key=itemgetter(*["residue_id"]))
+            res_info_lst = natsorted(res_info_lst, key=itemgetter(*["id"]))
 
         if (
             "hg_class" in lipid_segments
@@ -118,16 +124,16 @@ class Lipid(object):
         ):
             if lipid_segments.get("position1", None) == "/":
                 res_info_lst.append(
-                    {"position": "sn3", "residue_id": lipid_segments["hg_class"]}
+                    {"position": "sn3", "id": lipid_segments["hg_class"]}
                 )
             else:
-                res_info_lst.append({"residue_id": lipid_segments["hg_class"]})
+                res_info_lst.append({"id": lipid_segments["hg_class"]})
 
         for res in res_info_lst:
             res_type = ""
-            if fa_rgx.match(res["residue_id"]):
+            if fa_rgx.match(res["id"]):
                 res_type = "FA"
-                res_obj = FattyAcid(res["residue_id"])
+                res_obj = FattyAcid(res["id"])
                 res_level = res_obj.fa_level
                 if res_obj.is_modified:
                     max_mod_level = max(max_mod_level, float(res_level))
@@ -135,15 +141,13 @@ class Lipid(object):
                     max_unmod_level = max(max_unmod_level, float(res_level))
             else:
                 try:
-                    res_obj = HeadGroup(res["residue_id"])
+                    res_obj = HeadGroup(res["id"])
                     res_type = "HG"
                 except Exception as err:
                     logger.error(err)
-                    raise ValueError(
-                        f'Cannot parse string as HeadGroup: {res["residue_id"]}'
-                    )
-            res["residue_info"] = json.loads(res_obj.to_json())
-            res["residue_info"]["residue_type"] = res_type
+                    raise ValueError(f'Cannot parse string as HeadGroup: {res["id"]}')
+            res["info"] = json.loads(res_obj.to_json())
+            res["info"]["type"] = res_type
 
         if max_unmod_level > max_mod_level:
             max_unmod_level = max_mod_level
@@ -164,10 +168,11 @@ class Lipid(object):
         fa_info_lst = []
         for mod_lv in lv_lst["mod_lv_lst"]:
             fa_res_dct[mod_lv] = []
+        logger.info(res_lst)
         for res in res_lst:
-            res_info = res["residue_info"]
-            if res_info.get("residue_type", None) == "FA":
-                res_obj = FattyAcid(res_info.get("fa_id", None))
+            res_info = res["info"]
+            if res_info.get("type", None) == "FA":
+                res_obj = FattyAcid(res_info.get("id", None))
                 res_level = res_obj.fa_level
                 res_id = res_obj.id
                 lift_res_level = 0
@@ -188,8 +193,8 @@ class Lipid(object):
                 else:
                     bulk_level = res_level
                 fa_info_lst.append(res_obj.to_segments(mod_level=bulk_level))
-            elif res_info.get("residue_type", None) == "HG":
-                res_obj = HeadGroup(res_info.get("hg_id", None))
+            elif res_info.get("type", None) == "HG":
+                res_obj = HeadGroup(res_info.get("id", None))
                 other_pre_dct["HG"] = res_obj.id
         bulk_linked_ids = {}
         if lv_lst["lynx_lv_lst"][0].startswith("B"):
@@ -201,7 +206,7 @@ class Lipid(object):
                 sum_c += int(info["c"])
                 sum_db += int(info["db"])
                 sum_link.append(info["link"].strip("FA"))
-                sum_mod_lst.append(info["mod_text"].strip("<>"))
+                sum_mod_lst.append(info["mod_id"].strip("<>"))
             sum_fa_str = f"{''.join(sum_link)}{sum_c}:{sum_db}<{','.join(sum_mod_lst).strip(',')}>"
             bulk_linked_ids = FattyAcid(sum_fa_str).fa_linked_ids
 
@@ -223,12 +228,11 @@ class Lipid(object):
         if self.lynx_class_lv0 and lipid_segments:
             res_info_lst = self.__identify_level__(lipid_segments)
             lipid_info_dct = {
-                "_version": lynx_schema_cfg.get("_version", "0.1"),
+                "api_version": api_version,
                 "id": self.lipid_code,
                 "level": self.level,
-                "residues": res_info_lst,
                 "linked_ids": self._get_linked_ids(res_info_lst),
-                "lipid_class": {"main_class": self.lynx_class_lv0},
+                "info": {"main_class": self.lynx_class_lv0, "residues": res_info_lst},
             }
             logger.info(f"modification level: {self._max_mod_level}")
             logger.info(f"\n{lipid_info_dct}")
@@ -252,18 +256,30 @@ class Lipid(object):
             l_lv_idx = lipid_level_lst.index(self._lipid_level)
             out_lipid_levels_lst = lipid_level_lst[: l_lv_idx + 1]
 
-        out_mod_levels_lst = []
+        # out_mod_levels_lst = []
+        # max_level_str = str(self._max_mod_level)
+        # if max_level_str in mod_level_lst:
+        #     mod_idx = mod_level_lst.index(max_level_str)
+        #     out_mod_levels_lst = mod_level_lst[: mod_idx + 1]
+        # else:
+        #     ValueError(f"Modification level not supported: {max_level_str}")
+
         max_level_str = str(self._max_mod_level)
-        if max_level_str in mod_level_lst:
-            mod_idx = mod_level_lst.index(max_level_str)
-            out_mod_levels_lst = mod_level_lst[: mod_idx + 1]
+        if max_level_str in mod_db_level_lst:
+            mod_idx = mod_db_level_lst.index(max_level_str)
+            out_mod_levels_lst = mod_db_level_lst[: mod_idx + 1]
         else:
-            ValueError(f"Modification level not supported: {max_level_str}")
-        if max_level_str == "4":
-            out_mod_levels_lst.remove("3.2")
-            out_mod_levels_lst.remove("3.1")
-        elif max_level_str == "4.1":
-            out_mod_levels_lst.remove("3.2")
+            raise ValueError(f"Modification level not supported: {max_level_str}")
+        if len(max_level_str) == 1:
+            out_mod_levels_lst = [
+                out_lv for out_lv in out_mod_levels_lst if len(out_lv) == 1
+            ]
+        elif max_level_str.endswith(".1"):
+            out_mod_levels_lst = [
+                out_lv
+                for out_lv in out_mod_levels_lst
+                if len(out_lv) == 1 or out_lv.endswith(".1")
+            ]
 
         lv_info_dct = {
             "lipid_lv_lst": out_lipid_levels_lst,

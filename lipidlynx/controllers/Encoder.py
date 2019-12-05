@@ -17,6 +17,7 @@ from lipidlynx.models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
+
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:

@@ -22,6 +22,8 @@ from lipidlynx.models.defaults import (
     core_schema,
     core_schema_path,
     mod_level_lst,
+    db_level_lst,
+    mod_db_level_lst,
 )
 from lipidlynx.models.log import logger
 from lipidlynx.models.patterns import (
@@ -33,6 +35,24 @@ from lipidlynx.models.patterns import (
     mod_lv3_position_rgx,
     mod_lv4_position_rgx,
 )
+
+
+class DoubleBonds(object):
+    """
+    Place holder for individual DB class
+    """
+
+    def __init__(self):
+        pass
+
+
+class Rings(object):
+    """
+    Place holder for individual DB class
+    """
+
+    def __init__(self):
+        pass
 
 
 class Modifications(object):
@@ -85,12 +105,7 @@ class Modifications(object):
             delta_i = 0
             for s in lv0_seg_lst:
                 delta_i += int(s)
-            mod_dct = {
-                "cv": "Delta",
-                "count": delta_i,
-                # "positions": [],
-                # "positions_type": [],
-            }
+            mod_dct = {"cv": "Delta", "count": delta_i}
             return mod_dct
         else:
             mod_match = mod_lv3_position_rgx.match(mod_str)
@@ -133,23 +148,27 @@ class Modifications(object):
         max_level = -1.0
         mod_level = -1
         if mod_lv0_delta_rgx.match(self.mod_code):
-            mod_level = 0
-        if mod_lv1_elem_rgx.match(self.mod_code):
             mod_level = 1
-        if mod_lv2_types_rgx.match(self.mod_code):
+        if mod_lv1_elem_rgx.match(self.mod_code):
             mod_level = 2
+        if mod_lv2_types_rgx.match(self.mod_code):
+            mod_level = 3
         for mod_seg in self.mod_info:
-            mod_position_info = mod_seg.get("positions_info", None)
-            if mod_seg.get("positions", None):
-                if mod_level <= 3:
-                    mod_level = 3
-            if mod_position_info:
-                for p_info_str in mod_position_info:
-                    if re.match(r",?\d{1,2}[RS]", p_info_str):
-                        if mod_level < 4:
-                            mod_level = 4
+            if mod_seg.get("cv") != "DB":
+                mod_position_info = mod_seg.get("positions_info", None)
+                if mod_seg.get("positions", None):
+                    if mod_level <= 4:
+                        mod_level = 4
+                if mod_position_info:
+                    for p_info_str in mod_position_info:
+                        if re.match(r",?\d{1,2}[RS]", p_info_str):
+                            if mod_level < 5:
+                                mod_level = 5
         if self.mod_info:
             if self.mod_info[0]["cv"] == "DB":
+                if len(self.mod_info) == 1:
+                    max_level = 0
+                    mod_level = 0
                 db_positions = self.mod_info[0].get("positions", None)
                 db_positions_info = self.mod_info[0].get("positions_info", None)
                 if db_positions:
@@ -164,7 +183,7 @@ class Modifications(object):
         if mod_level.endswith(".0"):
             mod_level = mod_level[0]
 
-        if float(mod_level) >= 0:
+        if float(mod_level) > 0:
             return mod_level
         else:
             raise ValueError(
@@ -233,8 +252,8 @@ class Modifications(object):
         return sum_mod_elem_dct
 
     def get_sum_info(self):
-        linked_ids_lst = self.to_all_levels()
-        mod_id = linked_ids_lst.get(self.mod_level, "")
+        linked_ids = self.to_all_levels()
+        mod_id = linked_ids.get(self.mod_level, "")
         if mod_id:
             if mod_id == self.mod_code:
                 sum_mod_info_dct = {
@@ -272,18 +291,14 @@ class Modifications(object):
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
 
     def to_mass_shift(self, angle_brackets: bool = True) -> str:
-        if float(self.mod_level) > 0:
+        if float(self.mod_level) > 1:
             sum_mod_elem_dct = self.get_elem_info()
             delta = 0
             for elem in sum_mod_elem_dct:
                 if elem in elem_nominal_info:
                     delta += elem_nominal_info[elem] * sum_mod_elem_dct[elem]
-
-            mod_str = f"{delta:+}"
-            if angle_brackets:
-                mod_str = self.__add_angle_brackets__(mod_str)
-            return mod_str
-        elif float(self.mod_level) == 0:
+            return f"{delta:+}"
+        elif float(self.mod_level) == 1:
             lv0_match = mod_lv0_delta_rgx.match(self.mod_code)
             lv0_groups = []
             if lv0_match:
@@ -291,18 +306,16 @@ class Modifications(object):
                 lv0_groups = [int(i.strip(",")) for i in lv0_matched_groups]
             if lv0_groups:
                 mod_str = f"{sum(lv0_groups):+}"
-                if angle_brackets:
-                    mod_str = self.__add_angle_brackets__(mod_str)
             else:
                 mod_str = ""
             return mod_str
         else:
             raise ValueError(
-                f"Modification level not fit. required level >= 0, received: {self.mod_level}"
+                f"Modification level not fit. required level >= 1, received: {self.mod_level}"
             )
 
-    def to_elem_shift(self, angle_brackets: bool = True) -> str:
-        if float(self.mod_level) >= 1:
+    def to_elem_shift(self) -> str:
+        if float(self.mod_level) >= 2:
             sum_mod_elem_dct = self.get_elem_info()
             mod_str_lst = []
             mod_elem_lst = ["O", "N", "S", "H", "Na"]
@@ -315,17 +328,14 @@ class Modifications(object):
                         mod_elem_count = "-"
                     mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
 
-            mod_str = f'{",".join(mod_str_lst)}'
-            if angle_brackets:
-                mod_str = self.__add_angle_brackets__(mod_str)
-            return mod_str
+            return f'{",".join(mod_str_lst)}'
         else:
             raise ValueError(
-                f"Modification level not fit. required level >= 1, received: {self.mod_level}"
+                f"Modification level not fit. required level >= 2, received: {self.mod_level}"
             )
 
-    def to_mod_count(self, angle_brackets: bool = True) -> str:
-        if float(self.mod_level) >= 2:
+    def to_mod_count(self) -> str:
+        if float(self.mod_level) >= 3:
             mod_output_lst = []
             for mod in self.mod_info:
                 if mod["cv"] != "DB":
@@ -333,77 +343,46 @@ class Modifications(object):
                         mod_output_lst.append(f'{mod["count"]}{mod["cv"]}')
                     else:
                         mod_output_lst.append(f'{mod["cv"]}')
-            mod_str = f'{",".join(mod_output_lst)}'
-            if angle_brackets:
-                mod_str = self.__add_angle_brackets__(mod_str)
-            return mod_str
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 2, received: {self.mod_level}"
-            )
-
-    def to_mod_position(
-        self,
-        angle_brackets: bool = True,
-        db_position: bool = False,
-        db_position_info=False,
-    ) -> str:
-        if db_position_info and not db_position:
-            db_position = True
-        if float(self.mod_level) >= 3:
-            mod_output_lst = []
-            for mod in self.mod_info:
-                positions_lst = [str(i) for i in mod["positions"]]
-                positions = "{" + ",".join(positions_lst) + "}"
-                if mod["cv"] == "DB":
-                    if db_position and db_position_info:  # mod level 3.2
-                        mod_output_lst.append(
-                            "{" + ",".join(mod["positions_info"]) + "}"
-                        )
-                    if db_position and not db_position_info:  # mod level 3.1
-                        mod_output_lst.append(positions)
-                else:
-                    if mod["count"] > 1:
-                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
-                    else:
-                        mod_output_lst.append(f'{mod["cv"]}{positions}')
-            mod_str = f'{",".join(mod_output_lst)}'
-            if angle_brackets:
-                mod_str = self.__add_angle_brackets__(mod_str)
-            return mod_str
+            return f'{",".join(mod_output_lst)}'
         else:
             raise ValueError(
                 f"Modification level not fit. required level >= 3, received: {self.mod_level}"
             )
 
-    def to_mod_position_type(
-        self,
-        angle_brackets: bool = True,
-        db_position: bool = False,
-        db_position_info: bool = False,
-    ) -> str:
-        if db_position_info and not db_position:
-            db_position = True
-
+    def to_mod_position(self) -> str:
         if float(self.mod_level) >= 4:
             mod_output_lst = []
             for mod in self.mod_info:
-                positions = "{" + ",".join(mod["positions_info"]) + "}"
+                positions_lst = [str(i) for i in mod["positions"]]
+                positions = "{" + ",".join(positions_lst) + "}"
                 if mod["cv"] == "DB":
-                    if db_position and db_position_info:  # mod level 4.2
-                        mod_output_lst.append(positions)
-                    if db_position and not db_position_info:  # mod level 4.1
-                        positions_lst = [str(i) for i in mod["positions"]]
-                        mod_output_lst.append("{" + ",".join(positions_lst) + "}")
+                    pass
                 else:
                     if mod["count"] > 1:
                         mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
                     else:
                         mod_output_lst.append(f'{mod["cv"]}{positions}')
-            mod_str = f'{",".join(mod_output_lst)}'
-            if angle_brackets:
-                mod_str = self.__add_angle_brackets__(mod_str)
-            return mod_str
+            return f'{",".join(mod_output_lst)}'
+        else:
+            raise ValueError(
+                f"Modification level not fit. required level >= 4, received: {self.mod_level}"
+            )
+
+    def to_mod_position_type(self) -> str:
+
+        if float(self.mod_level) >= 5:
+            mod_output_lst = []
+            for mod in self.mod_info:
+                positions = "{" + ",".join(mod["positions_info"]) + "}"
+                if mod["cv"] == "DB":
+                    pass
+                else:
+                    if mod["count"] > 1:
+                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
+                    else:
+                        mod_output_lst.append(f'{mod["cv"]}{positions}')
+
+            return f'{",".join(mod_output_lst)}'
         else:
             raise ValueError(
                 f"Modification level not fit. required level >= 4, received: {self.mod_level}"
@@ -419,47 +398,33 @@ class Modifications(object):
             raise ValueError(
                 f'Cannot convert to higher level than the mod_level "{self.mod_level}". Input:{level}'
             )
-        if level in mod_level_lst:
-            if level == "0":
-                mod_str = self.to_mass_shift(angle_brackets=angle_brackets)
-            elif level == "1":
-                mod_str = self.to_elem_shift(angle_brackets=angle_brackets)
-            elif level == "2":
-                mod_str = self.to_mod_count(angle_brackets=angle_brackets)
-            elif level == "3":
-                mod_str = self.to_mod_position(
-                    angle_brackets=angle_brackets, db_position=False
-                )
-            elif level == "3.1":
-                mod_str = self.to_mod_position(
-                    angle_brackets=angle_brackets, db_position=True
-                )
-            elif level == "3.2":
-                mod_str = self.to_mod_position(
-                    angle_brackets=angle_brackets,
-                    db_position=True,
-                    db_position_info=True,
-                )
-            elif level == "4":
-                mod_str = self.to_mod_position_type(
-                    angle_brackets=angle_brackets,
-                    db_position=False,
-                    db_position_info=False,
-                )
-            elif level == "4.1":
-                mod_str = self.to_mod_position_type(
-                    angle_brackets=angle_brackets,
-                    db_position=True,
-                    db_position_info=False,
-                )
-            elif level == "4.2":
-                mod_str = self.to_mod_position_type(
-                    angle_brackets=angle_brackets,
-                    db_position=True,
-                    db_position_info=True,
-                )
+        if level in mod_db_level_lst and not level.startswith("0"):
+            if level.startswith("1"):
+                mod_str = self.to_mass_shift()
+            elif level.startswith("2"):
+                mod_str = self.to_elem_shift()
+            elif level.startswith("3"):
+                mod_str = self.to_mod_count()
+            elif level.startswith("4"):
+                mod_str = self.to_mod_position()
+            elif level.startswith("5"):
+                mod_str = self.to_mod_position_type()
             else:
                 raise ValueError(f"Currently not supported modification level: {level}")
+        if self.mod_info:
+            for mod in self.mod_info:
+                if mod["cv"] == "DB" and mod.get("positions", None):
+                    if level.endswith(".1"):
+                        positions_lst = [str(i) for i in mod["positions"]]
+                        positions = "{" + ",".join(positions_lst) + "}"
+                        mod_str = ",".join([positions, mod_str])
+                    if level.endswith(".2"):
+                        mod_str = ",".join(
+                            ["{" + ",".join(mod["positions_info"]) + "}", mod_str]
+                        )
+        mod_str = mod_str.strip(",")
+        if mod_str and angle_brackets:
+            mod_str = self.__add_angle_brackets__(mod_str)
 
         return mod_str
 
@@ -468,16 +433,23 @@ class Modifications(object):
     ) -> Union[Dict[str, str], List[str]]:
         all_levels_dct = {}
         all_levels_lst = []
-        if self.mod_level in mod_level_lst:
-            mod_idx = mod_level_lst.index(self.mod_level)
-            output_levels_lst = mod_level_lst[: mod_idx + 1]
+        if self.mod_level in mod_db_level_lst:
+            mod_idx = mod_db_level_lst.index(self.mod_level)
+            output_levels_lst = mod_db_level_lst[: mod_idx + 1]
         else:
             raise ValueError(f"Modification level not supported: {self.mod_level}")
-        if self.mod_level == "4":
-            output_levels_lst.remove("3.2")
-            output_levels_lst.remove("3.1")
-        elif self.mod_level == "4.1":
-            output_levels_lst.remove("3.2")
+        if len(self.mod_level) == 1:
+            output_levels_lst = [
+                out_lv for out_lv in output_levels_lst if len(out_lv) == 1
+            ]
+        elif self.mod_level.endswith(".1"):
+            output_levels_lst = [
+                out_lv
+                for out_lv in output_levels_lst
+                if len(out_lv) == 1 or out_lv.endswith(".1")
+            ]
+        else:
+            pass
         if as_list:
             for level in output_levels_lst:
                 all_levels_lst.append(
@@ -497,18 +469,20 @@ class Modifications(object):
 if __name__ == "__main__":
 
     mod_code_lst = [
-        r"<-18>",
-        r"<+46>",
-        r"<+3O,-2H>",
-        r"<2OH,Ke>",
-        r"<2OH{8,11},Ke{14}>",
+        # r"<-18>",
+        # r"<+46>",
+        # r"<+3O,-2H>",
+        # r"<2OH,Ke>",
+        # r"<2OH{8,11},Ke{14}>",
         r"<{5,9,12,15},2OH{8,11},Ke{14}>",
         r"<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
         r"<2OH{8R,11S},Ke{14}>",
         r"<{5,9,12,15},2OH{8R,11S},Ke{14}>",
         r"<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
+        r"<{9}>",
+        r"<{9,12}>",
         r"<{9Z}>",
-        r"<{9Z,12Z}>",
+        r"<{9Z,11E}>",
     ]
 
     for usr_mod_code in mod_code_lst:

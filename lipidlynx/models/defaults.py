@@ -46,7 +46,28 @@ mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
 
 lipid_level_lst = ["B", "D", "S"]
-mod_level_lst = ["0", "1", "2", "3", "3.1", "3.2", "4", "4.1", "4.2"]
+mod_level_lst = ["0", "1", "2", "3", "4", "5"]
+db_level_lst = [".0", "0.1", "0.2"]
+mod_db_level_lst = [
+    "0",
+    "0.1",
+    "0.2",
+    "1",
+    "1.1",
+    "1.2",
+    "2",
+    "2.1",
+    "2.2",
+    "3",
+    "3.1",
+    "3.2",
+    "4",
+    "4.1",
+    "4.2",
+    "5",
+    "5.1",
+    "5.2",
+]
 
 lynx_schema_cfg = {
     "lynx_mod": r"lipidlynx/models/schema/lynx_mod.schema.json",

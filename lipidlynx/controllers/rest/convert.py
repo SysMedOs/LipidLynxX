@@ -12,15 +12,9 @@ from flask_restful import Resource, fields, marshal_with
 from .parsers import convert_get_parser, convert_post_parser
 
 
-nested_tag_fields = {
-    'id': fields.Integer(),
-    'title': fields.String()
-}
+nested_tag_fields = {"id": fields.Integer(), "title": fields.String()}
 
-post_fields = {
-    'id': fields.Integer(),
-    'title': fields.String(),
-}
+post_fields = {"id": fields.Integer(), "title": fields.String()}
 
 
 class ConvertApi(Resource):
@@ -34,7 +28,7 @@ class ConvertApi(Resource):
             return post
         else:
             args = convert_get_parser.parse_args()
-            lynx_id = args['id'] or ''
+            lynx_id = args["id"] or ""
 
             if lynx_id:
                 pass
@@ -49,17 +43,17 @@ class ConvertApi(Resource):
         else:
             args = post_post_parser.parse_args(strict=True)
 
-            user = User.verify_auth_token(args['token'])
+            user = User.verify_auth_token(args["token"])
             if not user:
                 abort(401)
 
-            new_post = Post(args['title'])
+            new_post = Post(args["title"])
             new_post.user = user
             new_post.date = datetime.datetime.now()
-            new_post.text = args['text']
+            new_post.text = args["text"]
 
-            if args['tags']:
-                for item in args['tags']:
+            if args["tags"]:
+                for item in args["tags"]:
                     tag = Tag.query.filter_by(title=item).first()
 
                     # Add the tag if it exists. If not, make a new tag

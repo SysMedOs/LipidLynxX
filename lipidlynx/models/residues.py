@@ -17,13 +17,15 @@ from lipidlynx.models.defaults import (
     api_version,
     lynx_schema_cfg,
     mod_level_lst,
+    db_level_lst,
+    mod_db_level_lst,
     hg_schema,
     hg_schema_path,
     fa_schema,
     fa_schema_path,
 )
 from lipidlynx.models.log import logger
-from lipidlynx.models.modification import Modifications
+from lipidlynx.models.modifications import Modifications
 from lipidlynx.models.patterns import fa_rgx
 
 
@@ -128,28 +130,19 @@ class FattyAcid(object):
                         else:
                             fa_info_dct["info"]["is_modified"] = is_modified
             else:
-                mod_code = ""
                 if fa_matched_dct.get("db", 0) == 0:
-                    fa_info_dct["level"] = "4.2"
-                    fa_info_dct["linked_ids"] = {
-                        "0": fa_seg_str,
-                        "1": fa_seg_str,
-                        "2": fa_seg_str,
-                        "3": fa_seg_str,
-                        "3.1": fa_seg_str,
-                        "3.2": fa_seg_str,
-                        "4": fa_seg_str,
-                        "4.1": fa_seg_str,
-                        "4.2": fa_seg_str,
-                    }
+                    fa_info_dct["level"] = "5.2"
+                    for mod_lv in mod_level_lst:
+                        fa_info_dct["linked_ids"][mod_lv] = fa_seg_str
                 else:
-                    fa_info_dct["level"] = "4"
+                    fa_info_dct["level"] = "5"
                     fa_info_dct["linked_ids"] = {
                         "0": fa_seg_str,
                         "1": fa_seg_str,
                         "2": fa_seg_str,
                         "3": fa_seg_str,
                         "4": fa_seg_str,
+                        "5": fa_seg_str,
                     }
                 if self.lipid_code != fa_seg_str:
                     self.lipid_code = fa_seg_str

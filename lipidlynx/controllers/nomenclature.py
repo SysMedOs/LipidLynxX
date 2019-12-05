@@ -8,7 +8,6 @@
 
 
 class LynxObject(object):
-
     def __init__(self, lynx_id: str):
 
         self.lynx_id = lynx_id

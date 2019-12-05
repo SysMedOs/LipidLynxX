@@ -9,12 +9,11 @@
 from flask_restful import reqparse
 
 convert_get_parser = reqparse.RequestParser()
-convert_get_parser.add_argument('id', type=str, location=['args', 'headers', 'form', 'json'])
+convert_get_parser.add_argument(
+    "id", type=str, location=["args", "headers", "form", "json"]
+)
 
 convert_post_parser = reqparse.RequestParser()
 convert_post_parser.add_argument(
-    'lipid_name',
-    type=str,
-    required=True,
-    help="Input lipid name is required"
+    "lipid_name", type=str, required=True, help="Input lipid name is required"
 )

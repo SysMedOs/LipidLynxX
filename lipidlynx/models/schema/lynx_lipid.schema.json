@@ -62,7 +62,7 @@
           "description": "lipid class information",
           "type": "object",
           "required": [
-            "main_class"
+            "main_class", "residues"
           ],
           "properties": {
             "lm_class": {

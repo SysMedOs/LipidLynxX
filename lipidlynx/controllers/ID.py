@@ -17,13 +17,15 @@ class LynxID:
         self.lynx_id_info = {}
 
     def add_ref_id(self, db: str, ref_id: str):
-        ref_id_dct = self.lynx_id_info.get('resource_ids', {})
+        ref_id_dct = self.lynx_id_info.get("resource_ids", {})
         if db in ref_id_dct:
             if ref_id_dct[db] != ref_id:
-                logger.warning(f'update ref_id in db: {db} from {ref_id_dct[db]} to {ref_id}')
+                logger.warning(
+                    f"update ref_id in db: {db} from {ref_id_dct[db]} to {ref_id}"
+                )
         ref_id_dct[db] = ref_id
 
-    def add_ref_ids(self, db_ref_dct: Dict[str,str]):
+    def add_ref_ids(self, db_ref_dct: Dict[str, str]):
         for db in db_ref_dct:
             self.add_ref_id(db, db_ref_dct[db])
 

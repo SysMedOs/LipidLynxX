@@ -17,5 +17,5 @@ logger.setLevel(log_level)
 if not logger.handlers:
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
-    logger.info('Log started ...')
+    logger.info("Log started ...")
     logger.addHandler(console_handler)
