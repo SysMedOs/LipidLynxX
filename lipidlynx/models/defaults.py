@@ -13,7 +13,7 @@ import json
 import pandas as pd
 
 from lipidlynx.models.log import logger
-from lipidlynx.controllers.InitParams import (
+from lipidlynx.controllers.params_loader import (
     load_cfg_info,
     build_parser,
     build_mod_parser,
@@ -91,6 +91,33 @@ with open(mod_schema_path, "r") as mod_json_obj:
 
 elem_nominal_info = {"H": 1, "N": 14, "O": 16, "S": 32, "Na": 23}
 
+lipid_class_alias_info = {
+    "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
+    "O-p": {"CLASS": "P-", "RULE_CLASS": "FA"},
+    "cer": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "CER": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
+    "GPA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "GPCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "PlsA": {"CLASS": "PA", "RULE_CLASS": "PL"},
+    "PlsCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "PlsEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "PlsGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "PlsIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "PlsSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "GPC": {"CLASS": "PC", "RULE_CLASS": "PL"},
+    "GPE": {"CLASS": "PE", "RULE_CLASS": "PL"},
+    "GPG": {"CLASS": "PG", "RULE_CLASS": "PL"},
+    "GPI": {"CLASS": "PI", "RULE_CLASS": "PL"},
+    "GPS": {"CLASS": "PS", "RULE_CLASS": "PL"},
+    "MAG": {"CLASS": "MG", "RULE_CLASS": "GL"},
+    "DAG": {"CLASS": "DG", "RULE_CLASS": "GL"},
+    "TAG": {"CLASS": "TG", "RULE_CLASS": "GL"},
+}
+
 # # legacy params
 # pa_hg_elem_dct = {"C": 0, "H": 3, "O": 4, "P": 1, "N": 0}
 # pc_hg_elem_dct = {"C": 5, "H": 14, "O": 4, "P": 1, "N": 1}
@@ -154,32 +181,5 @@ elem_nominal_info = {"H": 1, "N": 14, "O": 16, "S": 32, "Na": 23}
 #
 # tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 #
-# lipid_class_alias_info = {
-#     "O-a": {"CLASS": "O-", "RULE_CLASS": "FA"},
-#     "O-p": {"CLASS": "P-", "RULE_CLASS": "FA"},
-#     "cer": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
-#     "CER": {"CLASS": "Cer", "RULE_CLASS": "Cer"},
-#     "GPA": {"CLASS": "PA", "RULE_CLASS": "PL"},
-#     "GPCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
-#     "GPEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
-#     "GPGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
-#     "GPIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
-#     "GPSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
-#     "PlsA": {"CLASS": "PA", "RULE_CLASS": "PL"},
-#     "PlsCho": {"CLASS": "PC", "RULE_CLASS": "PL"},
-#     "PlsEtn": {"CLASS": "PE", "RULE_CLASS": "PL"},
-#     "PlsGro": {"CLASS": "PG", "RULE_CLASS": "PL"},
-#     "PlsIns": {"CLASS": "PI", "RULE_CLASS": "PL"},
-#     "PlsSer": {"CLASS": "PS", "RULE_CLASS": "PL"},
-#     "GPC": {"CLASS": "PC", "RULE_CLASS": "PL"},
-#     "GPE": {"CLASS": "PE", "RULE_CLASS": "PL"},
-#     "GPG": {"CLASS": "PG", "RULE_CLASS": "PL"},
-#     "GPI": {"CLASS": "PI", "RULE_CLASS": "PL"},
-#     "GPS": {"CLASS": "PS", "RULE_CLASS": "PL"},
-#     "MAG": {"CLASS": "MG", "RULE_CLASS": "GL"},
-#     "DAG": {"CLASS": "DG", "RULE_CLASS": "GL"},
-#     "TAG": {"CLASS": "TG", "RULE_CLASS": "GL"},
-# }
-
 
 logger.info("Default parameters loaded successfully.")

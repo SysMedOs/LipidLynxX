@@ -16,9 +16,9 @@ from werkzeug.utils import secure_filename
 
 from lipidlynx.config import app_cfg_dct
 from lipidlynx.config import lipidlynx_blueprint
-from lipidlynx.controllers.Encoder import lynx_encode
-from lipidlynx.controllers.FileIO import get_table
-from lipidlynx.controllers.Parser import parse
+from lipidlynx.controllers.encoder import lynx_encode
+from lipidlynx.controllers.file_handler import get_table
+from lipidlynx.controllers.parser import parse
 
 
 @lipidlynx_blueprint.route(

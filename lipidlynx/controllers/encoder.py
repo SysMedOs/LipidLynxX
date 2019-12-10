@@ -18,17 +18,9 @@ from lipidlynx.models.defaults import (
     cv_alias_info,
 )
 
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
-#
-# For more info please contact:
-#     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-
 from lipidlynx.models.log import logger
 from lipidlynx.controllers.general_functions import seg_to_str
-from lipidlynx.controllers.Parser import parse, parse_mod
+from lipidlynx.controllers.parser import parse, parse_mod
 
 
 def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:

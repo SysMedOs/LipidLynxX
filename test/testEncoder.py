@@ -14,8 +14,8 @@ lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
 from lipidlynx.models.log import logger
-from lipidlynx.controllers.Parser import parse
-from lipidlynx.controllers.Encoder import lynx_encode
+from lipidlynx.controllers.parser import parse
+from lipidlynx.controllers.encoder import lynx_encode
 from lipidlynx.controllers.general_functions import get_abs_path
 
 

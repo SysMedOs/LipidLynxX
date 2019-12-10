@@ -41,7 +41,7 @@ class Lipid(object):
         self.level = "B0"
         self._lipid_level = "B"
         self._max_mod_level = 0
-
+        self.is_modified = False
         self.sum_info = self.__post_init__()
 
         self.residues = self.sum_info.get("residues", [])
@@ -96,25 +96,30 @@ class Lipid(object):
             ps = f"position{fa_count-1}"
         else:
             ps = f"position1"
-        if fa_count > 0 and fa in lipid_segments and lipid_segments.get(fa, None):
-            if lipid_segments.get(ps, None) == "/":
-                self._lipid_level = "S"
-                fa_info_dct = {"position": sn, "id": lipid_segments[fa]}
-            else:
-                if lipid_segments.get(ps, None) == "_":
-                    self._lipid_level = "D"
-                fa_info_dct = {"id": lipid_segments[fa]}
+        if fa_count > 0:
+            if fa in lipid_segments and lipid_segments.get(fa, None):
+                if lipid_segments.get(ps, None) == "/":
+                    self._lipid_level = "S"
+                    fa_info_dct = {"position": sn, "id": lipid_segments[fa]}
+                else:
+                    if lipid_segments.get(ps, None) == "_":
+                        self._lipid_level = "D"
+                    fa_info_dct = {"id": lipid_segments[fa]}
         return fa_info_dct
 
-    def __identify_level__(self, lipid_segments):
+    def __identify_level__(self, lipid_segments: dict):
 
         max_mod_level = 0
         max_unmod_level = 0
-        res_info_lst = [
-            self.__identify_fa__(lipid_segments, i)
-            for i in [1, 2, 3, 4, 5]
-            if self.__identify_fa__(lipid_segments, i)
-        ]
+        if self.lynx_class_lv0 == "FA" and "link" in lipid_segments:
+            res_info_lst = [{"id": self.lipid_code}]
+            self._lipid_level = "S"
+        else:
+            res_info_lst = [
+                self.__identify_fa__(lipid_segments, i)
+                for i in [1, 2, 3, 4, 5]
+                if self.__identify_fa__(lipid_segments, i)
+            ]
         if self._lipid_level != "S":  # Sort all residues by names in B and D level
             res_info_lst = natsorted(res_info_lst, key=itemgetter(*["id"]))
 
@@ -138,6 +143,7 @@ class Lipid(object):
                 res_level = res_obj.fa_level
                 if res_obj.is_modified:
                     max_mod_level = max(max_mod_level, float(res_level))
+                    self.is_modified = True
                 else:
                     max_unmod_level = max(max_unmod_level, float(res_level))
             else:
@@ -243,15 +249,45 @@ class Lipid(object):
             bulk_linked_ids = FattyAcid(sum_fa_str).fa_linked_ids
 
         for lv in lv_lst["lynx_lv_lst"]:
-            if lv[0] == "S":
-                fa_seg_str = "/".join(fa_res_dct.get(lv[1:], []))
-                linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
-            elif lv[0] == "D":
-                fa_seg_str = "_".join(fa_res_dct.get(lv[1:], []))
-                linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
-            elif lv[0] == "B" and int(lv[1]) <= 3:
-                fa_seg_str = bulk_linked_ids.get(lv[1:], "").strip("FA")
-                linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
+            if self.lynx_class_lv0 == "FA":
+                fa_str_lst = fa_res_dct.get(lv[1:], [])
+                if len(fa_str_lst) == 1:
+                    fa_str = fa_str_lst[0]
+                    if fa_str[:2] in ["FA", "O-", "P-"]:
+                        pass
+                    else:
+                        fa_str = f"FA{fa_str}"
+                    linked_ids_dct[lv] = fa_str
+            else:
+                if lv[0] == "S":
+                    fa_seg_str = "/".join(fa_res_dct.get(lv[1:], []))
+                    if "HG" in other_pre_dct:
+                        linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
+                    else:
+                        linked_ids_dct[lv] = f"{fa_seg_str}"
+                elif lv[0] == "D":
+                    pre_fa_seg_lst = fa_res_dct.get(lv[1:], [])
+                    fa_seg_lst = []
+                    # sort O-/P- first in D level
+                    for fa_seg in pre_fa_seg_lst:
+                        if fa_seg.startswith("O-"):
+                            fa_seg_lst.append(fa_seg)
+                            pre_fa_seg_lst.remove(fa_seg)
+                        elif fa_seg.startswith("P-"):
+                            fa_seg_lst.append(fa_seg)
+                            pre_fa_seg_lst.remove(fa_seg)
+                    fa_seg_lst = natsorted(fa_seg_lst) + natsorted(pre_fa_seg_lst)
+                    fa_seg_str = "_".join(fa_seg_lst)
+                    if "HG" in other_pre_dct:
+                        linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
+                    else:
+                        linked_ids_dct[lv] = f"{fa_seg_str}"
+                elif lv[0] == "B" and int(lv[1]) <= 3:
+                    fa_seg_str = bulk_linked_ids.get(lv[1:], "").strip("FA")
+                    if "HG" in other_pre_dct:
+                        linked_ids_dct[lv] = f'{other_pre_dct["HG"]}({fa_seg_str})'
+                    else:
+                        linked_ids_dct[lv] = f"{fa_seg_str}"
         return linked_ids_dct
 
     def __post_init__(self):
@@ -264,6 +300,7 @@ class Lipid(object):
                 "id": self.lipid_code,
                 "level": self.level,
                 "linked_ids": self._get_linked_ids(res_info_lst),
+                "is_modified": self.is_modified,
                 "info": {"main_class": self.lynx_class_lv0, "residues": res_info_lst},
             }
             logger.info(f"modification level: {self._max_mod_level}")
@@ -386,9 +423,10 @@ if __name__ == "__main__":
                     pl_d_lst.append(f"{hg}({sn1}_{sn2})")
                     pl_s_lst.append(f"{hg}({sn1}/{sn2})")
 
-    pl_lst = pl_s_lst + pl_d_lst
+    # lipid_lst = sn1_lst + sn2_lst + pl_s_lst + pl_d_lst
+    lipid_lst = sn1_lst
     counter = 0
-    for pl in pl_lst:
+    for pl in lipid_lst:
         counter += 1
         logger.info(f"Test Lipid #{counter} : {pl}")
         pl_obj = Lipid(lipid_code=pl)

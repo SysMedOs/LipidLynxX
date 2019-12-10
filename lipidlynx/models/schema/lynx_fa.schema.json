@@ -88,13 +88,7 @@
             false
           ]
         },
-        "mod_id": {
-          "description": "The link type of FA",
-          "type": "string",
-          "minimum": 0,
-          "maximum": 128
-        },
-        "mod_info": {
+        "modifications": {
           "type": "object",
           "required": [
             "api_version",

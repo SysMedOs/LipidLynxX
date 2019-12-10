@@ -107,7 +107,7 @@ class FattyAcid(object):
             )
             if fa_seg_str.lower().startswith("none"):
                 fa_seg_str = fa_seg_str[4:]
-            if mod_code:
+            if mod_code and mod_code.strip("<>"):  # mod_code can be None or '<>'
                 mod_obj = Modifications(mod_code)
                 fa_info_dct["mod_obj"] = mod_obj
                 fa_info_dct["level"] = f"{mod_obj.mod_level}"
@@ -125,8 +125,7 @@ class FattyAcid(object):
                         ):
                             is_modified = True
                             fa_info_dct["info"]["is_modified"] = is_modified
-                            fa_info_dct["info"]["mod_info"] = mod_obj.sum_mod_info
-                            fa_info_dct["info"]["mod_id"] = mod_obj.mod_id
+                            fa_info_dct["info"]["modifications"] = mod_obj.sum_mod_info
                         else:
                             fa_info_dct["info"]["is_modified"] = is_modified
             else:
