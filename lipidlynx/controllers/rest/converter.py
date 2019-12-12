@@ -22,7 +22,7 @@ from lipidlynx.controllers.parser import parse
 
 
 @lipidlynx_blueprint.route(
-    "/api/convert/name/<input_abbreviation>", methods=["GET", "POST"]
+    "/api/0.1/convert/name/<str:input_abbreviation>", methods=["GET", "POST"]
 )
 def convert_name(input_abbreviation: str):
     print("input_abbreviation", input_abbreviation)
@@ -39,7 +39,9 @@ def convert_name(input_abbreviation: str):
         return jsonify({"code": 1002, "msg": "Input error!", "data": ""})
 
 
-@lipidlynx_blueprint.route("/api/convert/json/<js_str>", methods=["GET", "POST"])
+@lipidlynx_blueprint.route(
+    "/api/0.1/convert/json/<str:js_str>", methods=["GET", "POST"]
+)
 def convert_json(js_str: str):
     usr_dct = json.loads(js_str)
     converted_dct = {}
@@ -78,8 +80,8 @@ def convert_json(js_str: str):
         return jsonify({"code": 1003, "msg": "Json input error", "data": {}})
 
 
-@lipidlynx_blueprint.route("/api/upload/<filename>", methods=["GET", "POST"])
-def table_input(filename) -> str:
+@lipidlynx_blueprint.route("/api/0.1/upload/<str:filename>", methods=["GET", "POST"])
+def table_input(filename: str) -> str:
     abs_table_path = os.path.join(app_cfg_dct["ABS_UPLOAD_PATH"], filename)
     if os.path.isfile(abs_table_path):
         return jsonify(
@@ -93,8 +95,8 @@ def table_input(filename) -> str:
         return jsonify({"code": 1003, "msg": "Input error!", "data": {}})
 
 
-@lipidlynx_blueprint.route("/api/download/<filename>", methods=["GET"])
-def download(filename) -> str:
+@lipidlynx_blueprint.route("/api/0.1/download/<str:filename>", methods=["GET"])
+def download(filename: str) -> str:
     if request.method == "GET":
         if os.path.isfile(os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], filename)):
             return send_from_directory(

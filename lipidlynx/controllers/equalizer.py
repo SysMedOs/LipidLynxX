@@ -101,19 +101,23 @@ class Equalizer(object):
             if matched_dct:
                 out_matched_df = pd.DataFrame.from_dict(matched_dct, orient="index")
                 out_matched_df.index.names = [f"ID@Lv_{self.level}"]
-                out_matched_df.to_excel(
+                out_matched_df.sort_index().to_excel(
                     xlsx_writer, sheet_name=f"matched_{self.level   }"
                 )
         if "equalized" in output_dct:
             equalized_dct = output_dct["equalized"]
             if equalized_dct:
-                pd.DataFrame.from_dict(equalized_dct, orient="index").to_excel(
+                pd.DataFrame.from_dict(
+                    equalized_dct, orient="index"
+                ).sort_index().to_excel(
                     xlsx_writer, sheet_name=f"unmatched_{self.level}"
                 )
         if "skipped" in output_dct:
             skipped_dct = output_dct["skipped"]
             if skipped_dct:
-                pd.DataFrame.from_dict(skipped_dct, orient="index").T.to_excel(
+                pd.DataFrame.from_dict(
+                    skipped_dct, orient="index"
+                ).T.sort_index().to_excel(
                     xlsx_writer, sheet_name="skipped", index=False
                 )
 
@@ -122,7 +126,26 @@ class Equalizer(object):
 
 if __name__ == "__main__":
     test_file = r"test/test_input/test_equalizer.csv"
-    out_file = r"../../test/test_output/test_level_mapper_output.xlsx"
-    equalizer = Equalizer(test_file, level="D3")
-    equalizer.export(out_file)
-    logger.info("FIN")
+    test_level_lst = [
+        "B1",
+        "B1.1",
+        "B1.2",
+        "B2",
+        "B2.1",
+        "B2.2",
+        "D1",
+        "D1.1",
+        "D1.2",
+        "D2",
+        "D2.1",
+        "D2.2",
+        "D3",
+        "D3.1",
+        "D3.2",
+    ]
+    for lv in test_level_lst:
+        equalizer = Equalizer(test_file, level=lv)
+        equalizer.export(
+            f"../../test/test_output/equalizer/test_level_mapper_output_{lv}.xlsx"
+        )
+        logger.info("FIN")
