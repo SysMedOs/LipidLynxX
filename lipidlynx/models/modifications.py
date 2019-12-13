@@ -12,9 +12,9 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 
-from lipidlynx.controllers.general_functions import check_json, get_abs_path
+from ..controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import (
+from .defaults import (
     api_version,
     cv_elements_info,
     elem_nominal_info,
@@ -25,8 +25,8 @@ from lipidlynx.models.defaults import (
     db_level_lst,
     mod_db_level_lst,
 )
-from lipidlynx.models.log import logger
-from lipidlynx.models.patterns import (
+from .log import logger
+from .patterns import (
     mod_rgx,
     mod_db_rgx,
     mod_lv0_delta_rgx,

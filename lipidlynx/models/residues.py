@@ -11,9 +11,9 @@ import os
 
 from jsonschema import Draft7Validator, RefResolver, validate
 
-from lipidlynx.controllers.general_functions import check_json, get_abs_path
+from ..controllers.general_functions import check_json, get_abs_path
 
-from lipidlynx.models.defaults import (
+from .defaults import (
     api_version,
     lynx_schema_cfg,
     mod_level_lst,
@@ -24,9 +24,9 @@ from lipidlynx.models.defaults import (
     fa_schema,
     fa_schema_path,
 )
-from lipidlynx.models.log import logger
-from lipidlynx.models.modifications import Modifications
-from lipidlynx.models.patterns import fa_rgx
+from .log import logger
+from .modifications import Modifications
+from .patterns import fa_rgx
 
 
 class HeadGroup(object):

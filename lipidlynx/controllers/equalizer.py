@@ -6,31 +6,41 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-
 import re
+from typing import Union
 
 import pandas as pd
 
-from lipidlynx.controllers.general_functions import get_abs_path
-from lipidlynx.models.log import logger
-from lipidlynx.models.lipid import Lipid
-from lipidlynx.models.residues import FattyAcid
+from .general_functions import get_abs_path
+from .converter import convert_string
+from ..models.log import logger
+from ..models.lipid import Lipid
+from ..models.residues import FattyAcid
+from .encoder import lynx_encode
+from .parser import parse
 
 
 class Equalizer(object):
-    def __init__(self, file_path: str, level: str = "auto"):
-        self.level = level
-        abs_path = get_abs_path(file_path)
-        if abs_path.lower().endswith(".xlsx"):
-            self.df = pd.read_excel(abs_path)
-        elif abs_path.lower().endswith(".csv"):
-            self.df = pd.read_csv(abs_path)
-        else:
-            raise ValueError(f"Cannot read file {abs_path}")
-        self.df.fillna("")
-        self.header_lst = self.df.columns.to_list()
+    def __init__(self, input_data: Union[str, dict], level: str = "auto"):
 
-        self.data = self.df.to_dict(orient="list")
+        if isinstance(input_data, str):
+            abs_path = get_abs_path(input_data)
+            if abs_path.lower().endswith(".xlsx"):
+                df = pd.read_excel(abs_path)
+            elif abs_path.lower().endswith(".csv"):
+                df = pd.read_csv(abs_path)
+            else:
+                raise ValueError(f"Cannot read file {abs_path}")
+            df.fillna("")
+            self.data = df.to_dict(orient="list")
+        elif isinstance(input_data, dict):
+            self.data = input_data
+        else:
+            raise ValueError(f"Not supported input {type(input_data)}")
+
+        self.level = level
+
+        self.header_lst = self.data.keys()
 
     def convert_col(self, col_name):
         id_lst = self.data.get(col_name, [])
@@ -38,12 +48,27 @@ class Equalizer(object):
         skipped_id_lst = []
         if id_lst:
             for _id in id_lst:
+                _lipid = None
                 if isinstance(_id, str) and _id:
                     logger.info(f"Convert {_id} to level {self.level}")
                     logger.info(f"test {_id}")
-                    _lipid = Lipid(lipid_code=_id)
-                else:
-                    _lipid = None
+                    try:
+                        _lipid = Lipid(lipid_code=_id)
+                    except ValueError:
+                        try:
+                            _lynx_id = lynx_encode(parse(_id))
+                            if _lynx_id:
+                                logger.debug(
+                                    f"Converted input {_id} to lynx_id {_lynx_id}"
+                                )
+                                _lipid = Lipid(lipid_code=_lynx_id)
+                            else:
+                                raise ValueError(
+                                    f"Cannot converted input {_id} to lynx_id {_lynx_id}"
+                                )
+                        except Exception as e:
+                            logger.error(e)
+
                 if _lipid:
                     if _lipid.is_modified and self.level in _lipid.linked_ids:
                         equalized_id_dct[_lipid.linked_ids[self.level]] = _id
@@ -93,7 +118,11 @@ class Equalizer(object):
 
         return output_dct
 
-    def export(self, out_path: str):
+    def export_dict(self):
+
+        return self.cross_match()
+
+    def export_xlsx(self, out_path: str):
         output_dct = self.cross_match()
         xlsx_writer = pd.ExcelWriter(out_path)
         if "matched" in output_dct:

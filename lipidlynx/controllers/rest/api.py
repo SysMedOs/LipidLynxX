@@ -7,20 +7,16 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import os
-import time
 
-from flask import request, abort, jsonify, send_from_directory
-from flask_restful import Api, Resource, reqparse
-from werkzeug.utils import secure_filename
+from flask import abort
+from flask_restful import Resource
 
-from ...config import app_cfg_dct
-from ...config import blueprint
-from ..encoder import lynx_encode
-from ..file_handler import get_table
 from ..converter import convert_dict, convert_list, convert_string
-from ..parser import parse
-from .parsers import convert_get_parser
+from ..equalizer import Equalizer
+from .errors import ApiErrors
+from .parsers import convert_get_parser, equalizer_get_parser
+
+errors = ApiErrors()
 
 
 class StringConverterAPI(Resource):
@@ -37,9 +33,9 @@ class StringConverterAPI(Resource):
             if converted_dct:
                 return {"code": 0, "msg": "Conversion success.", "data": converted_dct}
             else:
-                return {"code": 1001, "msg": "Conversion failure!", "data": ""}
+                return errors.input_error
         else:
-            return {"code": 1002, "msg": "Input error!", "data": ""}
+            return errors.input_error
 
 
 class ListConverterAPI(Resource):
@@ -57,9 +53,9 @@ class ListConverterAPI(Resource):
             if converted_dct:
                 return {"code": 0, "msg": "Json input parsed", "data": converted_dct}
             else:
-                return {"code": 1003, "msg": "No output", "data": {}}
+                return errors.output_error
         else:
-            return {"code": 1003, "msg": "Json input error", "data": {}}
+            return errors.input_error
 
 
 class DictConverterAPI(Resource):
@@ -77,7 +73,9 @@ class DictConverterAPI(Resource):
             if converted_dct:
                 return {"code": 0, "msg": "Json input parsed", "data": converted_dct}
             else:
-                return {"code": 1003, "msg": "Json input error", "data": {}}
+                return errors.output_error
+        else:
+            return errors.input_error
 
 
 class ConverterAPI(Resource):
@@ -98,8 +96,84 @@ class ConverterAPI(Resource):
         elif user_data and isinstance(user_data, dict):
             converted_dct = convert_dict(user_data)
         else:
-            return {"code": 1003, "msg": "Json input error", "data": {}}
+            return errors.input_error
         if converted_dct:
             return {"code": 0, "msg": "Json input parsed", "data": converted_dct}
         else:
-            return {"code": 1003, "msg": "Json input error", "data": {}}
+            return errors.output_error
+
+
+class LevelEqualizerAPI(Resource):
+    """
+    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/level/
+    -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
+    """
+
+    @staticmethod
+    def get():
+        args = equalizer_get_parser.parse_args()
+        print(args)
+        user_data = json.loads(args["data"])
+        user_level = json.loads(args["level"])
+        if isinstance(user_level, str) and user_level:
+            equalizer = Equalizer(input_data=user_data, level=user_level)
+            equalized_dct = equalizer.cross_match()
+            if equalized_dct:
+                return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
+            else:
+                return errors.output_error
+        else:
+            return errors.input_error
+
+
+class MultiLevelEqualizerAPI(Resource):
+    """
+    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/levels/
+    -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=["D3","B2"]' -X GET
+    """
+
+    @staticmethod
+    def get():
+        args = equalizer_get_parser.parse_args()
+        print(args)
+        user_data = json.loads(args["data"])
+        user_level = json.loads(args["level"])
+        if isinstance(user_level, list) and user_level:
+            equalized_dct = {}
+            for lv in user_level:
+                equalizer = Equalizer(input_data=user_data, level=lv)
+                equalized_dct[lv] = equalizer.cross_match()
+            if equalized_dct:
+                return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
+            else:
+                return errors.input_error
+        else:
+            return errors.output_error
+
+
+class EqualizerAPI(Resource):
+    """
+    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/
+    -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=Union[str, List[str]]' -X GET
+    """
+
+    @staticmethod
+    def get():
+        args = equalizer_get_parser.parse_args()
+        print(args)
+        user_data = json.loads(args["data"])
+        user_level = json.loads(args["level"])
+        if isinstance(user_level, str) and user_level:
+            equalizer = Equalizer(input_data=user_data, level=user_level)
+            equalized_dct = equalizer.cross_match()
+        elif isinstance(user_level, list) and user_level:
+            equalized_dct = {}
+            for lv in user_level:
+                equalizer = Equalizer(input_data=user_data, level=lv)
+                equalized_dct[lv] = equalizer.cross_match()
+        else:
+            return errors.input_error
+        if equalized_dct:
+            return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
+        else:
+            return errors.input_error

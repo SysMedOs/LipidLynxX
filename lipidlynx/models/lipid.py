@@ -14,19 +14,18 @@ import re
 from jsonschema import Draft7Validator
 from natsort import natsorted
 
-from lipidlynx.controllers.general_functions import check_json, get_abs_path
-
-from lipidlynx.models.defaults import (
+from ..controllers.general_functions import check_json, get_abs_path
+from ..models.defaults import (
     api_version,
     lynx_schema_cfg,
     lipid_level_lst,
     mod_level_lst,
     mod_db_level_lst,
 )
-from lipidlynx.models.log import logger
-from lipidlynx.models.modifications import Modifications
-from lipidlynx.models.patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
-from lipidlynx.models.residues import HeadGroup, FattyAcid
+from .log import logger
+from .modifications import Modifications
+from .patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
+from .residues import HeadGroup, FattyAcid
 
 
 class Lipid(object):

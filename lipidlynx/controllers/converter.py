@@ -28,20 +28,20 @@ def convert_string(
     if output_dct:
         pass
     else:
-        output_dct = {"INPUT": [], "OUTPUT": [], "CONVERTED": [], "NOT_CONVERTED": []}
+        output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
     if input_abbr and isinstance(input_abbr, str) and len(input_abbr) < 512:
         lynx_id = lynx_encode(parse(input_abbr))
         if lynx_id:
-            output_dct["INPUT"].append(input_abbr)
-            output_dct["OUTPUT"].append(lynx_id)
-            output_dct["CONVERTED"].append((input_abbr, lynx_id))
+            output_dct["input"].append(input_abbr)
+            output_dct["output"].append(lynx_id)
+            output_dct["converted"].append((input_abbr, lynx_id))
         else:
-            output_dct["NOT_CONVERTED"].append(input_abbr)
+            output_dct["skipped"].append(input_abbr)
     return output_dct
 
 
 def convert_list(input_lst: List[str]) -> Dict[str, Union[List, List[Tuple]]]:
-    output_dct = {"INPUT": [], "OUTPUT": [], "CONVERTED": [], "NOT_CONVERTED": []}
+    output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
     if input_lst and isinstance(input_lst, list):
         input_lst = list(filter(lambda x: isinstance(x, str) and len(x) > 1, input_lst))
         for abbr in input_lst:

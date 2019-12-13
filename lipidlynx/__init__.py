@@ -33,6 +33,9 @@ from .controllers.rest.api import (
     DictConverterAPI,
     ListConverterAPI,
     ConverterAPI,
+    LevelEqualizerAPI,
+    MultiLevelEqualizerAPI,
+    EqualizerAPI,
 )
 
 app = Flask(__name__)
@@ -174,6 +177,9 @@ api.add_resource(ConverterAPI, "/api/0.1/converter/")
 api.add_resource(StringConverterAPI, "/api/0.1/converter/string/")
 api.add_resource(ListConverterAPI, "/api/0.1/converter/list/")
 api.add_resource(DictConverterAPI, "/api/0.1/converter/dict/")
+api.add_resource(EqualizerAPI, "/api/0.1/equalizer/")
+api.add_resource(LevelEqualizerAPI, "/api/0.1/equalizer/level/")
+api.add_resource(MultiLevelEqualizerAPI, "/api/0.1/equalizer/levels/")
 
 app.register_blueprint(blueprint)
 

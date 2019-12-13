@@ -12,3 +12,11 @@ convert_get_parser = reqparse.RequestParser()
 convert_get_parser.add_argument(
     "data", type=str, location=["args", "headers", "form", "json"]
 )
+
+equalizer_get_parser = reqparse.RequestParser()
+equalizer_get_parser.add_argument(
+    "data", type=str, location=["args", "headers", "form", "json"]
+)
+equalizer_get_parser.add_argument(
+    "level", type=str, location=["args", "headers", "form", "json"]
+)
