@@ -28,10 +28,11 @@ from .forms import ConverterTableInputForm
 from .forms import ConverterTextInputForm
 from .forms import ParserInputForm
 from .liblynx.LynxParser import parse_lipidlynx
-from .controllers.rest.lynx_api import (
+from .controllers.rest.api import (
     StringConverterAPI,
     DictConverterAPI,
     ListConverterAPI,
+    ConverterAPI,
 )
 
 app = Flask(__name__)
@@ -169,7 +170,8 @@ def parser():
 
 # init rest api to blue print
 api = Api(blueprint)
-api.add_resource(StringConverterAPI, "/api/0.1/converter/str/<string:abbreviation>")
+api.add_resource(ConverterAPI, "/api/0.1/converter/")
+api.add_resource(StringConverterAPI, "/api/0.1/converter/string/")
 api.add_resource(ListConverterAPI, "/api/0.1/converter/list/")
 api.add_resource(DictConverterAPI, "/api/0.1/converter/dict/")
 
