@@ -12,13 +12,9 @@ import json
 
 import pandas as pd
 
-from lipidlynx.models.log import logger
-from lipidlynx.controllers.params_loader import (
-    load_cfg_info,
-    build_parser,
-    build_mod_parser,
-)
-from lipidlynx.controllers.general_functions import get_abs_path
+from ..models.log import logger
+from ..controllers.params_loader import load_cfg_info, build_parser, build_mod_parser
+from ..controllers.general_functions import get_abs_path
 
 # Define default values across LipidLynx
 
@@ -147,37 +143,37 @@ lipid_class_alias_info = {
 #     "BB": glycerol_bone_elem_dct,  # BB for glycerol BackBone
 # }
 #
-# elem_info = {
-#     "H": [(1.0078250321, 0.999885), (2.0141017780, 0.0001157)],
-#     "D": [(2.0141017780, 0.0001157)],
-#     "C": [(12.0, 0.9893), (13.0033548378, 0.0107)],
-#     "N": [(14.0030740052, 0.99632), (15.0001088984, 0.00368)],
-#     "O": [(15.9949146221, 0.99757), (16.99913150, 0.00038), (17.9991604, 0.00205)],
-#     "Na": [(22.98976967, 1.0)],
-#     "P": [(30.97376151, 1.0)],
-#     "S": [
-#         (31.97207069, 0.9493),
-#         (32.97145850, 0.0076),
-#         (33.96786683, 0.0429),
-#         (35.96708088, 0.0002),
-#     ],
-#     "K": [(38.9637069, 0.932581), (39.96399867, 0.000117), (40.96182597, 0.067302)],
-# }
-#
-#
-# pl_smi_info = {
-#     "PA": r"OP(O)(OCC(",
-#     "PC": r"[O-]P(OCC[N+](C)(C)C)(OCC(",
-#     "PC-CH3": r"[O]P(OCC[N](C)C)(OCC(",
-#     "PE": r"OP(OCCN)(OCC(",
-#     "PG": r"OP(OCC(O)CO)(OCC(",
-#     "PS": r"OP(OCC(C(O)=O)N)(OCC(",
-#     "PI": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](O)[C@@H](O)[C@H]1O))(OCC(",
-#     "PIP": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(",
-#     "PI4P": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(",
-#     "gly_part": r")C",
-#     "pl_end": r")=O",
-# }
+elem_info = {
+    "H": [(1.0078250321, 0.999885), (2.0141017780, 0.0001157)],
+    "D": [(2.0141017780, 0.0001157)],
+    "C": [(12.0, 0.9893), (13.0033548378, 0.0107)],
+    "N": [(14.0030740052, 0.99632), (15.0001088984, 0.00368)],
+    "O": [(15.9949146221, 0.99757), (16.99913150, 0.00038), (17.9991604, 0.00205)],
+    "Na": [(22.98976967, 1.0)],
+    "P": [(30.97376151, 1.0)],
+    "S": [
+        (31.97207069, 0.9493),
+        (32.97145850, 0.0076),
+        (33.96786683, 0.0429),
+        (35.96708088, 0.0002),
+    ],
+    "K": [(38.9637069, 0.932581), (39.96399867, 0.000117), (40.96182597, 0.067302)],
+}
+
+
+pl_smi_info = {
+    "PA": r"OP(O)(OCC(",
+    "PC": r"[O-]P(OCC[N+](C)(C)C)(OCC(",
+    "PC-CH3": r"[O]P(OCC[N](C)C)(OCC(",
+    "PE": r"OP(OCCN)(OCC(",
+    "PG": r"OP(OCC(O)CO)(OCC(",
+    "PS": r"OP(OCC(C(O)=O)N)(OCC(",
+    "PI": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](O)[C@@H](O)[C@H]1O))(OCC(",
+    "PIP": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(",
+    "PI4P": r"OP(O[C@H]1[C@H](O)([C@@H](O)[C@H](OP(O)(O)=O)[C@@H](O)[C@H]1O))(OCC(",
+    "gly_part": r")C",
+    "pl_end": r")=O",
+}
 #
 # tg_smi_info = {"gly_part_a": r"[H]C(C", "gly_part_b": r")(", "gly_part_c": r")C"}
 #

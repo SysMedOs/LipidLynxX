@@ -12,15 +12,11 @@ from typing import Dict, List, Tuple, Union
 
 from natsort import natsorted
 
-from lipidlynx.models.defaults import (
-    lipid_class_alias_info,
-    cv_order_list,
-    cv_alias_info,
-)
+from ..models.defaults import lipid_class_alias_info, cv_order_list, cv_alias_info
 
-from lipidlynx.models.log import logger
-from lipidlynx.controllers.general_functions import seg_to_str
-from lipidlynx.controllers.parser import parse, parse_mod
+from ..models.log import logger
+from ..controllers.general_functions import seg_to_str
+from ..controllers.parser import parse, parse_mod
 
 
 def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:

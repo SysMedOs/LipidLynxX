@@ -13,10 +13,10 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem, rdMolDescriptors
 
-from lipidlynx.models.log import logger
-from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
-from lipidlynx.models.defaults import default_cfg_path
-from lipidlynx.liblynx.Converter import Converter
+from ..models.log import logger
+from ..liblynx.LipidNomenclature import ParserFA, ParserPL
+from ..models.defaults import default_cfg_path
+from ..liblynx.Converter import Converter
 
 
 def parse_lipidlynx(abbr: str) -> dict:

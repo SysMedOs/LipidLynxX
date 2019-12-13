@@ -11,7 +11,7 @@ import re
 import pandas as pd
 from natsort import natsorted
 
-from lipidlynx.models.defaults import cv_order_list
+from ..models.defaults import cv_order_list
 
 
 class AbbrParser:

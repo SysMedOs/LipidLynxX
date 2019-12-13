@@ -9,8 +9,8 @@
 import re
 from typing import Dict, List, Union
 
-from lipidlynx.models.log import logger
-from lipidlynx.models.defaults import (
+from ..models.log import logger
+from ..models.defaults import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,
@@ -18,7 +18,7 @@ from lipidlynx.models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
-from lipidlynx.controllers.general_functions import seg_to_str
+from ..controllers.general_functions import seg_to_str
 
 
 def parse(

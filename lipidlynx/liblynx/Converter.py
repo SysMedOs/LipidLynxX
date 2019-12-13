@@ -11,9 +11,9 @@ import re
 
 import pandas as pd
 
-from lipidlynx.models.defaults import cfg_info_dct
-from lipidlynx.models.defaults import logger
-from lipidlynx.liblynx.AbbrParser import AbbrParser
+from ..models.defaults import cfg_info_dct
+from ..models.defaults import logger
+from ..liblynx.AbbrParser import AbbrParser
 
 
 class Converter:

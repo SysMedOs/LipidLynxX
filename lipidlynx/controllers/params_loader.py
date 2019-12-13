@@ -12,8 +12,8 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 
-from lipidlynx.controllers.general_functions import get_abs_path
-from lipidlynx.models.log import logger
+from ..controllers.general_functions import get_abs_path
+from ..models.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:

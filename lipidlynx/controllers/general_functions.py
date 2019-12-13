@@ -12,7 +12,7 @@ from typing import List
 
 from jsonschema import Draft7Validator
 
-from lipidlynx.models.log import logger
+from ..models.log import logger
 
 
 def get_abs_path(file_path: str) -> str:

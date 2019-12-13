@@ -39,7 +39,7 @@ app_cfg_dct["ABS_DOWNLOAD_PATH"] = os.path.join(
     app_cfg_dct["ABS_BASE_PATH"], app_cfg_dct["DOWNLOAD_FOLDER"]
 )
 
-lipidlynx_blueprint = Blueprint(
+blueprint = Blueprint(
     "lipidlynx",
     __name__,
     template_folder=r"templates",
