@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+    LipidLynx
+{% endblock %}
+
+{% block body %}
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="true">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
+                    <img alt="image" class="img-fluid"
+                         src="{{ url_for('.static', filename='images/LipidLynx_Logo.png') }}"></p>
+                </div>
+                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
+                    <h1>Welcome to LipidLynx</h1>
+                    <p class="lead">LipidLynx is designed to ...</p>
+                    <p class="lead">Project aim: </p>
+                    <p class="lead">1 Convert different abbreviations to unified LipidLynx id. </p>
+
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a class="btn btn-primary mt-4" href="{{ url_for('.convert_lipid') }}">Lipidome Converter</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary mt-4" href="{{ url_for('.equalizer') }}">Lipid Equalizer</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a class="btn btn-primary mt-4" href="{{ url_for('.convert_epilipid') }}">Epilipidome Converter</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-primary mt-4" href="{{ url_for('.equalizer') }}">Epilipidome Equalizer</a>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="lead">2 Generate associated properties from LipidLynx id. </p>
+                    <a class="btn btn-primary mt-4" href="{{ url_for('.parser') }}">Try LipidLynx Parser</a>
+                    <p class="lead">...</p>
+
+                    </div>
+                </div>
+            </div>
+    </section>
+
+{% endblock %}

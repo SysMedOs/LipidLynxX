@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/SysMedOs/epilion",
   "dependencies": {
-    "electron": "^5.0.8",
+    "electron": "^6.0.10",
     "python-shell": "^1.0.7"
   },
   "repository": {
