@@ -1,0 +1,19 @@
+{
+  "api_version": "0.1",
+  "id":"FA20:4<2OH,Ke>",
+  "level":"S2",
+  "linked_ids":{
+    "S0": "FA20:4<+44>",
+    "S1": "FA20:4<+3O,-6H>",
+    "S2": "FA20:4<2OH,Ke>"
+  },
+  "info": {
+    "c": 20,
+    "db": 4,
+    "link": "FA",
+    "is_modified": true
+  },
+  "mod_info": {
+    "mod_id": "<2OH,Ke>"
+  }
+}

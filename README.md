@@ -1,13 +1,13 @@
-# ![epiLION_Logo](doc/images/epiLION_Logo.png)
+# ![LipidLynx_Logo](doc/images/LipidLynx_Logo.png)
 
-## epi<span style="color:orange">L</span>ipidome <span style="color:orange">I</span>dentifier and <span style="color:orange">O</span>ptimized <span style="color:orange">N</span>omenclature
+## Lipid abbreviations linked by unified nomenclature
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
-[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/epiLION?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/epiLION&utm_campaign=Badge_Grade_Dashboard)
-![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/epiLION.svg)
+[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynx/master.svg)](https://travis-ci.com/SysMedOs/LipidLynx)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/LipidLynx?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynx&utm_campaign=Badge_Grade_Dashboard)
+![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynx.svg)
 
-The epiLION project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
+The LipidLynx project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
 
 -   Main Features
@@ -20,19 +20,19 @@ in the epilipidome.
     -   Hierarchical abbreviation system
     -   Capable to parse fuzzy site unspecific annotations
 
-![epiLION_levels](doc/images/epiLION_levels.png)
+![LipidLynx_levels](doc/images/LipidLynx_levels.png)
 
--   epiLION abbreviation converter
+-   LipidLynx abbreviation convert_lipid
 
-    -   Convert different abbreviations to uniformed epiLION abbreviations
+    -   Convert different abbreviations to uniformed LipidLynx abbreviations
 
-![epiLION_converter](doc/images/fig_converter.png)
+![LipidLynx_converter](doc/images/fig_converter.png)
 
--   epiLION structure and MS property generator
+-   LipidLynx structure and MS property generator
 
     -   Abbreviation to SMILES/ MOL / SDF conversion using python
 
-![epiLION_generator](doc/images/fig_generator.png)
+![LipidLynx_generator](doc/images/fig_generator.png)
 
 -   Currently supported modifications
 
@@ -50,7 +50,7 @@ in the epilipidome.
     -   `F`: fluoro
     -   `CN`: cyano
 
--   Example of epiLION abbreviations
+-   Example of LipidLynx abbreviations
 
     -   Fatty acids
 
@@ -69,23 +69,23 @@ in the epilipidome.
 
 ## Instructions
 
-### How to install epiLION from source code
+### How to install LipidLynx from source code
 
 -   Download the source code as zip file for your system
 
-    -   Download epiLION source Code as .zip. Please notice the date and version of LipidHunter source code.
+    -   Download LipidLynx source Code as .zip. Please notice the date and version of LipidHunter source code.
 
     -   Professional users can use `git` to clone the whole repository, please make sure that you switched to the correct branch.
 
     -   Only the released version is recommended for real data processing. Other development branches may lead to unknown issues and miss interpretation of the data.
 
--   Rename the downloaded file to `epiLION.zip`
+-   Rename the downloaded file to `LipidLynx.zip`
 
--   Unzip `epiLION.zip` file to any folder.
+-   Unzip `LipidLynx.zip` file to any folder.
 
--   Install epiLION source code
+-   Install LipidLynx source code
 
-    -   epiLION is developed under python 3.6+.
+    -   LipidLynx is developed under python 3.6+.
 
     -   The best way is to use virtual environment such as `conda`
 
@@ -97,38 +97,38 @@ in the epilipidome.
 
     -   Test source code installation
 
-        -   epiLION is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS.
+        -   LipidLynx is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS.
 
-        -   [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/epiLION/master.svg)](https://travis-ci.com/SysMedOs/epiLION/branches)
+        -   [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynx/master.svg)](https://travis-ci.com/SysMedOs/LipidLynx/branches)
 
-        -   you can also use py.test to test epiLION in your python environment
+        -   you can also use py.test to test LipidLynx in your python environment
 
-            -   unit test for epiLION converter is provided in [`Test/test_convLION.py`](test/test_convLION.py)
+            -   unit test for LipidLynx convert_lipid is provided in [`Test/test_convLION.py`](test/test_convLynx.py)
 
-            -   unit test for epiLION generator is provided in [`Test/test_epiLION.py`](test/test_epiLION.py)
+            -   unit test for LipidLynx generator is provided in [`Test/test_LipidLynx.py`](test/test_LipidLynx.py)
 
--   Run epiLION converter
+-   Run LipidLynx convert_lipid
 
     -   Run `python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx`
 
     -   convLION read list of different abbreviations in the `test_crosscheck.xlsx`
-        and generate the converted epiLION abbreviations in the output file.
+        and generate the converted LipidLynx abbreviations in the output file.
 
     -   convLION can read an write both `.xlsx` and `.csv` file.
 
     -   sample input
 
-        ![epiLION_converter_input](doc/images/inLION.PNG)
+        ![LipidLynx_converter_input](doc/images/inLynx.PNG)
 
     -   sample output
 
-        ![epiLION_converter_output](doc/images/outLION.PNG)
+        ![LipidLynx_converter_output](doc/images/outLynx.PNG)
 
--   Run epiLION generator
+-   Run LipidLynx generator
 
-    -   Run `python epiLION.py -i Test/TestInput/test_names.txt -o Test/TestOutput/test_sdf.sdf`
+    -   Run `python LipidLynx.py -i Test/TestInput/test_names.txt -o Test/TestOutput/test_sdf.sdf`
 
-    -   epiLION read list of epiLION abbreviations in the `test_names.txt`
+    -   LipidLynx read list of LipidLynx abbreviations in the `test_names.txt`
         and generate the structure in a combined sdf file.
 
 -   SDF output
@@ -147,7 +147,7 @@ in the epilipidome.
 
       In case you experienced any problems with running LipidHunter
 
-      please report an issue in the [issue tracker](https://github.com/SysMedOs/epiLION/issues) or contact us.
+      please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidLynx/issues) or contact us.
 
 ### License
 
@@ -168,7 +168,7 @@ in the epilipidome.
 
 ### Report issues
 
--   Report any issues here: <https://github.com/SysMedOs/epiLION/issues>
+-   Report any issues here: <https://github.com/SysMedOs/LipidLynx/issues>
 
 ### Fundings
 

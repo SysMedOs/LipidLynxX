@@ -1,7 +1,9 @@
+requests
+jsonschema
 wtforms
 werkzeug
 flask>=1.0.3
-natsort==6.0.0
+natsort>=6.0.0
 openpyxl
 pandas>=0.24.2
 pytest

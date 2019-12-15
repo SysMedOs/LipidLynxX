@@ -1,0 +1,20 @@
+{
+  "api_version": "0.1",
+  "mod_id":"<2OH,Ke>",
+  "mod_level":"2",
+  "mod_linked_ids":{
+    "0": "<+44>",
+    "1": "<+3O,-6H>",
+    "2": "<2OH,Ke>"
+  },
+  "mod_list": [
+    {
+      "cv": "OH",
+      "count": 2
+    },
+    {
+      "cv": "Ke",
+      "count": 1
+    }
+  ]
+}

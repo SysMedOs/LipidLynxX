@@ -7,25 +7,24 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 import os
 import sys
-import unittest
 import pandas as pd
 import pytest
 
-epiLION_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, epiLION_Path + "/../")
+lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lipidlynx_Path + "/../")
 
-from epilion.controllers.Logger import logger
-from epilion.controllers.Parser import parse
-from epilion.controllers.Encoder import lion_encode
-from epilion.controllers.GeneralFunctions import get_abs_path
+from lipidlynx.models.log import logger
+from lipidlynx.controllers.parser import parse
+from lipidlynx.controllers.encoder import lynx_encode
+from lipidlynx.controllers.general_functions import get_abs_path
 
 
 test_files = [
-    r"test/TestInput/Input_General.csv",
-    r"test/TestInput/Input_ALEX.csv",
-    r"test/TestInput/Input_LIPIDMAPS_ShortHand.csv",
-    r"test/TestInput/Input_LipidMatch.csv",
-    r"test/TestInput/Input_LPPtiger.csv",
+    r"test/test_input/Input_General.csv",
+    r"test/test_input/Input_ALEX.csv",
+    r"test/test_input/Input_LIPIDMAPS_ShortHand.csv",
+    r"test/test_input/Input_LipidMatch.csv",
+    r"test/test_input/Input_LPPtiger.csv",
 ]
 
 
@@ -33,12 +32,12 @@ test_files = [
 def test_lion_encode(test_file):
     logger.debug("SETUP TESTS...")
     logger.info(test_file)
-    # in_file = get_abs_path("TestInput/Input_LIPIDMAPS_ShortHand.csv")
+    # in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     in_file = None
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path("TestInput/Input_LIPIDMAPS_ShortHand.csv")
+        in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     logger.info(f"Test file {in_file}")
     in_df = pd.read_csv(in_file, header=0, index_col=False)
     logger.debug(f"Got infile {in_file}")
@@ -48,7 +47,7 @@ def test_lion_encode(test_file):
     for i, r in in_df_test.iterrows():
         logger.info(f'Process Lipid: {r["INPUT"]}')
         parsed_dct = parse(r["INPUT"])
-        test_output = lion_encode(parsed_dct)
+        test_output = lynx_encode(parsed_dct)
         correct_output = r["OUTPUT"].strip('"')
         correct_output = correct_output.strip('"')
         if test_output != correct_output:

@@ -6,18 +6,6 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_script import Manager, Server
-from lipidlynx import app
+from flask_restful import Api
 
-
-manager = Manager(app)
-manager.add_command("server", Server())
-
-
-@manager.shell
-def make_shell_context():
-    return dict(app=app)
-
-
-if __name__ == "__main__":
-    manager.run()
+rest_api = Api()
