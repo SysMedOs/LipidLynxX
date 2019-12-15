@@ -19,9 +19,25 @@ from .parsers import convert_get_parser, equalizer_get_parser
 errors = ApiErrors()
 
 
+def get_equalizer_params():
+    args = equalizer_get_parser.parse_args()
+    usr_data = json.loads(args["data"])
+    if ',' in args["level"]:
+        try:
+            usr_level = json.loads(args["level"])
+        except json.decoder.JSONDecodeError:
+            usr_level = args["level"].split(',')
+    else:
+        usr_level = args["level"]
+    print(usr_level)
+    return usr_data, usr_level
+
+
 class StringConverterAPI(Resource):
     """
     $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/converter/string/ -d 'data="PC 18:0_18:2"' -X GET
+    or
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/converter/string', params='data="PC 18:0_18:2"').json()
     """
 
     @staticmethod
@@ -87,14 +103,14 @@ class ConverterAPI(Resource):
     @staticmethod
     def get():
         args = convert_get_parser.parse_args()
-        user_data = json.loads(args["data"])
+        usr_data = json.loads(args["data"])
         converted_dct = {}
-        if isinstance(user_data, str) and user_data:
-            converted_dct = convert_string(user_data)
-        elif isinstance(user_data, list) and user_data:
-            converted_dct = convert_list(user_data)
-        elif user_data and isinstance(user_data, dict):
-            converted_dct = convert_dict(user_data)
+        if isinstance(usr_data, str) and usr_data:
+            converted_dct = convert_string(usr_data)
+        elif isinstance(usr_data, list) and usr_data:
+            converted_dct = convert_list(usr_data)
+        elif usr_data and isinstance(usr_data, dict):
+            converted_dct = convert_dict(usr_data)
         else:
             return errors.input_error
         if converted_dct:
@@ -107,16 +123,16 @@ class LevelEqualizerAPI(Resource):
     """
     $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/level/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
+
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":"D3"}).json()
     """
 
     @staticmethod
     def get():
-        args = equalizer_get_parser.parse_args()
-        print(args)
-        user_data = json.loads(args["data"])
-        user_level = json.loads(args["level"])
-        if isinstance(user_level, str) and user_level:
-            equalizer = Equalizer(input_data=user_data, level=user_level)
+        usr_data, usr_level = get_equalizer_params()
+        if isinstance(usr_level, str) and usr_level:
+            equalizer = Equalizer(input_data=usr_data, level=usr_level)
             equalized_dct = equalizer.cross_match()
             if equalized_dct:
                 return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
@@ -130,18 +146,18 @@ class MultiLevelEqualizerAPI(Resource):
     """
     $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/levels/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=["D3","B2"]' -X GET
+
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":'["D3","B3"]'}).json()
     """
 
     @staticmethod
     def get():
-        args = equalizer_get_parser.parse_args()
-        print(args)
-        user_data = json.loads(args["data"])
-        user_level = json.loads(args["level"])
-        if isinstance(user_level, list) and user_level:
+        usr_data, usr_level = get_equalizer_params()
+        if isinstance(usr_level, list) and usr_level:
             equalized_dct = {}
-            for lv in user_level:
-                equalizer = Equalizer(input_data=user_data, level=lv)
+            for lv in usr_level:
+                equalizer = Equalizer(input_data=usr_data, level=lv)
                 equalized_dct[lv] = equalizer.cross_match()
             if equalized_dct:
                 return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
@@ -155,21 +171,23 @@ class EqualizerAPI(Resource):
     """
     $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=Union[str, List[str]]' -X GET
+
+    or
+
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":'["D3","B3"]'}).json()
     """
 
     @staticmethod
     def get():
-        args = equalizer_get_parser.parse_args()
-        print(args)
-        user_data = json.loads(args["data"])
-        user_level = json.loads(args["level"])
-        if isinstance(user_level, str) and user_level:
-            equalizer = Equalizer(input_data=user_data, level=user_level)
+        usr_data, usr_level = get_equalizer_params()
+        if isinstance(usr_level, str) and usr_level:
+            equalizer = Equalizer(input_data=usr_data, level=usr_level)
             equalized_dct = equalizer.cross_match()
-        elif isinstance(user_level, list) and user_level:
+        elif isinstance(usr_level, list) and usr_level:
             equalized_dct = {}
-            for lv in user_level:
-                equalizer = Equalizer(input_data=user_data, level=lv)
+            for lv in usr_level:
+                equalizer = Equalizer(input_data=usr_data, level=lv)
                 equalized_dct[lv] = equalizer.cross_match()
         else:
             return errors.input_error

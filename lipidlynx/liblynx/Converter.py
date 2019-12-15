@@ -155,4 +155,4 @@ if __name__ == "__main__":
 
     converter.convert_table(test_in_file, test_out_file)
 
-    logger.info("lipidlynx converter finished.")
+    logger.info("lipidlynx convert_lipid finished.")

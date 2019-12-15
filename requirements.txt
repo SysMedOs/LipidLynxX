@@ -1,3 +1,4 @@
+requests
 jsonschema
 wtforms
 werkzeug

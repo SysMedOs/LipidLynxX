@@ -6,19 +6,10 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import json
-import os
-import time
 from typing import List, Dict, Union, Tuple
 
-from flask import request, abort, jsonify, send_from_directory
-from flask_restful import Api, Resource, reqparse
-from werkzeug.utils import secure_filename
 
-from ..config import app_cfg_dct
-from ..config import blueprint
 from .encoder import lynx_encode
-from .file_handler import get_table
 from .parser import parse
 
 
@@ -50,7 +41,7 @@ def convert_list(input_lst: List[str]) -> Dict[str, Union[List, List[Tuple]]]:
 
 
 def convert_dict(input_dct: dict) -> Dict[str, Union[List, List[Tuple]]]:
-    output_dct = {}
+    output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
     if input_dct and isinstance(input_dct, dict):
         for k in input_dct:
             if isinstance(k, str) and len(k) < 256:

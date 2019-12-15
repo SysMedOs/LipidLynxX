@@ -22,7 +22,7 @@ in the epilipidome.
 
 ![LipidLynx_levels](doc/images/LipidLynx_levels.png)
 
--   LipidLynx abbreviation converter
+-   LipidLynx abbreviation convert_lipid
 
     -   Convert different abbreviations to uniformed LipidLynx abbreviations
 
@@ -103,11 +103,11 @@ in the epilipidome.
 
         -   you can also use py.test to test LipidLynx in your python environment
 
-            -   unit test for LipidLynx converter is provided in [`Test/test_convLION.py`](test/test_convLynx.py)
+            -   unit test for LipidLynx convert_lipid is provided in [`Test/test_convLION.py`](test/test_convLynx.py)
 
             -   unit test for LipidLynx generator is provided in [`Test/test_LipidLynx.py`](test/test_LipidLynx.py)
 
--   Run LipidLynx converter
+-   Run LipidLynx convert_lipid
 
     -   Run `python convLION.py -i Test/TestInput/test_crosscheck.xlsx -o Test/TestOutput/test_crosscheck_output.xlsx`
 

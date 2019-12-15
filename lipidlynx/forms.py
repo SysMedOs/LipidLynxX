@@ -22,6 +22,13 @@ class ConverterTableInputForm(FlaskForm):
     input_file_str = FileField("Select input file:", validators=[DataRequired()])
 
 
+class EqualizerTableInputForm(FlaskForm):
+    input_id_str = TextAreaField(
+        "Input LipidLynx level here:", validators=[DataRequired()]
+    )
+    input_file_str = FileField("Select input file:", validators=[DataRequired()])
+
+
 class ParserInputForm(FlaskForm):
 
     lion_id_str = StringField(
