@@ -56,46 +56,48 @@ api.add_resource(EqualizerAPI, "/api/0.1/equalizer/")
 api.add_resource(LevelEqualizerAPI, "/api/0.1/equalizer/level/")
 api.add_resource(MultiLevelEqualizerAPI, "/api/0.1/equalizer/levels/")
 
-base_url = r'http://127.0.0.1:5000'
+base_url = r"http://127.0.0.1:5000"
 
 
 def run_converter(input_form):
     submitted = 0
     bad_input_lst = []
-    output_name = ''
+    output_name = ""
     usr_abbr_lst = input_form.input_id_str.data.strip("").split("\n")
     usr_abbr_lst = [s for s in usr_abbr_lst if s]
-    r_url = f'{base_url}{api.url_for(ListConverterAPI)}'
-    logger.info(f'Use API ListConverterAPI: {r_url}')
-    r = requests.get(r_url, params=f'data=' + json.dumps(usr_abbr_lst)).json()
-    out_dct = r.get('data', {})
+    r_url = f"{base_url}{api.url_for(ListConverterAPI)}"
+    logger.info(f"Use API ListConverterAPI: {r_url}")
+    r = requests.get(r_url, params=f"data=" + json.dumps(usr_abbr_lst)).json()
+    out_dct = r.get("data", {})
     if out_dct:
         submitted = 1
-        bad_input_lst = out_dct.get('skipped', [])
+        bad_input_lst = out_dct.get("skipped", [])
         output_name = create_output({"ABBREVIATIONS": out_dct})
-        logger.info(f'output_name: {output_name}')
+        logger.info(f"output_name: {output_name}")
 
     return submitted, out_dct, bad_input_lst, output_name
 
 
 def run_equalizer(data: dict, level: Union[str, List[str]]):
     submitted = 0
-    output_name = ''
-    r_url = f'{base_url}{api.url_for(EqualizerAPI)}'
-    logger.info(f'Use API EqualizerAPI: {r_url}')
-    r = requests.get(r_url, params={"data": json.dumps(data), 'level': json.dumps(level)}).json()
-    out_dct = r.get('data', {})
+    output_name = ""
+    r_url = f"{base_url}{api.url_for(EqualizerAPI)}"
+    logger.info(f"Use API EqualizerAPI: {r_url}")
+    r = requests.get(
+        r_url, params={"data": json.dumps(data), "level": json.dumps(level)}
+    ).json()
+    out_dct = r.get("data", {})
     if out_dct:
         submitted = 1
         output_name = create_equalizer_output(out_dct)
-        logger.info(f'output_name: {output_name}')
+        logger.info(f"output_name: {output_name}")
 
     return submitted, output_name
 
 
 @app.route("/")
 def index():
-    return redirect(url_for("lipidlynx.home"))
+    return redirect(url_for("lynx.home"))
 
 
 @blueprint.route("/")
@@ -121,11 +123,11 @@ def convert_lipid():
 @blueprint.route("/convert_lipid/string", methods=("GET", "POST"))
 def convert_lipid_string():
     usr_input_form = ConverterTextInputForm()
-    submitted, out_dct, bad_input_lst, output_name = 0, {}, [], ''
+    submitted, out_dct, bad_input_lst, output_name = 0, {}, [], ""
     if usr_input_form.validate_on_submit():
         submitted, out_dct, bad_input_lst, output_name = run_converter(usr_input_form)
     return render_template(
-        'converter.html',
+        "converter.html",
         out_dct=out_dct,
         bad_in_lst=bad_input_lst,
         in_form=usr_input_form,
@@ -203,11 +205,11 @@ def convert_epilipid():
 @blueprint.route("/convert_epilipid/string", methods=("GET", "POST"))
 def convert_epilipid_string():
     usr_input_form = ConverterTextInputForm()
-    submitted, out_dct, bad_input_lst, output_name = 0, {}, [], ''
+    submitted, out_dct, bad_input_lst, output_name = 0, {}, [], ""
     if usr_input_form.validate_on_submit():
         submitted, out_dct, bad_input_lst, output_name = run_converter(usr_input_form)
     return render_template(
-        'converter_epilipidome.html',
+        "converter_epilipidome.html",
         out_dct=out_dct,
         bad_in_lst=bad_input_lst,
         in_form=usr_input_form,
@@ -275,7 +277,7 @@ def equalizer():
         "equalizer.html",
         in_form=EqualizerTableInputForm(),
         submitted=submitted,
-        output_name=output_name
+        output_name=output_name,
     )
 
 
@@ -289,9 +291,9 @@ def equalize_epilipid():
     if usr_file.filename:
         usr_file_name = secure_filename(usr_file.filename)
         if usr_file_name.endswith(".csv"):
-            usr_data = pd.read_csv(usr_file).to_dict(orient='list')
+            usr_data = pd.read_csv(usr_file).to_dict(orient="list")
         elif usr_file_name.endswith(".xlsx") or usr_file_name.endswith(".xls"):
-            usr_data = pd.read_excel(usr_file).to_dict(orient='list')
+            usr_data = pd.read_excel(usr_file).to_dict(orient="list")
         else:
             abort(400, "File type not supported.")
 
@@ -301,11 +303,11 @@ def equalize_epilipid():
         pre_levels = [s for s in pre_levels if s]
         p_levels = []
         for x in pre_levels:
-            p_levels.extend(x.split('\n'))
+            p_levels.extend(x.split("\n"))
         levels = []
         for y in p_levels:
-            levels.extend(y.split(','))
-        logger.info(f'levels {levels}')
+            levels.extend(y.split(","))
+        logger.info(f"levels {levels}")
         submitted, output_name = run_equalizer(usr_data, level=levels)
     else:
         output_name = ""

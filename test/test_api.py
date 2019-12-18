@@ -9,8 +9,8 @@
 import json
 import requests
 
-from lipidlynx import api, app
-from lipidlynx.controllers.rest.api import (
+from lynx import api, app
+from lynx.controllers.rest.api import (
     StringConverterAPI,
     DictConverterAPI,
     ListConverterAPI,
@@ -23,5 +23,5 @@ from lipidlynx.controllers.rest.api import (
 # app.run(debug=True)
 
 # print(api.url_for(StringConverterAPI))
-r = requests.get('localhost:5000/api/0.1/converter/', data="PC 18:0_18:2")
+r = requests.get("localhost:5000/api/0.1/converter/", data="PC 18:0_18:2")
 print(r)

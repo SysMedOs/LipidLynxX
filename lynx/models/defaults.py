@@ -22,7 +22,7 @@ api_version = "0.1"
 
 # load default values from files defined in config.ini
 # following parameters generated will be used as global values
-with open(get_abs_path(r"lipidlynx/configurations/CV.json"), "r") as cv_js:
+with open(get_abs_path(r"lynx/configurations/CV.json"), "r") as cv_js:
     cv_alias_json = json.load(cv_js)
 
 cv_order_list = []
@@ -66,10 +66,10 @@ mod_db_level_lst = [
 ]
 
 lynx_schema_cfg = {
-    "lynx_mod": r"lipidlynx/models/schema/lynx_mod.schema.json",
-    "lynx_fa": r"lipidlynx/models/schema/lynx_fa.schema.json",
-    "lynx_hg": r"lipidlynx/models/schema/lynx_hg.schema.json",
-    "lynx_core": r"lipidlynx/models/schema/lynx_core.schema.json",
+    "lynx_mod": r"lynx/models/schema/lynx_mod.schema.json",
+    "lynx_fa": r"lynx/models/schema/lynx_fa.schema.json",
+    "lynx_hg": r"lynx/models/schema/lynx_hg.schema.json",
+    "lynx_core": r"lynx/models/schema/lynx_core.schema.json",
 }
 
 core_schema_path = get_abs_path(lynx_schema_cfg["lynx_core"])

@@ -124,9 +124,7 @@ def create_equalizer_output(sum_data: dict) -> str:
                 if equalized_dct:
                     pd.DataFrame.from_dict(
                         equalized_dct, orient="index"
-                    ).sort_index().to_excel(
-                        xlsx_writer, sheet_name=f"unmatched_{lv}"
-                    )
+                    ).sort_index().to_excel(xlsx_writer, sheet_name=f"unmatched_{lv}")
             if "skipped" in data:
                 skipped_dct = data["skipped"]
                 if skipped_dct:

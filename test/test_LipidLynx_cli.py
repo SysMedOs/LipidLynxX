@@ -12,8 +12,8 @@ import unittest
 lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
-from lynx_cli import LipidLynx_cli
-from lipidlynx.models.defaults import logger
+from bin import LipidLynx_cli
+from lynx.models.defaults import logger
 
 
 class lipidlynxTestCase(unittest.TestCase):

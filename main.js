@@ -1,6 +1,6 @@
 const {app, BrowserWindow} = require('electron');
 
-python_worker = require('child_process').spawn('python', ['./__init__.py']);
+python_worker = require('child_process').spawn('python', ['./lynx/app.py']);
 console.log(`Start Python worker...`);
 
 function createWindow () {
