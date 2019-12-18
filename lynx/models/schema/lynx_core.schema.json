@@ -1,0 +1,67 @@
+{
+  "$id": "#lynx_core.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "The core structure of LipidLynx output",
+  "required": [
+    "api_version",
+    "id",
+    "level"
+  ],
+  "properties": {
+    "api_version": {
+      "description": "Version of the LipidLynx api",
+      "type": "string",
+      "pattern": "^[012]\\.[0-9]$"
+    },
+    "type": {
+      "description": "Type of the LipidLynx object",
+      "type": "string",
+      "enum": [
+        "Lipid",
+        "Residue",
+        "HeadGroup",
+        "FattyAcid",
+        "Modification"
+      ]
+    },
+    "id": {
+      "description": "The LipidLynx id",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 384
+    },
+    "input_name": {
+      "description": "The abbreviation used for identification",
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 384
+    },
+    "alias": {
+      "description": "Collections of alias of this lipid in compatible levels",
+      "type": "object",
+      "uniqueItems": true,
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)"
+      },
+      "patternProperties": {
+        "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)": {
+          "description": "List of alias of this lipid in corresponding level",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 384
+          }
+        }
+      }
+    },
+    "level": {
+      "description": "The max level of lipid",
+      "type": "string",
+      "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)",
+      "minLength": 1,
+      "maxLength": 4
+    }
+  }
+}

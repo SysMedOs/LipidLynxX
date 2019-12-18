@@ -6,18 +6,10 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_script import Manager, Server
-from lynx import app
-
-
-manager = Manager(app)
-manager.add_command("server", Server())
-
-
-@manager.shell
-def make_shell_context():
-    return dict(app=app)
-
-
 if __name__ == "__main__":
-    manager.run()
+
+    import webbrowser
+    from lynx import app
+
+    webbrowser.open("http://127.0.0.1:5000/lynx", new=1, autoraise=True)
+    app.run()

@@ -1,0 +1,14 @@
+{
+  "api_version": "0.1",
+  "mod_id":"<+44>",
+  "mod_level":"2",
+  "mod_linked_ids":{
+    "0": "<+44>"
+  },
+  "mod_list": [
+    {
+      "cv": "Delta",
+      "count": 44
+    }
+  ]
+}
