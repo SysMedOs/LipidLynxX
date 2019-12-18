@@ -14,13 +14,9 @@ from lynx.models.defaults import logger
 from lynx.liblynx.Lipidlynx_core import lynx2sdf
 
 
-# required to perform multiprocessing
-# import multiprocessing
-
-
 def main(argv):
     """
-    :param argv: -i <input epiLION abbreviation file in .txt format>
+    :param argv: -i <input LipidLynxX abbreviation file in .csv/.xlsx format> -o <output .csv/.xlsx file>
     """
 
     in_file = ""
@@ -32,11 +28,11 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
         logger.debug(f"User input: {opts}, {args}")
     except getopt.GetoptError:
-        logger.info("LipidLynx_cli.py -i <input_file> -o <output_file>")
+        logger.info("LynxIDtoSDF.py -i <input_file> -o <output_file>")
         return is_output
     for opt, arg in opts:
         if opt == "-h":
-            logger.info("LipidLynx_cli.py -i <input_file> -o <output_file>")
+            logger.info("LynxIDtoSDF.py -i <input_file> -o <output_file>")
             return is_output
         elif opt in ("-i", "--infile"):
             in_file = arg
@@ -60,5 +56,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    # multiprocessing.freeze_support()
+
     main(sys.argv[1:])

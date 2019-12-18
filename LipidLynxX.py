@@ -11,5 +11,5 @@ if __name__ == "__main__":
     import webbrowser
     from lynx import app
 
-    webbrowser.open("http://127.0.0.1:5000/lipidlynx", new=1, autoraise=True)
+    webbrowser.open("http://127.0.0.1:5000/lynx", new=1, autoraise=True)
     app.run()
