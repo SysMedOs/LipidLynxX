@@ -10,9 +10,6 @@ import os
 
 from flask import Blueprint
 
-from .controllers.encoder import lynx_encode
-from .controllers.parser import parse
-
 
 class Config(object):
     SECRET_KEY = os.urandom(24).hex()

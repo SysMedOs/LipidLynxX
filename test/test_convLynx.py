@@ -14,7 +14,7 @@ import unittest
 epiLION_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, epiLION_Path + "/../")
 
-from bin import convLynx
+from bin import LynxConverter
 from lynx.models.defaults import logger
 
 
@@ -56,7 +56,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_Converter_help():
         logger.debug("test help...")
-        result = convLynx.main(["-h"])
+        result = LynxConverter.main(["-h"])
         if result is False:
             logger.debug("test help... PASSED")
         else:
@@ -65,7 +65,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
     @staticmethod
     def test_epiLION_Converter_bad_params():
         logger.debug("test bad params...")
-        result = convLynx.main(["-test"])
+        result = LynxConverter.main(["-test"])
         if result is False:
             logger.debug("test bad parameter... PASSED")
         else:
@@ -73,7 +73,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def test_epiLION_Converter_bad_input(self):
         logger.debug("test bad input...")
-        result = convLynx.main(self.fail_input_params)
+        result = LynxConverter.main(self.fail_input_params)
         if result is False:
             logger.debug("test bad input... PASSED")
         else:
@@ -81,7 +81,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
     def test_epiLION_Converter_good_input(self):
         logger.debug("test sample data...")
-        result = convLynx.main(self.pass_params)
+        result = LynxConverter.main(self.pass_params)
         if result is True:
             logger.debug("test sample data... PASSED")
         else:
@@ -92,7 +92,7 @@ class epiLION_ConverterTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python convLynx.py -i test/test_input/test_crosscheck.xlsx -o test/test_output/test_crosscheck_output.xlsx
+    # python LynxConverter.py -i test/test_input/test_crosscheck.xlsx -o test/test_output/test_crosscheck_output.xlsx
 
     epiLION_Path = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, epiLION_Path + "/../")

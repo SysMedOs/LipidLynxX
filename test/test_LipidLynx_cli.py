@@ -12,7 +12,7 @@ import unittest
 lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
-from bin import LipidLynx_cli
+from bin import LynxIDtoSDF
 from lynx.models.defaults import logger
 
 
@@ -55,7 +55,7 @@ class lipidlynxTestCase(unittest.TestCase):
     @staticmethod
     def test_lipidlynx_help():
         logger.debug("test help...")
-        result = LipidLynx_cli.main(["-h"])
+        result = LynxIDtoSDF.main(["-h"])
         if result is False:
             logger.debug("test help... PASSED")
         else:
@@ -64,7 +64,7 @@ class lipidlynxTestCase(unittest.TestCase):
     @staticmethod
     def test_lipidlynx_bad_params():
         logger.debug("test bad parameter...")
-        result = LipidLynx_cli.main(["-test"])
+        result = LynxIDtoSDF.main(["-test"])
         if result is False:
             logger.debug("test bad parameter... PASSED")
         else:
@@ -72,7 +72,7 @@ class lipidlynxTestCase(unittest.TestCase):
 
     def test_lipidlynx_bad_input(self):
         logger.debug("test bad input...")
-        result = LipidLynx_cli.main(self.fail_input_params)
+        result = LynxIDtoSDF.main(self.fail_input_params)
         if result is False:
             logger.debug("test bad input... PASSED")
         else:
@@ -80,7 +80,7 @@ class lipidlynxTestCase(unittest.TestCase):
 
     def test_lipidlynx_good_input(self):
         logger.debug("test sample data...")
-        result = LipidLynx_cli.main(self.pass_params)
+        result = LynxIDtoSDF.main(self.pass_params)
         if result is True:
             logger.debug("test sample data... PASSED")
         else:
@@ -91,7 +91,7 @@ class lipidlynxTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # python LipidLynx_cli.py -i test/test_input/test_names.txt -o test/test_output/test_names_sdf.sdf
+    # python LynxIDtoSDF.py -i test/test_input/test_names.txt -o test/test_output/test_names_sdf.sdf
 
     unittest.main()
     logger.info("TESTS FINISHED!")
