@@ -34,7 +34,7 @@ for _mod in cv_alias_json:
     cv_order_list.append(_mod["cv"])
     cv_elements_info[_mod["cv"]] = _mod["elements"]
 
-default_cfg_path = "config.ini"
+default_cfg_path = "/lynx/config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
 cv_rgx_dct = build_mod_parser(cv_alias_info)
