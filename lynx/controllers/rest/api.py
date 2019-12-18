@@ -22,11 +22,11 @@ errors = ApiErrors()
 def get_equalizer_params():
     args = equalizer_get_parser.parse_args()
     usr_data = json.loads(args["data"])
-    if ',' in args["level"]:
+    if "," in args["level"]:
         try:
             usr_level = json.loads(args["level"])
         except json.decoder.JSONDecodeError:
-            usr_level = args["level"].split(',')
+            usr_level = args["level"].split(",")
     else:
         usr_level = args["level"]
     print(usr_level)
@@ -121,8 +121,7 @@ class ConverterAPI(Resource):
 
 class LevelEqualizerAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/level/
-    -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
+    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/level/ -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
 
     r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
     params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":"D3"}).json()

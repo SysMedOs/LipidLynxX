@@ -10,9 +10,9 @@ import copy
 import json
 from dataclasses import dataclass, asdict, field, is_dataclass
 
-from lipidlynx.models.defaults import logger, abbr_cfg_df
-from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
-from lipidlynx.liblynx.Converter import Converter
+from lynx.models.defaults import logger, abbr_cfg_df
+from lynx.liblynx.AbbrElemCalc import ElemCalc
+from lynx.liblynx.Converter import Converter
 
 ELEM_CALC = ElemCalc()
 CONVERTER = Converter(abbr_df=abbr_cfg_df)

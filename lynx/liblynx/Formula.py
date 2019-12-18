@@ -10,7 +10,7 @@
 
 from dataclasses import dataclass, asdict, field
 
-from lipidlynx.liblynx.AbbrElemCalc import ElemCalc
+from lynx.liblynx.AbbrElemCalc import ElemCalc
 
 
 class ElemDict(dict):

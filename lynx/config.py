@@ -40,9 +40,9 @@ app_cfg_dct["ABS_DOWNLOAD_PATH"] = os.path.join(
 )
 
 blueprint = Blueprint(
-    "lipidlynx",
+    "lynx",
     __name__,
     template_folder=r"templates",
     static_folder=r"static",
-    url_prefix="/lipidlynx",
+    url_prefix="/lynx",
 )

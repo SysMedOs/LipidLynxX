@@ -11,8 +11,8 @@ import os.path
 from rdkit import Chem
 from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
-from lipidlynx.models.defaults import logger
-from lipidlynx.liblynx.LipidNomenclature import ParserFA, ParserPL
+from lynx.models.defaults import logger
+from lynx.liblynx.LipidNomenclature import ParserFA, ParserPL
 
 
 def lynx2sdf(abbr_lst, save_sdf):

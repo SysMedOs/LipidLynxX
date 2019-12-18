@@ -7,7 +7,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from flask_script import Manager, Server
-from lipidlynx import app
+from lynx import app
 
 
 manager = Manager(app)
