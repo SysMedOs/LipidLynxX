@@ -18,7 +18,7 @@ from ..models.log import logger
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
-    default_fields = ["cv", "rules", "mod_cfg", "abbr_cfg"]
+    default_fields = ["cv", "rules", "mod_cfg", "abbr_cfg", "base_url"]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
         config_path = get_abs_path(cfg_path)
@@ -40,8 +40,11 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     if len(user_cfg) > 2:
         options = config.options(user_cfg)
         for field in default_fields:
-            if field in options:
+            if field in options and field != "base_url":
                 cfg_path_dct[field] = get_abs_path(config.get(user_cfg, field))
+
+    if "base_url" not in cfg_path_dct:
+        cfg_path_dct["base_url"] = r"http://127.0.0.1:5000"
 
     return cfg_path_dct
 

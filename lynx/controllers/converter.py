@@ -40,8 +40,8 @@ def convert_list(input_lst: List[str]) -> Dict[str, Union[List, List[Tuple]]]:
     return output_dct
 
 
-def convert_dict(input_dct: dict) -> Dict[str, Union[List, List[Tuple]]]:
-    output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
+def convert_dict(input_dct: dict) -> Dict[str, dict]:
+    output_dct = {}
     if input_dct and isinstance(input_dct, dict):
         for k in input_dct:
             if isinstance(k, str) and len(k) < 256:
@@ -52,4 +52,5 @@ def convert_dict(input_dct: dict) -> Dict[str, Union[List, List[Tuple]]]:
                     in_lst = [k_val]
                 if in_lst:
                     output_dct[k] = convert_list(in_lst)
+
     return output_dct

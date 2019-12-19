@@ -12,7 +12,7 @@
             <div class="row align-items-center">
                 <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
                     <h2>Input lipid abbreviations</h2>
-                    <form id="in_form" method="POST" action="{{ url_for('.convert_lipid_string') }}">
+                    <form id="in_form" method="post" action="{{ url_for('.convert_lipid_string') }}">
                         {{ in_form.hidden_tag() }}
                         <div class="form-group">
                             {{ in_form.input_id_str.label }}
@@ -23,7 +23,7 @@
                             {% endif %}
                             {{ in_form.input_id_str(class_='form-control') }}
                         </div>
-                        <input class="btn btn-primary" type="submit" value="Convert">
+                        <input class="btn btn-primary" type="submit" value="Convert abbreviations">
                     </form>
                     <h2></h2>
                     <div>
@@ -33,7 +33,7 @@
                             <form id="form1" method="post" action="{{ url_for('.convert_lipid_table') }}"
                                   enctype="multipart/form-data">
                                 <input id="file1" class="btn btn-primary mt-4" type="file" name="user_file">
-                                <input class="btn btn-primary mt-4" type="submit" >
+                                <input class="btn btn-primary mt-4" type="submit" value="Convert table">
                             </form>
                         </div>
                     </div>
@@ -44,7 +44,8 @@
                     {% if out_dct != {} %}
                         <h2>LipidLynxX output</h2>
                         <h2></h2>
-                        <a class="btn btn-secondary mt-4" href="{{ url_for('.download', filename=output_name) }}">
+                        <a class="btn btn-secondary mt-4"
+                           href="{{ url_for('.download', filename=output_name, data=excel_data) }}">
                             Save output as .xlsx file
                         </a>
                         <h4>Converted abbreviations</h4>
@@ -59,10 +60,10 @@
                             <h2>LipidLynxX output</h2>
                             <h2></h2>
                             <h4>Not able to convert following abbreviations:</h4>
-                            {% for bad_abbr in bad_in_lst %}
-                                <p>{{ bad_abbr }}</p>
-                            {% endfor %}
                         {% endif %}
+                        {% for bad_abbr in bad_in_lst %}
+                            <p>{{ bad_abbr }}</p>
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>

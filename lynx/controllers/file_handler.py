@@ -7,25 +7,37 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+from io import BytesIO, StringIO
 import os
 import time
+from typing import Union, Tuple, Optional
 
 import pandas as pd
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 
 from ..config import app_cfg_dct
 from ..controllers.general_functions import get_abs_path
 
 
-def get_table(file_path: str) -> dict:
-
-    abs_path = get_abs_path(file_path)
+def get_table(file: Union[str, FileStorage]) -> dict:
+    if isinstance(file, str):
+        try:
+            abs_path = get_abs_path(file)
+            file = abs_path
+        except FileNotFoundError:
+            raise FileNotFoundError
+    elif isinstance(file, FileStorage):
+        abs_path = secure_filename(file.filename)
+    else:
+        raise FileNotFoundError
 
     if abs_path.lower().endswith(".csv"):
-        df = pd.read_csv(abs_path)
+        df = pd.read_csv(file)
     elif abs_path.lower().endswith(".tsv"):
-        df = pd.read_csv(abs_path, sep="\t")
+        df = pd.read_csv(file, sep="\t")
     elif abs_path.lower().endswith(".xlsx") or abs_path.lower().endswith(".xls"):
-        df = pd.read_excel(abs_path)
+        df = pd.read_excel(file)
     else:
         df = pd.DataFrame()
 
@@ -65,16 +77,17 @@ def clean_dct(dct: dict) -> dict:
     return dct
 
 
-def create_output(data: dict) -> str:
+def create_output(data: dict) -> Tuple[Optional[str], Optional[BytesIO]]:
     output_name = None
+    file_obj = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
     if data:
         not_converted_dct = {}
         df_lst = []
         for k in data:
-            k_pairs = data[k].get("converted", None)
-            k_not_converted = data[k].get("skipped", None)
+            k_pairs = data[k].get("converted", [])
+            k_not_converted = data[k].get("skipped", [])
             if k_pairs and isinstance(k, str):
                 df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
 
@@ -90,17 +103,20 @@ def create_output(data: dict) -> str:
             ).T
 
         if not converted_df.empty:
-            output_name = f"LipidLynx_Output_{int(time.time())}.xlsx"
-            output_path = os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], output_name)
-            with pd.ExcelWriter(output_path, engine="openpyxl") as output_writer:
-                converted_df.to_excel(output_writer, sheet_name="converted")
-                if not not_converted_df.empty:
-                    not_converted_df.to_excel(output_writer, sheet_name="skipped")
+
+            # output_path = os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], output_name)
+            file_obj = BytesIO()
+            output_writer = pd.ExcelWriter(file_obj, engine="openpyxl")
+            converted_df.to_excel(output_writer, sheet_name="converted")
+            if not not_converted_df.empty:
+                not_converted_df.to_excel(output_writer, sheet_name="skipped")
+            output_writer.save()
+            # excel_data = file_obj.getvalue()
 
     else:
         pass
 
-    return output_name
+    return file_obj
 
 
 def create_equalizer_output(sum_data: dict) -> str:

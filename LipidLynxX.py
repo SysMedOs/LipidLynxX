@@ -10,6 +10,8 @@ if __name__ == "__main__":
 
     import webbrowser
     from lynx import app
+    from lynx.models.defaults import cfg_info_dct
 
-    webbrowser.open("http://127.0.0.1:5000/lynx", new=1, autoraise=True)
-    app.run()
+    base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
+    webbrowser.open(f"{base_url}/lynx", new=1, autoraise=True)
+    app.run(debug=True)
