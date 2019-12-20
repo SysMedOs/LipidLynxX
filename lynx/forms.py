@@ -13,7 +13,7 @@ from wtforms.validators import DataRequired, Length
 class ConverterTextInputForm(FlaskForm):
 
     input_id_str = TextAreaField(
-        "Paste lipid abbreviations here:", validators=[DataRequired()]
+        "Paste lipid abbreviations below:", validators=[DataRequired()]
     )
 
 

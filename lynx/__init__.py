@@ -16,6 +16,7 @@ from flask import Flask, send_file
 from flask import abort, render_template, redirect, request, url_for
 from flask import jsonify, send_from_directory
 from flask_restful import Api, Resource, reqparse
+from flask_wtf import FlaskForm
 import pandas as pd
 
 from werkzeug.utils import secure_filename
@@ -62,41 +63,58 @@ api.add_resource(MultiLevelEqualizerAPI, "/api/0.1/equalizer/levels/")
 base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
 
 
-def run_converter(input_form):
-    submitted = 0
-    bad_input_lst = []
-    output_name = ""
-    excel_data = None
-    usr_abbr_lst = input_form.input_id_str.data.strip("").split("\n")
-    usr_abbr_lst = [s for s in usr_abbr_lst if s]
-    r_url = f"{base_url}{api.url_for(ListConverterAPI)}"
-    logger.info(f"Use API ListConverterAPI: {r_url}")
-    r = requests.get(r_url, params={"data": json.dumps(usr_abbr_lst)}).json()
-    out_dct = r.get("data", {})
-    if out_dct:
-        submitted = 1
-        bad_input_lst = out_dct.get("skipped", [])
-        output_name, excel_data = create_output({"ABBREVIATIONS": out_dct})
-        logger.info(f"output_name: {output_name}")
+def run_converter(data: Union[List[str], Dict[str, List[str]]]):
+    out_dct = {}
+    if isinstance(data, list):
+        r_url = f"{base_url}{api.url_for(ListConverterAPI)}"
+        logger.info(f"Use API - ListConverterAPI: {r_url}")
+    elif isinstance(data, dict):
+        r_url = f"{base_url}{api.url_for(DictConverterAPI)}"
+        logger.info(f"Use API - DictConverterAPI: {r_url}")
+    else:
+        r_url = f"{base_url}{api.url_for(ConverterAPI)}"
+        logger.info(f"Use API - ConverterAPI: {r_url}")
 
-    return submitted, out_dct, bad_input_lst, output_name, excel_data
+    r = requests.get(r_url, params={"data": json.dumps(data)}).json()
+    excel_data = r["data"]
+    output_name = f"Converter_{int(time.time())}.xlsx"
+
+    for k in excel_data:
+        if isinstance(excel_data[k], dict):
+            pair_lst = excel_data[k].get("converted")
+            if pair_lst:
+                for p in pair_lst:
+                    if p[0] not in out_dct and len(p) == 2:
+                        out_dct[p[0]] = p[1]
+        elif isinstance(excel_data[k], list) and k == "converted":
+            pair_lst = excel_data.get("converted", [])
+            if pair_lst:
+                for p in pair_lst:
+                    if p[0] not in out_dct and len(p) == 2:
+                        out_dct[p[0]] = p[1]
+    excel_data = json.dumps(excel_data)
+
+    return out_dct, output_name, excel_data
 
 
 def run_equalizer(data: dict, level: Union[str, List[str]]):
     submitted = 0
-    output_name = ""
+    output_name = f"Equalizer_{int(time.time())}.xlsx"
     r_url = f"{base_url}{api.url_for(EqualizerAPI)}"
-    logger.info(f"Use API EqualizerAPI: {r_url}")
+    logger.info(f"Use API - EqualizerAPI: {r_url}")
     r = requests.get(
         r_url, params={"data": json.dumps(data), "level": json.dumps(level)}
     ).json()
-    out_dct = r.get("data", {})
-    if out_dct:
-        submitted = 1
-        output_name = create_equalizer_output(out_dct)
-        logger.info(f"output_name: {output_name}")
+    excel_data = r.get("data", {})
 
-    return submitted, output_name
+    if excel_data:
+        submitted = 1
+        excel_data = json.dumps(r.get("data", {}))
+        logger.info(excel_data)
+    else:
+        excel_data = None
+
+    return submitted, output_name, excel_data
 
 
 @app.route("/")
@@ -114,11 +132,11 @@ def converter():
     return render_template(
         "converter.html",
         out_dct={},
-        bad_in_lst=[],
         in_form=ConverterTextInputForm(),
         table_form=ConverterTableInputForm(),
         submitted=0,
         output_name="",
+        alerts=[],
     )
 
 
@@ -127,31 +145,32 @@ def convert_lipid_string():
     usr_input_form = ConverterTextInputForm()
 
     if usr_input_form.validate_on_submit():
-        submitted, out_dct, bad_input_lst, output_name, excel_data = run_converter(
-            usr_input_form
-        )
+        usr_data = usr_input_form.input_id_str.data.strip("").split("\n")
+        usr_data = [s for s in usr_data if s]
+        out_dct, output_name, excel_data = run_converter(usr_data)
+        submitted = 1
     else:
         submitted, out_dct, bad_input_lst, output_name, excel_data = 0, {}, [], "", None
     return render_template(
         "converter.html",
         out_dct=out_dct,
-        bad_in_lst=bad_input_lst,
         in_form=usr_input_form,
         table_form=ConverterTableInputForm(),
         submitted=submitted,
         output_name=output_name,
+        excel_data=excel_data,
+        alerts=[],
     )
 
 
 @blueprint.route("/converter/results/table", methods=["GET", "POST"])
 def convert_lipid_table():
     logger.info("triggered")
-    submitted = 0
     out_dct = {}
-    table_dct = {}
     excel_data = {}
     usr_file = request.files["user_file"]
     logger.info(usr_file)
+    usr_table_form = ConverterTableInputForm()
     if usr_file.filename:
         table_dct = get_table(usr_file)
         submitted = 1
@@ -164,33 +183,26 @@ def convert_lipid_table():
             table_form=ConverterTableInputForm(),
             submitted=1,
             output_name="",
+            excel_data=excel_data,
+            alerts=[],
         )
+
     if table_dct:
         logger.info({"code": 0, "msg": "Upload success.", "data": table_dct})
-        r_url = f"{base_url}{api.url_for(DictConverterAPI)}"
-        logger.info(f"Use API ListConverterAPI: {r_url}")
-        r = requests.get(r_url, params={"data": json.dumps(table_dct)}).json()
-        excel_data = r["data"]
-        output_name = f"LipidLynx_Output_{int(time.time())}.xlsx"
-        for k in excel_data:
-            pair_lst = excel_data[k].get("converted")
-            if pair_lst:
-                for p in pair_lst:
-                    if p[0] not in out_dct and len(p) == 2:
-                        out_dct[p[0]] = p[1]
-        excel_data = json.dumps(excel_data)
+        out_dct, output_name, excel_data = run_converter(table_dct)
+        submitted = 1
     else:
         output_name = ""
 
     return render_template(
         "converter.html",
         out_dct=out_dct,
-        bad_in_lst=[],
         in_form=ConverterTextInputForm(),
-        table_form=ConverterTableInputForm(),
+        table_form=usr_table_form,
         submitted=submitted,
         output_name=output_name,
         excel_data=excel_data,
+        alerts=[],
     )
 
 
@@ -203,10 +215,12 @@ def equalizer():
         in_form=EqualizerInputForm(),
         submitted=submitted,
         output_name=output_name,
+        excel_data=None,
+        alert_lst=[],
     )
 
 
-@blueprint.route("/equalizer", methods=("GET", "POST"))
+@blueprint.route("/equalizer/results", methods=("GET", "POST"))
 def equalize_lipid():
     submitted = 0
     usr_data = {}
@@ -221,6 +235,14 @@ def equalize_lipid():
             usr_data = pd.read_excel(usr_file).to_dict(orient="list")
         else:
             abort(400, "File type not supported.")
+    else:
+        return render_template(
+            "equalizer.html",
+            in_form=EqualizerInputForm(),
+            submitted=1,
+            output_name="",
+            alerts=["Can not read file or file type not supported."],
+        )
 
     if usr_data:
         pre_levels = usr_input_form.input_id_str.data.strip("").split("\r\n")
@@ -232,18 +254,20 @@ def equalize_lipid():
         levels = []
         for y in p_levels:
             levels.extend(y.split(","))
+        levels = [lv.strip(" ") for lv in levels]
         logger.info(f"levels {levels}")
-        submitted, output_name = run_equalizer(usr_data, level=levels)
+        submitted, output_name, excel_data = run_equalizer(usr_data, level=levels)
     else:
         output_name = ""
-
-    logger.info(output_name)
+        excel_data = None
 
     return render_template(
         "equalizer.html",
         in_form=usr_input_form,
         submitted=submitted,
         output_name=output_name,
+        alerts=[],
+        excel_data=excel_data,
     )
 
 
@@ -267,10 +291,28 @@ def download():
         pass
     elif isinstance(data, str):
         data = json.loads(data)
-
-    excel_io = create_output(data)
+    if isinstance(data, dict):
+        if filename.startswith("Converter"):
+            excel_io = create_output(data)
+        elif filename.startswith("Equalizer"):
+            excel_io = create_equalizer_output(data)
+        else:
+            try:
+                excel_io = create_output(data)
+            except Exception as e:
+                try:
+                    excel_io = create_output(data)
+                except Exception as e:
+                    raise ValueError()
+    else:
+        excel_io = None
     if filename and excel_io:
-        return send_file(excel_io, attachment_filename=filename, as_attachment=True)
+        return send_file(
+            excel_io,
+            mimetype="application/vnd.ms-excel",
+            attachment_filename=filename,
+            as_attachment=True,
+        )
 
 
 app.register_blueprint(blueprint)

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}LipidLynxX{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('.static', filename='css/bootstrap.min.css') }}">
+    {# use bootstrap v4 from cdn #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <style type="text/css">
         .chart {
             margin-top: 30px;
@@ -14,22 +15,32 @@
 </head>
 <body>
 <header data-block-type="headers" data-id="1" data-vivaldi-spatnav-clickable="1">
-    <nav class="navbar navbar-expand-lg bg-warning">
-        <a class="navbar-brand" href="{{ url_for('index') }}">
-            <img src="{{ url_for('.static', filename='images/LipidLynxX_Logo.png') }}" height="40" alt="logo">
-            LipidLynxX</a>
+    <nav class="navbar navbar-expand-lg" style="background-color: #e97C31;">
+        <a class="navbar-brand text-light" href="{{ url_for('index') }}">
+            <img src="{{ url_for('.static', filename='images/LipidLynxX_Logo.png') }}" height="42" alt="logo">
+            LipidLynx
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav1"
                 aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav1">
+        <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link fr-view" href="{{ url_for('.home') }}" target="_blank">Home </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Home </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view" href="{{ url_for('.home') }}" target="_blank">About LipidLynxXProject</a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> User Guide </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Lipid Levels </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Nomenclature </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> About </a>
                 </li>
             </ul>
         </div>
@@ -47,20 +58,22 @@
         <div class="row align-items-top text-center text-md-left">
             <div class="col">
                 <h5><strong>LipidLynxX</strong></h5>
-                <p>Link lipid identifiers into an unified nomenclature</p>
+                <p class="text-dark">Link lipid identifiers into an unified nomenclature</p>
             </div>
             <div class="col">
                 <h5><strong>About Us</strong></h5>
-                <p>
-                    <a href="https://home.uni-leipzig.de/fedorova/sysmedos/" style="color: grey">Team SysMedOs</a><br>
-                    <a href="https://home.uni-leipzig.de/fedorova/" style="color: grey">Fedorova Research Group</a><br>
+                <p class="text-dark">
+                    <a href="https://home.uni-leipzig.de/fedorova/sysmedos/" class="text-dark">Team SysMedOs
+                        &#128279;</a><br>
+                    <a href="https://home.uni-leipzig.de/fedorova/" class="text-dark">Fedorova Research Group
+                        &#128279;</a><br>
                     AG Bioanalytik<br>University Leipzig
                 </p>
             </div>
         </div>
         <div class="row">
             <div class="col text-center">
-                <h6>Under development by team SysMedOs</h6>
+                <h6 class="text-dark">Under development by team SysMedOs</h6>
             </div>
         </div>
     </div>

@@ -77,22 +77,32 @@ def clean_dct(dct: dict) -> dict:
     return dct
 
 
-def create_output(data: dict) -> Tuple[Optional[str], Optional[BytesIO]]:
-    output_name = None
-    file_obj = None
+def create_output(data: dict) -> BytesIO:
+    excel_io = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
     if data:
         not_converted_dct = {}
         df_lst = []
         for k in data:
-            k_pairs = data[k].get("converted", [])
-            k_not_converted = data[k].get("skipped", [])
-            if k_pairs and isinstance(k, str):
-                df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
+            if isinstance(data[k], dict):
+                k_pairs = data[k].get("converted", [])
+                k_not_converted = data[k].get("skipped", [])
+                if k_pairs and isinstance(k, str):
+                    df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
 
-            if k_not_converted:
-                not_converted_dct[f"{k}_skipped"] = k_not_converted
+                if k_not_converted:
+                    not_converted_dct[f"{k}_skipped"] = k_not_converted
+            elif isinstance(data[k], list) and k == "converted":
+                k_pairs = data.get("converted", [])
+                if k_pairs:
+                    df_lst.append(
+                        pd.DataFrame(k_pairs, columns=["input", f"converted"])
+                    )
+            elif isinstance(data[k], list) and k == "skipped":
+                k_not_converted = data.get("skipped", [])
+                if k_not_converted:
+                    not_converted_dct[f"skipped"] = k_not_converted
 
         if df_lst:
             converted_df = pd.concat(df_lst, axis=1)
@@ -103,28 +113,28 @@ def create_output(data: dict) -> Tuple[Optional[str], Optional[BytesIO]]:
             ).T
 
         if not converted_df.empty:
-
-            # output_path = os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], output_name)
-            file_obj = BytesIO()
-            output_writer = pd.ExcelWriter(file_obj, engine="openpyxl")
-            converted_df.to_excel(output_writer, sheet_name="converted")
+            excel_io = BytesIO()
+            output_writer = pd.ExcelWriter(
+                excel_io, engine="openpyxl"
+            )  # write to BytesIO instead of file path
+            converted_df.to_excel(output_writer, sheet_name="converted", index=False)
             if not not_converted_df.empty:
-                not_converted_df.to_excel(output_writer, sheet_name="skipped")
+                not_converted_df.to_excel(
+                    output_writer, sheet_name="skipped", index=False
+                )
             output_writer.save()
-            # excel_data = file_obj.getvalue()
+            excel_io.seek(0)
 
-    else:
-        pass
-
-    return file_obj
+    return excel_io
 
 
-def create_equalizer_output(sum_data: dict) -> str:
-    output_name = None
+def create_equalizer_output(sum_data: dict) -> BytesIO:
+
     if sum_data:
-        output_name = f"LipidLynx_Output_{int(time.time())}.xlsx"
-        output_path = os.path.join(app_cfg_dct["ABS_DOWNLOAD_PATH"], output_name)
-        xlsx_writer = pd.ExcelWriter(output_path)
+        excel_io = BytesIO()
+        xlsx_writer = pd.ExcelWriter(
+            excel_io, engine="openpyxl"
+        )  # write to BytesIO instead of file path
         for lv in sum_data:
             data = sum_data[lv]
             if "matched" in data:
@@ -151,5 +161,7 @@ def create_equalizer_output(sum_data: dict) -> str:
                     )
 
         xlsx_writer.save()
-
-    return output_name
+        excel_io.seek(0)
+    else:
+        excel_io = None
+    return excel_io
