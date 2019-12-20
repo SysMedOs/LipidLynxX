@@ -180,16 +180,20 @@ class EqualizerAPI(Resource):
     @staticmethod
     def get():
         usr_data, usr_level = get_equalizer_params()
+        equalized_dct = {}
         if isinstance(usr_level, str) and usr_level:
-            equalizer = Equalizer(input_data=usr_data, level=usr_level)
-            equalized_dct = equalizer.cross_match()
+            if "[" in usr_level:
+                usr_level = json.loads(usr_level)
+            else:
+                usr_level = [usr_level]
         elif isinstance(usr_level, list) and usr_level:
-            equalized_dct = {}
-            for lv in usr_level:
-                equalizer = Equalizer(input_data=usr_data, level=lv)
-                equalized_dct[lv] = equalizer.cross_match()
+            pass
         else:
             return errors.input_error
+        for lv in usr_level:
+            equalizer = Equalizer(input_data=usr_data, level=lv)
+            equalized_dct[lv] = equalizer.cross_match()
+
         if equalized_dct:
             return {"code": 0, "msg": "Json input parsed", "data": equalized_dct}
         else:

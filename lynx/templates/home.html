@@ -8,6 +8,7 @@
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="true">
         <div class="container">
+            <div><p>&nbsp;</p></div>
             <div class="row align-items-center">
                 <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
                     <img alt="image" class="img-fluid"
@@ -15,31 +16,40 @@
                 </div>
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
                     <h1>Welcome to LipidLynxX</h1>
-                    <p class="lead">LipidLynxX is designed to ...</p>
-                    <p class="lead">Project aim: </p>
-                    <p class="lead">1 Convert different abbreviations to unified LipidLynxX id. </p>
-
+                    <h2 class="lead">Tools:</h2>
                     <div class="col-md-12">
                         <div class="row">
+                            <p class="lead">1. Convert different abbreviations to unified LipidLynxX identifier. </p>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
-                                <a class="btn btn-primary mt-4" href="{{ url_for('.convert_lipid') }}">Lipidome Converter</a>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.converter') }}">Lipidome Converter</a>
                             </div>
                             <div class="col-md-6">
-                                <a class="btn btn-primary mt-4" href="{{ url_for('.equalizer') }}">Lipid Equalizer</a>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Lipid Equalizer</a>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <a class="btn btn-primary mt-4" href="{{ url_for('.convert_epilipid') }}">Epilipidome Converter</a>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.converter') }}">Epilipidome Converter</a>
                             </div>
                             <div class="col-md-6">
-                                <a class="btn btn-primary mt-4" href="{{ url_for('.equalizer') }}">Epilipidome Equalizer</a>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Epilipidome Equalizer</a>
                             </div>
                         </div>
-                    </div>
-                    <p class="lead">2 Generate associated properties from LipidLynxX id. </p>
-                    <a class="btn btn-primary mt-4" href="{{ url_for('.parser') }}">Try LipidLynxX Parser</a>
+                        <div class="row">
+                            <p class="lead">&nbsp;</p>
+                        </div>
+                        <div class="row">
+                            <p class="lead">2. Parse and decode associated information from LipidLynxX identifier. </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.parser') }}">Try LipidLynxX Parser</a>
+                            </div>
+                        </div>
                     <p class="lead">...</p>
+                    </div>
 
                     </div>
                 </div>

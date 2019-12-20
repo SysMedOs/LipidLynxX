@@ -1,6 +1,4 @@
-# ![LipidLynx_Logo](doc/images/LipidLynxX_Logo.png)
-
-## LipidLynxX
+# LipidLynxX ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg) 
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynxX/master.svg)](https://travis-ci.com/SysMedOs/LipidLynx)
@@ -19,6 +17,10 @@ in the epilipidome.
 -   Cross level match based on shared levels
 -   Extract key information from LipidLynxX ID
 -   Strictly controlled format using JSON schema
+-   Easy to use Graphic User Interface
+-   API access for professional users
+
+![LipidLynx_01_Home](doc/images/LipidLynx_01_Home.png) 
 
 ### Main Modules
 
@@ -200,6 +202,12 @@ in the epilipidome.
       In case you experienced any problems with running LipidHunter
 
       please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidLynxX/issues) or contact us.
+
+### Screenshots
+-   **GUI**
+    ![LipidLynx_02_Converter](doc/images/LipidLynx_02_Converter.png) 
+-   **API**
+    ![ApiLynx_01_StringConverterAPI](doc/images/ApiLynx_01_StringConverterAPI.png) 
 
 ### License
 

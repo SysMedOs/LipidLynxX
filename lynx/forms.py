@@ -13,7 +13,7 @@ from wtforms.validators import DataRequired, Length
 class ConverterTextInputForm(FlaskForm):
 
     input_id_str = TextAreaField(
-        "Paste lipid abbreviations here:", validators=[DataRequired()]
+        "Paste lipid abbreviations below:", validators=[DataRequired()]
     )
 
 
@@ -22,7 +22,14 @@ class ConverterTableInputForm(FlaskForm):
     input_file_str = FileField("Select input file:", validators=[DataRequired()])
 
 
-class EqualizerTableInputForm(FlaskForm):
+class ConverterForm(FlaskForm):
+    input_id_str = TextAreaField(
+        "Paste lipid abbreviations here:", validators=[DataRequired()]
+    )
+    input_file_str = FileField("Select input file:", validators=[DataRequired()])
+
+
+class EqualizerInputForm(FlaskForm):
     input_id_str = TextAreaField(
         "Input LipidLynx level here:", validators=[DataRequired()]
     )

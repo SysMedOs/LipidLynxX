@@ -16,7 +16,7 @@ from rdkit.Chem import AllChem, rdMolDescriptors
 from ..models.log import logger
 from ..liblynx.LipidNomenclature import ParserFA, ParserPL
 from ..models.defaults import default_cfg_path
-from ..liblynx.Converter import Converter
+from ..controllers.converter import convert_string
 
 
 def parse_lipidlynx(abbr: str) -> dict:
@@ -26,17 +26,22 @@ def parse_lipidlynx(abbr: str) -> dict:
 
     info_dct = {}
 
-    converter = Converter(default_cfg_path)
-    epilion_id = converter.convert_abbr(abbr)
-
-    if fa_decoder.is_fa(epilion_id):
-        smi = fa_decoder.get_smi_fa(epilion_id)
-        logger.info(epilion_id + ": " + smi)
-    elif pl_decoder.is_pl(epilion_id):
-        smi = pl_decoder.get_smi_pl(epilion_id)
-        logger.info(epilion_id + ": " + smi)
+    converted_dct = convert_string(abbr)
+    lynx_id_lst = converted_dct.get("output", [])
+    if len(lynx_id_lst) == 1:
+        lynx_id = lynx_id_lst[0]
     else:
-        logger.info(f"Can NOT parse abbreviation: {epilion_id}")
+        lynx_id = ""
+
+    if fa_decoder.is_fa(lynx_id):
+        smi = fa_decoder.get_smi_fa(lynx_id)
+        logger.info(lynx_id + ": " + smi)
+    elif pl_decoder.is_pl(lynx_id):
+        smi = pl_decoder.get_smi_pl(lynx_id)
+        logger.info(lynx_id + ": " + smi)
+    else:
+        smi = ""
+        logger.info(f"Can NOT parse abbreviation: {lynx_id}")
 
     try:
         mol = Chem.MolFromSmiles(smi)
@@ -52,13 +57,13 @@ def parse_lipidlynx(abbr: str) -> dict:
         img_data = base64.b64encode(img_io.getbuffer())
         img_data_url = r"data:image/png;base64," + img_data.decode("utf-8")
 
-        info_dct["id"] = epilion_id
+        info_dct["id"] = lynx_id
         info_dct["formula"] = m_formula
         info_dct["exact_mass"] = "%.4f" % m_exact_mass
         info_dct["img"] = img_data_url
 
     except Exception as e:
-        logger.error(f"! FAILED: {epilion_id}")
+        logger.error(f"! FAILED: {lynx_id}")
         logger.error(f"! FAILED to generate structure from SMILES: {smi}")
         logger.error(e)
 
