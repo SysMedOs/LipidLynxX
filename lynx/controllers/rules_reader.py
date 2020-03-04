@@ -1,10 +1,14 @@
 import json
+import os
 import re
+from typing import Union
 
 from lynx.models.log import logger
+from lynx.controllers.general_functions import get_abs_path, load_folder
 
 
-def rgx_reader(file):
+def js_reader(file):
+    file = get_abs_path(file)
     with open(file) as file_obj:
         js_obj = json.load(file_obj)
         print(js_obj, type(js_obj))
@@ -12,7 +16,17 @@ def rgx_reader(file):
 
 
 class Rules(object):
-    def __init__(self, rules: dict):
+    """
+    Read rules from json file and build corresponding regular expressions
+    """
+
+    def __init__(self, rules: Union[str, dict]):
+        if isinstance(rules, dict):
+            pass
+        elif isinstance(rules, str):
+            rules = js_reader(rules)
+        else:
+            raise TypeError
         self.raw_rules = rules
         self.source = self.raw_rules["SOURCE"]
         self._date = self.raw_rules.get("_DATE", 20200214)
@@ -174,11 +188,29 @@ class Rules(object):
         return is_valid
 
 
-if __name__ == "__main__":
-    file_js = r"../configurations/rules/MS-DIAL.json"
-    js = rgx_reader(file_js)
+def build_rules(folder: str) -> dict:
 
-    usr_rules = Rules(js)
+    sum_rules = {}
+    file_path_lst = load_folder(folder, file_type=".json")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+
+    for f in file_path_lst:
+        temp_rules = Rules(f)
+        idx_lst = [os.path.basename(f)] + temp_rules.source
+        sum_rules["#".join(idx_lst)] = temp_rules
+
+    logger.info(sum_rules)
+
+    return sum_rules
+
+
+if __name__ == "__main__":
+    file_js = r"../configurations/rules/input/MS-DIAL.json"
+    usr_rules = Rules(file_js)
     out_dct = usr_rules.build()
     usr_rules.validate()
+
+    js_folder = r"../configurations/rules/input"
+    build_rules(js_folder)
+
     logger.info("Finished.")

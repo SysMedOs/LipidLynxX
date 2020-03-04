@@ -28,22 +28,57 @@ def get_abs_path(file_path: str) -> str:
 
     abs_path = ""
 
-    in_file_lst = [
-        r"{path}".format(path=file_path),
-        r"./{path}".format(path=file_path),
-        r"../{path}".format(path=file_path),
-        r"../../{path}".format(path=file_path),
-        r"../../../{path}".format(path=file_path),
-    ]
-    for f in in_file_lst:
-        if os.path.isfile(f):
-            abs_path = os.path.abspath(f)
-            break
+    if os.path.isdir(file_path):
+        abs_path = os.path.abspath(file_path)
+
+    elif os.path.isfile(file_path):
+        abs_path = os.path.abspath(file_path)
+    else:
+        in_file_lst = [
+            r"{path}".format(path=file_path),
+            r"./{path}".format(path=file_path),
+            r"../{path}".format(path=file_path),
+            r"../../{path}".format(path=file_path),
+            r"../../../{path}".format(path=file_path),
+        ]
+        for f in in_file_lst:
+            if os.path.isdir(f):
+                abs_path = os.path.abspath(f)
+                break
+            elif os.path.isfile(f):
+                abs_path = os.path.abspath(f)
+                break
 
     if not abs_path:
         raise FileNotFoundError(f"Can not find file: {file_path}")
 
     return abs_path
+
+
+def load_folder(folder: str, file_type: str = "") -> List[str]:
+    """
+     Load all files under given folder, optional with selected file suffix
+     Args:
+         folder: path of the folder.
+         file_type: type of the file, default value is "" for no file type filter
+
+     Returns:
+         file_abs_path_lst: the list of files under given folder in absolute path
+
+     """
+    abs_path = get_abs_path(folder)
+    file_lst = os.listdir(abs_path)
+    file_abs_path_lst = [os.path.join(abs_path, x) for x in file_lst]
+    if file_type:
+        file_abs_path_lst = [
+            f for f in file_abs_path_lst if f.lower().endswith(file_type.lower())
+        ]
+    file_abs_path_lst = [abs_f for abs_f in file_abs_path_lst if os.path.isfile(abs_f)]
+    logger.debug(
+        f"Fund {file_type} files:\nunder folder: {folder}\nfiles:\n {file_abs_path_lst}"
+    )
+
+    return file_abs_path_lst
 
 
 def seg_to_str(in_list: List[str], sep: str = ",") -> str:

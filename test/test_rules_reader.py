@@ -19,8 +19,9 @@ from lynx.controllers.general_functions import get_abs_path
 
 
 test_files = [
-    r"../lynx/configurations/rules/MS-DIAL.json",
-    r"../lynx/configurations/rules/LIPIDMAPS_LMSD.json",
+    r"../lynx/configurations/rules/input/LipidLynxX.json",
+    r"../lynx/configurations/rules/input/MS-DIAL.json",
+    r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json",
 ]
 
 

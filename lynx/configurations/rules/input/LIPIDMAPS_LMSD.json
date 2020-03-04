@@ -205,8 +205,7 @@
         "BRACKET_RIGHT"
       ],
       "OPTIONAL": [
-        "PREFIX",
-        "SUFFIX"
+        "PREFIX"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",

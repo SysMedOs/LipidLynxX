@@ -9,7 +9,7 @@
 from dataclasses import asdict
 import re
 
-# from rdkit import Chem
+# from rdkit input Chem
 
 from ..models.defaults import elem_info, logger, mod_cfg_df, pl_smi_info
 

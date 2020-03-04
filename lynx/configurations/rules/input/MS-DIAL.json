@@ -162,7 +162,7 @@
         "PREFIX"
       ],
       "MAX_RESIDUES": 4,
-      "PREFIX": "[MD]L",
+      "PREFIX": "ML|DL",
       "CLASS": "CL",
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
@@ -184,8 +184,7 @@
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
-        "PREFIX",
-        "SUFFIX"
+        "PREFIX"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?Hex[1-6]?|PE-",
@@ -206,9 +205,7 @@
         "HexCer 18:1;2O/26:0",
         "HexCer 44:1;3O",
         "HexCer 18:1;2O/26:0;O",
-        "HexCer 44:1;3O",
         "HexCer 18:1;2O/26:0;(2OH)",
-        "HexCer 44:1;3O",
         "HexCer 18:1;2O/26:0;(3OH)",
         "HexCer 59:1;4O",
         "HexCer 18:1;2O/26:0;O(FA 15:0)",
