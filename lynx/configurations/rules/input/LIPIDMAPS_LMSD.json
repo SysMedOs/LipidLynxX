@@ -68,7 +68,8 @@
         "FA01",
         "FA02",
         "FA03",
-        "FA04"
+        "FA04",
+        "FA07"
       ],
       "ORDER": [
         "PREFIX",
@@ -83,7 +84,7 @@
       "MAX_RESIDUES": 1,
       "PREFIX": "Acylcarnitine[\\s]?",
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
-      "CLASS": "C|SPB",
+      "CLASS": "C",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
         "Acylcarnitine C14:0",
@@ -225,9 +226,36 @@
         "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])"
       ]
     },
+    "SPB": {
+      "LMSD_CLASS": [
+        "SP01"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "SUM_RESIDUES",
+        "LIPID_CLASS_SEPARATOR",
+        "CLASS"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "C",
+      "SUM_RESIDUES": "SUM_RESIDUES",
+      "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
+      "CLASS": "[Ss]phingosine|[Pp]hytosphingosine|[Dd]ehydrophytosphingosine",
+      "SUFFIX": "-1-(phosphate|phosphocholine)",
+      "EXAMPLE": [
+        "C16 Sphingosine",
+        "C16 Phytosphingosine",
+        "C16 Dehydrophytosphingosine",
+        "C16 Sphingosine-1-phosphate",
+        "C17 sphingosine-1-phosphocholine"
+      ]
+    },
     "SP": {
       "LMSD_CLASS": [
-        "SP01",
         "SP02",
         "SP03",
         "SP05"
@@ -249,7 +277,6 @@
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
       "EXAMPLE": [
-        "SPB18:2;1",
         "Cer(d18:0/26:0)",
         "Cer(d18:0/26:0(2OH))",
         "Cer(d18:1/26:0)",

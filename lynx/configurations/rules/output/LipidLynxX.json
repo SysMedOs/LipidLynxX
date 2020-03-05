@@ -1,124 +1,101 @@
 {
-  "_DATE": 20200304,
+  "_DATE": 20200306,
   "_AUTHORS": [
     "zhixu.ni@uni-leipzig.de"
   ],
-  "NOMENCLATURE": [
-    "LipidLynxX"
-  ],
+  "NOMENCLATURE": "LipidLynxX",
   "SEPARATORS": {
-    "RESIDUE_SEPARATOR": "_|/",
-    "BRACKET_LEFT": "\\(",
-    "BRACKET_RIGHT": "\\)"
-  },
-  "RESIDUES": {
-    "RESIDUE": {
-      "ORDER": [
-        "LINK",
-        "NUM_C",
-        "DB",
-        "NUM_O",
-        "MODS"
-      ],
-      "OPTIONAL": [
-        "LINK",
-        "NUM_O",
-        "MODS"
-      ],
-      "LINK": "[OP]-",
-      "NUM_C": "\\d{1,2}",
-      "DB": ":[1,2]?\\d",
-      "NUM_O": ";[1-3]?",
-      "MODS": "<(,?\\S*)*>|<[+-]\\d{1,4}>|<(,?[+-]\\d{1,2}?[HONPSKNa])>",
-      "EXAMPLE": [
-        "18:2;1",
-        "18:2",
-        "9:0<oxo{9}>",
-        "26:0<OH{3}>",
-        "34:1;2<FA16:0>",
-        "34:1<+14>",
-        "34:1<+O>",
-        "34:1<+O,-2H>"
-      ]
-    },
-    "SUM_RESIDUES": {
-      "ORDER": [
-        "SUM_RESIDUES"
-      ],
-      "SUM_RESIDUES": "[\\d\\w:;()<>{}_/\\-]*",
-      "EXAMPLE": [
-        "18:2;1",
-        "18:2",
-        "9:0<oxo{9}>",
-        "34:1;2<FA16:0>",
-        "34:1<+14>",
-        "34:1<+O>",
-        "34:1<+O,-2H>"
-      ]
-    }
+    "B": "",
+    "D": "_",
+    "S": "/"
   },
   "LIPID_CLASSES": {
-    "FA": {
+    "FA01": {
+      "OUTPUT": "FA",
+      "INPUT": [
+        "FA"
+      ],
       "ORDER": [
         "CLASS",
-        "LIPID_CLASS_SEPARATOR",
         "SUM_RESIDUES"
-      ],
-      "OPTIONAL": [
-        "LIPID_CLASS_SEPARATOR"
-      ],
-      "MAX_RESIDUES": 1,
-      "CLASS": "FA|SPB",
-      "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "EXAMPLE": [
-        "FA18:2;1",
-        "SPB18:2;1",
-        "FA18:2",
-        "FA9:0",
-        "FA9:0<oxo{9}>",
-        "FA18:1<+14>",
-        "FA18:1<+O>",
-        "FA18:1<+O,-2H>"
       ]
     },
-    "GL": {
+    "FA02": {
+      "OUTPUT": "FA",
+      "INPUT": [
+        "FA"
+      ],
+      "ORDER": [
+        "CLASS",
+        "SUM_RESIDUES"
+      ]
+    },
+    "FA03": {
+      "OUTPUT": "FA",
+      "INPUT": [
+        "FA"
+      ],
+      "ORDER": [
+        "CLASS",
+        "SUM_RESIDUES"
+      ]
+    },
+    "FA04": {
+      "OUTPUT": "FA",
+      "INPUT": [
+        "FA"
+      ],
+      "ORDER": [
+        "CLASS",
+        "SUM_RESIDUES"
+      ]
+    },
+    "GL01": {
+      "OUTPUT": "MG",
+      "INPUT": [
+        "MG",
+        "MAG"
+      ],
       "ORDER": [
         "CLASS",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ],
-      "OPTIONAL": [],
-      "MAX_RESIDUES": 3,
-      "CLASS": "TG|DG|MG",
-      "BRACKET_LEFT": "BRACKET_LEFT",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
-        "MG(16:0)",
-        "MG(0:0/0:0/16:0)",
-        "MG(0:0/16:0/0:0)",
-        "MG(16:0/0:0/0:0)",
-        "DG(34:2)",
-        "DG(16:0_18:2)",
-        "DG(O-34:2)",
-        "DG(O-16:0_18:2)",
-        "DG(P-34:2)",
-        "DG(P-16:0_18:2)",
-        "DG(P-16:0/0:0/18:2)",
-        "TG(52:2)",
-        "TG(16:0_18:0_18:2)",
-        "TG(16:0/18:2/18:0)",
-        "TG(O-52:2)",
-        "TG(O-16:0_18:0_18:2)",
-        "TG(O-16:0/18:2/18:0)",
-        "TG(P-52:2)",
-        "TG(P-16:0_18:0_18:2)",
-        "TG(P-16:0/18:2/18:0)"
       ]
     },
-    "PL": {
+    "GL02": {
+      "OUTPUT": "DG",
+      "INPUT": [
+        "DG",
+        "DAG"
+      ],
+      "ORDER": [
+        "CLASS",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GL03": {
+      "OUTPUT": "TG",
+      "INPUT": [
+        "TG",
+        "TAG"
+      ],
+      "ORDER": [
+        "CLASS",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP01": {
+      "OUTPUT": "PC",
+      "INPUT": [
+        "PC",
+        "LPC",
+        "LysoPC"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -126,160 +103,250 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ],
-      "OPTIONAL": [
-        "PREFIX",
-        "SUFFIX"
-      ],
-      "MAX_RESIDUES": 2,
-      "PREFIX": "L",
-      "CLASS": "(P[ACEDGSI])|(PIP[1-6]?)|(BMP)",
-      "SUFFIX": "tOH",
-      "BRACKET_LEFT": "BRACKET_LEFT",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
-        "LPE(16:0)",
-        "LPE(16:0/0:0)",
-        "LPE(O-18:1)",
-        "LPE(P-16:0)",
-        "PE(34:2)",
-        "PE(16:0_18:2)",
-        "PE(16:0/18:2)",
-        "PE(O-34:2)",
-        "PE(O-16:0_18:2)",
-        "PE(O-16:0/18:2)",
-        "PE(P-34:2)",
-        "PE(P-16:0_18:2)",
-        "PE(P-16:0/18:2)",
-        "PIP(34:1)",
-        "PIP(16:0_18:1)",
-        "PIP(16:0/18:1)",
-        "LPIP(16:0)",
-        "LPIP(16:0/0:0)",
-        "PIP2(34:2)",
-        "PIP2(16:0_18:2)",
-        "PIP2(16:0/18:2)",
-        "LPIP2(16:0)",
-        "LPIP2(16:0/0:0)",
-        "PIP3(34:2)",
-        "PIP3(16:0_18:2)",
-        "PIP3(16:0/18:2)",
-        "LPIP3(16:0)",
-        "LPIP3(16:0_0:0)",
-        "LPIP3(16:0/0:0)",
-        "PEtOH(34:2)",
-        "PEtOH(16:0_18:2)",
-        "PEtOH(16:0/18:2)",
-        "BMP(34:1)",
-        "BMP(16:0_18:1)",
-        "BMP(16:0/18:1)"
       ]
     },
-    "CL": {
+    "GP02": {
+      "OUTPUT": "PE",
+      "INPUT": [
+        "PE",
+        "LPE",
+        "LysoPE"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ],
-      "OPTIONAL": [
-        "PREFIX"
-      ],
-      "MAX_RESIDUES": 4,
-      "PREFIX": "ML|DL",
-      "CLASS": "CL",
-      "BRACKET_LEFT": "BRACKET_LEFT",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
-        "CL(72:7)",
-        "CL(36:3_36:4)",
-        "CL(18:1/18:2/18:2/18:2)",
-        "MLCL(54:5)",
-        "MLCL(18:1_18:2_18:2)",
-        "MLCL(18:1/18:2/0:0/18:2)",
-        "DLCL(36:3)",
-        "DLCL(18:1_18:2)",
-        "DLCL(18:1/0:0/18:2/0:0)"
       ]
     },
-    "SP": {
+    "GP03": {
+      "OUTPUT": "PS",
+      "INPUT": [
+        "PS",
+        "LPS",
+        "LysoPS"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ],
-      "OPTIONAL": [
-        "PREFIX"
-      ],
-      "MAX_RESIDUES": 2,
-      "PREFIX": "[AS]?Hex[1-6]?|PE-",
-      "CLASS": "Cer[P]?|SPB|SM|GM[1-3]?",
-      "BRACKET_LEFT": "BRACKET_LEFT",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
-      "PE-Cer(32:1;2)",
-      "PE-Cer(16:1;2/16:0)",
-      "Cer(44:1;2)",
-      "Cer(18:1;2/26:0)",
-      "CerP(44:1;3)",
-      "CerP(18:1;3/26:0)",
-      "SM(34:1;2)",
-      "SM(18:1;2/16:0)",
-      "SM(34:1;2<FA16:0>)",
-      "HexCer(44:1;2)",
-      "HexCer(18:1;2/26:0)",
-      "HexCer(44:1;3)",
-      "HexCer(18:1;2/26:0;1)",
-      "HexCer(18:1;2/26:0<OH{2}>)",
-      "HexCer(18:1;2/26:0<OH{3}>)",
-      "HexCer(59:1;4)",
-      "HexCer(18:1;2/26:0;1<FA15:0>)",
-      "Hex2Cer(44:1;2)",
-      "Hex2Cer(18:1;2/26:0)",
-      "Hex3Cer(44:1;2)",
-      "Hex3Cer(18:1;2/26:0)",
-      "GM3(36:1;2)",
-      "GM3(18:1;2/18:0)",
-      "SHexCer(36:1;2)",
-      "SHexCer(18:1;2/18:0)",
-      "SHexCer(36:1;3)",
-      "SHexCer(18:1;2/18:0;1)"
       ]
     },
-    "ST": {
+    "GP04": {
+      "OUTPUT": "PG",
+      "INPUT": [
+        "PG",
+        "LPG",
+        "LysoPG"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
+      ]
+    },
+    "GP05": {
+      "OUTPUT": "PGP",
+      "INPUT": [
+        "PGP",
+        "LPGP",
+        "LysoPGP"
       ],
-      "OPTIONAL": [
-        "PREFIX"
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP06": {
+      "OUTPUT": "PI",
+      "INPUT": [
+        "PI",
+        "LPI",
+        "LysoPI"
       ],
-      "MAX_RESIDUES": 2,
-      "PREFIX": "ST|SI|CA|BR",
-      "CLASS": "CE|SE|ST",
-      "BRACKET_LEFT": "BRACKET_LEFT",
-      "SUM_RESIDUES": "SUM_RESIDUES",
-      "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
-        "CE(18:1)",
-        "SE(27:1/18:1)",
-        "STSE(18:1)",
-        "SE(29:2/18:1)",
-        "SISE(18:1)",
-        "SE(29:1/18:1)",
-        "CASE(18:1)",
-        "SE(28:1/18:1)",
-        "BRSE(22:6)",
-        "SE(28:2/22:6)"
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP07": {
+      "OUTPUT": "PIP",
+      "INPUT": [
+        "PIP",
+        "LPIP",
+        "LysoPIP"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP08": {
+      "OUTPUT": "PIP2",
+      "INPUT": [
+        "PIP2",
+        "LPIP2",
+        "LysoPIP2"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP09": {
+      "OUTPUT": "PIP3",
+      "INPUT": [
+        "PIP3",
+        "LPIP3",
+        "LysoPIP3"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP10": {
+      "OUTPUT": "PA",
+      "INPUT": [
+        "PA",
+        "LPA",
+        "LysoPA"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP11": {
+      "OUTPUT": "PPA",
+      "INPUT": [
+        "PPA",
+        "LPPA",
+        "LysoPPA"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "GP12": {
+      "OUTPUT": "CL",
+      "INPUT": [
+        "CL",
+        "MLCL",
+        "DLCL"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "SP01": {
+      "OUTPUT": "SPB",
+      "INPUT": [
+        "SPB",
+        "[Ss]phingosine"
+      ],
+      "ORDER": [
+        "CLASS",
+        "SUM_RESIDUES"
+      ]
+    },
+    "SP02": {
+      "OUTPUT": "Cer",
+      "INPUT": [
+        "Cer"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "SP03": {
+      "OUTPUT": "SM",
+      "INPUT": [
+        "SM"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "SP05": {
+      "OUTPUT": "HexCer",
+      "INPUT": [
+        "([AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso)Cer"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ]
+    },
+    "ST01": {
+      "OUTPUT": "ST",
+      "INPUT": [
+        "CE",
+        "ST"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
       ]
     }
   }

@@ -62,7 +62,8 @@
         "FA01",
         "FA02",
         "FA03",
-        "FA04"
+        "FA04",
+        "SP01"
       ],
       "ORDER": [
         "CLASS",
@@ -73,13 +74,14 @@
         "LIPID_CLASS_SEPARATOR"
       ],
       "MAX_RESIDUES": 1,
-      "CLASS": "FA",
+      "CLASS": "FA|SPB",
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
-        "FA18:2;3O",
-        "FA18:2",
-        "FA9:0"
+        "FA 18:2;3O",
+        "FA 18:2",
+        "FA 9:0",
+        "SPB 18:2;O"
       ]
     },
     "GL": {
@@ -204,7 +206,6 @@
     },
     "SP": {
       "LMSD_CLASS": [
-        "SP01",
         "SP02",
         "SP03",
         "SP05"
@@ -224,28 +225,27 @@
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
-        "SPB18:2;O",
         "PE-Cer 32:1;2O",
         "PE-Cer 16:1;2O/16:0",
-        "Cer 44:1;2O",
-        "Cer 18:1;2O/26:0",
+        "Cer 44:1;2O",
+        "Cer 18:1;2O/26:0",
         "CerP 44:1;3O",
         "CerP 18:1;3O/26:0",
         "SM 34:1;2O",
         "SM 18:1;2O/16:0",
         "SM 34:1;2O(FA 16:0)",
-        "HexCer 44:1;2O",
-        "HexCer 18:1;2O/26:0",
+        "HexCer 44:1;2O",
+        "HexCer 18:1;2O/26:0",
         "HexCer 44:1;3O",
-        "HexCer 18:1;2O/26:0;O",
+        "HexCer 18:1;2O/26:0;O",
         "HexCer 18:1;2O/26:0;(2OH)",
-        "HexCer 18:1;2O/26:0;(3OH)",
+        "HexCer 18:1;2O/26:0;(3OH)",
         "HexCer 59:1;4O",
-        "HexCer 18:1;2O/26:0;O(FA 15:0)",
-        "Hex2Cer 44:1;2O",
-        "Hex2Cer 18:1;2O/26:0",
-        "Hex3Cer 44:1;2O",
-        "Hex3Cer 18:1;2O/26:0",
+        "HexCer 18:1;2O/26:0;O(FA 15:0)",
+        "Hex2Cer 44:1;2O",
+        "Hex2Cer 18:1;2O/26:0",
+        "Hex3Cer 44:1;2O",
+        "Hex3Cer 18:1;2O/26:0",
         "GM3 36:1;2O",
         "GM3 18:1;2O/18:0",
         "SHexCer 36:1;2O",
