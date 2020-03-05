@@ -12,13 +12,14 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 
-from ..controllers.general_functions import get_abs_path
-from ..models.log import logger
+from lynx.controllers.general_functions import get_abs_path
+from lynx.controllers.rules_reader import build_all_rules
+from lynx.models.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
-    default_fields = ["cv", "rules", "mod_cfg", "abbr_cfg", "base_url"]
+    default_fields = ["cv", "rules", "input_rules", "mod_cfg", "abbr_cfg", "base_url"]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
         config_path = get_abs_path(cfg_path)
@@ -52,8 +53,9 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
 def build_parser(rules_file: str) -> Tuple[dict, dict]:
     """
     Read predefined rules from configurations folder and export as a dictionary
+
     Args:
-        rules_file (str): the path for the rules file
+        rules_file: the path for the rules file
 
     Returns:
         dict contains the regular expressions as a dict
@@ -121,3 +123,10 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
             )
 
     return cv_patterns_dct
+
+
+def build_input_rules(folder: str) -> dict:
+
+    input_rules = build_all_rules(folder=folder)
+
+    return input_rules

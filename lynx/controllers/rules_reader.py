@@ -11,7 +11,6 @@ def js_reader(file):
     file = get_abs_path(file)
     with open(file) as file_obj:
         js_obj = json.load(file_obj)
-        print(js_obj, type(js_obj))
         return js_obj
 
 
@@ -44,6 +43,7 @@ class Rules(object):
                 "Cannot find valid sections for key [SOURCE, RESIDUES, LIPID_CLASSES]"
             )
         self.rules = self.build()
+        self.is_validated = self.validate()
         logger.info(
             f"Load rule settings: for {self.source}\n"
             f"Last modified: {self._date}\n"
@@ -78,7 +78,19 @@ class Rules(object):
 
         return is_structure_valid
 
-    def __build__(self, lipid_classes: list, group: str):
+    def __build__(self, lipid_classes: list, group: str) -> dict:
+        """
+        Build regular expressions from segments of rules
+
+        Args:
+            lipid_classes: List of supported lipid classes or residues
+            group: define the rules is for "Lipid_CLASSES" or "RESIDUES"
+
+        Returns:
+            a dict of compiled regular expression patterns
+
+        """
+
         rules = {}
         for c in lipid_classes:
             temp_c_dct = self.raw_rules.get(group, {}).get(c, {})
@@ -106,7 +118,12 @@ class Rules(object):
                     if seg in optional_lst:
                         pattern_str += "?"
 
-                rules[c] = {"GROUPS": seg_lst, "PATTERN": pattern_str}
+                rules[c] = {
+                    "GROUPS": seg_lst,
+                    "PATTERN": pattern_str,
+                    "MATCH": re.compile(pattern_str),
+                    "CLASS": temp_c_dct.get("CLASS", group),
+                }
         return rules
 
     def build(self) -> dict:
@@ -117,6 +134,13 @@ class Rules(object):
         return sum_rules
 
     def validate(self) -> bool:
+        """
+        Validate if the regular expression fits to all examples in the JSON config file.
+
+        Returns:
+            True if all test passed, otherwise return False.
+
+        """
         if not self.rules:
             self.rules = self.build()
         else:
@@ -131,6 +155,7 @@ class Rules(object):
             else:
                 pattern_str = None
             if pattern_str and temp_c_dct:
+
                 max_res_count = self.raw_rules["LIPID_CLASSES"][c].get(
                     "MAX_RESIDUES", 1
                 )
@@ -139,6 +164,13 @@ class Rules(object):
                 test_lst = temp_c_dct.get("EXAMPLE", [])
                 test_dct = {}
                 for test_str in test_lst:
+                    fit_class = False
+                    class_rgx = re.compile(pattern_dct["CLASS"])
+                    class_search = class_rgx.search(test_str)
+                    if class_search:
+                        logger.debug(f"{test_str} fit to class {c}")
+                    else:
+                        logger.error(f"{test_str} NOT fit to class {c}")
                     c_match = c_pattern.match(test_str)
                     if c_match:
                         c_matched_res_dct = c_match.groupdict()
@@ -188,7 +220,7 @@ class Rules(object):
         return is_valid
 
 
-def build_rules(folder: str) -> dict:
+def build_all_rules(folder: str) -> dict:
 
     sum_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
@@ -197,9 +229,19 @@ def build_rules(folder: str) -> dict:
     for f in file_path_lst:
         temp_rules = Rules(f)
         idx_lst = [os.path.basename(f)] + temp_rules.source
-        sum_rules["#".join(idx_lst)] = temp_rules
+        idx = "#".join(idx_lst)
+        for c in temp_rules.rules:
+            c_class_str = temp_rules.rules[c].get("CLASS", "")
+            existed_c_info = sum_rules.get(c_class_str, {})
+            c_rgx = existed_c_info.get("SEARCH", re.compile(c_class_str))
+            c_pattern = existed_c_info.get("MATCH", {})
+            c_info = temp_rules.rules[c]
+            del c_info["CLASS"]
+            c_pattern[idx] = c_info
 
-    logger.info(sum_rules)
+            sum_rules[c_class_str] = {"SEARCH": c_rgx, "MATCH": c_pattern}
+
+    logger.debug(sum_rules)
 
     return sum_rules
 
@@ -211,6 +253,6 @@ if __name__ == "__main__":
     usr_rules.validate()
 
     js_folder = r"../configurations/rules/input"
-    build_rules(js_folder)
+    all_rules = build_all_rules(js_folder)
 
     logger.info("Finished.")

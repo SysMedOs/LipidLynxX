@@ -9,8 +9,8 @@
 import re
 from typing import Dict, List, Union
 
-from ..models.log import logger
-from ..models.defaults import (
+from lynx.models.log import logger
+from lynx.models.defaults import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,
@@ -18,95 +18,49 @@ from ..models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
-from ..controllers.general_functions import seg_to_str
+from lynx.controllers.general_functions import seg_to_str
 
 
-def parse(
-    abbr: str,
-    class_rules_dct: Dict[str, re.compile] = class_rgx_dct,
-    rules_class_dct: Dict[re.compile, str] = rgx_class_dct,
-    lipid_class: str = None,
-) -> Dict[str, Union[str, dict]]:
+def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
 
     """
     Main parser to read input abbreviations
     Args:
-        abbr: input lipid abbreviation to be converted
-        class_rules_dct: the predefined dict in the form of lipid_class: re.compile(r"rule")
-        rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
-        lipid_class: name of lipid_class
+        lipid_name: input lipid abbreviation to be converted
+        rules: the predefined dict in the form of lipid_class: re.compile(r"rule")
 
     Returns:
         parsed_info_dct: parsed information stored as dict
 
     """
 
-    rgx_lst = []
-    input_abbr = abbr
-    abbr = remove_prefix(abbr)
+    parsed_info_dct = {}
 
-    if "+" in abbr:
-        abbr_lst = abbr.split("+")
-        abbr = abbr_lst[0]
-        abbr_mod = "+" + "+".join(abbr_lst[1:])
-        logger.info(f"{input_abbr} contains additional modification {abbr_mod}.")
-    else:
-        abbr_mod = ""
-
-    if not lipid_class:  # try to get lipid class from abbr
-        if abbr.upper().startswith(("FA", "O-", "P-")):
-            rgx_lst = class_rules_dct.get("FA", [])
-        elif abbr[1:].upper().startswith(("O-", "P-")):  # for dO-, dP-
-            rgx_lst = class_rules_dct.get("FA", [])
-        elif abbr.upper().startswith(("PL", "PA", "PC", "PE", "PG", "PS", "PI")):
-            rgx_lst = class_rules_dct.get("PL", [])
-        elif abbr.upper().startswith(("SM", "SP")):
-            rgx_lst = class_rules_dct.get("SM", [])
-        elif abbr.upper().startswith(("CER")):
-            rgx_lst = class_rules_dct.get("Cer", [])
-        elif abbr.upper().startswith(("MG", "MAG")):
-            rgx_lst = class_rules_dct.get("MG", [])
-            if not rgx_lst:
-                rgx_lst = class_rules_dct.get("GL", [])
-        elif abbr.upper().startswith(("DG", "DAG")):
-            rgx_lst = class_rules_dct.get("DG", [])
-            if not rgx_lst:
-                rgx_lst = class_rules_dct.get("GL", [])
-        elif abbr.upper().startswith(("TG", "TAG")):
-            rgx_lst = class_rules_dct.get("TG", [])
-            if not rgx_lst:
-                rgx_lst = class_rules_dct.get("GL", [])
-        elif re.match(r"\d{1,2}:.*", abbr):
-            rgx_lst = class_rules_dct.get("FA", [])
-        elif abbr.startswith(tuple(lipid_class_alias_info.keys())):
-            for tmp_class in lipid_class_alias_info:
-                if abbr.startswith(tmp_class):
-                    rule_class = lipid_class_alias_info[tmp_class]["RULE_CLASS"]
-                    rgx_lst = class_rules_dct.get(rule_class, [])
-    else:
-        if lipid_class in class_rules_dct:
-            rgx_lst = class_rules_dct.get(lipid_class, [])
+    for c in rules:
+        c_search_rgx = rules[c].get("SEARCH", None)
+        c_match_rgx_dct = rules[c].get("MATCH", None)
+        if isinstance(c_search_rgx, re.Pattern) and isinstance(c_match_rgx_dct, dict):
+            class_search = c_search_rgx.search(lipid_name)
+            matched_info_dct = {}
+            if class_search:
+                for m in c_match_rgx_dct:
+                    m_pattern = c_match_rgx_dct[m]["MATCH"]  # type: re.Pattern
+                    m_groups = c_match_rgx_dct[m]["GROUPS"]  # type: list
+                    m_match = m_pattern.match(lipid_name)
+                    if m_match:
+                        matched_dct = {}
+                        matched_groups = m_match.groupdict()
+                        for g in m_groups:
+                            matched_dct[g] = matched_groups.get(g, "")
+                        matched_info_dct[m] = matched_dct
+                parsed_info_dct[c] = matched_info_dct
+            else:
+                pass
         else:
-            raise ValueError(f"Lipid class {lipid_class} is not supported")
-
-    if not rgx_lst:
-        rgx_lst = [r for k in class_rules_dct for r in class_rules_dct[k]]
-
-    parsed_info_dct = get_matched_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
+            logger.error(f"Cannot load rules correctly: {rules}")
 
     if not parsed_info_dct:
-        logger.warning(
-            f'Can not parse abbreviation: "{abbr}", try to ignore case and try again...'
-        )
-        parsed_info_dct = get_matched_info(
-            abbr, rgx_lst, rules_class_dct=rules_class_dct
-        )
-        if parsed_info_dct:
-            logger.info(f'Successfully parsed abbreviation: "{abbr}"')
-        else:
-            logger.warning(f'Not able to parse abbreviation: "{abbr}"')
-    if abbr_mod:
-        parsed_info_dct["ADDITIONAL_MOD"] = abbr_mod
+        logger.error(f"Failed to decode Lipid: {lipid_name}")
 
     return parsed_info_dct
 
@@ -121,7 +75,7 @@ def get_matched_info(
     General match function to find pattern by regular expression
     Args:
         abbr: input lipid abbreviation to be converted
-        rgx_lst: list of possible regular expression patterns for the input abbr in the form of List[re.compile]
+        rgx_lst: list of possible regular expression patterns for in the form of List[re.compile]
         rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
         ignore_case: set to False by default to be strict with cases defined in the patterns
 
@@ -259,11 +213,64 @@ def get_mod_cv(abbr: str = None) -> str:
 
 
 if __name__ == "__main__":
+    examples = [
+        "LPE 16:0",
+        "LPE 16:0/0:0",
+        "LPE O-18:1",
+        "LPE P-16:0",
+        "PE 34:2",
+        "PE 16:0_18:2",
+        "PE O-34:2",
+        "PE O-16:0_18:2",
+        "PE P-34:2",
+        "PE P-16:0_18:2",
+        "PIP 34:1",
+        "PIP 16:0_18:1",
+        "LPIP 16:0",
+        "LPIP 16:0/0:0",
+        "PIP2 34:2",
+        "PIP2 16:0_18:2",
+        "LPIP2 16:0",
+        "LPIP2 16:0/0:0",
+        "PIP3 34:2",
+        "PIP3 16:0_18:2",
+        "LPIP3 16:0",
+        "LPIP3 16:0/0:0",
+        "PEtOH 34:2",
+        "PEtOH 16:0_18:2",
+        "BMP 34:1",
+        "BMP 16:0_18:1",
+        "MG(16:0)",
+        "MG(0:0/0:0/16:0)",
+        "MG(0:0/16:0/0:0)",
+        "MG(16:0/0:0/0:0)",
+        "DG(34:2)",
+        "DG(16:0_18:2)",
+        "DG(O-34:2)",
+        "DG(O-16:0_18:2)",
+        "DG(P-34:2)",
+        "DG(P-16:0_18:2)",
+        "DG(P-16:0/0:0/18:2)",
+        "TG(52:2)",
+        "TG(16:0_18:0_18:2)",
+        "TG(16:0/18:2/18:0)",
+        "TG(O-52:2)",
+        "TG(O-16:0_18:0_18:2)",
+        "TG(O-16:0/18:2/18:0)",
+        "TG(P-52:2)",
+        "TG(P-16:0_18:0_18:2)",
+        "TG(P-16:0/18:2/18:0)",
+    ]
 
-    # s = r"O-a36:2"
-    # d = parse(s)
-    # print(d)
+    js_folder = r"../configurations/rules/input"
 
-    s = r"_O_OO,OOO_2OH_oxo2_OOH"
-    d = parse_mod(s)
-    print(d)
+    from lynx.controllers.rules_reader import build_all_rules
+
+    all_rules = build_all_rules(js_folder)
+
+    for e in examples:
+        p = parse(e, rules=all_rules)
+        logger.debug(e)
+        logger.debug(p)
+
+    logger.info("fin")

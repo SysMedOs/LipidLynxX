@@ -58,6 +58,12 @@
   },
   "LIPID_CLASSES": {
     "FA": {
+      "LMSD_CLASS": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04"
+      ],
       "ORDER": [
         "CLASS",
         "LIPID_CLASS_SEPARATOR",
@@ -67,17 +73,21 @@
         "LIPID_CLASS_SEPARATOR"
       ],
       "MAX_RESIDUES": 1,
-      "CLASS": "FA|SPB",
+      "CLASS": "FA",
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
         "FA18:2;3O",
-        "SPB18:2;O",
         "FA18:2",
         "FA9:0"
       ]
     },
     "GL": {
+      "LMSD_CLASS": [
+        "GL01",
+        "GL02",
+        "GL03"
+      ],
       "ORDER": [
         "CLASS",
         "LIPID_CLASS_SEPARATOR",
@@ -105,6 +115,19 @@
       ]
     },
     "PL": {
+      "LMSD_CLASS": [
+        "GP01",
+        "GP02",
+        "GP03",
+        "GP04",
+        "GP05",
+        "GP06",
+        "GP07",
+        "GP08",
+        "GP09",
+        "GP10",
+        "GP20"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -152,6 +175,9 @@
       ]
     },
     "CL": {
+      "LMSD_CLASS": [
+        "GP12"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -177,6 +203,12 @@
       ]
     },
     "SP": {
+      "LMSD_CLASS": [
+        "SP01",
+        "SP02",
+        "SP03",
+        "SP05"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -192,6 +224,7 @@
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
+        "SPB18:2;O",
         "PE-Cer 32:1;2O",
         "PE-Cer 16:1;2O/16:0",
         "Cer 44:1;2O",
@@ -222,6 +255,9 @@
       ]
     },
     "ST": {
+      "LMSD_CLASS": [
+        "ST01"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",

@@ -14,7 +14,7 @@ lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
 from lynx.models.log import logger
-from lynx.controllers.rules_reader import Rules, rgx_reader
+from lynx.controllers.rules_reader import Rules, js_reader
 from lynx.controllers.general_functions import get_abs_path
 
 
@@ -36,12 +36,11 @@ def test_rule(test_file):
     if not in_file:
         in_file = get_abs_path(r"lynx/configurations/rules/MS-DIAL.json")
     logger.info(f"Test file {in_file}")
-    js_dct = rgx_reader(test_file)
+    js_dct = js_reader(test_file)
     rule = Rules(js_dct)
     logger.debug(f"Got infile {in_file}")
     logger.debug(f"test Rule {rule.source}")
-    is_valid = rule.validate()
-    if is_valid is False:
+    if rule.is_validated is False:
         raise Exception(f"FAILED: test Rule {rule.source}")
     else:
         logger.info(f"PASSED: test Rule {rule.source}")

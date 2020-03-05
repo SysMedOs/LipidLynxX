@@ -59,6 +59,12 @@
   },
   "LIPID_CLASSES": {
     "FA": {
+      "LMSD_CLASS": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04"
+      ],
       "ORDER": [
         "CLASS",
         "LIPID_CLASS_SEPARATOR",
@@ -73,7 +79,6 @@
       "SUM_RESIDUES": "SUM_RESIDUES",
       "EXAMPLE": [
         "FA18:2;1",
-        "SPB18:2;1",
         "FA18:2",
         "FA9:0",
         "FA9:0<oxo{9}>",
@@ -83,6 +88,11 @@
       ]
     },
     "GL": {
+      "LMSD_CLASS": [
+        "GL01",
+        "GL02",
+        "GL03"
+      ],
       "ORDER": [
         "CLASS",
         "BRACKET_LEFT",
@@ -119,6 +129,19 @@
       ]
     },
     "PL": {
+      "LMSD_CLASS": [
+        "GP01",
+        "GP02",
+        "GP03",
+        "GP04",
+        "GP05",
+        "GP06",
+        "GP07",
+        "GP08",
+        "GP09",
+        "GP10",
+        "GP20"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -177,6 +200,9 @@
       ]
     },
     "CL": {
+      "LMSD_CLASS": [
+        "GP12"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -206,6 +232,12 @@
       ]
     },
     "SP": {
+      "LMSD_CLASS": [
+        "SP01",
+        "SP02",
+        "SP03",
+        "SP05"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -223,36 +255,40 @@
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
       "EXAMPLE": [
-      "PE-Cer(32:1;2)",
-      "PE-Cer(16:1;2/16:0)",
-      "Cer(44:1;2)",
-      "Cer(18:1;2/26:0)",
-      "CerP(44:1;3)",
-      "CerP(18:1;3/26:0)",
-      "SM(34:1;2)",
-      "SM(18:1;2/16:0)",
-      "SM(34:1;2<FA16:0>)",
-      "HexCer(44:1;2)",
-      "HexCer(18:1;2/26:0)",
-      "HexCer(44:1;3)",
-      "HexCer(18:1;2/26:0;1)",
-      "HexCer(18:1;2/26:0<OH{2}>)",
-      "HexCer(18:1;2/26:0<OH{3}>)",
-      "HexCer(59:1;4)",
-      "HexCer(18:1;2/26:0;1<FA15:0>)",
-      "Hex2Cer(44:1;2)",
-      "Hex2Cer(18:1;2/26:0)",
-      "Hex3Cer(44:1;2)",
-      "Hex3Cer(18:1;2/26:0)",
-      "GM3(36:1;2)",
-      "GM3(18:1;2/18:0)",
-      "SHexCer(36:1;2)",
-      "SHexCer(18:1;2/18:0)",
-      "SHexCer(36:1;3)",
-      "SHexCer(18:1;2/18:0;1)"
+        "SPB18:2;1",
+        "PE-Cer(32:1;2)",
+        "PE-Cer(16:1;2/16:0)",
+        "Cer(44:1;2)",
+        "Cer(18:1;2/26:0)",
+        "CerP(44:1;3)",
+        "CerP(18:1;3/26:0)",
+        "SM(34:1;2)",
+        "SM(18:1;2/16:0)",
+        "SM(34:1;2<FA16:0>)",
+        "HexCer(44:1;2)",
+        "HexCer(18:1;2/26:0)",
+        "HexCer(44:1;3)",
+        "HexCer(18:1;2/26:0;1)",
+        "HexCer(18:1;2/26:0<OH{2}>)",
+        "HexCer(18:1;2/26:0<OH{3}>)",
+        "HexCer(59:1;4)",
+        "HexCer(18:1;2/26:0;1<FA15:0>)",
+        "Hex2Cer(44:1;2)",
+        "Hex2Cer(18:1;2/26:0)",
+        "Hex3Cer(44:1;2)",
+        "Hex3Cer(18:1;2/26:0)",
+        "GM3(36:1;2)",
+        "GM3(18:1;2/18:0)",
+        "SHexCer(36:1;2)",
+        "SHexCer(18:1;2/18:0)",
+        "SHexCer(36:1;3)",
+        "SHexCer(18:1;2/18:0;1)"
       ]
     },
     "ST": {
+      "LMSD_CLASS": [
+        "ST01"
+      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
