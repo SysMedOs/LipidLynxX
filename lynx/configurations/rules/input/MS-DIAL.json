@@ -58,7 +58,7 @@
   },
   "LIPID_CLASSES": {
     "FA": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "FA01",
         "FA02",
         "FA03",
@@ -85,7 +85,7 @@
       ]
     },
     "GL": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "GL01",
         "GL02",
         "GL03"
@@ -117,7 +117,7 @@
       ]
     },
     "PL": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "GP01",
         "GP02",
         "GP03",
@@ -177,7 +177,7 @@
       ]
     },
     "CL": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "GP12"
       ],
       "ORDER": [
@@ -205,7 +205,7 @@
       ]
     },
     "SP": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "SP02",
         "SP03",
         "SP05"
@@ -255,7 +255,7 @@
       ]
     },
     "ST": {
-      "LMSD_CLASS": [
+      "LMSD_CLASSES": [
         "ST01"
       ],
       "ORDER": [

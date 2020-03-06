@@ -1,5 +1,5 @@
 {
-  "_DATE": 20200306,
+  "_DATE": 20200214,
   "_AUTHORS": [
     "zhixu.ni@uni-leipzig.de"
   ],
@@ -9,7 +9,7 @@
     "D": "_",
     "S": "/"
   },
-  "LIPID_CLASSES": {
+  "LMSD_CLASSES": {
     "FA01": {
       "OUTPUT": "FA",
       "INPUT": [

@@ -7,19 +7,29 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import configparser
+import os
 import re
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from natsort import natsorted
 
-from lynx.controllers.general_functions import get_abs_path
-from lynx.controllers.rules_reader import build_all_rules
+from lynx.controllers.general_functions import get_abs_path, load_folder
+from lynx.models.rules import InputRules, OutputRules
 from lynx.models.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
-    default_fields = ["cv", "rules", "input_rules", "mod_cfg", "abbr_cfg", "base_url"]
+    default_fields = [
+        "cv",
+        "rules",
+        "input_rules",
+        "output_rules",
+        "mod_cfg",
+        "abbr_cfg",
+        "base_url",
+    ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
         config_path = get_abs_path(cfg_path)
@@ -127,6 +137,49 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
 
 def build_input_rules(folder: str) -> dict:
 
-    input_rules = build_all_rules(folder=folder)
+    input_rules = {}
+    file_path_lst = load_folder(folder, file_type=".json")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+
+    for f in file_path_lst:
+        temp_rules = InputRules(f)
+        idx_lst = [os.path.basename(f)] + temp_rules.source
+        idx = "#".join(idx_lst)
+        for c in temp_rules.rules:
+            c_class_str = temp_rules.rules[c].get("CLASS", "")
+            c_lmsd_classes = temp_rules.rules[c].get("LMSD_CLASSES", [])
+            existed_c_info = input_rules.get(c_class_str, {})
+            c_rgx = existed_c_info.get("SEARCH", re.compile(c_class_str))
+            c_pattern = existed_c_info.get("MATCH", {})
+            c_lmsd_classes.extend(existed_c_info.get("LMSD_CLASSES", []))
+            c_lmsd_classes = natsorted(list(set(c_lmsd_classes)))
+            c_info = temp_rules.rules[c]
+            del c_info["CLASS"]
+            del c_info["LMSD_CLASSES"]
+            c_pattern[idx] = c_info
+
+            input_rules[c_class_str] = {
+                "LMSD_CLASSES": c_lmsd_classes,
+                "SEARCH": c_rgx,
+                "MATCH": c_pattern,
+            }
+
+    logger.debug(input_rules)
 
     return input_rules
+
+
+def build_output_rules(folder: str) -> dict:
+
+    output_rules = {}
+    file_path_lst = load_folder(folder, file_type=".json")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+
+    for f in file_path_lst:
+        temp_rules = OutputRules(f)
+        idx = f"{temp_rules.nomenclature}@{temp_rules.date}"
+        output_rules[idx] = temp_rules.rules.get("LMSD_CLASSES")
+
+    logger.debug(output_rules)
+
+    return output_rules

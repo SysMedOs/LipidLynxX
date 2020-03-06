@@ -1,22 +1,21 @@
-import json
-import os
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# For more info please contact:
+#     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import re
 from typing import Union
 
 from lynx.models.log import logger
-from lynx.controllers.general_functions import get_abs_path, load_folder
+from lynx.controllers.general_functions import js_reader
 
 
-def js_reader(file):
-    file = get_abs_path(file)
-    with open(file) as file_obj:
-        js_obj = json.load(file_obj)
-        return js_obj
-
-
-class Rules(object):
+class InputRules(object):
     """
-    Read rules from json file and build corresponding regular expressions
+    Read input rules from json file and build corresponding regular expressions
     """
 
     def __init__(self, rules: Union[str, dict]):
@@ -28,8 +27,8 @@ class Rules(object):
             raise TypeError
         self.raw_rules = rules
         self.source = self.raw_rules["SOURCE"]
-        self._date = self.raw_rules.get("_DATE", 20200214)
-        self._authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
+        self.date = self.raw_rules.get("_DATE", 20200214)
+        self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
         self.supported_residues = list(self.raw_rules["RESIDUES"].keys())
         self.supported_classes = list(self.raw_rules["LIPID_CLASSES"].keys())
         self.separators = self.raw_rules["SEPARATORS"]
@@ -45,9 +44,9 @@ class Rules(object):
         self.rules = self.build()
         self.is_validated = self.validate()
         logger.info(
-            f"Load rule settings: for {self.source}\n"
-            f"Last modified: {self._date}\n"
-            f"Authors: {self._authors}"
+            f"Load input rule: {self.source}\n"
+            f"Last modified: {self.date}\n"
+            f"Authors: {self.authors}"
         )
 
     def __replace_fields__(self):
@@ -122,7 +121,8 @@ class Rules(object):
                     "GROUPS": seg_lst,
                     "PATTERN": pattern_str,
                     "MATCH": re.compile(pattern_str),
-                    "CLASS": temp_c_dct.get("CLASS", group),
+                    "CLASS": temp_c_dct.get("CLASS", c),
+                    "LMSD_CLASSES": temp_c_dct.get("LMSD_CLASSES", [c]),
                 }
         return rules
 
@@ -220,39 +220,50 @@ class Rules(object):
         return is_valid
 
 
-def build_all_rules(folder: str) -> dict:
+class OutputRules(object):
+    """
+    Read output rules from json file and build corresponding regular expressions
+    """
 
-    sum_rules = {}
-    file_path_lst = load_folder(folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    def __init__(self, rules: Union[str, dict]):
+        if isinstance(rules, dict):
+            pass
+        elif isinstance(rules, str):
+            rules = js_reader(rules)
+        else:
+            raise TypeError
+        self.raw_rules = rules
+        self.date = self.raw_rules.get("_DATE", 20200214)
+        self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
+        self.nomenclature = self.raw_rules.get("NOMENCLATURE", "LipidLynxX")
+        self.supported_lmsd_classes = list(self.raw_rules["LMSD_CLASSES"].keys())
+        self.separators = self.raw_rules["SEPARATORS"]
+        self.rules = self.build()
+        self.is_structure_valid = self.__check__()
+        logger.info(
+            f"Load rules for nomenclature {self.nomenclature}\n"
+            f"Last modified: {self.date}\n"
+            f"Authors: {self.authors}"
+        )
 
-    for f in file_path_lst:
-        temp_rules = Rules(f)
-        idx_lst = [os.path.basename(f)] + temp_rules.source
-        idx = "#".join(idx_lst)
-        for c in temp_rules.rules:
-            c_class_str = temp_rules.rules[c].get("CLASS", "")
-            existed_c_info = sum_rules.get(c_class_str, {})
-            c_rgx = existed_c_info.get("SEARCH", re.compile(c_class_str))
-            c_pattern = existed_c_info.get("MATCH", {})
-            c_info = temp_rules.rules[c]
-            del c_info["CLASS"]
-            c_pattern[idx] = c_info
+    def __check__(self):
+        is_structure_valid = False
+        if isinstance(self.nomenclature, str) and isinstance(
+            self.supported_lmsd_classes, list
+        ):
+            is_structure_valid = True
+        else:
+            pass
 
-            sum_rules[c_class_str] = {"SEARCH": c_rgx, "MATCH": c_pattern}
+        return is_structure_valid
 
-    logger.debug(sum_rules)
-
-    return sum_rules
-
-
-if __name__ == "__main__":
-    file_js = r"../configurations/rules/input/MS-DIAL.json"
-    usr_rules = Rules(file_js)
-    out_dct = usr_rules.build()
-    usr_rules.validate()
-
-    js_folder = r"../configurations/rules/input"
-    all_rules = build_all_rules(js_folder)
-
-    logger.info("Finished.")
+    def build(self):
+        rules = {"SEPARATORS": self.separators, "LMSD_CLASSES": {}}
+        n_rules = self.raw_rules["LMSD_CLASSES"]
+        for c in self.supported_lmsd_classes:
+            c_info = n_rules[c]
+            c_input_lst = c_info.get("INPUT", [])
+            c_info["INPUT_PATTERNS"] = [re.compile(s) for s in c_input_lst]
+            rules["LMSD_CLASSES"][c] = c_info
+        self.rules = rules
+        return rules

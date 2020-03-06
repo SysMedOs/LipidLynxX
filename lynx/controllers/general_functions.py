@@ -100,6 +100,16 @@ def seg_to_str(in_list: List[str], sep: str = ",") -> str:
     return out_str
 
 
+def js_reader(file: str) -> dict:
+    file = get_abs_path(file)
+    if file.lower().endswith(".json"):
+        with open(file) as file_obj:
+            js_obj = json.load(file_obj)
+            return js_obj
+    else:
+        raise IOError(f"Input file: {file} is not json file")
+
+
 def check_json(validator: Draft7Validator, json_obj: json) -> bool:
     is_valid = False
     if validator.is_valid(json_obj):

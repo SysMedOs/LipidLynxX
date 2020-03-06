@@ -10,14 +10,7 @@ import re
 from typing import Dict, List, Union
 
 from lynx.models.log import logger
-from lynx.models.defaults import (
-    class_rgx_dct,
-    rgx_class_dct,
-    cv_rgx_dct,
-    lipid_class_alias_info,
-    cv_order_list,
-    cv_alias_info,
-)
+from lynx.models.defaults import rgx_class_dct, cv_rgx_dct, cv_order_list, cv_alias_info
 from lynx.controllers.general_functions import seg_to_str
 
 
@@ -39,6 +32,7 @@ def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
     for c in rules:
         c_search_rgx = rules[c].get("SEARCH", None)
         c_match_rgx_dct = rules[c].get("MATCH", None)
+        c_lmsd_classes = rules[c].get("LMSD_CLASSES", None)
         if isinstance(c_search_rgx, re.Pattern) and isinstance(c_match_rgx_dct, dict):
             class_search = c_search_rgx.search(lipid_name)
             matched_info_dct = {}
@@ -52,7 +46,10 @@ def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
                         matched_groups = m_match.groupdict()
                         for g in m_groups:
                             matched_dct[g] = matched_groups.get(g, "")
-                        matched_info_dct[m] = matched_dct
+                        matched_info_dct[m] = {
+                            "LMSD_CLASSES": c_lmsd_classes,
+                            "SEGMENTS": matched_dct,
+                        }
                 parsed_info_dct[c] = matched_info_dct
             else:
                 pass
@@ -264,9 +261,9 @@ if __name__ == "__main__":
 
     js_folder = r"../configurations/rules/input"
 
-    from lynx.controllers.rules_reader import build_all_rules
+    from lynx.controllers.params_loader import build_input_rules
 
-    all_rules = build_all_rules(js_folder)
+    all_rules = build_input_rules(js_folder)
 
     for e in examples:
         p = parse(e, rules=all_rules)
