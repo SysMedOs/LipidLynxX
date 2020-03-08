@@ -162,6 +162,7 @@ def build_input_rules(folder: str) -> dict:
                 "LMSD_CLASSES": c_lmsd_classes,
                 "SEARCH": c_rgx,
                 "MATCH": c_pattern,
+                "RESIDUES_SEPARATOR": temp_rules.separators.get("RESIDUES_SEPARATOR", "_|/")
             }
 
     logger.debug(input_rules)
@@ -178,7 +179,7 @@ def build_output_rules(folder: str) -> dict:
     for f in file_path_lst:
         temp_rules = OutputRules(f)
         idx = f"{temp_rules.nomenclature}@{temp_rules.date}"
-        output_rules[idx] = temp_rules.rules.get("LMSD_CLASSES")
+        output_rules[idx] = temp_rules.rules
 
     logger.debug(output_rules)
 

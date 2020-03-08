@@ -347,7 +347,7 @@ def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> 
     return lynx_code
 
 
-def encode_sub_fa(fa_abbr: str, add_mod: str = None):
+def encode_sub_residues(fa_abbr: str, add_mod: str = None):
     fa_candidates_lst = []
     class_info_lst = []
     if fa_abbr:
@@ -391,7 +391,7 @@ def encode_all_sub_fa(
     for f in fa_count_lst:
         fa_abbr = parsed_info.get(f"FA{f}", "")
         if fa_abbr:
-            fa_code = encode_sub_fa(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
+            fa_code = encode_sub_residues(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
         else:
             fa_code = ""
         fa_info_lst.append(fa_code)
@@ -499,7 +499,7 @@ def encode_sp(parsed_info: dict) -> str:
     spb_abbr = parsed_info["SPB"]
     if not spb_abbr.startswith("SPB"):
         spb_abbr = f"SPB{spb_abbr}"
-    spb_code = encode_sub_fa(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
+    spb_code = encode_sub_residues(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=1, brackets=False)
     class_code = check_lipid_class_alias(parsed_info["CLASS"])
     if fa_code:

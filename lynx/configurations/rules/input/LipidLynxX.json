@@ -9,7 +9,12 @@
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",
     "BRACKET_LEFT": "\\(",
-    "BRACKET_RIGHT": "\\)"
+    "BRACKET_RIGHT": "\\)",
+    "SEPARATOR_LEVELS": {
+      "B": "",
+      "D": "_",
+      "S": "/"
+    }
   },
   "RESIDUES": {
     "RESIDUE": {

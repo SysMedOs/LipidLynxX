@@ -123,6 +123,7 @@ class InputRules(object):
                     "MATCH": re.compile(pattern_str),
                     "CLASS": temp_c_dct.get("CLASS", c),
                     "LMSD_CLASSES": temp_c_dct.get("LMSD_CLASSES", [c]),
+                    "RESIDUES_SEPARATOR": self.separators.get("RESIDUES_SEPARATOR", "_|/")
                 }
         return rules
 

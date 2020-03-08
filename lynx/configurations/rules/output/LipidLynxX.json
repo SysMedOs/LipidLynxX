@@ -18,7 +18,8 @@
       "ORDER": [
         "CLASS",
         "SUM_RESIDUES"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "FA02": {
       "OUTPUT": "FA",
@@ -28,7 +29,8 @@
       "ORDER": [
         "CLASS",
         "SUM_RESIDUES"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "FA03": {
       "OUTPUT": "FA",
@@ -38,7 +40,8 @@
       "ORDER": [
         "CLASS",
         "SUM_RESIDUES"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "FA04": {
       "OUTPUT": "FA",
@@ -48,7 +51,8 @@
       "ORDER": [
         "CLASS",
         "SUM_RESIDUES"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "GL01": {
       "OUTPUT": "MG",
@@ -61,7 +65,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "GL02": {
       "OUTPUT": "DG",
@@ -74,7 +79,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GL03": {
       "OUTPUT": "TG",
@@ -87,7 +93,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 3
     },
     "GP01": {
       "OUTPUT": "PC",
@@ -103,7 +110,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP02": {
       "OUTPUT": "PE",
@@ -119,7 +127,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP03": {
       "OUTPUT": "PS",
@@ -135,7 +144,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP04": {
       "OUTPUT": "PG",
@@ -151,7 +161,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP05": {
       "OUTPUT": "PGP",
@@ -167,7 +178,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP06": {
       "OUTPUT": "PI",
@@ -183,7 +195,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP07": {
       "OUTPUT": "PIP",
@@ -199,7 +212,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP08": {
       "OUTPUT": "PIP2",
@@ -215,7 +229,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP09": {
       "OUTPUT": "PIP3",
@@ -231,7 +246,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP10": {
       "OUTPUT": "PA",
@@ -247,7 +263,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP11": {
       "OUTPUT": "PPA",
@@ -263,7 +280,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "GP12": {
       "OUTPUT": "CL",
@@ -279,7 +297,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "SP01": {
       "OUTPUT": "SPB",
@@ -290,7 +309,8 @@
       "ORDER": [
         "CLASS",
         "SUM_RESIDUES"
-      ]
+      ],
+      "MAX_RESIDUES": 1
     },
     "SP02": {
       "OUTPUT": "Cer",
@@ -304,7 +324,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "SP03": {
       "OUTPUT": "SM",
@@ -318,7 +339,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "SP05": {
       "OUTPUT": "HexCer",
@@ -332,7 +354,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     },
     "ST01": {
       "OUTPUT": "ST",
@@ -347,7 +370,8 @@
         "BRACKET_LEFT",
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
-      ]
+      ],
+      "MAX_RESIDUES": 2
     }
   }
 }

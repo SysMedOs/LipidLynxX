@@ -15,40 +15,80 @@ from lynx.models.defaults import (
     cv_rgx_dct,
     cv_order_list,
     cv_alias_info,
-    input_rules,
-    output_rules,
+    default_input_rules,
+    default_output_rules,
 )
+from lynx.controllers.encoder import encode_sub_residues
 from lynx.controllers.general_functions import seg_to_str
 from lynx.controllers.params_loader import build_input_rules, build_output_rules
-from lynx.controllers.parser import parse
+from lynx.controllers.parser import rule_parse, parse, parse_mod
 
 
-def generate(lipid_name: str, rules: dict, rule: str) -> str:
-    output_name = ""
-    out_r_info = rules.get(rule, None)
-    if out_r_info:
-        parsed_info = parse(lipid_name, rules=input_rules)
+class Generator(object):
+
+    def __init__(self, export_rules: dict, rule: str):
+        self.output_rules = export_rules.get(rule, None)
+        self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
+
+    def check_lmsd_class(self, parsed_info: dict, input_rule: str):
+        lmsd_info = {}
+        lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
+        segments = parsed_info["SEGMENTS"]
+        res_sep_str = parsed_info["RESIDUES_SEPARATOR"]
+        res_sep_levels = parsed_info["SEPARATOR_LEVELS"]
+        c_str = segments.get("CLASS", "")
+        for c in lmsd_classes:
+            if c in self.class_rules:
+                lmsd_patterns_lst = self.class_rules[c].get("INPUT_PATTERNS")
+                for c_rgx in lmsd_patterns_lst:
+                    logger.debug(f"Test {c_str} on LMSD: {c} using {c_rgx}")
+                    c_searched = c_rgx.search(c_str)
+                    if c_searched:
+                        c_dct = lmsd_info.get(c, {})
+                        c_dct[input_rule] = {
+                            "SEGMENTS": segments,
+                            "RESIDUES_SEPARATOR": res_sep_str,
+                        }
+                        temp_out_str = self.check_residues(
+                            segments,
+                            lmsd_class=c,
+                            separator=res_sep_str,
+                        )
+        return lmsd_info
+
+    def check_residues(
+            self, segments: dict, lmsd_class: str, separator: str = "-|/"
+    ) -> str:
+
+        output_str = ""
+        sum_res_str = segments.get("SUM_RESIDUES", "")
+        lc_class_str = segments.get("CLASS", "")
+        res_lst = re.split(separator, sum_res_str)
+        res_sep_lst = re.findall(separator, sum_res_str)
+        logger.info(res_sep_lst)
+        lmsd_rules = self.output_rules.get("LMSD_CLASSES", {}).get(lmsd_class, {})
+        sep_rules = self.output_rules.get("SEPARATORS")
+        c_max_res_count = lmsd_rules.get("MAX_RESIDUES", None)
+        if len(res_sep_lst) <= c_max_res_count:
+            for res in res_lst:
+                res_info = parse(res)
+                res_lynx_code = encode_sub_residues(res)
+                logger.info(res_lynx_code)
+                logger.info(res_info)
+        return output_str
+
+    def export(self, lipid_name: str, import_rules: dict = default_input_rules):
+
+        parsed_info = rule_parse(lipid_name, rules=import_rules)
         for p in parsed_info:
             p_info = parsed_info[p]
             logger.info(p_info)
             for in_r in p_info:
                 r_info = p_info[in_r]  # type: dict
-                lmsd_classes = r_info.get("LMSD_CLASSES", None)
-                segments = r_info["SEGMENTS"]
-                c_str = segments.get("CLASS", "")
-                for c in lmsd_classes:
-                    if c in out_r_info:
-                        lmsd_patterns_lst = out_r_info[c].get("INPUT_PATTERNS")
-                        for c_rgx in lmsd_patterns_lst:
-                            logger.debug(f"Test {c_str} on LMSD: {c} using {c_rgx}")
-                            c_searched = c_rgx.search(c_str)
-                            if c_searched:
-                                logger.info(f"{lipid_name} is LMSD: {c} by {in_r}")
-    else:
-        raise ValueError(f"Cannot find output rule: {rule}")
+                lmsd_info = self.check_lmsd_class(r_info, in_r)
 
-    logger.debug(parsed_info)
-    return output_name
+
+
 
 
 if __name__ == "__main__":
@@ -102,10 +142,15 @@ if __name__ == "__main__":
     #     "TG(P-16:0/18:2/18:0)",
     # ]
 
-    examples = ["PE(P-16:0_18:2)"]
+    examples = ["TG(P-16:0_18:2(9Z,11Z)_18:1(9Z))"]
 
     for e in examples:
-        o = generate(e, rules=output_rules, rule="LipidLynxX@20200214")
+        o = generate(
+            e,
+            import_rules=default_input_rules,
+            export_rules=default_output_rules,
+            rule="LipidLynxX@20200214",
+        )
         logger.debug(e)
         logger.debug(o)
 

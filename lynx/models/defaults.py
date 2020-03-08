@@ -43,8 +43,8 @@ for _mod in cv_alias_json:
 default_cfg_path = "/lynx/config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
-input_rules = build_input_rules(cfg_info_dct["input_rules"])
-output_rules = build_output_rules(cfg_info_dct["output_rules"])
+default_input_rules = build_input_rules(cfg_info_dct["input_rules"])
+default_output_rules = build_output_rules(cfg_info_dct["output_rules"])
 cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])

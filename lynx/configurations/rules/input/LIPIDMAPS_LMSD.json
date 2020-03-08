@@ -1,6 +1,8 @@
 {
   "_DATE": 20200303,
-  "_AUTHORS": ["zhixu.ni@uni-leipzig.de"],
+  "_AUTHORS": [
+    "zhixu.ni@uni-leipzig.de"
+  ],
   "SOURCE": [
     "LIPIDMAPS",
     "LMSD",
@@ -10,7 +12,12 @@
     "RESIDUE_SEPARATOR": "_|/",
     "LIPID_CLASS_SEPARATOR": "\\s",
     "BRACKET_LEFT": "\\(",
-    "BRACKET_RIGHT": "\\)"
+    "BRACKET_RIGHT": "\\)",
+    "SEPARATOR_LEVELS": {
+      "B": "",
+      "D": "_",
+      "S": "/"
+    }
   },
   "RESIDUES": {
     "RESIDUE": {

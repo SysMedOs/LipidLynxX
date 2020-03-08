@@ -10,11 +10,18 @@ import re
 from typing import Dict, List, Union
 
 from lynx.models.log import logger
-from lynx.models.defaults import rgx_class_dct, cv_rgx_dct, cv_order_list, cv_alias_info
-from lynx.controllers.general_functions import seg_to_str
+from lynx.models.defaults import (
+    class_rgx_dct,
+    rgx_class_dct,
+    cv_rgx_dct,
+    lipid_class_alias_info,
+    cv_order_list,
+    cv_alias_info,
+)
+from ..controllers.general_functions import seg_to_str
 
 
-def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
+def rule_parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
 
     """
     Main parser to read input abbreviations
@@ -33,12 +40,12 @@ def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
         c_search_rgx = rules[c].get("SEARCH", None)
         c_match_rgx_dct = rules[c].get("MATCH", None)
         c_lmsd_classes = rules[c].get("LMSD_CLASSES", None)
-        if isinstance(c_search_rgx, re.Pattern) and isinstance(c_match_rgx_dct, dict):
+        if c_search_rgx and isinstance(c_match_rgx_dct, dict):
             class_search = c_search_rgx.search(lipid_name)
             matched_info_dct = {}
             if class_search:
                 for m in c_match_rgx_dct:
-                    m_pattern = c_match_rgx_dct[m]["MATCH"]  # type: re.Pattern
+                    m_pattern = c_match_rgx_dct[m]["MATCH"]
                     m_groups = c_match_rgx_dct[m]["GROUPS"]  # type: list
                     m_match = m_pattern.match(lipid_name)
                     if m_match:
@@ -49,6 +56,8 @@ def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
                         matched_info_dct[m] = {
                             "LMSD_CLASSES": c_lmsd_classes,
                             "SEGMENTS": matched_dct,
+                            "RESIDUES_SEPARATOR": rules[c]["RESIDUES_SEPARATOR"],
+                            "SEPARATOR_LEVELS": rules[c]["SEPARATOR_LEVELS"],
                         }
                 parsed_info_dct[c] = matched_info_dct
             else:
@@ -58,6 +67,96 @@ def parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
 
     if not parsed_info_dct:
         logger.error(f"Failed to decode Lipid: {lipid_name}")
+
+    return parsed_info_dct
+
+
+def parse(
+    abbr: str,
+    class_rules_dct: Dict[str, re.compile] = class_rgx_dct,
+    rules_class_dct: Dict[re.compile, str] = rgx_class_dct,
+    lipid_class: str = None,
+) -> Dict[str, Union[str, dict]]:
+
+    """
+    Main parser to read input abbreviations
+    Args:
+        abbr: input lipid abbreviation to be converted
+        class_rules_dct: the predefined dict in the form of lipid_class: re.compile(r"rule")
+        rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
+        lipid_class: name of lipid_class
+
+    Returns:
+        parsed_info_dct: parsed information stored as dict
+
+    """
+
+    rgx_lst = []
+    input_abbr = abbr
+    abbr = remove_prefix(abbr)
+
+    if "+" in abbr:
+        abbr_lst = abbr.split("+")
+        abbr = abbr_lst[0]
+        abbr_mod = "+" + "+".join(abbr_lst[1:])
+        logger.info(f"{input_abbr} contains additional modification {abbr_mod}.")
+    else:
+        abbr_mod = ""
+
+    if not lipid_class:  # try to get lipid class from abbr
+        if abbr.upper().startswith(("FA", "O-", "P-")):
+            rgx_lst = class_rules_dct.get("FA", [])
+        elif abbr[1:].upper().startswith(("O-", "P-")):  # for dO-, dP-
+            rgx_lst = class_rules_dct.get("FA", [])
+        elif abbr.upper().startswith(("PL", "PA", "PC", "PE", "PG", "PS", "PI")):
+            rgx_lst = class_rules_dct.get("PL", [])
+        elif abbr.upper().startswith(("SM", "SP")):
+            rgx_lst = class_rules_dct.get("SM", [])
+        elif abbr.upper().startswith(("CER")):
+            rgx_lst = class_rules_dct.get("Cer", [])
+        elif abbr.upper().startswith(("MG", "MAG")):
+            rgx_lst = class_rules_dct.get("MG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
+        elif abbr.upper().startswith(("DG", "DAG")):
+            rgx_lst = class_rules_dct.get("DG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
+        elif abbr.upper().startswith(("TG", "TAG")):
+            rgx_lst = class_rules_dct.get("TG", [])
+            if not rgx_lst:
+                rgx_lst = class_rules_dct.get("GL", [])
+        elif re.match(r"\d{1,2}:.*", abbr):
+            rgx_lst = class_rules_dct.get("FA", [])
+        elif abbr.startswith(tuple(lipid_class_alias_info.keys())):
+            for tmp_class in lipid_class_alias_info:
+                if abbr.startswith(tmp_class):
+                    rule_class = lipid_class_alias_info[tmp_class]["RULE_CLASS"]
+                    rgx_lst = class_rules_dct.get(rule_class, [])
+    else:
+        if lipid_class in class_rules_dct:
+            rgx_lst = class_rules_dct.get(lipid_class, [])
+        else:
+            raise ValueError(f"Lipid class {lipid_class} is not supported")
+
+    if not rgx_lst:
+        rgx_lst = [r for k in class_rules_dct for r in class_rules_dct[k]]
+
+    parsed_info_dct = get_matched_info(abbr, rgx_lst, rules_class_dct=rules_class_dct)
+
+    if not parsed_info_dct:
+        logger.warning(
+            f'Can not parse abbreviation: "{abbr}", try to ignore case and try again...'
+        )
+        parsed_info_dct = get_matched_info(
+            abbr, rgx_lst, rules_class_dct=rules_class_dct
+        )
+        if parsed_info_dct:
+            logger.info(f'Successfully parsed abbreviation: "{abbr}"')
+        else:
+            logger.warning(f'Not able to parse abbreviation: "{abbr}"')
+    if abbr_mod:
+        parsed_info_dct["ADDITIONAL_MOD"] = abbr_mod
 
     return parsed_info_dct
 
@@ -266,7 +365,7 @@ if __name__ == "__main__":
     all_rules = build_input_rules(js_folder)
 
     for e in examples:
-        p = parse(e, rules=all_rules)
+        p = rule_parse(e, rules=all_rules)
         logger.debug(e)
         logger.debug(p)
 
