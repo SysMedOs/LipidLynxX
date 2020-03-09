@@ -162,7 +162,10 @@ def build_input_rules(folder: str) -> dict:
                 "LMSD_CLASSES": c_lmsd_classes,
                 "SEARCH": c_rgx,
                 "MATCH": c_pattern,
-                "RESIDUES_SEPARATOR": temp_rules.separators.get("RESIDUES_SEPARATOR", "_|/")
+                "RESIDUES_SEPARATOR": temp_rules.separators.get(
+                    "RESIDUES_SEPARATOR", "_|/"
+                ),
+                "SEPARATOR_LEVELS": temp_rules.separators.get("SEPARATOR_LEVELS", {}),
             }
 
     logger.debug(input_rules)

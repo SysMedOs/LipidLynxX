@@ -35,7 +35,7 @@
       "DB": ":[1,2]?\\d",
       "NUM_O": ";[1-3]?",
       "MODS": "<(,?\\S*)*>|<[+-]\\d{1,4}>|<(,?[+-]\\d{1,2}?[HONPSKNa])>",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "18:2;1",
         "18:2",
         "9:0<oxo{9}>",
@@ -51,7 +51,7 @@
         "SUM_RESIDUES"
       ],
       "SUM_RESIDUES": "[\\d\\w:;()<>{}_/\\-]*",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "18:2;1",
         "18:2",
         "9:0<oxo{9}>",
@@ -80,7 +80,7 @@
       "CLASS": "FA|SPB",
       "LIPID_CLASS_SEPARATOR": "LIPID_CLASS_SEPARATOR",
       "SUM_RESIDUES": "SUM_RESIDUES",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "FA18:2;1",
         "FA18:2",
         "FA9:0",
@@ -109,7 +109,7 @@
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "MG(16:0)",
         "MG(0:0/0:0/16:0)",
         "MG(0:0/16:0/0:0)",
@@ -160,12 +160,12 @@
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "L",
-      "CLASS": "(P[ACEDGSI])|(PIP[1-6]?)|(BMP)",
+      "CLASS": "(P[ACEDGSI])|(PIP[1-6]?)",
       "SUFFIX": "tOH",
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "LPE(16:0)",
         "LPE(16:0/0:0)",
         "LPE(O-18:1)",
@@ -203,6 +203,34 @@
         "BMP(16:0/18:1)"
       ]
     },
+    "BMP": {
+      "LMSD_CLASSES": [
+        "GP0410"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "SUFFIX"
+      ],
+      "MAX_RESIDUES": 2,
+      "PREFIX": "L",
+      "CLASS": "BMP|BPA",
+      "BRACKET_LEFT": "BRACKET_LEFT",
+      "SUM_RESIDUES": "SUM_RESIDUES",
+      "BRACKET_RIGHT": "BRACKET_RIGHT",
+      "EXAMPLES": [
+        "BMP(34:1)",
+        "BMP(16:0_18:1)",
+        "BMP(16:0/18:1)"
+      ]
+    },
     "CL": {
       "LMSD_CLASSES": [
         "GP12"
@@ -223,7 +251,7 @@
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "CL(72:7)",
         "CL(36:3_36:4)",
         "CL(18:1/18:2/18:2/18:2)",
@@ -257,7 +285,7 @@
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "PE-Cer(32:1;2)",
         "PE-Cer(16:1;2/16:0)",
         "Cer(44:1;2)",
@@ -307,7 +335,7 @@
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
       "BRACKET_RIGHT": "BRACKET_RIGHT",
-      "EXAMPLE": [
+      "EXAMPLES": [
         "CE(18:1)",
         "SE(27:1/18:1)",
         "STSE(18:1)",

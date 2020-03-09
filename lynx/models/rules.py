@@ -123,7 +123,9 @@ class InputRules(object):
                     "MATCH": re.compile(pattern_str),
                     "CLASS": temp_c_dct.get("CLASS", c),
                     "LMSD_CLASSES": temp_c_dct.get("LMSD_CLASSES", [c]),
-                    "RESIDUES_SEPARATOR": self.separators.get("RESIDUES_SEPARATOR", "_|/")
+                    "RESIDUES_SEPARATOR": self.separators.get(
+                        "RESIDUES_SEPARATOR", "_|/"
+                    ),
                 }
         return rules
 
@@ -263,8 +265,16 @@ class OutputRules(object):
         n_rules = self.raw_rules["LMSD_CLASSES"]
         for c in self.supported_lmsd_classes:
             c_info = n_rules[c]
-            c_input_lst = c_info.get("INPUT", [])
-            c_info["INPUT_PATTERNS"] = [re.compile(s) for s in c_input_lst]
+            seg_name_lst = c_info.get("ORDER", [])
+            for seg_name in seg_name_lst:
+                if seg_name in c_info:
+                    seg_pattern_lst = c_info[seg_name]["INPUT"]
+                    seg_pat_dct = {}
+                    for seg_pattern in seg_pattern_lst:
+                        seg_pat_dct[re.compile(seg_pattern)] = c_info[seg_name][
+                            "OUTPUT"
+                        ]
+                    c_info[seg_name] = seg_pat_dct
             rules["LMSD_CLASSES"][c] = c_info
         self.rules = rules
         return rules

@@ -391,7 +391,9 @@ def encode_all_sub_fa(
     for f in fa_count_lst:
         fa_abbr = parsed_info.get(f"FA{f}", "")
         if fa_abbr:
-            fa_code = encode_sub_residues(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
+            fa_code = encode_sub_residues(
+                fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", "")
+            )
         else:
             fa_code = ""
         fa_info_lst.append(fa_code)
