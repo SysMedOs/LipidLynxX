@@ -31,6 +31,22 @@ class Generator(object):
         self.output_rules = export_rules.get(rule, None)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
 
+    @staticmethod
+    def get_best_candidate(candidates: List[str]) -> str:
+        best_candidate = ""
+        if len(candidates) > 1:
+            code_len = 1
+            for tmp_code in candidates:
+                tmp_len = len(tmp_code)
+                if max(code_len, tmp_len) == tmp_len:
+                    best_candidate = tmp_code
+                    code_len = tmp_len
+        elif len(candidates) == 1:
+            best_candidate = candidates[0]
+        else:
+            logger.warning("Failed to generate abbreviation for this lipid...")
+        return best_candidate
+
     def check_residues(
         self,
         residues: str,
@@ -97,13 +113,18 @@ class Generator(object):
                 )
                 s_matched = s_rgx.match(segment_text)
                 if s_matched:
-                    out_seg_lst.append(patterns_dct[s_rgx])
+                    defined_seg = patterns_dct[s_rgx]
+                    if defined_seg == "EXCEPTIONS":
+                        if lmsd_class in ["GP12"]:
+                            out_seg_lst.append(segment_text)
+                        if lmsd_class in ["SP05"]:
+                            out_seg_lst.append(segment_text)
+                    else:
+                        out_seg_lst.append(defined_seg)
+
             out_seg_lst = list(filter(None, list(set(out_seg_lst))))
-        if out_seg_lst:
-            out_seg_str = out_seg_lst[0]
-        else:
-            out_seg_str = ""
-        return out_seg_str
+
+        return self.get_best_candidate(out_seg_lst)
 
     def check_segments(self, parsed_info: dict, input_rule: str):
         segments_dct = {}
@@ -187,18 +208,8 @@ class Generator(object):
                     candidates_lst.remove(abbr)
                     candidates_lst.append(abbr[2:])
         candidates_lst = list(filter(None, list(set(chk_abbr_lst))))
-        if len(candidates_lst) > 1:
-            code_len = 1
-            for tmp_code in candidates_lst:
-                tmp_len = len(tmp_code)
-                if max(code_len, tmp_len) == tmp_len:
-                    best_abbr = tmp_code
-        elif len(candidates_lst) == 1:
-            best_abbr = candidates_lst[0]
-        else:
-            logger.warning("Failed to generate abbreviation for this lipid...")
 
-        return best_abbr
+        return self.get_best_candidate(candidates_lst)
 
     def export(self, lipid_name: str, import_rules: dict = default_input_rules):
 
@@ -220,43 +231,10 @@ class Generator(object):
 
 
 if __name__ == "__main__":
-    import os
 
-    from lynx.controllers.general_functions import load_folder
-    from lynx.models.rules import InputRules
-
-    check_in_rules_folder = r"../configurations/rules/input"
-    file_path_lst = load_folder(check_in_rules_folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
-
-    in_rule_tests = {}
-    for f in file_path_lst:
-        tmp_rules = InputRules(f)
-        idx_lst = [os.path.basename(f)] + tmp_rules.source
-        idx = "#".join(idx_lst)
-        rules_info = tmp_rules.raw_rules.get("LIPID_CLASSES", {})
-        tmp_tests = {}
-        for c in rules_info:
-            in_rule_tests[f"{c}@{idx}"] = rules_info[c].get("EXAMPLES", [])
-
+    t_in = "FA 18:2;3O"
     lynx_gen = Generator(export_rules=default_output_rules, rule="LipidLynxX@20200214")
-    test_sum = {}
-    for i in in_rule_tests:
-        i_lst = in_rule_tests[i]
-        i_test_dct = {}
-        for e in i_lst:
-            o = lynx_gen.export(e, import_rules=default_input_rules)
-            i_test_dct[e] = o
-        test_sum[i] = i_test_dct
-    for k in test_sum:
-        logger.info(f"Results of {k}:")
-        for r in test_sum[k]:
-            r_out = test_sum[k].get(r, "")
-            if len(r_out) >= len(r):
-                logger.info(f"Input: {r} -> Output: {r_out}")
-            elif r_out.endswith(")") or r_out.endswith(">"):
-                logger.info(f"Input: {r} -> Output: {r_out}")
-            else:
-                logger.warning(f"{k} Input: {r} -> Output: {r_out}")
+    t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
+    logger.warning(f"Input: {t_in} -> Output: {t_out}")
 
     logger.info("fin")

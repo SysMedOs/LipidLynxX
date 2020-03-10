@@ -13,6 +13,9 @@
       "S": "/"
     }
   },
+  "EXCEPTIONS": {
+    "PREFIX": "TEST"
+  },
   "LMSD_CLASSES": {
     "FA01": {
       "ORDER": [
@@ -237,12 +240,6 @@
       }
     },
     "GP05": {
-      "OUTPUT": "PGP",
-      "INPUT": [
-        "PGP",
-        "LPGP",
-        "LysoPGP"
-      ],
       "ORDER": [
         "PREFIX",
         "CLASS",
@@ -421,10 +418,9 @@
       ],
       "MAX_RESIDUES": 4,
       "PREFIX": {
-        "OUTPUT": "",
+        "OUTPUT": "EXCEPTIONS",
         "INPUT": [
-          "ML",
-          "DL"
+          "ML|DL"
         ]
       },
       "CLASS": {
@@ -515,13 +511,36 @@
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": {
-        "OUTPUT": "Hex",
+        "OUTPUT": "EXCEPTIONS",
         "INPUT": [
-          "Hex",
-          "Gal",
-          "Glc",
-          "Man",
+          "Hex\\d?",
+          "Gal\\d?",
+          "Glc\\d?",
+          "Man\\d?",
           "([AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso)"
+        ]
+      },
+      "CLASS": {
+        "OUTPUT": "Cer",
+        "INPUT": [
+        "Cer"
+        ]
+      }
+    },
+    "SP06": {
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "MAX_RESIDUES": 2,
+      "PREFIX": {
+        "OUTPUT": "EXCEPTIONS",
+        "INPUT": [
+          "GM[1-4]?"
         ]
       },
       "CLASS": {

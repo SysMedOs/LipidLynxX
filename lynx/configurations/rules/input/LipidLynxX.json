@@ -160,7 +160,7 @@
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "L",
-      "CLASS": "(P[ACEDGSI])|(PIP[1-6]?)",
+      "CLASS": "P[ACEDGSI]|PIP|PIP[2-6]",
       "SUFFIX": "tOH",
       "BRACKET_LEFT": "BRACKET_LEFT",
       "SUM_RESIDUES": "SUM_RESIDUES",
@@ -267,7 +267,8 @@
       "LMSD_CLASSES": [
         "SP02",
         "SP03",
-        "SP05"
+        "SP05",
+        "SP06"
       ],
       "ORDER": [
         "PREFIX",

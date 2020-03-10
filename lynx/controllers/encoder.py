@@ -43,7 +43,7 @@ def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
                 lynx_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
             elif lipid_class == "PL":
                 lynx_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
-            elif lipid_class in ["Cer", "SM", "SP"]:
+            elif lipid_class in ["Cer", "SM", "SP", "GM1", "GM2", "GM3", "GM4"]:
                 lynx_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
             elif lipid_class == "GL":
                 lynx_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
@@ -141,7 +141,7 @@ def get_best_abbreviation(
     elif len(candidates_lst) == 1:
         lynx_code = candidates_lst[0]
     else:
-        logger.warning("Failed to generate epiLION abbreviation for this lipid...")
+        logger.warning("Failed to generate Lipid abbreviation for this lipid...")
 
     if lynx_code is None:
         lynx_code = ""
@@ -266,11 +266,11 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
 
     if o_info is not None:
         o_info_len = len(o_info)
-        if o_info_len <= 2 and re.match(r"\d{1,2}", o_info):
-            mod_lst.append(f"{o_info}O")
-        elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
-            mod_lst.append(o_info)
-        elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
+        if re.match(r"\d", o_info) and o_info_len < 2:
+            mod_lst.append(f"+{o_info}O")
+        elif 2 <= o_info_len <= 3 and re.match(r"\dO", o_info):
+            mod_lst.append(f"+{o_info}")
+        elif o_info_len > 3 and re.match(r"\d\(.*\)", o_info):
             mod_lst.extend(decode_mod(o_info[1:].strip("()[]<>")))
         else:
             mod_lst.extend(decode_mod(o_info))
@@ -284,7 +284,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
                 for mod_alia in mod_alias_lst:
                     for obs_mod in mod_lst:
                         if obs_mod and re.match(
-                            r"\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
+                            r"[+-]?\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
                             obs_mod,
                         ):
                             if obs_mod.startswith("DB"):
