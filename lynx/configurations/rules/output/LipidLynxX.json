@@ -544,9 +544,9 @@
         ]
       },
       "CLASS": {
-        "OUTPUT": "Cer",
+        "OUTPUT": "EXCEPTIONS",
         "INPUT": [
-        "Cer"
+        "GM[1-4]?"
         ]
       }
     },

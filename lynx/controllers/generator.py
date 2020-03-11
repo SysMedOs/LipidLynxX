@@ -117,7 +117,7 @@ class Generator(object):
                     if defined_seg == "EXCEPTIONS":
                         if lmsd_class in ["GP12"]:
                             out_seg_lst.append(segment_text)
-                        if lmsd_class in ["SP05"]:
+                        if lmsd_class in ["SP05", "SP06"]:
                             out_seg_lst.append(segment_text)
                     else:
                         out_seg_lst.append(defined_seg)
@@ -232,7 +232,7 @@ class Generator(object):
 
 if __name__ == "__main__":
 
-    t_in = "FA 18:2;3O"
+    t_in = "GM3(d18:1/18:0)"
     lynx_gen = Generator(export_rules=default_output_rules, rule="LipidLynxX@20200214")
     t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
     logger.warning(f"Input: {t_in} -> Output: {t_out}")
