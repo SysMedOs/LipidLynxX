@@ -10,15 +10,68 @@
     "RESIDUE_SEPARATOR": "_|/",
     "BRACKET_LEFT": "\\(",
     "BRACKET_RIGHT": "\\)",
+    "BRACKET_MODS_LEFT": "\\<",
+    "BRACKET_MODS_RIGHT": "\\>",
     "SEPARATOR_LEVELS": {
       "B": "",
       "D": "_",
       "S": "/"
     }
   },
+  "MODS": {
+    "POSITIONS": {
+      "ORDER": [
+        "POSITION",
+        "POSITION_INFO"
+      ],
+      "OPTIONAL": [
+        "POSITION_INFO"
+      ],
+      "POSITION": "\\d{1,2}",
+      "POSITION_INFO": "[EZRS]",
+      "EXAMPLES": [
+        "{9,12}",
+        "{9Z,11E}",
+        "{9Z}",
+        "{8R}",
+        "{8S,12R}"
+      ]
+    },
+    "MOD": {
+      "ORDER": [
+        "MOD"
+      ],
+      "MOD": "(,?)([+-]?\\d{0,2}[a-zA-Z]{1,10})?({(,?\\d{1,2}[EZRS])+})?",
+      "EXAMPLES": [
+        "+O",
+        "OH{9}",
+        ",2OH{9R,12S}",
+        "{9E,12Z}"
+      ]
+    },
+    "SUM_MODS": {
+      "ORDER": [
+        "BRACKET_MODS_LEFT",
+        "MOD",
+        "BRACKET_MODS_RIGHT"
+      ],
+      "REPEAT": {
+        "MOD": [1, 10]
+      },
+      "BRACKET_MODS_LEFT": "BRACKET_MODS_LEFT",
+      "MOD": "MOD",
+      "BRACKET_MODS_RIGHT": "BRACKET_MODS_RIGHT",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    }
+  },
   "RESIDUES": {
     "RESIDUE": {
       "ORDER": [
+        "RESIDUE_SEPARATOR",
         "LINK",
         "NUM_C",
         "DB",
@@ -26,15 +79,17 @@
         "MODS"
       ],
       "OPTIONAL": [
+        "RESIDUE_SEPARATOR",
         "LINK",
         "NUM_O",
         "MODS"
       ],
+      "RESIDUE_SEPARATOR": "RESIDUE_SEPARATOR",
       "LINK": "[OP]-",
       "NUM_C": "\\d{1,2}",
       "DB": ":[1,2]?\\d",
       "NUM_O": ";[1-3]?",
-      "MODS": "<(,?\\S*)*>|<[+-]\\d{1,4}>|<(,?[+-]\\d{1,2}?[HONPSKNa])>",
+      "SUM_MODS": "SUM_MODS",
       "EXAMPLES": [
         "18:2;1",
         "18:2",
@@ -48,9 +103,12 @@
     },
     "SUM_RESIDUES": {
       "ORDER": [
-        "SUM_RESIDUES"
+        "RESIDUE"
       ],
-      "SUM_RESIDUES": "[\\d\\w:;()<>{}_/\\-]*",
+      "RESIDUE": "RESIDUE",
+      "REPEAT": {
+        "RESIDUE": [1, 4]
+      },
       "EXAMPLES": [
         "18:2;1",
         "18:2",

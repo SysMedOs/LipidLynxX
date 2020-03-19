@@ -166,6 +166,7 @@ def build_input_rules(folder: str) -> dict:
                     "RESIDUES_SEPARATOR", "_|/"
                 ),
                 "SEPARATOR_LEVELS": temp_rules.separators.get("SEPARATOR_LEVELS", {}),
+                "MAX_RESIDUES": temp_rules.rules[c].get("MAX_RESIDUES", 1),
             }
 
     logger.debug(input_rules)

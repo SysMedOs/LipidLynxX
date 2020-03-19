@@ -29,12 +29,13 @@ class InputRules(object):
         self.source = self.raw_rules["SOURCE"]
         self.date = self.raw_rules.get("_DATE", 20200214)
         self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
+        self.supported_mods = list(self.raw_rules["MODS"].keys())
         self.supported_residues = list(self.raw_rules["RESIDUES"].keys())
         self.supported_classes = list(self.raw_rules["LIPID_CLASSES"].keys())
         self.separators = self.raw_rules["SEPARATORS"]
         self.rules = {}
         self.is_structure_valid = self.__check__()
-        self.__replace_fields__()
+        # self.__replace_fields__()
         if self.is_structure_valid:
             pass
         else:
@@ -51,6 +52,12 @@ class InputRules(object):
 
     def __replace_fields__(self):
         for sep in self.separators:
+            for res in self.supported_mods:
+                res_sep = self.raw_rules["MODS"][res].get(sep, None)
+                if res_sep == sep:
+                    self.raw_rules["MODS"][res][sep] = self.separators.get(
+                        sep, ""
+                    )
             for res in self.supported_residues:
                 res_sep = self.raw_rules["RESIDUES"][res].get(sep, None)
                 if res_sep == sep:
@@ -63,6 +70,92 @@ class InputRules(object):
                     self.raw_rules["LIPID_CLASSES"][lc][sep] = self.separators.get(
                         sep, r"\s"
                     )
+
+    def __replace_refs__(self, rules: dict):
+        ref_rgx = re.compile(r'(\$)((\.[A-Z_]{1,20})+)(\.0)')
+        for rule in rules:
+            rule_dct = rules[rule]
+            pattern = rule_dct["PATTERN"]
+            logger.debug(f'Pattern: {pattern}')
+            ref_lst = re.findall(ref_rgx, pattern)
+            ref_replace_dct = {}
+            if ref_lst:
+                logger.info(f'Found Refs: {ref_lst}')
+                for ref_tpl in ref_lst:
+                    ref_seg_dct = {}
+                    if len(ref_tpl) >= 2:
+                        ref_seg_lst = ref_tpl[1].split(".")
+                        ref_seg_lst = [s for s in ref_seg_lst if s != "" and s != " "]
+                        if ref_seg_lst:
+                            ref_pattern_lst = []
+                            ref_info = ''
+                            for ref in ref_seg_lst:
+                                if not ref_seg_dct:
+                                    if ref in rules:
+                                        ref_info = rules[ref]["PATTERN"]
+                                        if ref_info and isinstance(ref_info, str):
+                                            logger.info(f'Found Ref Pattern: {ref_lst}')
+                                            ref_patt = r'\$\.' + '\\.'.join(ref_seg_lst) + r'\.0'
+                                            ref_replace_dct[ref_patt] = ref_info
+                                            break
+                                    else:
+                                        if ref in self.raw_rules:
+                                            ref_seg_dct = self.raw_rules[ref]
+                                            ref_pattern_lst.append(r'\.' + ref)
+                                else:
+                                    if ref in rules:
+                                        ref_info = rules[ref]["PATTERN"]
+                                        if ref_info and isinstance(ref_info, str):
+                                            logger.info(f'Found Ref Pattern: {ref_lst}')
+                                            ref_patt = r'\$\.' + '\\.'.join(ref_seg_lst) + '.0'
+                                            ref_replace_dct[ref_patt] = ref_info
+                                            break
+                                    elif ref in ref_seg_dct:
+                                        ref_info = ref_seg_dct[ref]
+                                        if isinstance(ref_info, str):
+                                            ref_pattern_lst.append(r'\.' + ref)
+                                            ref_pattern = r'\$' + ''.join(ref_pattern_lst) + '.0'
+                                            ref_replace_dct[ref_pattern] = ref_info
+                                            logger.info(f'Found Ref Pattern: {ref_lst}')
+                                            break
+                                        elif isinstance(ref_info, dict):
+                                            ref_seg_dct = ref_info
+                                        else:
+                                            raise KeyError
+                                    else:
+                                        raise KeyError
+                        else:
+                            raise ValueError
+                    else:
+                        raise ValueError
+                logger.info(f'Replace Refs: {ref_replace_dct}')
+                replace_match = False
+                for ref_replace in ref_replace_dct:
+                    replaced_pattern = re.sub(ref_replace, str(ref_replace_dct[ref_replace]), rule_dct["PATTERN"])
+                    rule_dct["PATTERN"] = replaced_pattern
+                    logger.info(f'Replaced pattern to {replaced_pattern} by {ref_replace}')
+                    replace_match = True
+                if replace_match:
+                    rule_dct["MATCH"] = rule_dct["PATTERN"]
+        return rules
+
+
+        # for res in self.supported_residues:
+        #     res_mods = self.raw_rules["RESIDUES"][res].get("SUM_MODS", None)
+        #     res_mods_repeat = self.raw_rules["RESIDUES"][res].get("REPEAT", {}).get("SUM_MODS", None)
+        #     if res_mods == "SUM_MODS":
+        #         sum_mods_rules = self.__build__(["SUM_MODS"], "RESIDUES")
+        #         sum_pattern = sum_mods_rules.get(
+        #             "SUM_MODS", {}
+        #         ).get("PATTERN", "")
+        #         if res_mods_repeat:
+        #             if isinstance(res_mods_repeat, list):
+        #                 sum_pattern = f"({sum_pattern})" + "{" + str(res_mods_repeat[0]) + ',' + str(res_mods_repeat[1]) + '}'
+        #             else:
+        #                 sum_pattern = f"({sum_pattern})+"
+        #         else:
+        #             pass
+        #         self.raw_rules["RESIDUES"][res]["SUM_MODS"] = sum_pattern
 
     def __check__(self):
         is_structure_valid = False
@@ -123,6 +216,7 @@ class InputRules(object):
                     "MATCH": re.compile(pattern_str),
                     "CLASS": temp_c_dct.get("CLASS", c),
                     "LMSD_CLASSES": temp_c_dct.get("LMSD_CLASSES", [c]),
+                    "MAX_RESIDUES": temp_c_dct.get("MAX_RESIDUES", 1),
                     "RESIDUES_SEPARATOR": self.separators.get(
                         "RESIDUES_SEPARATOR", "_|/"
                     ),
@@ -130,9 +224,11 @@ class InputRules(object):
         return rules
 
     def build(self) -> dict:
-        sum_rules = self.__build__(self.supported_residues, "RESIDUES")
-        self.rules = sum_rules
+        sum_rules = self.__build__(self.supported_mods, "MODS")
+        sum_rules.update(self.__build__(self.supported_residues, "RESIDUES"))
+        # sum_rules = self.__replace_refs__(sum_rules)
         sum_rules.update(self.__build__(self.supported_classes, "LIPID_CLASSES"))
+        sum_rules = self.__replace_refs__(sum_rules)
         self.rules = sum_rules
         return sum_rules
 

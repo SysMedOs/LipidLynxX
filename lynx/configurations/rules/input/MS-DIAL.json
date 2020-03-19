@@ -15,6 +15,37 @@
       "S": "/"
     }
   },
+  "MODS": {
+    "MOD": {
+      "ORDER": [
+        "MOD"
+      ],
+      "MOD": ",?(\\d{1,2})([0-9a-zA-Z]*)",
+      "EXAMPLES": [
+        "9",
+        "9Z",
+        "9OH"
+      ]
+    },
+    "SUM_MODS": {
+      "ORDER": [
+        "BRACKET_LEFT",
+        "MOD",
+        "BRACKET_RIGHT"
+      ],
+      "REPEAT": {
+        "MOD": [1, 10]
+      },
+      "BRACKET_LEFT": "BRACKET_LEFT",
+      "MOD": "MOD",
+      "BRACKET_RIGHT": "BRACKET_RIGHT",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    }
+  },
   "RESIDUES": {
     "RESIDUE": {
       "ORDER": [
@@ -47,7 +78,7 @@
       "ORDER": [
         "SUM_RESIDUES"
       ],
-      "SUM_RESIDUES": "[\\d\\w:;()-_/]*",
+      "SUM_RESIDUES": "[\\d\\w,:;()-_/]*",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",

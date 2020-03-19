@@ -232,7 +232,7 @@ class Generator(object):
 
 if __name__ == "__main__":
 
-    t_in = "GM3(d18:1/18:0)"
+    t_in = "GM3(d18:1/18:2(9Z,12Z))"
     lynx_gen = Generator(export_rules=default_output_rules, rule="LipidLynxX@20200214")
     t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
     logger.warning(f"Input: {t_in} -> Output: {t_out}")
