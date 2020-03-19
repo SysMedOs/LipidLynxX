@@ -6,8 +6,9 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import re
 from typing import Union
+
+import regex as re
 
 from lynx.models.log import logger
 from lynx.controllers.general_functions import js_reader
@@ -32,10 +33,13 @@ class InputRules(object):
         self.supported_mods = list(self.raw_rules["MODS"].keys())
         self.supported_residues = list(self.raw_rules["RESIDUES"].keys())
         self.supported_classes = list(self.raw_rules["LIPID_CLASSES"].keys())
+        self.supported_keys = (
+            self.supported_mods + self.supported_residues + self.supported_classes
+        )
         self.separators = self.raw_rules["SEPARATORS"]
         self.rules = {}
         self.is_structure_valid = self.__check__()
-        # self.__replace_fields__()
+
         if self.is_structure_valid:
             pass
         else:
@@ -50,37 +54,16 @@ class InputRules(object):
             f"Authors: {self.authors}"
         )
 
-    def __replace_fields__(self):
-        for sep in self.separators:
-            for res in self.supported_mods:
-                res_sep = self.raw_rules["MODS"][res].get(sep, None)
-                if res_sep == sep:
-                    self.raw_rules["MODS"][res][sep] = self.separators.get(
-                        sep, ""
-                    )
-            for res in self.supported_residues:
-                res_sep = self.raw_rules["RESIDUES"][res].get(sep, None)
-                if res_sep == sep:
-                    self.raw_rules["RESIDUES"][res][sep] = self.separators.get(
-                        sep, "_|/"
-                    )
-            for lc in self.supported_classes:
-                lc_sep = self.raw_rules["LIPID_CLASSES"][lc].get(sep, None)
-                if lc_sep == sep:
-                    self.raw_rules["LIPID_CLASSES"][lc][sep] = self.separators.get(
-                        sep, r"\s"
-                    )
-
     def __replace_refs__(self, rules: dict):
-        ref_rgx = re.compile(r'(\$)((\.[A-Z_]{1,20})+)(\.0)')
+        ref_rgx = re.compile(r"(\$)((\.[A-Z_]{1,99})+)(\.0)")
         for rule in rules:
             rule_dct = rules[rule]
             pattern = rule_dct["PATTERN"]
-            logger.debug(f'Pattern: {pattern}')
+            logger.debug(f"Pattern: {pattern}")
             ref_lst = re.findall(ref_rgx, pattern)
             ref_replace_dct = {}
             if ref_lst:
-                logger.info(f'Found Refs: {ref_lst}')
+                logger.info(f"Found Refs: {ref_lst}")
                 for ref_tpl in ref_lst:
                     ref_seg_dct = {}
                     if len(ref_tpl) >= 2:
@@ -88,35 +71,43 @@ class InputRules(object):
                         ref_seg_lst = [s for s in ref_seg_lst if s != "" and s != " "]
                         if ref_seg_lst:
                             ref_pattern_lst = []
-                            ref_info = ''
+                            ref_info = ""
                             for ref in ref_seg_lst:
                                 if not ref_seg_dct:
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            logger.info(f'Found Ref Pattern: {ref_lst}')
-                                            ref_patt = r'\$\.' + '\\.'.join(ref_seg_lst) + r'\.0'
+                                            logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            ref_patt = (
+                                                r"\$\."
+                                                + "\\.".join(ref_seg_lst)
+                                                + r"\.0"
+                                            )
                                             ref_replace_dct[ref_patt] = ref_info
                                             break
                                     else:
                                         if ref in self.raw_rules:
                                             ref_seg_dct = self.raw_rules[ref]
-                                            ref_pattern_lst.append(r'\.' + ref)
+                                            ref_pattern_lst.append(r"\." + ref)
                                 else:
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            logger.info(f'Found Ref Pattern: {ref_lst}')
-                                            ref_patt = r'\$\.' + '\\.'.join(ref_seg_lst) + '.0'
+                                            logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            ref_patt = (
+                                                r"\$\." + "\\.".join(ref_seg_lst) + ".0"
+                                            )
                                             ref_replace_dct[ref_patt] = ref_info
                                             break
                                     elif ref in ref_seg_dct:
                                         ref_info = ref_seg_dct[ref]
                                         if isinstance(ref_info, str):
-                                            ref_pattern_lst.append(r'\.' + ref)
-                                            ref_pattern = r'\$' + ''.join(ref_pattern_lst) + '.0'
+                                            ref_pattern_lst.append(r"\." + ref)
+                                            ref_pattern = (
+                                                r"\$" + "".join(ref_pattern_lst) + ".0"
+                                            )
                                             ref_replace_dct[ref_pattern] = ref_info
-                                            logger.info(f'Found Ref Pattern: {ref_lst}')
+                                            logger.info(f"Found Ref Pattern: {ref_lst}")
                                             break
                                         elif isinstance(ref_info, dict):
                                             ref_seg_dct = ref_info
@@ -128,34 +119,22 @@ class InputRules(object):
                             raise ValueError
                     else:
                         raise ValueError
-                logger.info(f'Replace Refs: {ref_replace_dct}')
+                logger.info(f"Replace Refs: {ref_replace_dct}")
                 replace_match = False
                 for ref_replace in ref_replace_dct:
-                    replaced_pattern = re.sub(ref_replace, str(ref_replace_dct[ref_replace]), rule_dct["PATTERN"])
+                    replaced_pattern = re.sub(
+                        ref_replace,
+                        str(ref_replace_dct[ref_replace]),
+                        rule_dct["PATTERN"],
+                    )
                     rule_dct["PATTERN"] = replaced_pattern
-                    logger.info(f'Replaced pattern to {replaced_pattern} by {ref_replace}')
+                    logger.info(
+                        f"Replaced pattern to {replaced_pattern} by {ref_replace}"
+                    )
                     replace_match = True
                 if replace_match:
-                    rule_dct["MATCH"] = rule_dct["PATTERN"]
+                    rule_dct["MATCH"] = re.compile(rule_dct["PATTERN"])
         return rules
-
-
-        # for res in self.supported_residues:
-        #     res_mods = self.raw_rules["RESIDUES"][res].get("SUM_MODS", None)
-        #     res_mods_repeat = self.raw_rules["RESIDUES"][res].get("REPEAT", {}).get("SUM_MODS", None)
-        #     if res_mods == "SUM_MODS":
-        #         sum_mods_rules = self.__build__(["SUM_MODS"], "RESIDUES")
-        #         sum_pattern = sum_mods_rules.get(
-        #             "SUM_MODS", {}
-        #         ).get("PATTERN", "")
-        #         if res_mods_repeat:
-        #             if isinstance(res_mods_repeat, list):
-        #                 sum_pattern = f"({sum_pattern})" + "{" + str(res_mods_repeat[0]) + ',' + str(res_mods_repeat[1]) + '}'
-        #             else:
-        #                 sum_pattern = f"({sum_pattern})+"
-        #         else:
-        #             pass
-        #         self.raw_rules["RESIDUES"][res]["SUM_MODS"] = sum_pattern
 
     def __check__(self):
         is_structure_valid = False
@@ -189,25 +168,58 @@ class InputRules(object):
             if temp_c_dct:
                 order_lst = temp_c_dct.get("ORDER", [])
                 optional_lst = temp_c_dct.get("OPTIONAL", [])
+                repeat_dct = temp_c_dct.get("REPEAT", {})
                 pattern_str = ""
                 seg_lst = []
                 for seg in order_lst:
+                    is_optional = False
+                    if seg in optional_lst:
+                        is_optional = True
                     seg_str = temp_c_dct.get(seg, "")
-                    if (
-                        c in self.supported_classes
-                        and seg_str in self.supported_residues
-                    ):
+                    if c in self.supported_keys and seg_str in self.supported_residues:
                         seg_str = self.rules[seg_str].get("PATTERN", "")
                         if seg_str:
-                            pattern_str += seg_str
+                            if seg in repeat_dct:
+                                is_optional = False
+                                repeat_info = repeat_dct[seg]
+                                if (
+                                    isinstance(repeat_info, list)
+                                    and len(repeat_info) == 2
+                                ):
+                                    pattern_str += (
+                                        f"({seg_str})"
+                                        + "{"
+                                        + f"{repeat_info[0]},{repeat_info[1]}"
+                                        + "}"
+                                    )
+                                else:
+                                    pattern_str += f"({seg_str})*"
+                            else:
+                                pattern_str += seg_str
                             seg_lst.append(seg)
                         else:
                             raise KeyError(f"Rule pattern {seg_str} not defined!")
                     else:
-                        pattern_str += f"(?P<{seg}>{seg_str})"
+                        if seg in repeat_dct:
+                            is_optional = False
+                            repeat_info = repeat_dct[seg]
+                            if isinstance(repeat_info, list) and len(repeat_info) == 2:
+                                pattern_str += (
+                                    f"(?P<{seg}>{seg_str})"
+                                    + "{"
+                                    + f"{repeat_info[0]},{repeat_info[1]}"
+                                    + "}"
+                                )
+                            else:
+                                if seg in optional_lst:
+                                    pattern_str += f"(?P<{seg}>{seg_str})*"
+                                else:
+                                    pattern_str += f"(?P<{seg}>{seg_str})+"
+                        else:
+                            pattern_str += f"(?P<{seg}>{seg_str})"
                         seg_lst.append(seg)
 
-                    if seg in optional_lst:
+                    if is_optional:
                         pattern_str += "?"
 
                 rules[c] = {

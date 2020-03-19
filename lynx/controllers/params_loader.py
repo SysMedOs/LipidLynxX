@@ -8,11 +8,11 @@
 
 import configparser
 import os
-import re
 from typing import Dict, List, Tuple
 
-import pandas as pd
 from natsort import natsorted
+import pandas as pd
+import regex as re
 
 from lynx.controllers.general_functions import get_abs_path, load_folder
 from lynx.models.rules import InputRules, OutputRules

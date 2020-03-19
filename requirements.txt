@@ -1,8 +1,8 @@
 jsonschema
-flask>=1.0.3
-natsort>=6.0.0
+flask>=1.1.1
+natsort>=7.0.1
 openpyxl
-pandas>=0.24.2
+pandas>=1.0.3
 pytest
 requests
 rdkit

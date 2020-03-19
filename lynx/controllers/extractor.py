@@ -6,10 +6,10 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import re
 from typing import Dict, List, Union
 
 from natsort import natsorted
+import regex as re
 
 from lynx.models.log import logger
 from lynx.models.defaults import (
@@ -50,10 +50,8 @@ class Extractor(object):
                 m_match = m_pattern.match(lipid_name)
                 if m_match:
                     matched_dct = {}
-                    matched_groups = m_match.groupdict()
-                    for g in m_groups:
-                        matched_dct[g] = matched_groups.get(g, "")
-                    matched_info_dct[m] = matched_dct
+                    matched_groups = m_match.capturesdict()
+                    matched_info_dct[m] = matched_groups
         return matched_info_dct
 
     def check_residues(
@@ -92,9 +90,9 @@ class Extractor(object):
                     logger.error(m)
                     matched_dct = matched_info_dct[m]
                     mod_str = matched_dct.get("SUM_MODS", None)
-                    if mod_str:
-                        mod_info = decode_mod(mod_str)
-                        logger.info(f"{mod_str}, {mod_info}")
+                    # if mod_str:
+                    #     mod_info = decode_mod(mod_str)
+                    #     logger.info(f"{mod_str}, {mod_info}")
                     logger.error(matched_dct)
                 out_res_lst.append(res)
 
@@ -136,14 +134,15 @@ class Extractor(object):
             matched_info_dct = self.check_segments(lipid_name, c)
             for m in matched_info_dct:
                 matched_dct = matched_info_dct[m]
-                sum_residues = matched_dct.get("SUM_RESIDUES", None)
-                if sum_residues:
-                    residues = self.check_residues(
-                        sum_residues,
-                        max_residues=c_max_res,
-                        separator_levels=sep_levels,
-                        separator=res_sep,
-                    )
+                sum_residues_lst = matched_dct.get("SUM_RESIDUES", [])
+                if sum_residues_lst:
+                    for sum_residues in sum_residues_lst:
+                        residues = self.check_residues(
+                            sum_residues,
+                            max_residues=c_max_res,
+                            separator_levels=sep_levels,
+                            separator=res_sep,
+                        )
                 matched_info_dct[m] = {
                     "LMSD_CLASSES": c_lmsd_classes,
                     "SEGMENTS": matched_dct,
@@ -163,7 +162,9 @@ class Extractor(object):
 
 if __name__ == "__main__":
 
-    t_in = "GM3(d18:1/18:2(9Z,12Z))"
+    # t_in = "GM3(d18:1/18:2(9Z,12Z))"
+    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z))"
+    t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
     extractor = Extractor(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 
