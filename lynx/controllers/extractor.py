@@ -6,24 +6,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from typing import Dict, List, Union
+from typing import Dict, Union
 
 from natsort import natsorted
 import regex as re
 
-from lynx.models.log import logger
-from lynx.models.defaults import (
-    rgx_class_dct,
-    cv_rgx_dct,
-    cv_order_list,
-    cv_alias_info,
-    default_input_rules,
-    default_output_rules,
-)
-from lynx.controllers.encoder import encode_sub_residues, decode_mod
-from lynx.controllers.general_functions import seg_to_str
-from lynx.controllers.params_loader import build_input_rules, build_output_rules
-from lynx.controllers.parser import rule_parse, parse, parse_mod
+from lynx.utils.log import logger
+from lynx.models.defaults import default_input_rules
 
 
 class Extractor(object):
@@ -163,8 +152,9 @@ class Extractor(object):
 if __name__ == "__main__":
 
     # t_in = "GM3(d18:1/18:2(9Z,12Z))"
-    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z))"
-    t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
+    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH))"
+    t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
+    # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
     extractor = Extractor(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 

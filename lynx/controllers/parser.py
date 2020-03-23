@@ -9,7 +9,7 @@
 import re
 from typing import Dict, List, Union
 
-from lynx.models.log import logger
+from lynx.utils.log import logger
 from lynx.models.defaults import (
     class_rgx_dct,
     rgx_class_dct,
@@ -18,7 +18,7 @@ from lynx.models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
-from ..controllers.general_functions import seg_to_str
+from lynx.utils.toolbox import seg_to_str
 
 
 def rule_parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:

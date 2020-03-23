@@ -1,23 +1,61 @@
 # -*- coding: utf-8 -*-
 #
-# -*- coding: utf-8 -*-
-#
 # Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-from io import BytesIO, StringIO
+
+import json
 import os
-import time
-from typing import Union, Tuple, Optional
+from io import BytesIO
+from typing import List, Union
 
 import pandas as pd
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
-from ..config import app_cfg_dct
-from ..controllers.general_functions import get_abs_path
+from lynx.utils.log import logger
+
+
+def get_abs_path(file_path: str) -> str:
+    """
+    check and get absolute file path from given file
+    Args:
+        file_path: The relative path to a file
+
+    Returns:
+        abs_path: the absolute path of input file
+
+    """
+
+    abs_path = ""
+
+    if os.path.isdir(file_path):
+        abs_path = os.path.abspath(file_path)
+
+    elif os.path.isfile(file_path):
+        abs_path = os.path.abspath(file_path)
+    else:
+        in_file_lst = [
+            r"{path}".format(path=file_path),
+            r"./{path}".format(path=file_path),
+            r"../{path}".format(path=file_path),
+            r"../../{path}".format(path=file_path),
+            r"../../../{path}".format(path=file_path),
+        ]
+        for f in in_file_lst:
+            if os.path.isdir(f):
+                abs_path = os.path.abspath(f)
+                break
+            elif os.path.isfile(f):
+                abs_path = os.path.abspath(f)
+                break
+
+    if not abs_path:
+        raise FileNotFoundError(f"Can not find file: {file_path}")
+
+    return abs_path
 
 
 def get_table(file: Union[str, FileStorage]) -> dict:
@@ -49,32 +87,40 @@ def get_table(file: Union[str, FileStorage]) -> dict:
     return dct
 
 
-def save_table(df: pd.DataFrame, file_name: str):
-    is_output = False
-    abs_output_path = None
-    if not df.empty:
-        df.to_excel(file_name)
-        is_output = True
-        abs_output_path = get_abs_path(file_name)
-
-    return is_output, abs_output_path
-
-
-def clean_dct(dct: dict) -> dict:
-
-    if dct:
-        for k in dct:
-            v = dct[k]
-            if isinstance(v, str):
-                dct[k] = [v]
-            elif isinstance(v, list):
-                dct[k] = list(filter(None, v))
-            else:
-                pass
+def get_json(file: str) -> dict:
+    file = get_abs_path(file)
+    if file.lower().endswith(".json"):
+        with open(file) as file_obj:
+            js_obj = json.load(file_obj)
+            return js_obj
     else:
-        pass
+        raise IOError(f"Input file: {file} is not json file")
 
-    return dct
+
+def load_folder(folder: str, file_type: str = "") -> List[str]:
+    """
+     Load all files under given folder, optional with selected file suffix
+     Args:
+         folder: path of the folder.
+         file_type: type of the file, default value is "" for no file type filter
+
+     Returns:
+         file_abs_path_lst: the list of files under given folder in absolute path
+
+     """
+    abs_path = get_abs_path(folder)
+    file_lst = os.listdir(abs_path)
+    file_abs_path_lst = [os.path.join(abs_path, x) for x in file_lst]
+    if file_type:
+        file_abs_path_lst = [
+            f for f in file_abs_path_lst if f.lower().endswith(file_type.lower())
+        ]
+    file_abs_path_lst = [abs_f for abs_f in file_abs_path_lst if os.path.isfile(abs_f)]
+    logger.debug(
+        f"Fund {file_type} files:\nunder folder: {folder}\nfiles:\n {file_abs_path_lst}"
+    )
+
+    return file_abs_path_lst
 
 
 def create_output(data: dict) -> BytesIO:
@@ -165,3 +211,14 @@ def create_equalizer_output(sum_data: dict) -> BytesIO:
     else:
         excel_io = None
     return excel_io
+
+
+def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
+    is_output = False
+    abs_output_path = None
+    if not df.empty:
+        df.to_excel(file_name)
+        is_output = True
+        abs_output_path = get_abs_path(file_name)
+
+    return is_output, abs_output_path

@@ -8,7 +8,7 @@
 
 from typing import Dict
 
-from lynx.models.log import logger
+from lynx.utils.log import logger
 
 
 class LynxID:

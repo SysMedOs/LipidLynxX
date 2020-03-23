@@ -7,23 +7,14 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import re
-from typing import Dict, List, Union
+from typing import List
 
 from natsort import natsorted
 
-from lynx.models.log import logger
-from lynx.models.defaults import (
-    rgx_class_dct,
-    cv_rgx_dct,
-    cv_order_list,
-    cv_alias_info,
-    default_input_rules,
-    default_output_rules,
-)
+from lynx.utils.log import logger
+from lynx.models.defaults import default_input_rules, default_output_rules
 from lynx.controllers.encoder import encode_sub_residues
-from lynx.controllers.general_functions import seg_to_str
-from lynx.controllers.params_loader import build_input_rules, build_output_rules
-from lynx.controllers.parser import rule_parse, parse, parse_mod
+from lynx.controllers.parser import rule_parse, parse
 
 
 class Generator(object):

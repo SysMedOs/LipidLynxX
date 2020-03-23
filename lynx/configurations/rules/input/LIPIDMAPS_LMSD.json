@@ -10,6 +10,7 @@
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",
+    "MOD_SEPARATOR": "-",
     "SPACE": "\\s",
     "COLON": ":",
     "SEMICOLON": ";",
@@ -25,17 +26,24 @@
     "MOD": {
       "ORDER": [
         "MOD_SITE",
-        "MOD_INFO"
+        "MOD_SITE_INFO",
+        "MOD_SEPARATOR",
+        "MOD_TYPE"
       ],
       "OPTIONAL": [
-        "MOD_INFO"
+        "MOD_SITE_INFO",
+        "MOD_SEPARATOR",
+        "MOD_TYPE"
       ],
-      "MOD_SITE": ",?([0-9]{1,2})",
-      "MOD_INFO": "([0-9a-zA-Z]*)",
+      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
+      "MOD_SITE_INFO": "([EZRS])?",
+      "MOD_SEPARATOR": "$.SEPARATORS.MOD_SEPARATOR.0",
+      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
       "EXAMPLES": [
         "9",
         "9Z",
-        "9OH"
+        "9OH",
+        "9S-OH"
       ]
     },
     "SUM_MODS": {
@@ -107,7 +115,7 @@
       "REPEAT": {
         "RESIDUE": [1, 4]
       },
-      "RESIDUE": "($.RESIDUES.RESIDUE.0)|(($.SEPARATORS.RESIDUE_SEPARATOR.0)?(?P<SPECIFIC_RESIDUE>[-,0-9a-zA-Z]+))",
+      "RESIDUE": "($.RESIDUES.RESIDUE.0)|(($.SEPARATORS.RESIDUE_SEPARATOR.0)?(?P<SPECIFIC_RESIDUE>[-,0-9a-zA-Z]{3,}))",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",

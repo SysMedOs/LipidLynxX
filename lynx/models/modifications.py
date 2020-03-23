@@ -12,7 +12,8 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 
-from ..controllers.general_functions import check_json, get_abs_path
+from lynx.utils.file_readers import get_abs_path
+from lynx.utils.toolbox import check_json
 
 from .defaults import (
     api_version,
@@ -21,11 +22,9 @@ from .defaults import (
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
-    mod_level_lst,
-    db_level_lst,
     mod_db_level_lst,
 )
-from .log import logger
+from lynx.utils.log import logger
 from .patterns import (
     mod_rgx,
     mod_db_rgx,

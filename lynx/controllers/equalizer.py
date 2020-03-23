@@ -6,16 +6,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import re
 from typing import Union
 
 import pandas as pd
 
-from .general_functions import get_abs_path
-from .converter import convert_string
-from ..models.log import logger
+from lynx.utils.file_readers import get_abs_path
+from lynx.utils.log import logger
 from ..models.lipid import Lipid
-from ..models.residues import FattyAcid
 from .encoder import lynx_encode
 from .parser import parse
 

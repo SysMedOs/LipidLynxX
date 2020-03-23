@@ -13,10 +13,10 @@ import pytest
 lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
-from lynx.models.log import logger
+from lynx.utils.log import logger
 from lynx.controllers.parser import parse
 from lynx.controllers.encoder import lynx_encode
-from lynx.controllers.general_functions import get_abs_path
+from lynx.utils.file_readers import get_abs_path
 
 
 test_files = [

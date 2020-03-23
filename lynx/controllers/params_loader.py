@@ -14,9 +14,9 @@ from natsort import natsorted
 import pandas as pd
 import regex as re
 
-from lynx.controllers.general_functions import get_abs_path, load_folder
+from lynx.utils.file_readers import get_abs_path, load_folder
 from lynx.models.rules import InputRules, OutputRules
-from lynx.models.log import logger
+from lynx.utils.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "The structure of LipidLynx FA with/without modification",
+  "description": "The structure of LipidLynx Residue with/without modification",
   "type": "object",
   "required": [
     "api_version",
@@ -54,7 +54,7 @@
       }
     },
     "info": {
-      "description": "The structure of Fatty acid",
+      "description": "The structure of Residue",
       "type": "object",
       "required": [
         "c",
@@ -64,13 +64,13 @@
       ],
       "properties": {
         "c": {
-          "description": "The Carbon number in FA",
+          "description": "The Carbon number in Residue",
           "type": "integer",
           "minimum": 0,
           "maximum": 256
         },
         "db": {
-          "description": "The Double bond equivalent of FA (without the COOH in FA)",
+          "description": "The Double bond equivalent of FA (without the COOH in Residue)",
           "type": "integer",
           "minimum": 0,
           "maximum": 128
@@ -81,7 +81,7 @@
           "pattern": "(^FA$)|(^[OP]-$)"
         },
         "is_modified": {
-          "description": "if the FA contains modification other than initial C=C bond",
+          "description": "if the Residue contains modification other than initial C=C bond",
           "type": "boolean",
           "enum": [
             true,

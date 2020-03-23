@@ -9,27 +9,24 @@
 import json
 import os
 
-from jsonschema import Draft7Validator, RefResolver, validate
+from jsonschema import Draft7Validator, RefResolver
 
-from ..controllers.general_functions import check_json, get_abs_path
+from lynx.utils.toolbox import check_json
 
 from .defaults import (
     api_version,
-    lynx_schema_cfg,
     mod_level_lst,
-    db_level_lst,
-    mod_db_level_lst,
     hg_schema,
     hg_schema_path,
     fa_schema,
     fa_schema_path,
 )
-from .log import logger
-from .modifications import Modifications
-from .patterns import fa_rgx
+from lynx.utils.log import logger
+from lynx.models.modifications import Modifications
+from lynx.models.patterns import fa_rgx
 
 
-class HeadGroup(object):
+class LipidClass(object):
     def __init__(self, hg_code: str):
         self.hg = hg_code
         self.schema = "lynx_hg"
@@ -192,7 +189,7 @@ if __name__ == "__main__":
     ]
 
     for hg in hg_lst:
-        hg_obj = HeadGroup(hg_code=hg)
+        hg_obj = LipidClass(hg_code=hg)
         logger.info(hg_obj.to_json())
 
     mod_code_lst = [

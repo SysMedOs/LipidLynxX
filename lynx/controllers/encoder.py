@@ -14,8 +14,8 @@ from natsort import natsorted
 
 from ..models.defaults import lipid_class_alias_info, cv_order_list, cv_alias_info
 
-from ..models.log import logger
-from ..controllers.general_functions import seg_to_str
+from lynx.utils.log import logger
+from lynx.utils.toolbox import seg_to_str
 from ..controllers.parser import parse, parse_mod
 
 

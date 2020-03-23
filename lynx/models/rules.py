@@ -10,8 +10,8 @@ from typing import Union
 
 import regex as re
 
-from lynx.models.log import logger
-from lynx.controllers.general_functions import js_reader
+from lynx.utils.log import logger
+from lynx.utils.file_readers import get_json
 
 
 class InputRules(object):
@@ -23,7 +23,7 @@ class InputRules(object):
         if isinstance(rules, dict):
             pass
         elif isinstance(rules, str):
-            rules = js_reader(rules)
+            rules = get_json(rules)
         else:
             raise TypeError
         self.raw_rules = rules
@@ -258,8 +258,20 @@ class InputRules(object):
             pass
         valid_lst = []
         valid_dct = {}
-        for c in self.supported_classes:
-            temp_c_dct = self.raw_rules.get("LIPID_CLASSES", {}).get(c, {})
+        for c in self.supported_keys:
+
+            if c in self.supported_mods:
+                temp_c_dct = self.raw_rules.get("MODS", {}).get(c, {})
+                seg_typ = "MODS"
+            elif c in self.supported_residues:
+                temp_c_dct = self.raw_rules.get("RESIDUES", {}).get(c, {})
+                seg_typ = "RESIDUES"
+            elif c in self.supported_classes:
+                temp_c_dct = self.raw_rules.get("LIPID_CLASSES", {}).get(c, {})
+                seg_typ = "LIPID_CLASSES"
+            else:
+                temp_c_dct = self.raw_rules.get("LIPID_CLASSES", {}).get(c, {})
+                seg_typ = "LIPID_CLASSES"
             pattern_dct = self.rules.get(c, "")
             if isinstance(pattern_dct, dict):
                 pattern_str = pattern_dct.get("PATTERN", None)
@@ -267,9 +279,7 @@ class InputRules(object):
                 pattern_str = None
             if pattern_str and temp_c_dct:
 
-                max_res_count = self.raw_rules["LIPID_CLASSES"][c].get(
-                    "MAX_RESIDUES", 1
-                )
+                max_res_count = self.raw_rules[seg_typ][c].get("MAX_RESIDUES", 1)
                 logger.debug(f"Validating {c} pattern: {pattern_str}")
                 c_pattern = re.compile(pattern_str)
                 test_lst = temp_c_dct.get("EXAMPLE", [])
@@ -285,7 +295,7 @@ class InputRules(object):
                     c_match = c_pattern.match(test_str)
                     if c_match:
                         c_matched_res_dct = c_match.groupdict()
-                        logger.debug(f"Check: {test_str}")
+                        print(f"Check: {test_str}")
                         logger.debug(c_matched_res_dct)
                         if "SUM_RESIDUES" in c_matched_res_dct:
                             c_sum_res = c_matched_res_dct["SUM_RESIDUES"]
@@ -340,7 +350,7 @@ class OutputRules(object):
         if isinstance(rules, dict):
             pass
         elif isinstance(rules, str):
-            rules = js_reader(rules)
+            rules = get_json(rules)
         else:
             raise TypeError
         self.raw_rules = rules

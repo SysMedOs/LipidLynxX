@@ -12,7 +12,7 @@ import json
 
 import pandas as pd
 
-from ..models.log import logger
+from lynx.utils.log import logger
 from ..controllers.params_loader import (
     load_cfg_info,
     build_parser,
@@ -20,7 +20,7 @@ from ..controllers.params_loader import (
     build_input_rules,
     build_output_rules,
 )
-from ..controllers.general_functions import get_abs_path
+from lynx.utils.file_readers import get_abs_path
 
 # Define default values across LipidLynx
 
@@ -75,18 +75,18 @@ mod_db_level_lst = [
 
 lynx_schema_cfg = {
     "lynx_mod": r"lynx/models/schema/lynx_mod.schema.json",
-    "lynx_fa": r"lynx/models/schema/lynx_fa.schema.json",
-    "lynx_hg": r"lynx/models/schema/lynx_hg.schema.json",
+    "lynx_residue": r"lynx/models/schema/lynx_residue.schema.json",
+    "lynx_lipidclass": r"lynx/models/schema/lynx_lipidclass.schema.json",
     "lynx_core": r"lynx/models/schema/lynx_core.schema.json",
 }
 
 core_schema_path = get_abs_path(lynx_schema_cfg["lynx_core"])
 with open(core_schema_path, "r") as core_obj:
     core_schema = json.load(core_obj)
-hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_hg"])
+hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_lipidclass"])
 with open(hg_schema_path, "r") as hg_json_obj:
     hg_schema = json.load(hg_json_obj)
-fa_schema_path = get_abs_path(lynx_schema_cfg["lynx_fa"])
+fa_schema_path = get_abs_path(lynx_schema_cfg["lynx_residue"])
 with open(fa_schema_path, "r") as fa_json_obj:
     fa_schema = json.load(fa_json_obj)
 mod_schema_path = get_abs_path(lynx_schema_cfg["lynx_mod"])

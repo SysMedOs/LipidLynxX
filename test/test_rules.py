@@ -13,14 +13,14 @@ import pytest
 lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lipidlynx_Path + "/../")
 
-from lynx.models.log import logger
+from lynx.utils.log import logger
 from lynx.models.rules import InputRules, OutputRules
-from lynx.controllers.general_functions import get_abs_path, js_reader
+from lynx.utils.file_readers import get_abs_path
 
 test_input_files = [
-    r"../lynx/configurations/rules/input/LipidLynxX.json",
-    r"../lynx/configurations/rules/input/MS-DIAL.json",
-    r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json",
+    # r"../lynx/configurations/rules/input/LipidLynxX.json",
+    # r"../lynx/configurations/rules/input/MS-DIAL.json",
+    r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json"
 ]
 
 test_output_files = [r"../lynx/configurations/rules/output/LipidLynxX.json"]
@@ -35,7 +35,7 @@ def test_input_rule(test_file):
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path(r"../lynx/configurations/rules/input/LipidLynxX.json")
+        in_file = get_abs_path(r"../lynx/configurations/rules/LipidLynxX.json")
     logger.info(f"Test file {in_file}")
     rule = InputRules(test_file)
     logger.debug(f"Got infile {in_file}")

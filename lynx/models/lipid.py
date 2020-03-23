@@ -14,18 +14,17 @@ import re
 from jsonschema import Draft7Validator
 from natsort import natsorted
 
-from ..controllers.general_functions import check_json, get_abs_path
+from lynx.utils.file_readers import get_abs_path
+from lynx.utils.toolbox import check_json
 from ..models.defaults import (
     api_version,
     lynx_schema_cfg,
     lipid_level_lst,
-    mod_level_lst,
     mod_db_level_lst,
 )
-from .log import logger
-from .modifications import Modifications
+from lynx.utils.log import logger
 from .patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
-from .residues import HeadGroup, FattyAcid
+from .residues import LipidClass, FattyAcid
 
 
 class Lipid(object):
@@ -147,7 +146,7 @@ class Lipid(object):
                     max_unmod_level = max(max_unmod_level, float(res_level))
             else:
                 try:
-                    res_obj = HeadGroup(res["id"])
+                    res_obj = LipidClass(res["id"])
                     res_type = "HG"
                 except Exception as err:
                     logger.error(err)
@@ -231,7 +230,7 @@ class Lipid(object):
                     bulk_level = res_level
                 fa_info_lst.append(res_obj.to_segments(mod_level=bulk_level))
             elif res_info.get("type", None) == "HG":
-                res_obj = HeadGroup(res_info.get("id", None))
+                res_obj = LipidClass(res_info.get("id", None))
                 other_pre_dct["HG"] = res_obj.id
         bulk_linked_ids = {}
         if lv_lst["lynx_lv_lst"][0].startswith("B"):
