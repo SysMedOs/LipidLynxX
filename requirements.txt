@@ -5,7 +5,6 @@ openpyxl
 pandas>=1.0.3
 pytest
 requests
-rdkit
 xlrd
 xlwt
 werkzeug
