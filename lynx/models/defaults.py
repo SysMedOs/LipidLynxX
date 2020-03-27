@@ -13,7 +13,7 @@ import json
 import pandas as pd
 
 from lynx.utils.log import logger
-from ..controllers.params_loader import (
+from lynx.controllers.params_loader import (
     load_cfg_info,
     build_parser,
     build_mod_parser,
@@ -26,25 +26,26 @@ from lynx.utils.file_readers import get_abs_path
 
 api_version = "0.1"
 
-# load default values from files defined in config.ini
+# __load__ default values from files defined in config.ini
 # following parameters generated will be used as global values
-with open(get_abs_path(r"lynx/configurations/CV.json"), "r") as cv_js:
-    cv_alias_json = json.load(cv_js)
-
-cv_order_list = []
-cv_alias_info = {}
-cv_elements_info = {}
-
-for _mod in cv_alias_json:
-    cv_alias_info[_mod["cv"]] = _mod["alias"]
-    cv_order_list.append(_mod["cv"])
-    cv_elements_info[_mod["cv"]] = _mod["elements"]
 
 default_cfg_path = "/lynx/config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
 default_input_rules = build_input_rules(cfg_info_dct["input_rules"])
 default_output_rules = build_output_rules(cfg_info_dct["output_rules"])
+
+default_cv_file = get_abs_path(cfg_info_dct["cv"])
+with open(default_cv_file, "r") as cv_js:
+    cv_alias_json = json.load(cv_js)
+cv_order_list = []
+cv_alias_info = {}
+cv_elements_info = {}
+for _mod in cv_alias_json:
+    cv_alias_info[_mod["cv"]] = _mod["alias"]
+    cv_order_list.append(_mod["cv"])
+    cv_elements_info[_mod["cv"]] = _mod["elements"]
+
 cv_rgx_dct = build_mod_parser(cv_alias_info)
 mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
 abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])

@@ -11,13 +11,15 @@ from typing import Dict, Union
 from natsort import natsorted
 import regex as re
 
-from lynx.utils.log import logger
+from lynx.controllers.formatter import Formatter
 from lynx.models.defaults import default_input_rules
+from lynx.utils.log import logger
 
 
 class Extractor(object):
-    def __init__(self, rules):
+    def __init__(self, rules: dict = default_input_rules):
         self.rules = rules
+        self.formatter = Formatter()
 
     def check_segments(self, lipid_name: str, rule_class: str, rule: str):
         c = rule_class
@@ -90,14 +92,10 @@ class Extractor(object):
             for res in res_lst:
                 # todo: Add rgx here
                 matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
-                matched_dct = matched_info_dct
-                mod_str = matched_info_dct.get("SUM_MODS", None)
-                # if mod_str:
-                #     mod_info = decode_mod(mod_str)
-                #     logger.info(f"{mod_str}, {mod_info}")
+                matched_dct = self.formatter.format_residue(matched_info_dct)
                 logger.error(matched_dct)
                 out_res_lst.append(res)
-                out_res_dct[res] = matched_info_dct
+                out_res_dct[res] = matched_dct
 
         if lv_min == "D":
             no_res_lst = []
@@ -184,17 +182,12 @@ class Extractor(object):
         return extracted_info_dct
 
 
-class Formatter(object):
-    def __init__(self, cv):
-        pass
-
-
 if __name__ == "__main__":
 
     # t_in = "GM3(d18:1/18:2(9Z,12Z))"
-    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH))"
+    t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH))"
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
-    t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
+    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
     extractor = Extractor(rules=default_input_rules)
     t_out = extractor.extract(t_in)

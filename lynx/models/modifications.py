@@ -275,7 +275,7 @@ class Modifications(object):
                 }
         else:
             raise ValueError(
-                f"Cannot format modification code to level {self.mod_level} "
+                f"Cannot format_mod_type modification code to level {self.mod_level} "
                 f"from input: {self.mod_code}"
             )
 

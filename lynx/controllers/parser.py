@@ -63,7 +63,7 @@ def rule_parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
             else:
                 pass
         else:
-            logger.error(f"Cannot load rules correctly: {rules}")
+            logger.error(f"Cannot __load__ rules correctly: {rules}")
 
     if not parsed_info_dct:
         logger.error(f"Failed to decode Lipid: {lipid_name}")

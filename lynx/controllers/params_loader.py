@@ -46,7 +46,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         user_cfg = "default"
     else:
         user_cfg = ""
-        raise ValueError(f"Cannot load settings from file {config_path}")
+        raise ValueError(f"Cannot __load__ settings from file {config_path}")
 
     if len(user_cfg) > 2:
         options = config.options(user_cfg)
