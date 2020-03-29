@@ -162,7 +162,7 @@ class Extractor(object):
                     matched_info_dct[r] = {
                         "LMSD_CLASSES": c_lmsd_classes,
                         "SEGMENTS": matched_dct,
-                        "Residues": residues_dct,
+                        "RESIDUES": residues_dct,
                         # "RESIDUES_SEPARATOR": res_sep,
                         # "SEPARATOR_LEVELS": sep_levels,
                     }
@@ -184,11 +184,16 @@ class Extractor(object):
 
 if __name__ == "__main__":
 
+    # LIPID MAPS
     # t_in = "GM3(d18:1/18:2(9Z,12Z))"
-    t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH))"
+    # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH))"
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/20:4(5,8,11,14)(7R-OH,12S-OH))"
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
+
+    # MS-DIAL
+    t_in = "Hex3Cer 18:1;2O/26:0;(3OH)"
+
     extractor = Extractor(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 

@@ -12,15 +12,20 @@ from typing import List
 from natsort import natsorted
 
 from lynx.utils.log import logger
-from lynx.models.defaults import default_input_rules, default_output_rules
+from lynx.models.defaults import default_output_rules, default_input_rules
 from lynx.controllers.encoder import encode_sub_residues
 from lynx.controllers.parser import rule_parse, parse
+from lynx.controllers.extractor import Extractor
 
 
 class Generator(object):
-    def __init__(self, export_rules: dict, rule: str):
-        self.output_rules = export_rules.get(rule, None)
+    def __init__(self, output_rules: dict, rule: str, input_rules: dict = default_input_rules):
+        self.output_rules = output_rules.get(rule, None)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
+        self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
+        self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
+        self.residue_rules = self.output_rules.get("RESIDUES", {}).get("RESIDUE", {})
+        self.extractor = Extractor(rules=input_rules)
 
     @staticmethod
     def get_best_candidate(candidates: List[str]) -> str:
@@ -37,62 +42,6 @@ class Generator(object):
         else:
             logger.warning("Failed to generate abbreviation for this lipid...")
         return best_candidate
-
-    def check_residues(
-        self,
-        residues: str,
-        lmsd_class: str,
-        separator_levels: dict = None,
-        separator: str = "-|/",
-    ) -> str:
-
-        if separator_levels is None:
-            separator_levels = {"B": "", "D": "_", "S": "/"}
-
-        res_lst = re.split(separator, residues)
-        res_sep_lst = re.findall(separator, residues)
-        if not res_sep_lst:
-            res_sep_lst = [""]
-        res_sep_levels = []
-        for res_sep in res_sep_lst:
-            for lv in separator_levels:
-                if res_sep == separator_levels[lv]:
-                    res_sep_levels.append(lv)
-
-        lv_min = natsorted(res_sep_levels)[0]
-
-        lmsd_rules = self.output_rules.get("LMSD_CLASSES", {}).get(lmsd_class, {})
-        c_max_res_count = lmsd_rules.get("MAX_RESIDUES", None)
-        sep_rules = self.output_rules.get("SEPARATORS")
-        out_sep = sep_rules.get("SEPARATOR_LEVELS", {}).get(lv_min, "")
-
-        out_res_lst = []
-        res_true_lst = []
-        if "0:0" in res_sep_lst:
-            res_true_lst = [res for res in res_lst if res != "0:0"]
-        if len(res_lst) <= c_max_res_count or len(res_true_lst) <= c_max_res_count:
-            for res in res_lst:
-                res_info = parse(res)
-                res_lynx_code = encode_sub_residues(res)
-                logger.info(res_lynx_code)
-                logger.info(res_info)
-                out_res_lst.append(res_lynx_code)
-
-        if lv_min == "D":
-            o_lst = []
-            p_lst = []
-            r_lst = []
-            for r in out_res_lst:
-                if r.startswith("O-"):
-                    o_lst.append(r)
-                elif r.startswith("P-"):
-                    p_lst.append(r)
-                else:
-                    r_lst.append(r)
-
-            out_res_lst = natsorted(o_lst) + natsorted(p_lst) + natsorted(r_lst)
-
-        return out_sep.join(out_res_lst)
 
     def check_rest(self, segment_text: str, segment_name: str, lmsd_class: str):
         patterns_dct = self.class_rules[lmsd_class].get(segment_name)
@@ -117,43 +66,22 @@ class Generator(object):
 
         return self.get_best_candidate(out_seg_lst)
 
+    def compile_residues(self, residues: dict):
+        residues_order = residues.get("RESIDUE_ORDER", [])
+        residues_separator = residues.get("RESIDUE_SEPARATOR", [])
+        residues_info = residues.get("RESIDUE_INFO", [])
+        sum_residues_lst = []
+        sum_residues_str = ''
+        for res_info in residues_info:
+            pass
+
     def check_segments(self, parsed_info: dict, input_rule: str):
         segments_dct = {}
         lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
         segments = parsed_info["SEGMENTS"]
-        res_sep_str = parsed_info["RESIDUES_SEPARATOR"]
-        res_sep_levels = parsed_info["SEPARATOR_LEVELS"]
-        c_str = segments.get("CLASS", "")
         for c in lmsd_classes:
             if c in self.class_rules:
-                c_dct = segments_dct.get(c, {})
-                lc_class_str = self.check_rest(segments.get("CLASS", ""), "CLASS", c)
-                if lc_class_str:
-                    out_sum_res_str = self.check_residues(
-                        segments.get("SUM_RESIDUES", ""),
-                        lmsd_class=c,
-                        separator_levels=res_sep_levels,
-                        separator=res_sep_str,
-                    )
-                    c_dct[input_rule] = {
-                        "LMSD_CLASS": c,
-                        "SEGMENTS": {
-                            "PREFIX": self.check_rest(
-                                segments.get("PREFIX", ""), "PREFIX", c
-                            ),
-                            "CLASS": lc_class_str,
-                            "SUFFIX": self.check_rest(
-                                segments.get("SUFFIX", ""), "SUFFIX", c
-                            ),
-                            "BRACKET_LEFT": segments.get("BRACKET_LEFT", "("),
-                            "SUM_RESIDUES": out_sum_res_str,
-                            "BRACKET_RIGHT": segments.get("BRACKET_RIGHT", ")"),
-                        },
-                    }
-                    segments_dct[c] = c_dct
-                    logger.info(
-                        f'Assign lipid class {lc_class_str} to {segments.get("CLASS", "")} from class {c}'
-                    )
+                pass
 
         return segments_dct
 
@@ -204,7 +132,7 @@ class Generator(object):
 
     def export(self, lipid_name: str, import_rules: dict = default_input_rules):
 
-        parsed_info = rule_parse(lipid_name, rules=import_rules)
+        parsed_info = self.extractor.extract(lipid_name)
         export_info = []
         for p in parsed_info:
             p_info = parsed_info[p]
@@ -223,8 +151,8 @@ class Generator(object):
 
 if __name__ == "__main__":
 
-    t_in = "GM3(d18:1/18:2(9Z,12Z))"
-    lynx_gen = Generator(export_rules=default_output_rules, rule="LipidLynxX@20200214")
+    t_in = "GM3(d18:1/18:2(9Z,11Z)(12OH))"
+    lynx_gen = Generator(output_rules=default_output_rules, rule="LipidLynxX@20200214")
     t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
     logger.warning(f"Input: {t_in} -> Output: {t_out}")
 

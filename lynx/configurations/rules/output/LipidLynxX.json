@@ -5,16 +5,105 @@
   ],
   "NOMENCLATURE": "LipidLynxX",
   "SEPARATORS": {
-    "BRACKET_LEFT": "(",
-    "BRACKET_RIGHT": ")",
+    "RUOUND_BRACKET_LEFT": "(",
+    "RUOUND_BRACKET_RIGHT": ")",
+    "ANGLE_BRACKET_LEFT": "<",
+    "ANGLE_BRACKET_RIGHT": ">",
+    "CURLY_BRACKET_LEFT": "{",
+    "CURLY_BRACKET_RIGHT": "}",
+    "SQUARE_BRACKET_LEFT": "{",
+    "SQUARE_BRACKET_RIGHT": "}",
     "SEPARATOR_LEVELS": {
       "B": "",
       "D": "_",
       "S": "/"
     }
   },
-  "EXCEPTIONS": {
-    "PREFIX": "TEST"
+  "MODS": {
+    "MOD": {
+      "ORDER": [
+        "MOD_COUNT",
+        "MOD_TYPE",
+        "MOD_SITE",
+        "MOD_SITE_INFO"
+      ],
+      "OPTIONAL": [
+        "MOD_COUNT",
+        "MOD_TYPE",
+        "MOD_SITE",
+        "MOD_SITE_INFO"
+      ],
+      "MOD_COUNT": "\\d?\\d?",
+      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
+      "MOD_SITE_INFO": "([EZRS])?",
+      "EXAMPLES": [
+        "9",
+        "9Z",
+        "9OH",
+        "9S-OH"
+      ]
+    },
+    "SUM_MODS": {
+      "ORDER": [
+        "BRACKET_LEFT",
+        "MOD",
+        "BRACKET_RIGHT"
+      ],
+      "REPEAT": {
+        "MOD": [
+          1,
+          10
+        ]
+      },
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "MOD": "$.MODS.MOD.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    }
+  },
+  "RESIDUES": {
+    "RESIDUE": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "NUM_C",
+        "DB_SEPARATOR",
+        "DB",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "DB",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "REPEAT": {
+        "SUM_MODS": [
+          0,
+          10
+        ]
+      },
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "LINK": "[OP]-|C|[mdt]|h",
+      "NUM_C": "[0-9]{1,2}",
+      "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
+      "DB": "[1,2]?[0-9]",
+      "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
+      "NUM_O": ";[1-3]?O?",
+      "SUM_MODS": "$.MODS.SUM_MODS.0"
+    },
+    "EXCEPTIONS": {
+      "PREFIX": "TEST"
+    }
   },
   "LMSD_CLASSES": {
     "FA01": {
@@ -426,9 +515,9 @@
       "CLASS": {
         "OUTPUT": "CL",
         "INPUT": [
-        "CL",
-        "MLCL",
-        "DLCL"
+          "CL",
+          "MLCL",
+          "DLCL"
         ]
       }
     },
@@ -441,8 +530,8 @@
       "CLASS": {
         "OUTPUT": "SPB",
         "INPUT": [
-        "SPB",
-        "[Ss]phingosine"
+          "SPB",
+          "[Ss]phingosine"
         ]
       }
     },
@@ -466,7 +555,7 @@
       "CLASS": {
         "OUTPUT": "Cer",
         "INPUT": [
-        "Cer"
+          "Cer"
         ]
       },
       "SUFFIX": {
@@ -496,7 +585,7 @@
       "CLASS": {
         "OUTPUT": "SM",
         "INPUT": [
-        "SM"
+          "SM"
         ]
       }
     },
@@ -523,7 +612,7 @@
       "CLASS": {
         "OUTPUT": "Cer",
         "INPUT": [
-        "Cer"
+          "Cer"
         ]
       }
     },
@@ -546,7 +635,7 @@
       "CLASS": {
         "OUTPUT": "EXCEPTIONS",
         "INPUT": [
-        "GM[1-4]?"
+          "GM[1-4]?"
         ]
       }
     },
@@ -572,8 +661,8 @@
       "CLASS": {
         "OUTPUT": "ST",
         "INPUT": [
-        "CE",
-        "ST"
+          "CE",
+          "ST"
         ]
       }
     }

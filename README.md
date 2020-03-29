@@ -16,7 +16,7 @@ in the epilipidome.
 -   Unified position specific annotations
 -   Cross level match based on shared levels
 -   Extract key information from LipidLynxX ID
--   Strictly controlled format_mod_type using JSON schema
+-   Strictly controlled format using JSON schema
 -   Easy to use Graphic User Interface
 -   API access for professional users
 
@@ -34,7 +34,7 @@ in the epilipidome.
     
 -   **LipidLynxX Parser**
 
-    -   Decode LipidLynxX ID and export information into JSON format_mod_type
+    -   Decode LipidLynxX ID and export information into JSON format
 
 -   **LipidLynxX Generator**
 

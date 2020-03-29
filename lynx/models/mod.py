@@ -7,14 +7,13 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import re
+import os
 from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 
-from lynx.utils.file_readers import get_abs_path
-from lynx.utils.toolbox import check_json
 
+from lynx.models.cv import CV
 from lynx.models.defaults import (
     api_version,
     cv_elements_info,
@@ -23,43 +22,25 @@ from lynx.models.defaults import (
     core_schema,
     core_schema_path,
     mod_db_level_lst,
+    default_cv_file
 )
+from lynx.utils.file_readers import get_abs_path
 from lynx.utils.log import logger
-from lynx.models.patterns import (
-    mod_rgx,
-    mod_db_rgx,
-    mod_lv0_delta_rgx,
-    mod_lv1_elem_rgx,
-    mod_lv2_types_rgx,
-    mod_lv3_position_rgx,
-    mod_lv4_position_rgx,
-)
+from lynx.utils.toolbox import check_json
 
 
-class DoubleBonds(object):
-    """
-    Place holder for individual DB class
-    """
+class Mods(object):
 
-    def __init__(self):
-        pass
-
-
-class Rings(object):
-    """
-    Place holder for individual DB class
-    """
-
-    def __init__(self):
-        pass
-
-
-class Modifications(object):
-    def __init__(self, mod_code: str, db: int = 0):
-
-        self.mod_code = mod_code.strip("<>")
+    def __init__(self, mod_info: dict, db: int = 0, schema="lynx_mod", cv_file: str = default_cv_file):
+        if os.path.isfile(cv_file):
+            pass
+        else:
+            cv_file = default_cv_file
+        self.cv = CV(cv_file).info
+        self.mod_info = mod_info
         self.schema = "lynx_mod"
         self.type = "Modification"
+        self.mod_level = self.mod_info.get("MOD_LEVEL", 0)
         with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
@@ -71,146 +52,16 @@ class Modifications(object):
         self.db_count = db
 
         self.mod_info = self.__post_init__()
-        self.mod_level = self.__identify_level__()
+
         self.sum_mod_info = self.get_sum_info()
 
         self.mod_id = self.sum_mod_info.get("id", "")
         self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
         self.mod_list = self.sum_mod_info.get("info", {})
 
-        logger.info(
-            f"Level {self.mod_level:3s} modification created from: {self.mod_code}"
-        )
-
-    def __parse_db__(self, db_str: str) -> dict:
-
-        if mod_db_rgx.match(db_str):
-            db_position_lst = db_str.strip("{}").split(",")
-            if len(db_position_lst) != self.db_count:
-                self.db_count = len(db_position_lst)
-
-            db_dct = {"cv": "DB", "count": self.db_count}
-            db_positions_info = self.get_positions(db_position_lst)
-            if db_positions_info:
-                db_dct.update(db_positions_info)
-            return db_dct
-        else:
-            raise ValueError(f"Cannot parse DB info from string: {db_str}")
-
-    def __parse_mod__(self, mod_str: str) -> dict:
-        if mod_lv0_delta_rgx.match(self.mod_code):
-            lv0_seg_lst = mod_lv0_delta_rgx.match(self.mod_code).groups()
-            lv0_seg_lst = [s.strip(",") for s in lv0_seg_lst]
-            delta_i = 0
-            for s in lv0_seg_lst:
-                delta_i += int(s)
-            mod_dct = {"cv": "Delta", "count": delta_i}
-            return mod_dct
-        else:
-            mod_match = mod_lv3_position_rgx.match(mod_str)
-            if mod_match:
-                mod_match_dct = mod_match.groupdict()
-                cv = mod_match_dct["cv"]
-                count = int(
-                    mod_match_dct.get("count") or 1
-                )  # count can be '', set to 1 by default
-                positions = mod_match_dct.get("positions", "")
-
-                mod_dct = {"cv": cv, "count": count}
-
-                if positions:
-                    positions_info = self.get_positions(positions)
-                    mod_dct.update(positions_info)
-                return mod_dct
-            else:
-                if "+" in mod_str or "-" in mod_str:
-                    mod_match = mod_lv1_elem_rgx.match(mod_str)
-                else:
-                    mod_match = mod_lv2_types_rgx.match(mod_str)
-                if mod_match:
-                    mod_match_dct = mod_match.groupdict()
-                    cv = mod_match_dct["cv"]
-                    count = int(mod_match_dct.get("count") or 1)
-                    mod_dct = {
-                        "cv": cv,
-                        "count": count,
-                        # "positions": [],
-                        # "positions_type": [],
-                    }
-                    return mod_dct
-                else:
-                    raise ValueError(
-                        f"Cannot parse modification info from string: {mod_str}"
-                    )
-
-    def __identify_level__(self) -> str:
-        max_level = -1.0
-        mod_level = -1
-        if mod_lv0_delta_rgx.match(self.mod_code):
-            mod_level = 1
-        if mod_lv1_elem_rgx.match(self.mod_code):
-            mod_level = 2
-        if mod_lv2_types_rgx.match(self.mod_code):
-            mod_level = 3
-        for mod_seg in self.mod_info:
-            if mod_seg.get("cv") != "DB":
-                mod_position_info = mod_seg.get("positions_info", None)
-                if mod_seg.get("positions", None):
-                    if mod_level <= 4:
-                        mod_level = 4
-                if mod_position_info:
-                    for p_info_str in mod_position_info:
-                        if re.match(r",?\d{1,2}[RS]", p_info_str):
-                            if mod_level < 5:
-                                mod_level = 5
-        if self.mod_info:
-            if self.mod_info[0]["cv"] == "DB":
-                if len(self.mod_info) == 1:
-                    max_level = 0
-                    mod_level = 0
-                db_positions = self.mod_info[0].get("positions", None)
-                db_positions_info = self.mod_info[0].get("positions_info", None)
-                if db_positions:
-                    max_level = max(max_level, mod_level + 0.1)
-                if db_positions_info:
-                    for db_info in db_positions_info:
-                        if "E" in db_info or "Z" in db_info:
-                            max_level = max(max_level, mod_level + 0.2)
-                            break
-
-        mod_level = f"{max(max_level, mod_level):.1f}"
-        if mod_level.endswith(".0"):
-            mod_level = mod_level[0]
-
-        if float(mod_level) > 0:
-            return mod_level
-        else:
-            raise ValueError(
-                f"Cannot parse the level of modification from string: {self.mod_code}"
-            )
-
-    def __post_init__(self):
-        mod_info = []
-        mod_code_match = mod_rgx.findall(self.mod_code)
-        if mod_code_match:
-            mod_lst = [
-                m_seg[0].strip(",")
-                for m_seg in mod_code_match
-                if m_seg and m_seg[0].strip(",")
-            ]
-            if mod_lst:
-                if mod_lst[0].startswith("{"):
-                    db_dct = self.__parse_db__(mod_lst[0])
-                    if db_dct:
-                        mod_info.append(db_dct)
-                    mod_lst = mod_lst[1:]
-
-                for mod in mod_lst:
-                    mod_dct = self.__parse_mod__(mod)
-                    if mod_dct:
-                        mod_info.append(mod_dct)
-
-        return mod_info
+        # logger.info(
+        #     f"Level {self.mod_level:3s} modification created from: {self.mod_code}"
+        # )
 
     @staticmethod
     def __add_angle_brackets__(mod_str: str) -> str:
@@ -219,28 +70,12 @@ class Modifications(object):
         else:
             return ""
 
-    @staticmethod
-    def get_positions(positions: Union[str, List[str]]) -> dict:
-        position_info = {"positions": [], "positions_info": []}
-        if isinstance(positions, str):
-            positions = positions.split(",")
-        for position_seg in positions:
-            position_match = mod_lv4_position_rgx.match(position_seg)
-            if position_match:
-                position_match_dct = position_match.groupdict()
-                position = int(position_match_dct["position"])
-                # position_type = position_match_dct.get('position_type', '')
-                position_info["positions"].append(position)
-                position_info["positions_info"].append(position_seg.strip(","))
-
-        return position_info
-
-    def get_elem_info(self):
+    def get_sum_elements_shift(self):
         sum_mod_elem_dct = {}
         for mod in self.mod_info:
-            mod_cv = mod["cv"]
-            mod_count = mod["count"]
-            mod_elem_dct = cv_elements_info[mod_cv]
+            mod_cv = mod["MOD_CV"]
+            mod_count = mod["MOD_COUNT"]
+            mod_elem_dct = mod["MOD_ELEMENTS"]
             if mod_cv != "DB":
                 for elem in mod_elem_dct:
                     if elem in sum_mod_elem_dct:
@@ -289,7 +124,7 @@ class Modifications(object):
         else:
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
 
-    def to_mass_shift(self, angle_brackets: bool = True) -> str:
+    def to_mass_shift(self) -> str:
         if float(self.mod_level) > 1:
             sum_mod_elem_dct = self.get_elem_info()
             delta = 0

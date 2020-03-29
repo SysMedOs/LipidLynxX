@@ -19,7 +19,7 @@ from lynx.utils.file_readers import get_abs_path
 
 test_input_files = [
     # r"../lynx/configurations/rules/input/LipidLynxX.json",
-    # r"../lynx/configurations/rules/input/MS-DIAL.json",
+    r"../lynx/configurations/rules/input/MS-DIAL.json",
     r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json"
 ]
 

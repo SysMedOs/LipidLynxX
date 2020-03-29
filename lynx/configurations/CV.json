@@ -1,6 +1,6 @@
 [
     {"order":0.01,"level":3,"cv":"DB","alias":["DB", "\\d[EZ]?",""],"elements":{"H":-2},"remarks":"C=C bond"},
-    {"order":1.01,"level":1,"cv":"Delta","alias":["Delta", "Mass shift"],"elements":{},"remarks":"mass shift"},
+    {"order":1.01,"level":1,"cv":"Delta","alias":["Delta", "Mass shift","[+-]\\d+"],"elements":{},"remarks":"mass shift"},
     {"order":2.01,"level":2,"cv":"O","alias":["O"],"elements":{"O":1},"remarks":"Undefined oxygen addition"},
     {"order":2.01,"level":2,"cv":"H","alias":["H"],"elements":{"H":1},"remarks":"Undefined hydrogen addition"},
     {"order":3.01,"level":3,"cv":"iPGA","alias":["PGA\\d?", "IsoP-A\\d?"],"elements":{},"remarks":""},
