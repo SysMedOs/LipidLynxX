@@ -11,12 +11,13 @@ from typing import List
 
 from natsort import natsorted
 
-from lynx.utils.log import logger
-from lynx.models.defaults import default_output_rules, default_input_rules
 from lynx.controllers.encoder import encode_sub_residues
 from lynx.controllers.parser import rule_parse, parse
 from lynx.controllers.params_loader import load_output_rule
 from lynx.controllers.extractor import Extractor
+from lynx.models.residues import Residues
+from lynx.models.defaults import default_output_rules, default_input_rules
+from lynx.utils.log import logger
 
 
 class Generator(object):
@@ -68,18 +69,23 @@ class Generator(object):
         return self.get_best_candidate(out_seg_lst)
 
     def compile_residues(self, residues: dict):
-        residues_order = residues.get("RESIDUE_ORDER", [])
-        residues_separator = residues.get("RESIDUE_SEPARATOR", [])
-        residues_info = residues.get("RESIDUE_INFO", [])
-        sum_residues_lst = []
+        residues_order = residues.get("RESIDUES_ORDER", [])
+        residues_separator = residues.get("RESIDUES_SEPARATOR", [])
+        residues_info = residues.get("RESIDUES_INFO", [])
         sum_residues_str = ''
+        sum_residues_lst = []
         for res_info in residues_info:
-            pass
+            res_obj = Residues(residues_info[res_info])
+            sum_residues_lst.append(res_obj.linked_ids)
+        
+        return sum_residues_str
 
     def check_segments(self, parsed_info: dict, input_rule: str):
         segments_dct = {}
         lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
         segments = parsed_info["SEGMENTS"]
+        residues = parsed_info.get("RESIDUES", {})
+        sum_residues_str = self.compile_residues(residues)
         for c in lmsd_classes:
             if c in self.class_rules:
                 pass

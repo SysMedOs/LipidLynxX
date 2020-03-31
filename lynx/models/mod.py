@@ -44,9 +44,9 @@ class Mods(object):
                 f"Cannot find output rule for 'MODS' from nomenclature: {nomenclature}."
             )
         self.mod_info = mod_info.get("MOD_INFO", {})
-        self.schema = "lynx_mod"
+        self.schema = schema
         self.type = "Modification"
-        self.max_mod_level = str(mod_info.get("MOD_LEVEL", 0))
+        self.mod_level = str(mod_info.get("MOD_LEVEL", 0))
         with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
@@ -136,7 +136,7 @@ class Mods(object):
             if cv in ["", "DB"]:
                 db_idx = mod
             for o in self.mod_rule_orders:
-                if o in mod_seg_lst:
+                if o in mod_seg_lst or o in self.mod_separators:
                     if o == "MOD_COUNT":
                         mod_count = mod_dct.get(o, 1)
                         if mod_count > 1 and cv not in ["", "DB"]:
@@ -171,12 +171,8 @@ class Mods(object):
                             mod_seg_str += ",".join(mod_sites_str_lst)
                         else:
                             pass
-                    elif o == "SITE_BRACKET_LEFT":
-                        mod_seg_str += self.mod_separators.get("SITE_BRACKET_LEFT", "{")
-                    elif o == "SITE_BRACKET_RIGHT":
-                        mod_seg_str += self.mod_separators.get(
-                            "SITE_BRACKET_RIGHT", "}"
-                        )
+                    elif o.upper().endswith("_SEPARATOR"):
+                        mod_seg_str += str(self.mod_separators.get(o, ""))
                     else:
                         mod_seg_str += str(mod_dct.get(o, ""))
             mod_str_dct[mod] = mod_seg_str
@@ -223,9 +219,9 @@ class Mods(object):
         mod_str = ""
         if not isinstance(level, str):
             level = str(level)
-        if float(level) > float(self.max_mod_level):
+        if float(level) > float(self.mod_level):
             raise ValueError(
-                f'Cannot convert to higher level than the mod_level "{self.max_mod_level}". Input:{level}'
+                f'Cannot convert to higher level than the mod_level "{self.mod_level}". Input:{level}'
             )
 
         if level.startswith("0"):
@@ -259,11 +255,11 @@ class Mods(object):
 
     def to_all_levels(self, as_list: bool = False) -> Union[Dict[str, str], List[str]]:
         all_levels_dct = {}
-        if self.max_mod_level in mod_db_level_lst:
-            mod_idx = mod_db_level_lst.index(self.max_mod_level)
+        if self.mod_level in mod_db_level_lst:
+            mod_idx = mod_db_level_lst.index(self.mod_level)
             output_levels_lst = mod_db_level_lst[: mod_idx + 1]
         else:
-            raise ValueError(f"Modification level not supported: {self.max_mod_level}")
+            raise ValueError(f"Modification level not supported: {self.mod_level}")
 
         for level in output_levels_lst:
             all_levels_dct[level] = self.to_mod_level(level)
@@ -289,20 +285,22 @@ class Mods(object):
 
     def to_sum_info(self):
         linked_ids = self.to_all_levels()
-        mod_id = linked_ids.get(self.max_mod_level, "")
-        if mod_id:
+        mod_id = linked_ids.get(self.mod_level, "")
+        if float(self.mod_level) > 0 and mod_id:
             sum_mod_info_dct = {
                 "api_version": api_version,
                 "type": self.type,
                 "id": mod_id,
-                "level": self.max_mod_level,
+                "level": self.mod_level,
                 "linked_ids": linked_ids,
                 "linked_levels": natsorted(list(linked_ids.keys())),
                 "info": self.get_mod_info(),
             }
+        elif float(self.mod_level) == 0:
+            sum_mod_info_dct = {}
         else:
             raise ValueError(
-                f"Cannot format_mods modification code to level {self.max_mod_level} "
+                f"Cannot format_mods modification code to level {self.mod_level} "
                 f"from input: {self.mod_info}"
             )
 

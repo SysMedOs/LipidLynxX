@@ -10,20 +10,27 @@ import json
 import os
 
 from jsonschema import Draft7Validator, RefResolver
+import regex as re
 
-from lynx.utils.toolbox import check_json
-
-from .defaults import (
+from lynx.controllers.params_loader import load_output_rule
+from lynx.models.defaults import (
     api_version,
     mod_level_lst,
     hg_schema,
     hg_schema_path,
     fa_schema,
     fa_schema_path,
+    lynx_schema_cfg,
+    core_schema,
+    core_schema_path,
+    mod_db_level_lst,
+    default_output_rules,
 )
-from lynx.utils.log import logger
 from lynx.models.modifications import Modifications
+from lynx.models.mod import Mods
 from lynx.models.patterns import fa_rgx
+from lynx.utils.log import logger
+from lynx.utils.toolbox import check_json
 
 
 class LipidClass(object):
@@ -171,95 +178,165 @@ class FattyAcid(object):
         return out_fa_info_dct
 
 
+class Residues(object):
+    def __init__(
+        self,
+        residue_info: dict,
+        db: int = 0,
+        schema: str = "lynx_fa",
+        output_rules: dict = default_output_rules,
+        nomenclature: str = "LipidLynxX",
+    ):
+        self.export_rule = load_output_rule(output_rules, nomenclature)
+        self.res_rule = self.export_rule.get("RESIDUES", None)
+        self.res_rule_orders = self.res_rule.get("RESIDUE", {}).get("ORDER", [])
+        self.res_separators = self.export_rule.get("SEPARATORS", [])
+        self.res_info = residue_info
+        self.__replace_mdt__()
+
+        self.schema = schema
+        self.type = "FattyAcid"
+        resolver = RefResolver(
+            referrer=fa_schema, base_uri=f"file://{os.path.dirname(fa_schema_path)}/"
+        )
+        self.validator = Draft7Validator(fa_schema, resolver=resolver)
+
+        mod_info = residue_info.get("MOD", {})
+
+        mod_obj = Mods(mod_info)
+        self.sum_mod_info = mod_obj.sum_mod_info
+        self.mod_level = mod_obj.mod_level
+        self.res_level = self.mod_level
+        if float(self.mod_level) > 0:
+            self.is_modified = True
+        else:
+            self.is_modified = False
+
+        if self.is_modified and self.sum_mod_info:
+            self.linked_levels = self.sum_mod_info.get("linked_levels", ["0"])
+        else:
+            self.linked_levels = ["0"]
+
+        self.linked_ids = self.__post_init__()
+
+        logger.info(self.res_level)
+
+        # self.fa_info_dct = self.__post_init__()
+        # self.fa_info_dct["id"] = self.lipid_code
+        # self.info = self.fa_info_dct["info"]
+        #
+        # self.mod_info = self.fa_info_dct.get("mod_obj", None)
+        # if db and db < self.fa_info_dct["info"]["db"]:
+        #     self.db_count = db
+        # else:
+        #     self.db_count = self.fa_info_dct["info"]["db"]
+        # self.id = self.fa_info_dct.get("id", "")
+        #
+        # self.fa_linked_ids = self.fa_info_dct.get("linked_ids", {})
+        # logger.info(
+        #     f"Level {self.res_level:4s} FattyAcid created from: {self.lipid_code}"
+        # )
+
+    def __replace_mdt__(self):
+        link = self.res_info.get("LINK", "")
+        if link.lower() == "m":
+            self.res_info["LINK"] = ""
+            self.res_info["NUM_O"] = 1 + self.res_info.get("NUM_O", 0)
+        elif link.lower() == "d":
+            self.res_info["LINK"] = ""
+            self.res_info["NUM_O"] = 2 + self.res_info.get("NUM_O", 0)
+        elif link.lower() == "t":
+            self.res_info["LINK"] = ""
+            self.res_info["NUM_O"] = 3 + self.res_info.get("NUM_O", 0)
+        else:
+            pass
+
+    def __post_init__(self):
+        res_str_dct = {}
+        num_o = self.res_info.get("NUM_O", 0)
+        for lv in self.linked_levels:
+            res_str = ""
+            for o in self.res_rule_orders:
+                if o in self.res_info or o in self.res_separators or o in ["SUM_MODS"]:
+                    if o in ["SUM_MODS", "MODS", "MOD"]:
+                        res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
+                    elif o == "NUM_O":
+                        if num_o > 0:
+                            res_str += str(num_o)
+                        else:
+                            pass
+                    elif o.upper().endswith("_SEPARATOR"):
+                        res_str += self.res_separators.get(o, "")
+                        if num_o == 0:
+                            res_str = res_str.strip(
+                                self.res_separators.get("O_SEPARATOR", "")
+                            )
+                    elif re.search("BRACKET", o.upper()):
+                        res_str += self.res_separators.get(o, "")
+                    else:
+                        res_str += str(self.res_info.get(o, ""))
+            na_brackets_lst = [r"\<\>", r"\{\}", r"\[\]", r"\(\)"]
+            for b in na_brackets_lst:
+                res_str = re.sub(b, "", res_str)
+            res_str_dct[lv] = res_str.strip(";")
+
+        return res_str_dct
+
+    def to_json(self):
+        fa_lite_info_dct = self.fa_info_dct
+        fa_lite_info_dct.pop("mod_obj", None)
+        fa_json_str = json.dumps(fa_lite_info_dct)
+        if check_json(self.validator, json.loads(fa_json_str)):
+            return fa_json_str
+        else:
+            raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
+
+
 if __name__ == "__main__":
 
-    hg_lst = [
-        "PA",
-        "PC",
-        "PE",
-        "PG",
-        "PI",
-        "PS",
-        "SM",
-        "SPB",
-        "Cer",
-        "PIP",
-        "PIP2",
-        "PIP3",
-    ]
-
-    for hg in hg_lst:
-        hg_obj = LipidClass(hg_code=hg)
-        logger.info(hg_obj.to_json())
-
-    mod_code_lst = [
-        r"16:0",
-        r"18:1",
-        r"18:1<{9Z}>",
-        r"20:4<-18>",
-        r"20:4<+46>",
-        r"20:4<+3O,-2H>",
-        r"20:4<2OH,Ke>",
-        r"20:4<2OH{8,11},Ke{14}>",
-        r"20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"20:4<2OH{8R,11S},Ke{14}>",
-        r"20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-        r"FA16:0",
-        r"FA18:1",
-        r"FA18:1<{9Z}>",
-        r"FA20:4<-18>",
-        r"FA20:4<+46>",
-        r"FA20:4<+3O,-2H>",
-        r"FA20:4<2OH,Ke>",
-        r"FA20:4<2OH{8,11},Ke{14}>",
-        r"FA20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"FA20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"FA20:4<2OH{8R,11S},Ke{14}>",
-        r"FA20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"FA20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-        r"O-16:0",
-        r"O-18:1",
-        r"O-18:1<{9Z}>",
-        r"O-20:4<-18>",
-        r"O-20:4<+46>",
-        r"O-20:4<+3O,-2H>",
-        r"O-20:4<2OH,Ke>",
-        r"O-20:4<2OH{8,11},Ke{14}>",
-        r"O-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"O-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"O-20:4<2OH{8R,11S},Ke{14}>",
-        r"O-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"O-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-        r"P-16:0",
-        r"P-18:1",
-        r"P-18:1<{9Z}>",
-        r"P-20:4<-18>",
-        r"P-20:4<+46>",
-        r"P-20:4<+3O,-2H>",
-        r"P-20:4<2OH,Ke>",
-        r"P-20:4<2OH{8,11},Ke{14}>",
-        r"P-20:4<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"P-20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"P-20:4<2OH{8R,11S},Ke{14}>",
-        r"P-20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"P-20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
-    ]
-
-    for usr_mod_code in mod_code_lst:
-        logger.info(f"Test FA str: {usr_mod_code}")
-
-        fa_obj = FattyAcid(usr_mod_code)
-
-        # logger.debug(f"to all levels: {fa_obj.to_all_levels()}")
-        # logger.debug(
-        #     f"to all levels without <> : {fa_obj.to_all_levels(angle_brackets=False)}"
-        # )
-        #
-        fa_json = fa_obj.to_json()
-        logger.debug(fa_json)
-        fa_ids_dct = json.loads(fa_json).get("linked_ids", "")
-        logger.info("".join([f"\n {s}: {fa_ids_dct[s]}" for s in fa_ids_dct]))
+    usr_res_info = {
+        "d18:1": {
+            "LINK": "d",
+            "MOD": {"MOD_LEVEL": 0, "MOD_INFO": {}},
+            "NUM_C": 18,
+            "NUM_DB": 1,
+            "NUM_O": 0,
+        },
+        "18:2(9Z,11Z)(12OH)": {
+            "LINK": "",
+            "MOD": {
+                "MOD_LEVEL": 4.2,
+                "MOD_INFO": {
+                    "0.01_DB": {
+                        "MOD_CV": "DB",
+                        "MOD_LEVEL": 0.2,
+                        "MOD_COUNT": 2,
+                        "MOD_SITE": ["9", "11"],
+                        "MOD_SITE_INFO": ["Z", "Z"],
+                        "MOD_ORDER": 0.01,
+                        "MOD_ELEMENTS": {"H": -2},
+                        "MOD_MASS_SHIFT": 0,
+                    },
+                    "5.01_OH": {
+                        "MOD_CV": "OH",
+                        "MOD_LEVEL": 4,
+                        "MOD_COUNT": 1,
+                        "MOD_SITE": ["12"],
+                        "MOD_SITE_INFO": [""],
+                        "MOD_ORDER": 5.01,
+                        "MOD_ELEMENTS": {"O": 1},
+                        "MOD_MASS_SHIFT": 16,
+                    },
+                },
+            },
+            "NUM_C": 18,
+            "NUM_DB": 2,
+            "NUM_O": 0,
+        },
+    }
+    for r in usr_res_info:
+        res_obj = Residues(usr_res_info[r])
+        logger.debug(res_obj.linked_ids)
+        # res_json = res_obj.to_json()
 
     logger.info("FINISHED")
