@@ -7,23 +7,18 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import os
 from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 from natsort import natsorted
 
 from lynx.controllers.params_loader import load_output_rule
-from lynx.models.cv import CV
 from lynx.models.defaults import (
     api_version,
-    cv_elements_info,
-    elem_nominal_info,
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
     mod_db_level_lst,
-    default_cv_file,
     default_output_rules,
 )
 from lynx.utils.file_readers import get_abs_path
@@ -61,15 +56,17 @@ class Mods(object):
             )
 
         self.db_count = db
-        self.sum_mod_info = self.get_sum_info()
+        self.sum_mod_info = self.to_sum_info()
 
         self.mod_id = self.sum_mod_info.get("id", "")
         self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
         self.mod_list = self.sum_mod_info.get("info", {})
 
-        # logger.info(
-        #     f"Level {self.mod_level:3s} modification created from: {self.mod_code}"
-        # )
+    def __str__(self):
+        return self.to_json()
+
+    def __repr__(self):
+        return self.to_json()
 
     @staticmethod
     def __add_angle_brackets__(mod_str: str) -> str:
@@ -93,46 +90,6 @@ class Mods(object):
 
         return sum_mod_elem_dct
 
-    def get_sum_info(self):
-        linked_ids = self.to_all_levels()
-        mod_id = linked_ids.get(self.max_mod_level, "")
-        if mod_id:
-            if mod_id == self.mod_code:
-                sum_mod_info_dct = {
-                    "api_version": api_version,
-                    "type": self.type,
-                    "id": self.mod_code,
-                    "level": self.max_mod_level,
-                    "all_levels": self.max_mod_level,
-                    "linked_ids": self.to_all_levels(),
-                    "info": self.mod_info,
-                }
-            else:
-                sum_mod_info_dct = {
-                    "api_version": api_version,
-                    "type": self.type,
-                    "id": mod_id,
-                    # "input_name": self.mod_code,
-                    "level": self.max_mod_level,
-                    "linked_ids": self.to_all_levels(),
-                    "info": self.mod_info,
-                }
-        else:
-            raise ValueError(
-                f"Cannot format_mods modification code to level {self.max_mod_level} "
-                f"from input: {self.mod_code}"
-            )
-
-        return sum_mod_info_dct
-
-    def to_json(self):
-        mod_json_str = json.dumps(self.sum_mod_info)
-
-        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
-            return mod_json_str
-        else:
-            raise Exception(f"Schema test FAILED. Schema {self.schema}")
-
     def to_mass_shift(self) -> str:
         mass_shift = 0
         for mod in self.mod_info:
@@ -145,11 +102,12 @@ class Mods(object):
         mod_elem_lst = ["C", "O", "N", "S", "H", "Na"]
         mod_str_lst = []
         for mod in self.mod_info:
-            mod_elements = self.mod_info[mod].get("MOD_ELEMENTS", 0)
-            for elem in mod_elements:
-                sum_elements[elem] = sum_elements.get(elem, 0) + mod_elements.get(
-                    elem, 0
-                )
+            if self.mod_info[mod].get("MOD_CV", "") not in ["", "DB"]:
+                mod_elements = self.mod_info[mod].get("MOD_ELEMENTS", 0)
+                for elem in mod_elements:
+                    sum_elements[elem] = sum_elements.get(elem, 0) + mod_elements.get(
+                        elem, 0
+                    )
 
         for mod_elem in mod_elem_lst:
             if mod_elem in sum_elements:
@@ -216,7 +174,9 @@ class Mods(object):
                     elif o == "SITE_BRACKET_LEFT":
                         mod_seg_str += self.mod_separators.get("SITE_BRACKET_LEFT", "{")
                     elif o == "SITE_BRACKET_RIGHT":
-                        mod_seg_str += self.mod_separators.get("SITE_BRACKET_RIGHT", "}")
+                        mod_seg_str += self.mod_separators.get(
+                            "SITE_BRACKET_RIGHT", "}"
+                        )
                     else:
                         mod_seg_str += str(mod_dct.get(o, ""))
             mod_str_dct[mod] = mod_seg_str
@@ -227,7 +187,7 @@ class Mods(object):
             mod_str_dct_idx = natsorted(list(mod_str_dct.keys()))
             for k in mod_str_dct_idx:
                 mod_str_lst.append(mod_str_dct[k])
-        return ",".join(mod_str_lst).strip(',')
+        return ",".join(mod_str_lst).strip(",")
 
     def to_mod_count(self, get_db_only: bool = False):
         return self.to_mod_base(
@@ -285,10 +245,10 @@ class Mods(object):
         if float(level) < 4:
             if level.endswith(".1"):
                 db_str = self.to_mod_site(get_db_only=True)
-                mod_str = ','.join([db_str, mod_str])
+                mod_str = ",".join([db_str, mod_str])
             elif level.endswith(".2"):
                 db_str = self.to_mod_site_info(get_db_only=True)
-                mod_str = ','.join([db_str, mod_str])
+                mod_str = ",".join([db_str, mod_str])
             else:
                 pass
         else:
@@ -311,10 +271,56 @@ class Mods(object):
 
         return all_levels_info
 
+    def get_mod_info(self) -> list:
+        mod_js_lst = []
+        for mod_idx in self.mod_info:
+            mod_seg_dct = self.mod_info[mod_idx]
+            mod_js_dct = {
+                "cv": mod_seg_dct.get("MOD_CV", ""),
+                "count": mod_seg_dct.get("MOD_COUNT", 0),
+                "site": [int(i) for i in mod_seg_dct.get("MOD_SITE", [])],
+                "site_info": mod_seg_dct.get("MOD_SITE_INFO", []),
+                "order": mod_seg_dct.get("MOD_ORDER", 0),
+                "elements": mod_seg_dct.get("MOD_ELEMENTS", {}),
+                "mass_shift": mod_seg_dct.get("MOD_MASS_SHIFT", 0),
+            }
+            mod_js_lst.append(mod_js_dct)
+        return mod_js_lst
+
+    def to_sum_info(self):
+        linked_ids = self.to_all_levels()
+        mod_id = linked_ids.get(self.max_mod_level, "")
+        if mod_id:
+            sum_mod_info_dct = {
+                "api_version": api_version,
+                "type": self.type,
+                "id": mod_id,
+                "level": self.max_mod_level,
+                "linked_ids": linked_ids,
+                "linked_levels": natsorted(list(linked_ids.keys())),
+                "info": self.get_mod_info(),
+            }
+        else:
+            raise ValueError(
+                f"Cannot format_mods modification code to level {self.max_mod_level} "
+                f"from input: {self.mod_info}"
+            )
+
+        return sum_mod_info_dct
+
+    def to_json(self):
+        mod_json_str = json.dumps(self.sum_mod_info)
+
+        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
+            return mod_json_str
+        else:
+            raise Exception(f"Schema test FAILED. Schema {self.schema}")
+
 
 if __name__ == "__main__":
+
     usr_mod_info = {
-        "MOD_LEVEL": 3.2,
+        "MOD_LEVEL": 5.2,
         "MOD_INFO": {
             "0.01_DB": {
                 "MOD_CV": "DB",
@@ -329,42 +335,18 @@ if __name__ == "__main__":
             "5.01_OH": {
                 "MOD_CV": "OH",
                 "MOD_LEVEL": 5,
-                "MOD_COUNT": 2,
-                "MOD_SITE": [],
-                "MOD_SITE_INFO": [],
+                "MOD_COUNT": 1,
+                "MOD_SITE": ["12"],
+                "MOD_SITE_INFO": ["R"],
                 "MOD_ORDER": 5.01,
                 "MOD_ELEMENTS": {"O": 1},
                 "MOD_MASS_SHIFT": 16,
             },
         },
     }
-    # usr_mod_info = {
-    #     "MOD_LEVEL": 5.2,
-    #     "MOD_INFO": {
-    #         "0.01_DB": {
-    #             "MOD_CV": "DB",
-    #             "MOD_LEVEL": 0.2,
-    #             "MOD_COUNT": 2,
-    #             "MOD_SITE": ["9", "11"],
-    #             "MOD_SITE_INFO": ["Z", "Z"],
-    #             "MOD_ORDER": 0.01,
-    #             "MOD_ELEMENTS": {"H": -2},
-    #             "MOD_MASS_SHIFT": 0,
-    #         },
-    #         "5.01_OH": {
-    #             "MOD_CV": "OH",
-    #             "MOD_LEVEL": 5,
-    #             "MOD_COUNT": 1,
-    #             "MOD_SITE": ["12"],
-    #             "MOD_SITE_INFO": ["R"],
-    #             "MOD_ORDER": 5.01,
-    #             "MOD_ELEMENTS": {"O": 1},
-    #             "MOD_MASS_SHIFT": 16,
-    #         },
-    #     },
-    # }
 
     mod_obj = Mods(usr_mod_info)
-    mod_obj
+    logger.debug(mod_obj)
+    mod_json = mod_obj.to_json()
 
     logger.info("FINISHED")
