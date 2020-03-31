@@ -158,11 +158,11 @@ class Formatter(object):
                 if mod_type in self.raw_cv:
                     updated_mod_info["MOD_ELEMENTS"] = self.raw_cv[mod_type].get("ELEMENTS", {})
                     if mod_type not in ["Delta", "DB"] and mod_type not in mass_shift_dct:
-                        updated_mod_info["MOD_SHIFT"] = self.to_mass_shift(updated_mod_info["MOD_ELEMENTS"])
+                        updated_mod_info["MOD_MASS_SHIFT"] = self.to_mass_shift(updated_mod_info["MOD_ELEMENTS"])
                     elif mod_type == "Delta" and mod_type in mass_shift_dct:
-                        updated_mod_info["MOD_SHIFT"] = mass_shift_dct.get("Delta", 0)
+                        updated_mod_info["MOD_MASS_SHIFT"] = mass_shift_dct.get("Delta", 0)
                     else:
-                        updated_mod_info["MOD_SHIFT"] = 0
+                        updated_mod_info["MOD_MASS_SHIFT"] = 0
                 else:
                     raise ValueError(f"Unsupported modification type: {mod_type}")
                 mod_info_dct[f'{mod_order}_{mod_type}'] = updated_mod_info

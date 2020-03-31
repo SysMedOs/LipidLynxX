@@ -188,3 +188,26 @@ def build_output_rules(folder: str) -> dict:
     logger.debug(output_rules)
 
     return output_rules
+
+
+def load_output_rule(output_rules: dict, rule: str = "LipidLynxX"):
+    output_rule_info = output_rules.get(rule, None)
+    if not output_rule_info:
+        rule_ver = 0
+        for o_rule in output_rules:
+            o_rule_lst = o_rule.split("@")
+            if len(o_rule_lst) == 2:
+                nomenclature = o_rule_lst[0]
+                version = int(o_rule_lst[1])
+                if rule.lower().startswith(nomenclature.lower()) and version > rule_ver:
+                    output_rule_info = output_rules.get(o_rule, None)
+                else:
+                    raise ValueError(f"Cannot load output rule: {rule}")
+            else:
+                raise ValueError(f"Cannot load output rule: {rule}")
+    else:
+        raise ValueError(f"Cannot load output rule: {rule}")
+    if output_rule_info:
+        return output_rule_info
+    else:
+        raise ValueError(f"Cannot load output rule: {rule}")

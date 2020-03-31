@@ -5,14 +5,14 @@
   ],
   "NOMENCLATURE": "LipidLynxX",
   "SEPARATORS": {
-    "RUOUND_BRACKET_LEFT": "(",
-    "RUOUND_BRACKET_RIGHT": ")",
-    "ANGLE_BRACKET_LEFT": "<",
-    "ANGLE_BRACKET_RIGHT": ">",
-    "CURLY_BRACKET_LEFT": "{",
-    "CURLY_BRACKET_RIGHT": "}",
-    "SQUARE_BRACKET_LEFT": "{",
-    "SQUARE_BRACKET_RIGHT": "}",
+    "RESIDUE_BRACKET_LEFT": "(",
+    "RESIDUE_BRACKET_RIGHT": ")",
+    "MODS_BRACKET_LEFT": "<",
+    "MODS_BRACKET_RIGHT": ">",
+    "SITE_BRACKET_LEFT": "{",
+    "SITE_BRACKET_RIGHT": "}",
+    "SQUARE_BRACKET_LEFT": "[",
+    "SQUARE_BRACKET_RIGHT": "]",
     "SEPARATOR_LEVELS": {
       "B": "",
       "D": "_",
@@ -23,25 +23,36 @@
     "MOD": {
       "ORDER": [
         "MOD_COUNT",
-        "MOD_TYPE",
+        "MOD_CV",
+        "SITE_BRACKET_LEFT",
         "MOD_SITE",
-        "MOD_SITE_INFO"
+        "MOD_SITE_INFO",
+        "SITE_BRACKET_RIGHT"
       ],
       "OPTIONAL": [
         "MOD_COUNT",
-        "MOD_TYPE",
+        "MOD_CV",
+        "SITE_BRACKET_LEFT",
         "MOD_SITE",
-        "MOD_SITE_INFO"
+        "MOD_SITE_INFO",
+        "SITE_BRACKET_LEFT"
       ],
+      "REPEAT": {
+        "MOD": [1, 10]
+      },
       "MOD_COUNT": "\\d?\\d?",
-      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_CV": "([a-zA-Z]*[-0-9a-zA-Z]*)",
+      "SITE_BRACKET_LEFT": "$.SEPARATORS.MODS_BRACKET_LEFT.0",
       "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
       "MOD_SITE_INFO": "([EZRS])?",
+      "SITE_BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",
       "EXAMPLES": [
-        "9",
-        "9Z",
-        "9OH",
-        "9S-OH"
+        "{9,12}",
+        "{9Z,12Z}",
+        "OH",
+        "2OH",
+        "OH{8R}",
+        "2OH{8R,15S}"
       ]
     },
     "SUM_MODS": {
@@ -51,7 +62,11 @@
         "BRACKET_RIGHT"
       ],
       "REPEAT": {
-        "MOD": [
+        "MOD_SITE": [
+          1,
+          10
+        ],
+        "MOD_SITE_INFO": [
           1,
           10
         ]

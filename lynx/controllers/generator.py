@@ -15,12 +15,13 @@ from lynx.utils.log import logger
 from lynx.models.defaults import default_output_rules, default_input_rules
 from lynx.controllers.encoder import encode_sub_residues
 from lynx.controllers.parser import rule_parse, parse
+from lynx.controllers.params_loader import load_output_rule
 from lynx.controllers.extractor import Extractor
 
 
 class Generator(object):
-    def __init__(self, output_rules: dict, rule: str, input_rules: dict = default_input_rules):
-        self.output_rules = output_rules.get(rule, None)
+    def __init__(self, output_rules: dict = default_output_rules, rule: str = "LipidLynxX", input_rules: dict = default_input_rules):
+        self.output_rules = load_output_rule(output_rules, rule)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
         self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
@@ -152,7 +153,7 @@ class Generator(object):
 if __name__ == "__main__":
 
     t_in = "GM3(d18:1/18:2(9Z,11Z)(12OH))"
-    lynx_gen = Generator(output_rules=default_output_rules, rule="LipidLynxX@20200214")
+    lynx_gen = Generator()
     t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
     logger.warning(f"Input: {t_in} -> Output: {t_out}")
 

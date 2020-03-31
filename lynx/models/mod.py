@@ -11,8 +11,9 @@ import os
 from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
+from natsort import natsorted
 
-
+from lynx.controllers.params_loader import load_output_rule
 from lynx.models.cv import CV
 from lynx.models.defaults import (
     api_version,
@@ -22,7 +23,8 @@ from lynx.models.defaults import (
     core_schema,
     core_schema_path,
     mod_db_level_lst,
-    default_cv_file
+    default_cv_file,
+    default_output_rules,
 )
 from lynx.utils.file_readers import get_abs_path
 from lynx.utils.log import logger
@@ -30,17 +32,26 @@ from lynx.utils.toolbox import check_json
 
 
 class Mods(object):
-
-    def __init__(self, mod_info: dict, db: int = 0, schema="lynx_mod", cv_file: str = default_cv_file):
-        if os.path.isfile(cv_file):
-            pass
-        else:
-            cv_file = default_cv_file
-        self.cv = CV(cv_file).info
-        self.mod_info = mod_info
+    def __init__(
+        self,
+        mod_info: dict,
+        db: int = 0,
+        schema: str = "lynx_mod",
+        output_rules: dict = default_output_rules,
+        nomenclature: str = "LipidLynxX",
+    ):
+        self.export_rule = load_output_rule(output_rules, nomenclature)
+        self.mod_rule = self.export_rule.get("MODS", None)
+        self.mod_rule_orders = self.mod_rule.get("MOD", {}).get("ORDER", [])
+        self.mod_separators = self.export_rule.get("SEPARATORS", [])
+        if not self.mod_rule:
+            raise ValueError(
+                f"Cannot find output rule for 'MODS' from nomenclature: {nomenclature}."
+            )
+        self.mod_info = mod_info.get("MOD_INFO", {})
         self.schema = "lynx_mod"
         self.type = "Modification"
-        self.mod_level = self.mod_info.get("MOD_LEVEL", 0)
+        self.max_mod_level = str(mod_info.get("MOD_LEVEL", 0))
         with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
@@ -50,9 +61,6 @@ class Mods(object):
             )
 
         self.db_count = db
-
-        self.mod_info = self.__post_init__()
-
         self.sum_mod_info = self.get_sum_info()
 
         self.mod_id = self.sum_mod_info.get("id", "")
@@ -87,14 +95,15 @@ class Mods(object):
 
     def get_sum_info(self):
         linked_ids = self.to_all_levels()
-        mod_id = linked_ids.get(self.mod_level, "")
+        mod_id = linked_ids.get(self.max_mod_level, "")
         if mod_id:
             if mod_id == self.mod_code:
                 sum_mod_info_dct = {
                     "api_version": api_version,
                     "type": self.type,
                     "id": self.mod_code,
-                    "level": self.mod_level,
+                    "level": self.max_mod_level,
+                    "all_levels": self.max_mod_level,
                     "linked_ids": self.to_all_levels(),
                     "info": self.mod_info,
                 }
@@ -104,13 +113,13 @@ class Mods(object):
                     "type": self.type,
                     "id": mod_id,
                     # "input_name": self.mod_code,
-                    "level": self.mod_level,
+                    "level": self.max_mod_level,
                     "linked_ids": self.to_all_levels(),
                     "info": self.mod_info,
                 }
         else:
             raise ValueError(
-                f"Cannot format_mods modification code to level {self.mod_level} "
+                f"Cannot format_mods modification code to level {self.max_mod_level} "
                 f"from input: {self.mod_code}"
             )
 
@@ -125,221 +134,237 @@ class Mods(object):
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
 
     def to_mass_shift(self) -> str:
-        if float(self.mod_level) > 1:
-            sum_mod_elem_dct = self.get_elem_info()
-            delta = 0
-            for elem in sum_mod_elem_dct:
-                if elem in elem_nominal_info:
-                    delta += elem_nominal_info[elem] * sum_mod_elem_dct[elem]
-            return f"{delta:+}"
-        elif float(self.mod_level) == 1:
-            lv0_match = mod_lv0_delta_rgx.match(self.mod_code)
-            lv0_groups = []
-            if lv0_match:
-                lv0_matched_groups = lv0_match.groups()
-                lv0_groups = [int(i.strip(",")) for i in lv0_matched_groups]
-            if lv0_groups:
-                mod_str = f"{sum(lv0_groups):+}"
-            else:
-                mod_str = ""
-            return mod_str
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 1, received: {self.mod_level}"
-            )
+        mass_shift = 0
+        for mod in self.mod_info:
+            mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0)
 
-    def to_elem_shift(self) -> str:
-        if float(self.mod_level) >= 2:
-            sum_mod_elem_dct = self.get_elem_info()
-            mod_str_lst = []
-            mod_elem_lst = ["O", "N", "S", "H", "Na"]
-            for mod_elem in mod_elem_lst:
-                if mod_elem in sum_mod_elem_dct:
-                    mod_elem_count = f"{sum_mod_elem_dct[mod_elem]:+}"
-                    if mod_elem_count == "+1":
-                        mod_elem_count = "+"
-                    elif mod_elem_count == "-1":
-                        mod_elem_count = "-"
-                    mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+        return f"{mass_shift:+}"
 
-            return f'{",".join(mod_str_lst)}'
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 2, received: {self.mod_level}"
-            )
+    def to_elements(self):
+        sum_elements = {}
+        mod_elem_lst = ["C", "O", "N", "S", "H", "Na"]
+        mod_str_lst = []
+        for mod in self.mod_info:
+            mod_elements = self.mod_info[mod].get("MOD_ELEMENTS", 0)
+            for elem in mod_elements:
+                sum_elements[elem] = sum_elements.get(elem, 0) + mod_elements.get(
+                    elem, 0
+                )
 
-    def to_mod_count(self) -> str:
-        if float(self.mod_level) >= 3:
-            mod_output_lst = []
-            for mod in self.mod_info:
-                if mod["cv"] != "DB":
-                    if mod["count"] > 1:
-                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}')
-                    else:
-                        mod_output_lst.append(f'{mod["cv"]}')
-            return f'{",".join(mod_output_lst)}'
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 3, received: {self.mod_level}"
-            )
+        for mod_elem in mod_elem_lst:
+            if mod_elem in sum_elements:
+                mod_elem_count = f"{sum_elements[mod_elem]:+}"
+                if mod_elem_count == "+1":
+                    mod_elem_count = "+"
+                elif mod_elem_count == "-1":
+                    mod_elem_count = "-"
+                mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
 
-    def to_mod_position(self) -> str:
-        if float(self.mod_level) >= 4:
-            mod_output_lst = []
-            for mod in self.mod_info:
-                positions_lst = [str(i) for i in mod["positions"]]
-                positions = "{" + ",".join(positions_lst) + "}"
-                if mod["cv"] == "DB":
-                    pass
-                else:
-                    if mod["count"] > 1:
-                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
-                    else:
-                        mod_output_lst.append(f'{mod["cv"]}{positions}')
-            return f'{",".join(mod_output_lst)}'
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 4, received: {self.mod_level}"
-            )
+        return f'{",".join(mod_str_lst)}'
 
-    def to_mod_position_type(self) -> str:
-
-        if float(self.mod_level) >= 5:
-            mod_output_lst = []
-            for mod in self.mod_info:
-                positions = "{" + ",".join(mod["positions_info"]) + "}"
-                if mod["cv"] == "DB":
-                    pass
-                else:
-                    if mod["count"] > 1:
-                        mod_output_lst.append(f'{mod["count"]}{mod["cv"]}{positions}')
-                    else:
-                        mod_output_lst.append(f'{mod["cv"]}{positions}')
-
-            return f'{",".join(mod_output_lst)}'
-        else:
-            raise ValueError(
-                f"Modification level not fit. required level >= 4, received: {self.mod_level}"
-            )
-
-    def to_mod_level(
-        self, level: Union[int, float, str] = 0, angle_brackets: bool = True
+    def to_mod_base(
+        self,
+        mod_seg_lst: Union[list, tuple] = ("MOD_COUNT", "MOD_CV"),
+        get_db_only: bool = False,
     ) -> str:
+        mod_str_dct = {}
+        db_idx = None
+        for mod in self.mod_info:
+            mod_seg_str = ""
+            is_mod_sites_with_info = False
+            mod_sites_lst = []
+            mod_dct = self.mod_info[mod]
+            cv = mod_dct.get("MOD_CV", None)
+            if cv in ["", "DB"]:
+                db_idx = mod
+            for o in self.mod_rule_orders:
+                if o in mod_seg_lst:
+                    if o == "MOD_COUNT":
+                        mod_count = mod_dct.get(o, 1)
+                        if mod_count > 1 and cv not in ["", "DB"]:
+                            mod_seg_str += str(mod_count)
+                        elif mod_count == 1:
+                            pass
+                        elif cv in ["", "DB"]:
+                            pass
+                        else:
+                            raise ValueError(
+                                f"Modification count must >= 1, got value: {mod_count}"
+                            )
+                    elif o == "MOD_CV":
+                        if cv in ["", "DB"]:
+                            pass
+                        else:
+                            mod_seg_str += cv
+                    elif o == "MOD_SITE" and "MOD_SITE_INFO" not in mod_seg_lst:
+                        mod_sites_lst = mod_dct.get("MOD_SITE", [])
+                        if mod_sites_lst:
+                            mod_seg_str += ",".join(mod_sites_lst)
+                        else:
+                            pass
+                    elif o == "MOD_SITE" and "MOD_SITE_INFO" in mod_seg_lst:
+                        mod_sites_lst = mod_dct.get("MOD_SITE", [])
+                        is_mod_sites_with_info = True
+                    elif o == "MOD_SITE_INFO" and is_mod_sites_with_info:
+                        mod_sites_info_lst = mod_dct.get("MOD_SITE_INFO", [])
+                        mod_sites_cmb_lst = zip(mod_sites_lst, mod_sites_info_lst)
+                        mod_sites_str_lst = [f"{t[0]}{t[1]}" for t in mod_sites_cmb_lst]
+                        if mod_sites_str_lst:
+                            mod_seg_str += ",".join(mod_sites_str_lst)
+                        else:
+                            pass
+                    elif o == "SITE_BRACKET_LEFT":
+                        mod_seg_str += self.mod_separators.get("SITE_BRACKET_LEFT", "{")
+                    elif o == "SITE_BRACKET_RIGHT":
+                        mod_seg_str += self.mod_separators.get("SITE_BRACKET_RIGHT", "}")
+                    else:
+                        mod_seg_str += str(mod_dct.get(o, ""))
+            mod_str_dct[mod] = mod_seg_str
+        if get_db_only and db_idx and mod_str_dct:
+            mod_str_dct = {"0": mod_str_dct[db_idx]}
+        mod_str_lst = []
+        if mod_str_dct:
+            mod_str_dct_idx = natsorted(list(mod_str_dct.keys()))
+            for k in mod_str_dct_idx:
+                mod_str_lst.append(mod_str_dct[k])
+        return ",".join(mod_str_lst).strip(',')
+
+    def to_mod_count(self, get_db_only: bool = False):
+        return self.to_mod_base(
+            mod_seg_lst=["MOD_COUNT", "MOD_CV"], get_db_only=get_db_only
+        )
+
+    def to_mod_site(self, get_db_only: bool = False):
+        return self.to_mod_base(
+            mod_seg_lst=[
+                "MOD_COUNT",
+                "MOD_CV",
+                "SITE_BRACKET_LEFT",
+                "MOD_SITE",
+                "SITE_BRACKET_RIGHT",
+            ],
+            get_db_only=get_db_only,
+        )
+
+    def to_mod_site_info(self, get_db_only: bool = False):
+        return self.to_mod_base(
+            mod_seg_lst=[
+                "MOD_COUNT",
+                "MOD_CV",
+                "SITE_BRACKET_LEFT",
+                "MOD_SITE",
+                "MOD_SITE_INFO",
+                "SITE_BRACKET_RIGHT",
+            ],
+            get_db_only=get_db_only,
+        )
+
+    def to_mod_level(self, level: Union[int, float, str] = 0) -> str:
         mod_str = ""
         if not isinstance(level, str):
             level = str(level)
-        if float(level) > float(self.mod_level):
+        if float(level) > float(self.max_mod_level):
             raise ValueError(
-                f'Cannot convert to higher level than the mod_level "{self.mod_level}". Input:{level}'
+                f'Cannot convert to higher level than the mod_level "{self.max_mod_level}". Input:{level}'
             )
-        if level in mod_db_level_lst and not level.startswith("0"):
-            if level.startswith("1"):
-                mod_str = self.to_mass_shift()
-            elif level.startswith("2"):
-                mod_str = self.to_elem_shift()
-            elif level.startswith("3"):
-                mod_str = self.to_mod_count()
-            elif level.startswith("4"):
-                mod_str = self.to_mod_position()
-            elif level.startswith("5"):
-                mod_str = self.to_mod_position_type()
+
+        if level.startswith("0"):
+            mod_str = ""
+        elif level.startswith("1"):
+            mod_str = self.to_mass_shift()
+        elif level.startswith("2"):
+            mod_str = self.to_elements()
+        elif level.startswith("3"):
+            mod_str = self.to_mod_count()
+        elif level.startswith("4"):
+            mod_str = self.to_mod_site()
+        elif level.startswith("5"):
+            mod_str = self.to_mod_site_info()
+        else:
+            raise ValueError(f"Currently not supported modification level: {level}")
+        if float(level) < 4:
+            if level.endswith(".1"):
+                db_str = self.to_mod_site(get_db_only=True)
+                mod_str = ','.join([db_str, mod_str])
+            elif level.endswith(".2"):
+                db_str = self.to_mod_site_info(get_db_only=True)
+                mod_str = ','.join([db_str, mod_str])
             else:
-                raise ValueError(f"Currently not supported modification level: {level}")
-        if self.mod_info:
-            for mod in self.mod_info:
-                if mod["cv"] == "DB" and mod.get("positions", None):
-                    if level.endswith(".1"):
-                        positions_lst = [str(i) for i in mod["positions"]]
-                        positions = "{" + ",".join(positions_lst) + "}"
-                        mod_str = ",".join([positions, mod_str])
-                    if level.endswith(".2"):
-                        mod_str = ",".join(
-                            ["{" + ",".join(mod["positions_info"]) + "}", mod_str]
-                        )
+                pass
+        else:
+            pass
         mod_str = mod_str.strip(",")
-        if mod_str and angle_brackets:
-            mod_str = self.__add_angle_brackets__(mod_str)
 
         return mod_str
 
-    def to_all_levels(
-        self, angle_brackets: bool = True, as_list: bool = False
-    ) -> Union[Dict[str, str], List[str]]:
+    def to_all_levels(self, as_list: bool = False) -> Union[Dict[str, str], List[str]]:
         all_levels_dct = {}
-        all_levels_lst = []
-        if self.mod_level in mod_db_level_lst:
-            mod_idx = mod_db_level_lst.index(self.mod_level)
+        if self.max_mod_level in mod_db_level_lst:
+            mod_idx = mod_db_level_lst.index(self.max_mod_level)
             output_levels_lst = mod_db_level_lst[: mod_idx + 1]
         else:
-            raise ValueError(f"Modification level not supported: {self.mod_level}")
-        if len(self.mod_level) == 1:
-            output_levels_lst = [
-                out_lv for out_lv in output_levels_lst if len(out_lv) == 1
-            ]
-        elif self.mod_level.endswith(".1"):
-            output_levels_lst = [
-                out_lv
-                for out_lv in output_levels_lst
-                if len(out_lv) == 1 or out_lv.endswith(".1")
-            ]
-        else:
-            pass
-        if as_list:
-            for level in output_levels_lst:
-                all_levels_lst.append(
-                    self.to_mod_level(level, angle_brackets=angle_brackets)
-                )
-            all_levels_info = all_levels_lst
-        else:
-            for level in output_levels_lst:
-                all_levels_dct[level] = self.to_mod_level(
-                    level, angle_brackets=angle_brackets
-                )
-            all_levels_info = all_levels_dct
+            raise ValueError(f"Modification level not supported: {self.max_mod_level}")
+
+        for level in output_levels_lst:
+            all_levels_dct[level] = self.to_mod_level(level)
+        all_levels_info = all_levels_dct
 
         return all_levels_info
 
 
 if __name__ == "__main__":
+    usr_mod_info = {
+        "MOD_LEVEL": 3.2,
+        "MOD_INFO": {
+            "0.01_DB": {
+                "MOD_CV": "DB",
+                "MOD_LEVEL": 0.2,
+                "MOD_COUNT": 2,
+                "MOD_SITE": ["9", "11"],
+                "MOD_SITE_INFO": ["Z", "Z"],
+                "MOD_ORDER": 0.01,
+                "MOD_ELEMENTS": {"H": -2},
+                "MOD_MASS_SHIFT": 0,
+            },
+            "5.01_OH": {
+                "MOD_CV": "OH",
+                "MOD_LEVEL": 5,
+                "MOD_COUNT": 2,
+                "MOD_SITE": [],
+                "MOD_SITE_INFO": [],
+                "MOD_ORDER": 5.01,
+                "MOD_ELEMENTS": {"O": 1},
+                "MOD_MASS_SHIFT": 16,
+            },
+        },
+    }
+    # usr_mod_info = {
+    #     "MOD_LEVEL": 5.2,
+    #     "MOD_INFO": {
+    #         "0.01_DB": {
+    #             "MOD_CV": "DB",
+    #             "MOD_LEVEL": 0.2,
+    #             "MOD_COUNT": 2,
+    #             "MOD_SITE": ["9", "11"],
+    #             "MOD_SITE_INFO": ["Z", "Z"],
+    #             "MOD_ORDER": 0.01,
+    #             "MOD_ELEMENTS": {"H": -2},
+    #             "MOD_MASS_SHIFT": 0,
+    #         },
+    #         "5.01_OH": {
+    #             "MOD_CV": "OH",
+    #             "MOD_LEVEL": 5,
+    #             "MOD_COUNT": 1,
+    #             "MOD_SITE": ["12"],
+    #             "MOD_SITE_INFO": ["R"],
+    #             "MOD_ORDER": 5.01,
+    #             "MOD_ELEMENTS": {"O": 1},
+    #             "MOD_MASS_SHIFT": 16,
+    #         },
+    #     },
+    # }
 
-    mod_code_lst = [
-        # r"<-18>",
-        # r"<+46>",
-        # r"<+3O,-2H>",
-        # r"<2OH,Ke>",
-        # r"<2OH{8,11},Ke{14}>",
-        r"<{5,9,12,15},2OH{8,11},oxo{14}>",
-        r"<{5Z,9E,12E,15E},2OH{8,11},oxo{14}>",
-        r"<2OH{8R,11S},oxo{14}>",
-        r"<{5,9,12,15},2OH{8R,11S},oxo{14}>",
-        r"<{5Z,9E,12E,15E},2OH{8R,11S},oxo{14}>",
-        r"<{9}>",
-        r"<{9,12}>",
-        r"<{9Z}>",
-        r"<{9Z,11E}>",
-    ]
-
-    for usr_mod_code in mod_code_lst:
-        logger.info(f"Test mod str: {usr_mod_code}")
-
-        mod_obj = Modifications(usr_mod_code)
-
-        # print('to mass shift', mod_obj.to_mass_shift())
-        # print('to elem shift', mod_obj.to_elem_shift())
-        # print('to mod_count', mod_obj.to_mod_count())
-        # print('to mod_position', mod_obj.to_mod_position())
-        # print('to mod_position_type', mod_obj.to_mod_position_type())
-        # print('to mass shift', mod_obj.to_mass_shift(angle_brackets=False))
-        # print('to elem shift', mod_obj.to_elem_shift(angle_brackets=False))
-        # print('to mod_count', mod_obj.to_mod_count(angle_brackets=False))
-        # print('to mod_position', mod_obj.to_mod_position(angle_brackets=False))
-        # print('to mod_position_type', mod_obj.to_mod_position_type(angle_brackets=False))
-        logger.debug(f"to all levels: {mod_obj.to_all_levels()}")
-        logger.debug(
-            f"to all levels without <> : {mod_obj.to_all_levels(angle_brackets=False)}"
-        )
-
-        mod_json = mod_obj.to_json()
-        logger.debug(mod_json)
+    mod_obj = Mods(usr_mod_info)
+    mod_obj
 
     logger.info("FINISHED")
