@@ -18,8 +18,8 @@ from .defaults import (
     mod_level_lst,
     hg_schema,
     hg_schema_path,
-    fa_schema,
-    fa_schema_path,
+    res_schema,
+    res_schema_path,
 )
 
 

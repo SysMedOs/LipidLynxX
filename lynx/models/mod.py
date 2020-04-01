@@ -355,24 +355,32 @@ def merge_mods(
         ]  # type: list
     else:
         raise TypeError(
-            f"Requires multiple Mods objects in list or dict, "
+            f"Requires multiple Mods information in list or dict, "
             f"got type: {type(mods_collection)} for {mods_collection}"
         )
 
-    for mod_obj in mods_collection:
-        if isinstance(mod_obj, Mods):
-            mod_info = mod_obj.mod_info
-            for mod_idx in mod_info:
-                if re.search(r"DB", mod_idx):
-                    pass
+    for mod_seg in mods_collection:
+        if isinstance(mod_seg, Mods):
+            mod_info = mod_seg.mod_info
+        elif isinstance(mod_seg, dict):
+            mod_info = mod_seg.get("MOD_INFO", {})
+        else:
+            raise TypeError(
+                f"Requires multiple Mods information in dict or as Mods object, "
+                f"got type: {type(mod_seg)} for {mod_seg}"
+            )
+
+        for mod_idx in mod_info:
+            if re.search(r"DB", mod_idx):
+                pass
+            else:
+                if mod_idx not in sum_mods_dct:
+                    sum_mods_dct[mod_idx] = mod_info[mod_idx]
                 else:
-                    if mod_idx not in sum_mods_dct:
-                        sum_mods_dct[mod_idx] = mod_info[mod_idx]
-                    else:
-                        existed_count = sum_mods_dct[mod_idx].get("MOD_COUNT", 0)
-                        sum_mods_dct[mod_idx]["MOD_COUNT"] = (
-                            mod_info[mod_idx].get("MOD_COUNT", 0) + existed_count
-                        )
+                    existed_count = sum_mods_dct[mod_idx].get("MOD_COUNT", 0)
+                    sum_mods_dct[mod_idx]["MOD_COUNT"] = (
+                        mod_info[mod_idx].get("MOD_COUNT", 0) + existed_count
+                    )
     max_level = 0
     for sum_mod_idx in sum_mods_dct:
         sum_mod_seg_info = sum_mods_dct[sum_mod_idx]

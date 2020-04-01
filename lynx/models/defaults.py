@@ -87,9 +87,9 @@ with open(core_schema_path, "r") as core_obj:
 hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_lipidclass"])
 with open(hg_schema_path, "r") as hg_json_obj:
     hg_schema = json.load(hg_json_obj)
-fa_schema_path = get_abs_path(lynx_schema_cfg["lynx_residue"])
-with open(fa_schema_path, "r") as fa_json_obj:
-    fa_schema = json.load(fa_json_obj)
+res_schema_path = get_abs_path(lynx_schema_cfg["lynx_residue"])
+with open(res_schema_path, "r") as res_json_obj:
+    res_schema = json.load(res_json_obj)
 mod_schema_path = get_abs_path(lynx_schema_cfg["lynx_mod"])
 with open(mod_schema_path, "r") as mod_json_obj:
     mod_schema = json.load(mod_json_obj)

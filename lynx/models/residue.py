@@ -8,6 +8,7 @@
 
 import json
 import os
+from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 import regex as re
@@ -18,8 +19,8 @@ from lynx.models.defaults import (
     mod_level_lst,
     hg_schema,
     hg_schema_path,
-    fa_schema,
-    fa_schema_path,
+    res_schema,
+    res_schema_path,
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
@@ -27,7 +28,7 @@ from lynx.models.defaults import (
     default_output_rules,
 )
 from lynx.models.modifications import Modifications
-from lynx.models.mod import Mods
+from lynx.models.mod import Mods, merge_mods
 from lynx.models.patterns import fa_rgx
 from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
@@ -66,9 +67,9 @@ class FattyAcid(object):
         self.schema = "lynx_fa"
         self.type = "FattyAcid"
         resolver = RefResolver(
-            referrer=fa_schema, base_uri=f"file://{os.path.dirname(fa_schema_path)}/"
+            referrer=res_schema, base_uri=f"file://{os.path.dirname(res_schema_path)}/"
         )
-        self.validator = Draft7Validator(fa_schema, resolver=resolver)
+        self.validator = Draft7Validator(res_schema, resolver=resolver)
 
         self.fa_info_dct = self.__post_init__()
         self.fa_info_dct["id"] = self.lipid_code
@@ -178,12 +179,11 @@ class FattyAcid(object):
         return out_fa_info_dct
 
 
-class Residues(object):
+class Residue(object):
     def __init__(
         self,
         residue_info: dict,
-        db: int = 0,
-        schema: str = "lynx_fa",
+        schema: str = "lynx_residues",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
     ):
@@ -197,9 +197,9 @@ class Residues(object):
         self.schema = schema
         self.type = "FattyAcid"
         resolver = RefResolver(
-            referrer=fa_schema, base_uri=f"file://{os.path.dirname(fa_schema_path)}/"
+            referrer=res_schema, base_uri=f"file://{os.path.dirname(res_schema_path)}/"
         )
-        self.validator = Draft7Validator(fa_schema, resolver=resolver)
+        self.validator = Draft7Validator(res_schema, resolver=resolver)
 
         mod_info = residue_info.get("MOD", {})
 
@@ -292,6 +292,59 @@ class Residues(object):
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
 
 
+def merge_residues(
+    all_residues: dict,
+    schema: str = "lynx_residues",
+    output_rules: dict = default_output_rules,
+    nomenclature: str = "LipidLynxX",
+) -> Residue:
+
+    sum_res_dct = {}
+    if isinstance(all_residues, dict):
+        pass
+    else:
+        raise TypeError(
+            f"Requires multiple Residues in dict, "
+            f"got type: {type(all_residues)} for {all_residues}"
+        )
+
+    all_mod_lst = [
+        all_residues[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}}) for rm in all_residues
+    ]
+    sum_mods_obj = merge_mods(all_mod_lst)
+
+    for res in all_residues:
+        res_info = all_residues[res]
+        for res_seg in res_info:
+            if re.search(r"MOD", res_seg):
+                pass
+            else:
+                if res_seg not in sum_res_dct:
+                    sum_res_dct[res_seg] = res_info[res_seg]
+                else:
+                    existed_count = sum_res_dct.get(res_seg, None)
+                    res_seg_count = res_info.get(res_seg, None)
+                    if res_seg_count:
+                        if isinstance(existed_count, int) and isinstance(
+                            res_seg_count, int
+                        ):
+                            sum_res_dct[res_seg] = res_seg_count + existed_count
+                        elif isinstance(existed_count, str) and isinstance(
+                            res_seg_count, str
+                        ):
+                            sum_res_dct[res_seg] = res_seg_count + existed_count
+                        else:
+                            raise TypeError
+                    else:
+                        pass
+
+    sum_res_dct["MOD"] = {"MOD_LEVEL": sum_mods_obj.mod_level, "MOD_INFO": sum_mods_obj.mod_info}
+
+    sum_res_obj = Residue(sum_res_dct, schema, output_rules, nomenclature)
+
+    return sum_res_obj
+
+
 if __name__ == "__main__":
 
     usr_res_info = {
@@ -334,9 +387,12 @@ if __name__ == "__main__":
             "NUM_O": 0,
         },
     }
-    for r in usr_res_info:
-        res_obj = Residues(usr_res_info[r])
-        logger.debug(res_obj.linked_ids)
-        # res_json = res_obj.to_json()
+    # for r in usr_res_info:
+    #     usr_res_obj = Residue(usr_res_info[r])
+    #     logger.debug(usr_res_obj.linked_ids)
+    #     # usr_res_json = res_obj.to_json()
 
+    usr_res_obj = merge_residues(usr_res_info)
+    logger.debug(usr_res_obj.linked_ids)
+    # usr_res_json = res_obj.to_json()
     logger.info("FINISHED")

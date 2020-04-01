@@ -15,7 +15,7 @@ from lynx.controllers.encoder import encode_sub_residues
 from lynx.controllers.parser import rule_parse, parse
 from lynx.controllers.params_loader import load_output_rule
 from lynx.controllers.extractor import Extractor
-from lynx.models.residues import Residues
+from lynx.models.residue import Residue
 from lynx.models.defaults import default_output_rules, default_input_rules
 from lynx.utils.log import logger
 
@@ -80,7 +80,7 @@ class Generator(object):
         res_lv_dct = {}
         sum_lv_lst = []
         for res_abbr in residues_info:
-            res_obj = Residues(residues_info[res_abbr])
+            res_obj = Residue(residues_info[res_abbr])
             res_lv_id_dct[res_abbr] = res_obj.linked_ids
             res_lv_dct[res_abbr] = list(res_obj.linked_ids.keys())
             sum_lv_lst.extend(res_lv_dct[res_abbr])
