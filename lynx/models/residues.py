@@ -203,9 +203,9 @@ class Residues(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        mod_obj = Mods(mod_info)
-        self.sum_mod_info = mod_obj.sum_mod_info
-        self.mod_level = mod_obj.mod_level
+        self.mod_obj = Mods(mod_info)
+        self.sum_mod_info = self.mod_obj.sum_mod_info
+        self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level
         if float(self.mod_level) > 0:
             self.is_modified = True

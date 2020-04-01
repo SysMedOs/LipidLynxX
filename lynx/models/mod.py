@@ -11,6 +11,7 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 from natsort import natsorted
+import regex as re
 
 from lynx.controllers.params_loader import load_output_rule
 from lynx.models.defaults import (
@@ -172,12 +173,22 @@ class Mods(object):
                         else:
                             pass
                     elif o.upper().endswith("_SEPARATOR"):
-                        mod_seg_str += str(self.mod_separators.get(o, ""))
+                        mod_seg_str += self.mod_separators.get(o, "")
+                    elif re.search("BRACKET", o.upper()):
+                        mod_seg_str += self.mod_separators.get(o, "")
                     else:
                         mod_seg_str += str(mod_dct.get(o, ""))
-            mod_str_dct[mod] = mod_seg_str
+
+            mod_seg_str = re.sub(r"\{\}", "", mod_seg_str)
+            mod_seg_str = re.sub(r",,", ",", mod_seg_str)
+            mod_str_dct[mod] = mod_seg_str.strip(",")
         if get_db_only and db_idx and mod_str_dct:
             mod_str_dct = {"0": mod_str_dct[db_idx]}
+        else:
+            if db_idx in mod_str_dct:
+                del mod_str_dct[db_idx]
+            else:
+                pass
         mod_str_lst = []
         if mod_str_dct:
             mod_str_dct_idx = natsorted(list(mod_str_dct.keys()))
@@ -238,13 +249,18 @@ class Mods(object):
             mod_str = self.to_mod_site_info()
         else:
             raise ValueError(f"Currently not supported modification level: {level}")
-        if float(level) < 4:
-            if level.endswith(".1"):
-                db_str = self.to_mod_site(get_db_only=True)
-                mod_str = ",".join([db_str, mod_str])
-            elif level.endswith(".2"):
-                db_str = self.to_mod_site_info(get_db_only=True)
-                mod_str = ",".join([db_str, mod_str])
+
+        # add DB part
+        if level.endswith(".1"):
+            db_str = self.to_mod_site(get_db_only=True)
+            if db_str:
+                mod_str = ",".join([db_str, mod_str]).strip(",")
+            else:
+                pass
+        elif level.endswith(".2"):
+            db_str = self.to_mod_site_info(get_db_only=True)
+            if db_str:
+                mod_str = ",".join([db_str, mod_str]).strip(",")
             else:
                 pass
         else:
@@ -271,10 +287,18 @@ class Mods(object):
         mod_js_lst = []
         for mod_idx in self.mod_info:
             mod_seg_dct = self.mod_info[mod_idx]
+            mod_sites_lst = mod_seg_dct.get("MOD_SITE", [])
+            if mod_sites_lst:
+                try:
+                    sites = [int(i) for i in mod_seg_dct.get("MOD_SITE", [])]
+                except ValueError:
+                    sites = []
+            else:
+                sites = []
             mod_js_dct = {
                 "cv": mod_seg_dct.get("MOD_CV", ""),
                 "count": mod_seg_dct.get("MOD_COUNT", 0),
-                "site": [int(i) for i in mod_seg_dct.get("MOD_SITE", [])],
+                "site": sites,
                 "site_info": mod_seg_dct.get("MOD_SITE_INFO", []),
                 "order": mod_seg_dct.get("MOD_ORDER", 0),
                 "elements": mod_seg_dct.get("MOD_ELEMENTS", {}),
@@ -315,6 +339,58 @@ class Mods(object):
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
 
 
+def merge_mods(
+    mods_collection: Union[dict, list],
+    db: int = 0,
+    schema: str = "lynx_mod",
+    output_rules: dict = default_output_rules,
+    nomenclature: str = "LipidLynxX",
+) -> Mods:
+    sum_mods_dct = {}
+    if isinstance(mods_collection, list):
+        pass
+    elif isinstance(mods_collection, dict):
+        mods_collection = [
+            mods_collection[mod] for mod in mods_collection
+        ]  # type: list
+    else:
+        raise TypeError(
+            f"Requires multiple Mods objects in list or dict, "
+            f"got type: {type(mods_collection)} for {mods_collection}"
+        )
+
+    for mod_obj in mods_collection:
+        if isinstance(mod_obj, Mods):
+            mod_info = mod_obj.mod_info
+            for mod_idx in mod_info:
+                if re.search(r"DB", mod_idx):
+                    pass
+                else:
+                    if mod_idx not in sum_mods_dct:
+                        sum_mods_dct[mod_idx] = mod_info[mod_idx]
+                    else:
+                        existed_count = sum_mods_dct[mod_idx].get("MOD_COUNT", 0)
+                        sum_mods_dct[mod_idx]["MOD_COUNT"] = (
+                            mod_info[mod_idx].get("MOD_COUNT", 0) + existed_count
+                        )
+    max_level = 0
+    for sum_mod_idx in sum_mods_dct:
+        sum_mod_seg_info = sum_mods_dct[sum_mod_idx]
+        mod_seg_count = sum_mod_seg_info["MOD_COUNT"]
+        if sum_mod_seg_info["MOD_LEVEL"] > 3:
+            sum_mod_seg_info["MOD_LEVEL"] = 3
+            max_level = max(max_level, sum_mod_seg_info["MOD_LEVEL"])
+        if sum_mod_seg_info["MOD_SITE"]:
+            sum_mod_seg_info["MOD_SITE"] = [""] * mod_seg_count
+        if sum_mod_seg_info["MOD_SITE_INFO"]:
+            sum_mod_seg_info["MOD_SITE_INFO"] = [""] * mod_seg_count
+        sum_mods_dct[sum_mod_idx] = sum_mod_seg_info
+
+    sum_mod_obj = Mods({"MOD_LEVEL": max_level, "MOD_INFO": sum_mods_dct})
+
+    return sum_mod_obj
+
+
 if __name__ == "__main__":
 
     usr_mod_info = {
@@ -343,8 +419,13 @@ if __name__ == "__main__":
         },
     }
 
-    mod_obj = Mods(usr_mod_info)
-    logger.debug(mod_obj)
-    mod_json = mod_obj.to_json()
+    usr_mod_obj = Mods(usr_mod_info)
+    logger.debug(usr_mod_obj)
+    mod_json = usr_mod_obj.to_json()
+
+    usr_sum_mods_obj = merge_mods([usr_mod_obj, usr_mod_obj])
+
+    logger.debug(usr_sum_mods_obj)
+    sum_mod_json = usr_sum_mods_obj.to_json()
 
     logger.info("FINISHED")

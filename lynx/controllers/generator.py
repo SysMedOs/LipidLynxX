@@ -21,12 +21,14 @@ from lynx.utils.log import logger
 
 
 class Generator(object):
-    def __init__(self, output_rules: dict = default_output_rules, rule: str = "LipidLynxX", input_rules: dict = default_input_rules):
+    def __init__(self, output_rules: dict = default_output_rules, rule: str = "LipidLynxX",
+                 input_rules: dict = default_input_rules):
         self.output_rules = load_output_rule(output_rules, rule)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
         self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
         self.residue_rules = self.output_rules.get("RESIDUES", {}).get("RESIDUE", {})
+        self.separator_levels = self.output_rules.get("SEPARATORS", {}).get("SEPARATOR_LEVELS", {})
         self.extractor = Extractor(rules=input_rules)
 
     @staticmethod
@@ -68,24 +70,59 @@ class Generator(object):
 
         return self.get_best_candidate(out_seg_lst)
 
-    def compile_residues(self, residues: dict):
+    def get_residues(self, residues: dict):
         residues_order = residues.get("RESIDUES_ORDER", [])
-        residues_separator = residues.get("RESIDUES_SEPARATOR", [])
+        residues_sep_level = residues.get("RESIDUES_SEPARATOR_LEVEL", "")
         residues_info = residues.get("RESIDUES_INFO", [])
+        res_count = len(list(residues_info.keys()))
         sum_residues_str = ''
-        sum_residues_lst = []
-        for res_info in residues_info:
-            res_obj = Residues(residues_info[res_info])
-            sum_residues_lst.append(res_obj.linked_ids)
-        
-        return sum_residues_str
+        res_lv_id_dct = {}
+        res_lv_dct = {}
+        sum_lv_lst = []
+        for res_abbr in residues_info:
+            res_obj = Residues(residues_info[res_abbr])
+            res_lv_id_dct[res_abbr] = res_obj.linked_ids
+            res_lv_dct[res_abbr] = list(res_obj.linked_ids.keys())
+            sum_lv_lst.extend(res_lv_dct[res_abbr])
+
+        sum_lv_lst = natsorted(set(sum_lv_lst))
+        for res in res_lv_id_dct:
+            r_lv_dct = res_lv_id_dct[res]
+            if list(r_lv_dct.keys()) == ['0']:
+                for lv in sum_lv_lst:
+                    r_lv_dct[lv] = r_lv_dct["0"]
+        sum_lv_id_dct = {}
+        for sum_lv in sum_lv_lst:
+            lv_id_lst = []
+            for r in residues_order:
+                r_lv_id = res_lv_id_dct.get(r, {}).get(sum_lv, None)
+                if r_lv_id:
+                    lv_id_lst.append(r_lv_id)
+            if len(lv_id_lst) == res_count:
+                sum_lv_id_dct[sum_lv] = lv_id_lst
+
+        sum_res_sep_lv_lst = []
+        if residues_sep_level == 'S':
+            sum_res_sep_lv_lst = ['D', 'S']
+        elif residues_sep_level == 'D':
+            sum_res_sep_lv_lst = ['D']
+        elif residues_sep_level == 'B':
+            sum_res_sep_lv_lst = ['B']
+
+        sum_res_id_lv_dct = {}
+
+        for sep_lv in sum_res_sep_lv_lst:
+            for res_lv in sum_lv_id_dct:
+                sum_res_id_lv_dct[f'{sep_lv}{res_lv}'] = f'{self.separator_levels[sep_lv]}'.join(sum_lv_id_dct[res_lv])
+
+        return sum_res_id_lv_dct
 
     def check_segments(self, parsed_info: dict, input_rule: str):
         segments_dct = {}
         lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
         segments = parsed_info["SEGMENTS"]
         residues = parsed_info.get("RESIDUES", {})
-        sum_residues_str = self.compile_residues(residues)
+        sum_residues_str = self.get_residues(residues)
         for c in lmsd_classes:
             if c in self.class_rules:
                 pass
@@ -129,7 +166,7 @@ class Generator(object):
         for abbr in candidates_lst:
             if abbr.startswith("FA"):
                 if re.search(r":\d[oep]", abbr) or re.search(
-                    r"[OP]-\d{1,2}:\da?", abbr
+                        r"[OP]-\d{1,2}:\da?", abbr
                 ):
                     candidates_lst.remove(abbr)
                     candidates_lst.append(abbr[2:])
@@ -157,7 +194,6 @@ class Generator(object):
 
 
 if __name__ == "__main__":
-
     t_in = "GM3(d18:1/18:2(9Z,11Z)(12OH))"
     lynx_gen = Generator()
     t_out = lynx_gen.export(t_in, import_rules=default_input_rules)
