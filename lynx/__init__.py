@@ -7,37 +7,23 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import os
 import requests
-import time
+from datetime import datetime
 from typing import Union, List, Dict
 
 from flask import Flask, send_file
 from flask import abort, render_template, redirect, request, url_for
-from flask import jsonify, send_from_directory
-from flask_restful import Api, Resource, reqparse
-from flask_wtf import FlaskForm
+from flask_restful import Api
 import pandas as pd
 
 from werkzeug.utils import secure_filename
 
-from .config import app_cfg_dct
-from .config import blueprint
-from .config import DevConfig
-from .controllers.encoder import lynx_encode
-from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
-from .controllers.parser import parse
-from .models.defaults import logger, cfg_info_dct
-from .models.patterns import rgx_blank
-from .forms import (
-    ConverterTableInputForm,
-    ConverterTextInputForm,
-    ConverterForm,
-    ParserInputForm,
-    EqualizerInputForm,
-)
 from .liblynx.LynxParser import parse_lipidlynx
-from .controllers.rest.api import (
+
+from lynx.utils.config import app_cfg_dct
+from lynx.utils.config import blueprint
+from lynx.utils.config import DevConfig
+from lynx.controllers.rest.api import (
     StringConverterAPI,
     DictConverterAPI,
     ListConverterAPI,
@@ -46,6 +32,17 @@ from .controllers.rest.api import (
     MultiLevelEqualizerAPI,
     EqualizerAPI,
 )
+from lynx.forms import (
+    ConverterTableInputForm,
+    ConverterTextInputForm,
+    ConverterForm,
+    ParserInputForm,
+    EqualizerInputForm,
+)
+from lynx.models.defaults import logger, cfg_info_dct
+from lynx.models.patterns import rgx_blank
+from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
+from lynx.utils.toolbox import keep_string_only
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
@@ -77,7 +74,7 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
 
     r = requests.get(r_url, params={"data": json.dumps(data)}).json()
     excel_data = r["data"]
-    output_name = f"Converter_{int(time.time())}.xlsx"
+    output_name = f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
 
     for k in excel_data:
         if isinstance(excel_data[k], dict):
@@ -99,7 +96,7 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
 
 def run_equalizer(data: dict, level: Union[str, List[str]]):
     submitted = 0
-    output_name = f"Equalizer_{int(time.time())}.xlsx"
+    output_name = f"LipidLynxX-Equalizer_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
     r_url = f"{base_url}{api.url_for(EqualizerAPI)}"
     logger.info(f"Use API - EqualizerAPI: {r_url}")
     r = requests.get(
@@ -186,7 +183,7 @@ def convert_lipid_table():
             excel_data=excel_data,
             alerts=[],
         )
-
+    table_dct = keep_string_only(table_dct)
     if table_dct:
         logger.info({"code": 0, "msg": "Upload success.", "data": table_dct})
         out_dct, output_name, excel_data = run_converter(table_dct)
@@ -292,9 +289,9 @@ def download():
     elif isinstance(data, str):
         data = json.loads(data)
     if isinstance(data, dict):
-        if filename.startswith("Converter"):
+        if filename.startswith("LipidLynxX-Convert"):
             excel_io = create_output(data)
-        elif filename.startswith("Equalizer"):
+        elif filename.startswith("LipidLynxX-Equal"):
             excel_io = create_equalizer_output(data)
         else:
             try:

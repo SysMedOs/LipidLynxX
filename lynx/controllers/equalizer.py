@@ -13,8 +13,8 @@ import pandas as pd
 from lynx.utils.file_readers import get_abs_path
 from lynx.utils.log import logger
 from ..models.lipid import Lipid
-from .encoder import lynx_encode
-from .parser import parse
+# from .encoder import lynx_encode
+
 
 
 class Equalizer(object):

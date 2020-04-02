@@ -84,7 +84,7 @@ class CV(object):
 
 if __name__ == '__main__':
 
-    usr_cv = r'lynx/configurations/CV.json'
+    usr_cv = r'lynx/configurations/controlled_vocabularies.json'
 
     cv_obj = CV(usr_cv)
     print(cv_obj.info)

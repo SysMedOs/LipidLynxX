@@ -22,13 +22,12 @@ from lynx.utils.log import logger
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
     default_fields = [
-        "cv",
-        "rules",
+        "api_version",
+        "base_url",
+        "controlled_vocabularies",
+        "defined_alias",
         "input_rules",
         "output_rules",
-        "mod_cfg",
-        "abbr_cfg",
-        "base_url",
     ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
@@ -51,8 +50,15 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     if len(user_cfg) > 2:
         options = config.options(user_cfg)
         for field in default_fields:
-            if field in options and field != "base_url":
+            if field in options and field in [
+                "controlled_vocabularies",
+                "defined_alias",
+                "input_rules",
+                "output_rules",
+            ]:
                 cfg_path_dct[field] = get_abs_path(config.get(user_cfg, field))
+            else:
+                pass
 
     if "base_url" not in cfg_path_dct:
         cfg_path_dct["base_url"] = r"http://127.0.0.1:5000"
