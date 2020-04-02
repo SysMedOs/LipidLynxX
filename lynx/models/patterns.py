@@ -40,7 +40,7 @@ pl_rgx = re.compile(
 
 # lynx SP
 sp_rgx = re.compile(
-    r"(?P<hg_subclass>L)?(?P<hg_class>Cer|SM|SPB?)(\s*\(?)?"
+    r"(?P<hg_subclass>L)?(?P<hg_class>Cer|SM|SPB?|GM[1-4]?)(\s*\(?)?"
     r"(?P<fa1>([OP]-|FA|SBP)?(\d{1,2})(:)(\d)([<][^/_]*[>])?)?(?P<position1>[_/\\])?"
     r"(?P<fa2>([OP]-|FA)?(\d{1,2})(:)(\d)([<][^/_]*[>])?)?(\))"
 )

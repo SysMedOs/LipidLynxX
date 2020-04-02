@@ -7,18 +7,29 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import configparser
-import re
+import os
 from typing import Dict, List, Tuple
 
+from natsort import natsorted
 import pandas as pd
+import regex as re
 
-from ..controllers.general_functions import get_abs_path
-from ..models.log import logger
+from lynx.utils.file_readers import get_abs_path, load_folder
+from lynx.models.rules import InputRules, OutputRules
+from lynx.utils.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
-    default_fields = ["cv", "rules", "mod_cfg", "abbr_cfg", "base_url"]
+    default_fields = [
+        "cv",
+        "rules",
+        "input_rules",
+        "output_rules",
+        "mod_cfg",
+        "abbr_cfg",
+        "base_url",
+    ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
         config_path = get_abs_path(cfg_path)
@@ -35,7 +46,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         user_cfg = "default"
     else:
         user_cfg = ""
-        raise ValueError(f"Cannot load settings from file {config_path}")
+        raise ValueError(f"Cannot __load__ settings from file {config_path}")
 
     if len(user_cfg) > 2:
         options = config.options(user_cfg)
@@ -52,8 +63,9 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
 def build_parser(rules_file: str) -> Tuple[dict, dict]:
     """
     Read predefined rules from configurations folder and export as a dictionary
+
     Args:
-        rules_file (str): the path for the rules file
+        rules_file: the path for the rules file
 
     Returns:
         dict contains the regular expressions as a dict
@@ -121,3 +133,81 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
             )
 
     return cv_patterns_dct
+
+
+def build_input_rules(folder: str) -> dict:
+
+    input_rules = {}
+    file_path_lst = load_folder(folder, file_type=".json")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+
+    for f in file_path_lst:
+        temp_rules = InputRules(f)
+        idx_lst = [os.path.basename(f)] + temp_rules.source
+        idx = "#".join(idx_lst)
+        for c in temp_rules.rules:
+            c_class_str = temp_rules.rules[c].get("CLASS", "")
+            c_lmsd_classes = temp_rules.rules[c].get("LMSD_CLASSES", [])
+            existed_c_info = input_rules.get(c_class_str, {})
+            c_rgx = existed_c_info.get("SEARCH", re.compile(c_class_str))
+            c_pattern = existed_c_info.get("MATCH", {})
+            c_lmsd_classes.extend(existed_c_info.get("LMSD_CLASSES", []))
+            c_lmsd_classes = natsorted(list(set(c_lmsd_classes)))
+            c_info = temp_rules.rules[c]
+            del c_info["CLASS"]
+            del c_info["LMSD_CLASSES"]
+            c_pattern[idx] = c_info
+
+            input_rules[c_class_str] = {
+                "LMSD_CLASSES": c_lmsd_classes,
+                "SEARCH": c_rgx,
+                "MATCH": c_pattern,
+                "RESIDUES_SEPARATOR": temp_rules.separators.get(
+                    "RESIDUES_SEPARATOR", "_|/"
+                ),
+                "SEPARATOR_LEVELS": temp_rules.separators.get("SEPARATOR_LEVELS", {}),
+                "MAX_RESIDUES": temp_rules.rules[c].get("MAX_RESIDUES", 1),
+            }
+
+    logger.debug(input_rules)
+
+    return input_rules
+
+
+def build_output_rules(folder: str) -> dict:
+
+    output_rules = {}
+    file_path_lst = load_folder(folder, file_type=".json")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+
+    for f in file_path_lst:
+        temp_rules = OutputRules(f)
+        idx = f"{temp_rules.nomenclature}@{temp_rules.date}"
+        output_rules[idx] = temp_rules.rules
+
+    logger.debug(output_rules)
+
+    return output_rules
+
+
+def load_output_rule(output_rules: dict, rule: str = "LipidLynxX"):
+    output_rule_info = output_rules.get(rule, None)
+    if not output_rule_info:
+        rule_ver = 0
+        for o_rule in output_rules:
+            o_rule_lst = o_rule.split("@")
+            if len(o_rule_lst) == 2:
+                nomenclature = o_rule_lst[0]
+                version = int(o_rule_lst[1])
+                if rule.lower().startswith(nomenclature.lower()) and version > rule_ver:
+                    output_rule_info = output_rules.get(o_rule, None)
+                else:
+                    raise ValueError(f"Cannot load output rule: {rule}")
+            else:
+                raise ValueError(f"Cannot load output rule: {rule}")
+    else:
+        raise ValueError(f"Cannot load output rule: {rule}")
+    if output_rule_info:
+        return output_rule_info
+    else:
+        raise ValueError(f"Cannot load output rule: {rule}")

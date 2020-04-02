@@ -8,6 +8,7 @@
     "id",
     "level",
     "linked_ids",
+    "linked_levels",
     "info"
   ],
   "properties": {
@@ -51,6 +52,15 @@
         }
       }
     },
+    "linked_levels": {
+      "description": "Collection of all linked levels",
+      "type": "array",
+      "uniqueItems": true,
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "(^[ABDES]?)|(^[ABDEMS]?[0-5](\\.[0-9])?$)"
+      }
+    },
     "info": {
       "description": "Information of the modification as individual objects",
       "type": "array",
@@ -73,7 +83,7 @@
             "minimum": -512,
             "maximum": 512
           },
-          "positions": {
+          "site": {
             "description": "The list of positions",
             "type": "array",
             "items": {
@@ -83,16 +93,42 @@
             },
             "maxItems": 99
           },
-          "positions_info": {
+          "site_info": {
             "description": "The list of positions",
             "type": "array",
             "items": {
               "type": "string",
-              "minLength": 1,
+              "minLength": 0,
               "maxLength": 3
             },
-            "maxItems": 99,
-            "uniqueItems": true
+            "maxItems": 99
+          },
+          "order": {
+            "description": "The list of positions",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 99
+          },
+          "elements": {
+            "description": "The element shift of this modification",
+            "type": "object",
+            "uniqueItems": true,
+            "minProperties": 0,
+            "propertyNames": {
+              "pattern": "(^[COHNPKS]a?$)"
+            },
+            "patternProperties": {
+              "(^[COHNPKS]a?$)": {
+                "type": "integer",
+                "minimum": -99,
+                "maximum": 99}
+            }
+          },
+          "mass_shift": {
+            "description": "The nominal mass shift of this modification",
+            "type": "integer",
+            "minimum": -999,
+            "maximum": 999
           }
         }
       },

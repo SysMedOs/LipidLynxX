@@ -25,7 +25,7 @@ from .config import app_cfg_dct
 from .config import blueprint
 from .config import DevConfig
 from .controllers.encoder import lynx_encode
-from .controllers.file_handler import get_table, create_output, create_equalizer_output
+from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from .controllers.parser import parse
 from .models.defaults import logger, cfg_info_dct
 from .models.patterns import rgx_blank
