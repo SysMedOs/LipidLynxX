@@ -46,7 +46,7 @@ JSON_SCHEMA_INFO = {
     },
     # "lynx_core": {
     #     "core_S4.1": r"test/test_input/test_json/lynx_core_S4.1.json",
-    #     "core_S4.2": r"test/test_input/test_json/lynx_core_S4.2.json",
+    #     "core_S4.2": r"test/test_input/test_json/lynx_core_S5.2.json",
     # },
 }
 

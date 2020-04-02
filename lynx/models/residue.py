@@ -84,7 +84,7 @@ class FattyAcid(object):
         self.fa_level = self.fa_info_dct.get("level", "")
         self.is_modified = self.fa_info_dct["info"].get("is_modified", False)
         self.fa_linked_ids = self.fa_info_dct.get("linked_ids", {})
-        logger.info(
+        logger.debug(
             f"Level {self.fa_level:4s} FattyAcid created from: {self.lipid_code}"
         )
 
@@ -218,24 +218,6 @@ class Residue(object):
             self.linked_levels = ["0"]
 
         self.linked_ids = self.__post_init__()
-
-        logger.info(self.res_level)
-
-        # self.fa_info_dct = self.__post_init__()
-        # self.fa_info_dct["id"] = self.lipid_code
-        # self.info = self.fa_info_dct["info"]
-        #
-        # self.mod_info = self.fa_info_dct.get("mod_obj", None)
-        # if db and db < self.fa_info_dct["info"]["db"]:
-        #     self.db_count = db
-        # else:
-        #     self.db_count = self.fa_info_dct["info"]["db"]
-        # self.id = self.fa_info_dct.get("id", "")
-        #
-        # self.fa_linked_ids = self.fa_info_dct.get("linked_ids", {})
-        # logger.info(
-        #     f"Level {self.res_level:4s} FattyAcid created from: {self.lipid_code}"
-        # )
 
     def __replace_mdt__(self):
         link = self.res_info.get("LINK", "")

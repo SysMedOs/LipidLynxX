@@ -61,6 +61,7 @@ class Extractor(object):
     def check_residues(
         self,
         rule: str,
+        residues: list,
         sum_residues: str,
         max_residues: int = 1,
         separator_levels: dict = None,
@@ -70,10 +71,12 @@ class Extractor(object):
         if separator_levels is None:
             separator_levels = {"B": "", "D": "_", "S": "/"}
 
-        res_lst = re.split(separator, sum_residues)
+        res_lst = residues
         res_sep_lst = re.findall(separator, sum_residues)
         if not res_sep_lst:
             res_sep_lst = [""]
+        for s in res_sep_lst:
+            res_lst = [res.strip(s) for res in res_lst]
         res_sep_levels = []
         for res_sep in res_sep_lst:
             for lv in separator_levels:
@@ -93,7 +96,7 @@ class Extractor(object):
                 # todo: Add rgx here
                 matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
                 matched_dct = self.formatter.format_residue(matched_info_dct)
-                logger.error(matched_dct)
+                logger.debug(matched_dct)
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 
@@ -122,7 +125,7 @@ class Extractor(object):
         return {
             "RESIDUES_ORDER": out_res_lst,
             "RESIDUES_INFO": out_res_dct,
-            "RESIDUES_SEPARATOR": res_sep_lst,
+            # "RESIDUES_SEPARATOR": res_sep_lst,
             "RESIDUES_SEPARATOR_LEVEL": lv_min,
         }
 
@@ -151,9 +154,11 @@ class Extractor(object):
             for r in c_rules:
                 matched_dct = self.check_segments(lipid_name, c, r)
                 sum_residues_lst = matched_dct.get("SUM_RESIDUES", [])
-                if sum_residues_lst and len(sum_residues_lst) == 1:
+                obs_residues_lst = matched_dct.get("RESIDUE", [])
+                if sum_residues_lst and len(sum_residues_lst) == 1 and obs_residues_lst:
                     residues_dct = self.check_residues(
                         r,
+                        obs_residues_lst,
                         sum_residues_lst[0],
                         max_residues=c_max_res,
                         separator_levels=sep_levels,
@@ -166,9 +171,9 @@ class Extractor(object):
                         # "RESIDUES_SEPARATOR": res_sep,
                         # "SEPARATOR_LEVELS": sep_levels,
                     }
-                elif sum_residues_lst and len(sum_residues_lst) > 1:
+                elif obs_residues_lst and len(obs_residues_lst) > 1:
                     raise ValueError(
-                        f"More than two parts of SUM residues matched: {sum_residues_lst}"
+                        f"More than two parts of SUM residues matched: {obs_residues_lst}"
                     )
                 else:
                     pass  # nothing found. the rule is not used.

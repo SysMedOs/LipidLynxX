@@ -276,7 +276,18 @@ class Mods(object):
             output_levels_lst = mod_db_level_lst[: mod_idx + 1]
         else:
             raise ValueError(f"Modification level not supported: {self.mod_level}")
-
+        if self.mod_level.endswith(".2"):
+            pass
+        elif self.mod_level.endswith(".1"):
+            output_levels_lst = [
+                o_lv for o_lv in output_levels_lst if not o_lv.endswith(".2")
+            ]
+        else:
+            output_levels_lst = [
+                o_lv
+                for o_lv in output_levels_lst
+                if not o_lv.endswith(".1") and not o_lv.endswith(".2")
+            ]
         for level in output_levels_lst:
             all_levels_dct[level] = self.to_mod_level(level)
         all_levels_info = all_levels_dct

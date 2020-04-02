@@ -51,7 +51,7 @@ class Formatter(object):
                 if alia_rgx and matched_cv is not None:
                     alia_match = alia_rgx.match(mod_type)
                     if alia_match:
-                        logger.info(f"mod_type: {mod_type} identified as {matched_cv}")
+                        logger.debug(f"mod_type: {mod_type} identified as {matched_cv}")
                         formatted_mod_type_lst.append(matched_cv)
                         if matched_cv == "Delta":
                             mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get("LEVEL", 0)
@@ -97,7 +97,8 @@ class Formatter(object):
                 )
                 existed_mod_site_lst.append(mod_tp[1]),
                 existed_mod_site_info_lst.append(mod_tp[2])
-                mod_level = mod_lv_dct.get(mod_type, 0)
+                mod_level = 0
+                db_mod_level = 0
                 mod_count = existed_mod_count + 1
                 if mod_type == "DB":
                     true_site_lst = [s for s in existed_mod_site_lst if s != ""]
@@ -112,41 +113,18 @@ class Formatter(object):
                             "Z" not in true_site_info_lst
                             and "E" not in true_site_info_lst
                         ):
-                            mod_level += 0.1
+                            db_mod_level = 0.1
                     elif (
                         len(true_site_lst) == mod_count
                         and len(true_site_info_lst) == mod_count
                     ):
                         if "Z" in true_site_info_lst or "E" in true_site_info_lst:
-                            mod_level += 0.2
-                    else:
-                        pass
-                elif mod_type == "Delta":
-                    pass
-                elif mod_type != "DB" and mod_level >= 3:
-                    true_site_lst = [s for s in existed_mod_site_lst if s != ""]
-                    true_site_info_lst = [
-                        s for s in existed_mod_site_info_lst if s != ""
-                    ]
-                    if (
-                        len(true_site_lst) == mod_count
-                        and len(true_site_info_lst) != mod_count
-                    ):
-                        if (
-                            "S" not in true_site_info_lst
-                            and "R" not in true_site_info_lst
-                        ):
-                            mod_level += 1
-                    elif (
-                        len(true_site_lst) == mod_count
-                        and len(true_site_info_lst) == mod_count
-                    ):
-                        if "S" in true_site_info_lst or "R" in true_site_info_lst:
-                            mod_level += 2
+                            db_mod_level = 0.2
                     else:
                         pass
                 else:
-                    pass
+                    mod_level = mod_lv_dct.get(mod_type, 0)
+                mod_level += db_mod_level
                 updated_mod_info = {
                     "MOD_CV": mod_type,
                     "MOD_LEVEL": mod_level,
@@ -171,17 +149,20 @@ class Formatter(object):
         mod_seg_levels_lst = []
         if mod_info_dct:
             for mod_seg in mod_info_dct:
-                mod_seg_levels_lst.append(mod_info_dct[mod_seg].get("MOD_LEVEL", '0'))
+                mod_seg_levels_lst.append(mod_info_dct[mod_seg].get("MOD_LEVEL", 0))
         if mod_seg_levels_lst:
             max_mod_level = max(mod_seg_levels_lst)
             mod_seg_levels_str_lst = [str(i) for i in mod_seg_levels_lst]
-            for mod_lv_str in mod_seg_levels_str_lst:
-                if mod_lv_str.endswith(".1"):
-                    max_mod_level += 0.1
-                elif mod_lv_str.endswith(".2"):
-                    max_mod_level += 0.2
-                else:
-                    pass
+            if max_mod_level >= 1:
+                for mod_lv_str in mod_seg_levels_str_lst:
+                    if mod_lv_str.endswith(".1"):
+                        max_mod_level += 0.1
+                    elif mod_lv_str.endswith(".2"):
+                        max_mod_level += 0.2
+                    else:
+                        pass
+            else:
+                pass
         else:
             max_mod_level = 0
         # mod_info_dct["MOD_LEVEL"] = max_mod_level
