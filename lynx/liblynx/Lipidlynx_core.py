@@ -24,11 +24,11 @@ def lynx2sdf(abbr_lst, save_sdf):
                 with open(abbr_lst, "r") as infile_obj:
                     abbr_lst = infile_obj.readlines()
             else:
-                logger.error(f"Can NOT load input: {abbr_lst}")
+                logger.error(f"Can NOT __load__ input: {abbr_lst}")
                 logger.info("!! END PROCESSING !!")
                 exit()
         except Exception as e:
-            logger.error(f"Can NOT load input: {abbr_lst}")
+            logger.error(f"Can NOT __load__ input: {abbr_lst}")
             logger.error(e)
 
     fa_decoder = ParserFA()

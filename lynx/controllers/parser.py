@@ -9,8 +9,8 @@
 import re
 from typing import Dict, List, Union
 
-from ..models.log import logger
-from ..models.defaults import (
+from lynx.utils.log import logger
+from lynx.models.defaults import (
     class_rgx_dct,
     rgx_class_dct,
     cv_rgx_dct,
@@ -18,7 +18,57 @@ from ..models.defaults import (
     cv_order_list,
     cv_alias_info,
 )
-from ..controllers.general_functions import seg_to_str
+from lynx.utils.toolbox import seg_to_str
+
+
+def rule_parse(lipid_name: str, rules: dict) -> Dict[str, Union[str, dict]]:
+
+    """
+    Main parser to read input abbreviations
+    Args:
+        lipid_name: input lipid abbreviation to be converted
+        rules: the predefined dict in the form of lipid_class: re.compile(r"rule")
+
+    Returns:
+        parsed_info_dct: parsed information stored as dict
+
+    """
+
+    parsed_info_dct = {}
+
+    for c in rules:
+        c_search_rgx = rules[c].get("SEARCH", None)
+        c_match_rgx_dct = rules[c].get("MATCH", None)
+        c_lmsd_classes = rules[c].get("LMSD_CLASSES", None)
+        if c_search_rgx and isinstance(c_match_rgx_dct, dict):
+            class_search = c_search_rgx.search(lipid_name)
+            matched_info_dct = {}
+            if class_search:
+                for m in c_match_rgx_dct:
+                    m_pattern = c_match_rgx_dct[m]["MATCH"]
+                    m_groups = c_match_rgx_dct[m]["GROUPS"]  # type: list
+                    m_match = m_pattern.match(lipid_name)
+                    if m_match:
+                        matched_dct = {}
+                        matched_groups = m_match.groupdict()
+                        for g in m_groups:
+                            matched_dct[g] = matched_groups.get(g, "")
+                        matched_info_dct[m] = {
+                            "LMSD_CLASSES": c_lmsd_classes,
+                            "SEGMENTS": matched_dct,
+                            "RESIDUES_SEPARATOR": rules[c]["RESIDUES_SEPARATOR"],
+                            "SEPARATOR_LEVELS": rules[c]["SEPARATOR_LEVELS"],
+                        }
+                parsed_info_dct[c] = matched_info_dct
+            else:
+                pass
+        else:
+            logger.error(f"Cannot __load__ rules correctly: {rules}")
+
+    if not parsed_info_dct:
+        logger.error(f"Failed to decode Lipid: {lipid_name}")
+
+    return parsed_info_dct
 
 
 def parse(
@@ -121,7 +171,7 @@ def get_matched_info(
     General match function to find pattern by regular expression
     Args:
         abbr: input lipid abbreviation to be converted
-        rgx_lst: list of possible regular expression patterns for the input abbr in the form of List[re.compile]
+        rgx_lst: list of possible regular expression patterns for in the form of List[re.compile]
         rules_class_dct: the predefined dict in the form of re.compile(r"rule"): lipid_class
         ignore_case: set to False by default to be strict with cases defined in the patterns
 
@@ -259,11 +309,64 @@ def get_mod_cv(abbr: str = None) -> str:
 
 
 if __name__ == "__main__":
+    examples = [
+        "LPE 16:0",
+        "LPE 16:0/0:0",
+        "LPE O-18:1",
+        "LPE P-16:0",
+        "PE 34:2",
+        "PE 16:0_18:2",
+        "PE O-34:2",
+        "PE O-16:0_18:2",
+        "PE P-34:2",
+        "PE P-16:0_18:2",
+        "PIP 34:1",
+        "PIP 16:0_18:1",
+        "LPIP 16:0",
+        "LPIP 16:0/0:0",
+        "PIP2 34:2",
+        "PIP2 16:0_18:2",
+        "LPIP2 16:0",
+        "LPIP2 16:0/0:0",
+        "PIP3 34:2",
+        "PIP3 16:0_18:2",
+        "LPIP3 16:0",
+        "LPIP3 16:0/0:0",
+        "PEtOH 34:2",
+        "PEtOH 16:0_18:2",
+        "BMP 34:1",
+        "BMP 16:0_18:1",
+        "MG(16:0)",
+        "MG(0:0/0:0/16:0)",
+        "MG(0:0/16:0/0:0)",
+        "MG(16:0/0:0/0:0)",
+        "DG(34:2)",
+        "DG(16:0_18:2)",
+        "DG(O-34:2)",
+        "DG(O-16:0_18:2)",
+        "DG(P-34:2)",
+        "DG(P-16:0_18:2)",
+        "DG(P-16:0/0:0/18:2)",
+        "TG(52:2)",
+        "TG(16:0_18:0_18:2)",
+        "TG(16:0/18:2/18:0)",
+        "TG(O-52:2)",
+        "TG(O-16:0_18:0_18:2)",
+        "TG(O-16:0/18:2/18:0)",
+        "TG(P-52:2)",
+        "TG(P-16:0_18:0_18:2)",
+        "TG(P-16:0/18:2/18:0)",
+    ]
 
-    # s = r"O-a36:2"
-    # d = parse(s)
-    # print(d)
+    js_folder = r"../configurations/rules/input"
 
-    s = r"_O_OO,OOO_2OH_oxo2_OOH"
-    d = parse_mod(s)
-    print(d)
+    from lynx.controllers.params_loader import build_input_rules
+
+    all_rules = build_input_rules(js_folder)
+
+    for e in examples:
+        p = rule_parse(e, rules=all_rules)
+        logger.debug(e)
+        logger.debug(p)
+
+    logger.info("fin")

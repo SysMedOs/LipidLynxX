@@ -14,8 +14,8 @@ from natsort import natsorted
 
 from ..models.defaults import lipid_class_alias_info, cv_order_list, cv_alias_info
 
-from ..models.log import logger
-from ..controllers.general_functions import seg_to_str
+from lynx.utils.log import logger
+from lynx.utils.toolbox import seg_to_str
 from ..controllers.parser import parse, parse_mod
 
 
@@ -43,7 +43,7 @@ def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
                 lynx_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
             elif lipid_class == "PL":
                 lynx_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
-            elif lipid_class in ["Cer", "SM", "SP"]:
+            elif lipid_class in ["Cer", "SM", "SP", "GM1", "GM2", "GM3", "GM4"]:
                 lynx_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
             elif lipid_class == "GL":
                 lynx_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
@@ -141,7 +141,7 @@ def get_best_abbreviation(
     elif len(candidates_lst) == 1:
         lynx_code = candidates_lst[0]
     else:
-        logger.warning("Failed to generate epiLION abbreviation for this lipid...")
+        logger.warning("Failed to generate Lipid abbreviation for this lipid...")
 
     if lynx_code is None:
         lynx_code = ""
@@ -266,11 +266,11 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
 
     if o_info is not None:
         o_info_len = len(o_info)
-        if o_info_len <= 2 and re.match(r"\d{1,2}", o_info):
-            mod_lst.append(f"{o_info}O")
-        elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
-            mod_lst.append(o_info)
-        elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
+        if re.match(r"\d", o_info) and o_info_len < 2:
+            mod_lst.append(f"+{o_info}O")
+        elif 2 <= o_info_len <= 3 and re.match(r"\dO", o_info):
+            mod_lst.append(f"+{o_info}")
+        elif o_info_len > 3 and re.match(r"\d\(.*\)", o_info):
             mod_lst.extend(decode_mod(o_info[1:].strip("()[]<>")))
         else:
             mod_lst.extend(decode_mod(o_info))
@@ -284,7 +284,7 @@ def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) 
                 for mod_alia in mod_alias_lst:
                     for obs_mod in mod_lst:
                         if obs_mod and re.match(
-                            r"\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
+                            r"[+-]?\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
                             obs_mod,
                         ):
                             if obs_mod.startswith("DB"):
@@ -347,7 +347,7 @@ def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> 
     return lynx_code
 
 
-def encode_sub_fa(fa_abbr: str, add_mod: str = None):
+def encode_sub_residues(fa_abbr: str, add_mod: str = None):
     fa_candidates_lst = []
     class_info_lst = []
     if fa_abbr:
@@ -391,7 +391,9 @@ def encode_all_sub_fa(
     for f in fa_count_lst:
         fa_abbr = parsed_info.get(f"FA{f}", "")
         if fa_abbr:
-            fa_code = encode_sub_fa(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
+            fa_code = encode_sub_residues(
+                fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", "")
+            )
         else:
             fa_code = ""
         fa_info_lst.append(fa_code)
@@ -499,7 +501,7 @@ def encode_sp(parsed_info: dict) -> str:
     spb_abbr = parsed_info["SPB"]
     if not spb_abbr.startswith("SPB"):
         spb_abbr = f"SPB{spb_abbr}"
-    spb_code = encode_sub_fa(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
+    spb_code = encode_sub_residues(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
     fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=1, brackets=False)
     class_code = check_lipid_class_alias(parsed_info["CLASS"])
     if fa_code:

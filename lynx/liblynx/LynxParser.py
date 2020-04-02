@@ -13,9 +13,8 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem, rdMolDescriptors
 
-from ..models.log import logger
+from lynx.utils.log import logger
 from ..liblynx.LipidNomenclature import ParserFA, ParserPL
-from ..models.defaults import default_cfg_path
 from ..controllers.converter import convert_string
 
 

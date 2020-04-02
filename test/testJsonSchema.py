@@ -18,7 +18,7 @@ sys.path.insert(0, epiLION_Path + "/../")
 
 from lynx.models.defaults import lynx_schema_cfg, core_schema, core_schema_path
 from lynx.models.defaults import logger
-from lynx.controllers.general_functions import get_abs_path
+from lynx.utils.file_readers import get_abs_path
 
 
 JSON_SCHEMA_INFO = {
@@ -46,7 +46,7 @@ JSON_SCHEMA_INFO = {
     },
     # "lynx_core": {
     #     "core_S4.1": r"test/test_input/test_json/lynx_core_S4.1.json",
-    #     "core_S4.2": r"test/test_input/test_json/lynx_core_S4.2.json",
+    #     "core_S4.2": r"test/test_input/test_json/lynx_core_S5.2.json",
     # },
 }
 

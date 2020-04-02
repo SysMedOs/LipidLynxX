@@ -12,21 +12,20 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 
-from ..controllers.general_functions import check_json, get_abs_path
+from lynx.utils.file_readers import get_abs_path
+from lynx.utils.toolbox import check_json
 
-from .defaults import (
+from lynx.models.defaults import (
     api_version,
     cv_elements_info,
     elem_nominal_info,
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
-    mod_level_lst,
-    db_level_lst,
     mod_db_level_lst,
 )
-from .log import logger
-from .patterns import (
+from lynx.utils.log import logger
+from lynx.models.patterns import (
     mod_rgx,
     mod_db_rgx,
     mod_lv0_delta_rgx,
@@ -276,7 +275,7 @@ class Modifications(object):
                 }
         else:
             raise ValueError(
-                f"Cannot format modification code to level {self.mod_level} "
+                f"Cannot format_mods modification code to level {self.mod_level} "
                 f"from input: {self.mod_code}"
             )
 
@@ -474,11 +473,11 @@ if __name__ == "__main__":
         # r"<+3O,-2H>",
         # r"<2OH,Ke>",
         # r"<2OH{8,11},Ke{14}>",
-        r"<{5,9,12,15},2OH{8,11},Ke{14}>",
-        r"<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>",
-        r"<2OH{8R,11S},Ke{14}>",
-        r"<{5,9,12,15},2OH{8R,11S},Ke{14}>",
-        r"<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>",
+        r"<{5,9,12,15},2OH{8,11},oxo{14}>",
+        r"<{5Z,9E,12E,15E},2OH{8,11},oxo{14}>",
+        r"<2OH{8R,11S},oxo{14}>",
+        r"<{5,9,12,15},2OH{8R,11S},oxo{14}>",
+        r"<{5Z,9E,12E,15E},2OH{8R,11S},oxo{14}>",
         r"<{9}>",
         r"<{9,12}>",
         r"<{9Z}>",

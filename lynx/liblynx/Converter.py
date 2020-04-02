@@ -40,7 +40,7 @@ class Converter:
                 abbr_df = pd.read_csv(file, sep="\t")
             else:
                 abbr_df = pd.DataFrame()
-                logger.error(f"Can Not load file: {file}")
+                logger.error(f"Can Not __load__ file: {file}")
         else:
             raise FileNotFoundError
         abbr_df.fillna("", inplace=True)
