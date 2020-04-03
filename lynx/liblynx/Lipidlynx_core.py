@@ -8,8 +8,8 @@
 
 import os.path
 
-from rdkit import Chem
-from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
+# from rdkit import Chem
+# from rdkit.Chem import AllChem, Descriptors, rdMolDescriptors
 
 from lynx.models.defaults import logger
 from lynx.liblynx.LipidNomenclature import ParserFA, ParserPL

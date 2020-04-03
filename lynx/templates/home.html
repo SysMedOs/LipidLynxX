@@ -8,52 +8,67 @@
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="true">
         <div class="container">
-            <div><p>&nbsp;</p></div>
-            <div class="row align-items-center">
-                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
-                    <img alt="image" class="img-fluid"
-                         src="{{ url_for('.static', filename='images/LipidLynxX_Logo.png') }}"></p>
-                </div>
-                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
-                    <h1>Welcome to LipidLynxX</h1>
-                    <h2 class="lead">Tools:</h2>
-                    <div class="col-md-12">
-                        <div class="row">
-                            <p class="lead">Convert different abbreviations to unified LipidLynxX identifier. </p>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.converter') }}">Lipidome Converter</a>
-                            </div>
-                            <div class="col-md-6">
-                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Lipid Equalizer</a>
-                            </div>
-                        </div>
-{#                        <div class="row">#}
-{#                            <div class="col-md-6">#}
-{#                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.converter') }}">Epilipidome Converter</a>#}
-{#                            </div>#}
-{#                            <div class="col-md-6">#}
-{#                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Epilipidome Equalizer</a>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="row">#}
-{#                            <p class="lead">&nbsp;</p>#}
-{#                        </div>#}
-{#                        <div class="row">#}
-{#                            <p class="lead">2. Parse and decode associated information from LipidLynxX identifier. </p>#}
-{#                        </div>#}
-{#                        <div class="row">#}
-{#                            <div class="col-md-6">#}
-{#                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.parser') }}">Try LipidLynxX Parser</a>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    <p class="lead">...</p>#}
+            <div class="row">&nbsp;</div>
+            <div class="row">
+                <div class="col-3" style="z-index: 10000;">
+                    <div class="row">&nbsp;</div>
+                    <div class="row"><h3>&nbsp;</h3></div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row"><img alt="image" class="img-fluid"
+                                          src="../static/images/LipidLynxX_Logo.png"></div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <ul>
+                            <li>LipidLynxX version: {{ lynx_version }}</li>
+                            <li>API version: {{ api_version }}</li>
+                        </ul>
                     </div>
+                </div>
+                <div class="col-1" style="z-index: 10000;"></div>
+                <div class="col-8" style="z-index: 10000;">
+                    <div class="row">&nbsp;</div>
+                    <div class="row"><h3>Welcome to LipidLynxX<br></h3></div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-3">
+                            <a href="{{ url_for('.converter') }}"><img alt="image" class="img-fluid"
+                                                                       src="../static/images/converter_logo.png"></a>
 
+                        </div>
+                        <div class="col-9">
+                            <h3>LipidLynxX Nomenclature Converter</h3>
+                            <p class="lead">Convert different abbreviations to unified LipidLynxX
+                                identifier. </p>
+                            <div class="row">
+                                <div class="col-4"><a class="btn btn-info mt-4 btn-block"
+                                                      href="{{ url_for('.converter') }}">
+                                    Run Converter</a><br></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">&nbsp;</div>
+                    <div class="row">
+                        <div class="col-3">
+                            <a href="{{ url_for('.equalizer') }}"><img alt="image" class="img-fluid"
+                                                                       src="../static/images/equalizer_logo.png"></a>
+                        </div>
+                        <div class="col-9">
+
+                            <h3>LipidLynxX Nomenclature Equalizer</h3>
+                            <p class="lead">Bring lipid identifiers into same level of information and perform cross
+                                level matching. </p>
+                            <div class="row">
+                                <div class="col-4">
+                                    <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Run
+                                        Equalizer</a><br></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+        </div>
     </section>
 
 {% endblock %}

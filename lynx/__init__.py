@@ -18,7 +18,7 @@ import pandas as pd
 
 from werkzeug.utils import secure_filename
 
-from .liblynx.LynxParser import parse_lipidlynx
+# from .liblynx.LynxParser import parse_lipidlynx
 
 from lynx.utils.config import app_cfg_dct
 from lynx.utils.config import blueprint
@@ -43,6 +43,8 @@ from lynx.models.defaults import logger, cfg_info_dct, api_version
 from lynx.models.patterns import rgx_blank
 from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
+
+lynx_version = 0.2
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
@@ -74,7 +76,9 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
 
     r = requests.get(r_url, params={"data": json.dumps(data)}).json()
     excel_data = r["data"]
-    output_name = f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    output_name = (
+        f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    )
 
     for k in excel_data:
         if isinstance(excel_data[k], dict):
@@ -96,7 +100,9 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
 
 def run_equalizer(data: dict, level: Union[str, List[str]]):
     submitted = 0
-    output_name = f"LipidLynxX-Equalizer_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    output_name = (
+        f"LipidLynxX-Equalizer_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    )
     r_url = f"{base_url}{api.url_for(EqualizerAPI)}"
     logger.info(f"Use API - EqualizerAPI: {r_url}")
     r = requests.get(
@@ -122,7 +128,7 @@ def index():
 
 @blueprint.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("home.html", lynx_version=lynx_version, api_version=api_version)
 
 
 @blueprint.route("/converter", methods=["GET", "POST"])
@@ -269,15 +275,15 @@ def equalize_lipid():
     )
 
 
-@blueprint.route("/parser", methods=("GET", "POST"))
-def parser():
-    in_form = ParserInputForm()
-    if in_form.validate_on_submit():
-        out_dct = parse_lipidlynx(in_form.lion_id_str.data)
-    else:
-        out_dct = {}
-
-    return render_template("parser.html", out_dct=out_dct, in_form=in_form)
+# @blueprint.route("/parser", methods=("GET", "POST"))
+# def parser():
+#     in_form = ParserInputForm()
+#     if in_form.validate_on_submit():
+#         out_dct = parse_lipidlynx(in_form.lion_id_str.data)
+#     else:
+#         out_dct = {}
+#
+#     return render_template("parser.html", out_dct=out_dct, in_form=in_form)
 
 
 @blueprint.route("/downloads", methods=["GET", "POST"])
@@ -311,6 +317,13 @@ def download():
             attachment_filename=filename,
             as_attachment=True,
         )
+
+
+@blueprint.route("/about")
+def about():
+    return render_template(
+        "about.html", lynx_version=lynx_version, api_version=api_version
+    )
 
 
 app.register_blueprint(blueprint)
