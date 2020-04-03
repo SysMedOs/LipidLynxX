@@ -197,7 +197,7 @@ if __name__ == "__main__":
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
 
     # MS-DIAL
-    t_in = "Hex3Cer 18:1;2O/26:0;(3OH)"
+    t_in = "TG(16:0/18:2/9:0<oxo{9}>)"
 
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)

@@ -36,9 +36,9 @@ def get_equalizer_params():
 
 class StringConverterAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/converter/string/ -d 'data="PC 18:0_18:2"' -X GET
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/converter/string/ -d 'data="PC 18:0_18:2"' -X GET
     or
-    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/converter/string', params='data="PC 18:0_18:2"').json()
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/{api_version}/converter/string', params='data="PC 18:0_18:2"').json()
     """
 
     @staticmethod
@@ -57,7 +57,7 @@ class StringConverterAPI(Resource):
 
 class ListConverterAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/converter/dict/
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/converter/dict/
     -d 'data=["PC 16:0_18:2", "PC 18:0_18:2"]' -X GET
     """
 
@@ -77,7 +77,7 @@ class ListConverterAPI(Resource):
 
 class DictConverterAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/converter/dict/
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/converter/dict/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -X GET
     """
 
@@ -97,7 +97,7 @@ class DictConverterAPI(Resource):
 
 class ConverterAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/converter/dict/
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/converter/dict/
     -d 'data=Union[str|list|dict]' -X GET
     """
 
@@ -122,9 +122,9 @@ class ConverterAPI(Resource):
 
 class LevelEqualizerAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/level/ -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer/level/ -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level="D3"' -X GET
 
-    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer',
     params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":"D3"}).json()
     """
 
@@ -144,10 +144,10 @@ class LevelEqualizerAPI(Resource):
 
 class MultiLevelEqualizerAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/levels/
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer/levels/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=["D3","B2"]' -X GET
 
-    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer',
     params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":'["D3","B3"]'}).json()
     """
 
@@ -169,12 +169,12 @@ class MultiLevelEqualizerAPI(Resource):
 
 class EqualizerAPI(Resource):
     """
-    $ curl http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer/
+    $ curl http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer/
     -d 'data={"x":["PC 16:0_18:2"], "y":["PC 18:0_18:2"]}' -d 'level=Union[str, List[str]]' -X GET
 
     or
 
-    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/0.1/equalizer',
+    r=requests.get('http://127.0.0.1:5000/lipidlynx/api/{api_version}/equalizer',
     params={"data":'{"x":["PC 16:0_18:2"],"y":["PC 18:0_18:2"]}', "level":'["D3","B3"]'}).json()
     """
 

@@ -43,7 +43,9 @@ class Converter:
                 output_dct = self.convert_string(abbr, output_dct)
         return output_dct
 
-    def convert_dict(self, input_dct: Dict[str, Union[str, List[str]]]) -> Dict[str, dict]:
+    def convert_dict(
+        self, input_dct: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, dict]:
         output_dct = {}
         if input_dct and isinstance(input_dct, dict):
             for k in input_dct:
@@ -78,9 +80,10 @@ if __name__ == "__main__":
     from lynx.utils.log import logger
 
     t_in_lst = [
-        "GM3(d18:1/18:2(9Z,11Z)(12OH))",
-        "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
-        "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
+        # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
+        # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        "TG(16:0/18:2/9:0<oxo{9}>)",
     ]
     lynx_converter = Converter()
     for t_in in t_in_lst:
@@ -90,7 +93,7 @@ if __name__ == "__main__":
     t2_out = lynx_converter.convert(t_in_lst)
     logger.info(f"Input: {t_in_lst} -> Best Output: {t2_out}")
 
-    t3_out = lynx_converter.convert({'1': t_in_lst})
+    t3_out = lynx_converter.convert({"1": t_in_lst})
     logger.info(f"Input: {t_in_lst} -> Best Output: {t3_out}")
 
     logger.info("fin")

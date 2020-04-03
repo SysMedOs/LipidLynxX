@@ -221,22 +221,30 @@ class Encoder(object):
 
         parsed_info = self.extractor.extract(lipid_name)
         export_info = []
-        for p in parsed_info:
-            p_info = parsed_info[p]
-            logger.info(p_info)
-            for in_r in p_info:
-                r_info = p_info[in_r]  # type: dict
-                checked_seg_info = self.check_segments(r_info, in_r)
-                comp_dct = self.compile_segments(checked_seg_info)
-                export_info.append(comp_dct)
-        best_export_dct = self.get_best_id_series(export_info)
-        logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
+        if parsed_info:
+            for p in parsed_info:
+                p_info = parsed_info[p]
+                logger.info(p_info)
+                for in_r in p_info:
+                    r_info = p_info[in_r]  # type: dict
+                    checked_seg_info = self.check_segments(r_info, in_r)
+                    comp_dct = self.compile_segments(checked_seg_info)
+                    export_info.append(comp_dct)
+            best_export_dct = self.get_best_id_series(export_info)
+            logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
+        else:
+            best_export_dct = {}
 
         return best_export_dct
 
     def convert(self, lipid_name: str, import_rules: dict = default_input_rules) -> str:
         all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
-        return self.get_best_id(all_lv_id_dct)
+        best_id = ""
+        if all_lv_id_dct:
+            best_id = self.get_best_id(all_lv_id_dct)
+        else:
+            pass
+        return best_id
 
     def export_level(
         self,
@@ -301,7 +309,9 @@ if __name__ == "__main__":
         t1_out = lynx_gen.convert(t_in, import_rules=default_input_rules)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
         t_lv = "B0"
-        t2_out = lynx_gen.export_level(t_in, level=t_lv, import_rules=default_input_rules)
+        t2_out = lynx_gen.export_level(
+            t_in, level=t_lv, import_rules=default_input_rules
+        )
         logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
         t_lv_lst = ["B0", "D0"]
         t3_out = lynx_gen.export_levels(

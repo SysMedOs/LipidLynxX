@@ -39,7 +39,7 @@ from lynx.forms import (
     ParserInputForm,
     EqualizerInputForm,
 )
-from lynx.models.defaults import logger, cfg_info_dct
+from lynx.models.defaults import logger, cfg_info_dct, api_version
 from lynx.models.patterns import rgx_blank
 from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
@@ -49,13 +49,13 @@ app.config.from_object(DevConfig)
 # app.config['SERVER_NAME'] = 'lypidlynx.local'
 # init rest api to blue print
 api = Api(blueprint)
-api.add_resource(ConverterAPI, "/api/0.1/converter/")
-api.add_resource(StringConverterAPI, "/api/0.1/converter/string/")
-api.add_resource(ListConverterAPI, "/api/0.1/converter/list/")
-api.add_resource(DictConverterAPI, "/api/0.1/converter/dict/")
-api.add_resource(EqualizerAPI, "/api/0.1/equalizer/")
-api.add_resource(LevelEqualizerAPI, "/api/0.1/equalizer/level/")
-api.add_resource(MultiLevelEqualizerAPI, "/api/0.1/equalizer/levels/")
+api.add_resource(ConverterAPI, f"/api/{api_version}/converter/")
+api.add_resource(StringConverterAPI, f"/api/{api_version}/converter/string/")
+api.add_resource(ListConverterAPI, f"/api/{api_version}/converter/list/")
+api.add_resource(DictConverterAPI, f"/api/{api_version}/converter/dict/")
+api.add_resource(EqualizerAPI, f"/api/{api_version}/equalizer/")
+api.add_resource(LevelEqualizerAPI, f"/api/{api_version}/equalizer/level/")
+api.add_resource(MultiLevelEqualizerAPI, f"/api/{api_version}/equalizer/levels/")
 
 base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
 
@@ -107,6 +107,7 @@ def run_equalizer(data: dict, level: Union[str, List[str]]):
     if excel_data:
         submitted = 1
         excel_data = json.dumps(r.get("data", {}))
+        logger.info("Equalizer")
         logger.info(excel_data)
     else:
         excel_data = None

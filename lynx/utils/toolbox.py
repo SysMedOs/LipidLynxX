@@ -54,7 +54,9 @@ def clean_dct(dct: dict) -> dict:
     return dct
 
 
-def keep_string_only(data: Union[list, Dict[str, list]]) -> Union[list, Dict[str, list]]:
+def keep_string_only(
+    data: Union[list, Dict[str, list]]
+) -> Union[list, Dict[str, list]]:
     filtered_data = None
     if isinstance(data, list):
         filtered_data = [d for d in data if isinstance(d, str) and len(d) > 0]
