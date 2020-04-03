@@ -13,7 +13,7 @@ from jsonschema import Draft7Validator, RefResolver
 from natsort import natsorted
 import regex as re
 
-from lynx.controllers.params_loader import load_output_rule
+from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import (
     api_version,
     lynx_schema_cfg,

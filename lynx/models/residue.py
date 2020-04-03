@@ -8,12 +8,11 @@
 
 import json
 import os
-from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator, RefResolver
 import regex as re
 
-from lynx.controllers.params_loader import load_output_rule
+from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import (
     api_version,
     mod_level_lst,
@@ -21,10 +20,6 @@ from lynx.models.defaults import (
     hg_schema_path,
     res_schema,
     res_schema_path,
-    lynx_schema_cfg,
-    core_schema,
-    core_schema_path,
-    mod_db_level_lst,
     default_output_rules,
 )
 from lynx.models.modifications import Modifications

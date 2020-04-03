@@ -15,7 +15,7 @@ from rdkit.Chem import AllChem, rdMolDescriptors
 
 from lynx.utils.log import logger
 from ..liblynx.LipidNomenclature import ParserFA, ParserPL
-from ..controllers.converter import convert_string
+from ..controllers.converter import Converter
 
 
 def parse_lipidlynx(abbr: str) -> dict:
@@ -25,7 +25,7 @@ def parse_lipidlynx(abbr: str) -> dict:
 
     info_dct = {}
 
-    converted_dct = convert_string(abbr)
+    converted_dct = Converter.convert_string(abbr)
     lynx_id_lst = converted_dct.get("output", [])
     if len(lynx_id_lst) == 1:
         lynx_id = lynx_id_lst[0]
