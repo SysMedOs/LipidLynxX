@@ -11,7 +11,7 @@ import re
 
 # from rdkit input Chem
 
-from ..models.defaults import elem_info, logger, mod_cfg_df, pl_smi_info
+from ..models.defaults import elem_info, logger, pl_smi_info
 
 from ..liblynx.Lipids import FA
 from ..liblynx.AbbrElemCalc import ElemCalc

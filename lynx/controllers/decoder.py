@@ -16,7 +16,7 @@ from lynx.models.defaults import default_input_rules
 from lynx.utils.log import logger
 
 
-class Extractor(object):
+class Decoder(object):
     def __init__(self, rules: dict = default_input_rules):
         self.rules = rules
         self.formatter = Formatter()
@@ -197,9 +197,9 @@ if __name__ == "__main__":
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
 
     # MS-DIAL
-    t_in = "Hex3Cer 18:1;2O/26:0;(3OH)"
+    t_in = "TG(16:0/18:2/9:0<oxo{9}>)"
 
-    extractor = Extractor(rules=default_input_rules)
+    extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 
     logger.info(t_out)

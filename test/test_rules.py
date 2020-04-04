@@ -35,7 +35,7 @@ def test_input_rule(test_file):
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path(r"../lynx/configurations/rules/LipidLynxX.json")
+        in_file = get_abs_path(r"../lynx/configurations/rules/input/LipidLynxX.json")
     logger.info(f"Test file {in_file}")
     rule = InputRules(test_file)
     logger.debug(f"Got infile {in_file}")

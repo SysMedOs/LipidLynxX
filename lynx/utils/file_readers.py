@@ -177,40 +177,45 @@ def create_output(data: dict) -> BytesIO:
 def create_equalizer_output(sum_data: dict) -> BytesIO:
 
     if sum_data:
-        excel_io = BytesIO()
-        xlsx_writer = pd.ExcelWriter(
-            excel_io, engine="openpyxl"
+        table_io = BytesIO()
+        table_writer = pd.ExcelWriter(
+            table_io, engine="openpyxl"
         )  # write to BytesIO instead of file path
         for lv in sum_data:
             data = sum_data[lv]
-            if "matched" in data:
-                matched_dct = data["matched"]
-                if matched_dct:
-                    out_matched_df = pd.DataFrame.from_dict(matched_dct, orient="index")
-                    out_matched_df.index.names = [f"ID@Lv_{lv}"]
-                    out_matched_df.sort_index().to_excel(
-                        xlsx_writer, sheet_name=f"matched_{lv}"
-                    )
-            if "equalized" in data:
-                equalized_dct = data["equalized"]
-                if equalized_dct:
-                    pd.DataFrame.from_dict(
-                        equalized_dct, orient="index"
-                    ).sort_index().to_excel(xlsx_writer, sheet_name=f"unmatched_{lv}")
-            if "skipped" in data:
-                skipped_dct = data["skipped"]
-                if skipped_dct:
-                    pd.DataFrame.from_dict(
-                        skipped_dct, orient="index"
-                    ).T.sort_index().to_excel(
-                        xlsx_writer, sheet_name=f"skipped_{lv}", index=False
-                    )
+            for k in data:
+                if k.lower().startswith("match"):
+                    matched_dct = data[k]
+                    if matched_dct:
+                        out_matched_df = pd.DataFrame.from_dict(
+                            matched_dct, orient="index"
+                        )
+                        out_matched_df.index.names = [f"ID@Lv_{lv}"]
+                        out_matched_df.sort_index().to_excel(
+                            table_writer, sheet_name=f"matched_{lv}"
+                        )
+                elif k.lower().startswith("equalized"):
+                    equalized_dct = data[k]
+                    if equalized_dct:
+                        pd.DataFrame.from_dict(
+                            equalized_dct, orient="index"
+                        ).sort_index().to_excel(table_writer, sheet_name=f"unmatched")
+                elif k.lower().startswith("skipped"):
+                    skipped_dct = data[k]
+                    if skipped_dct:
+                        pd.DataFrame.from_dict(
+                            skipped_dct, orient="index"
+                        ).T.sort_index().to_excel(
+                            table_writer, sheet_name="skipped", index=False
+                        )
+                else:
+                    pass
 
-        xlsx_writer.save()
-        excel_io.seek(0)
+        table_writer.save()
+        table_io.seek(0)
     else:
-        excel_io = None
-    return excel_io
+        table_io = None
+    return table_io
 
 
 def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):

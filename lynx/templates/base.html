@@ -17,8 +17,8 @@
 <header data-block-type="headers" data-id="1" data-vivaldi-spatnav-clickable="1">
     <nav class="navbar navbar-expand-lg" style="background-color: #e97C31;">
         <a class="navbar-brand text-light" href="{{ url_for('index') }}">
-            <img src="{{ url_for('.static', filename='images/LipidLynxX_Logo.png') }}" height="42" alt="logo">
-            LipidLynx
+            <img src="../static/images/LipidLynxX_Logo.png" height="42" alt="logo">
+            LipidLynxX
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav1"
                 aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,12 @@
                     <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Home </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.converter') }}" target="_blank"> Converter </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.equalizer') }}" target="_blank"> Equalizer </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> User Guide </a>
                 </li>
                 <li class="nav-item">
@@ -40,7 +46,7 @@
                     <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Nomenclature </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> About </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.about') }}" target="_blank"> About LipidLynxX </a>
                 </li>
             </ul>
         </div>
@@ -73,7 +79,7 @@
         </div>
         <div class="row">
             <div class="col text-center">
-                <h6 class="text-dark">Under development by team SysMedOs</h6>
+                <h6 class="text-dark">Developed by team SysMedOs</h6>
             </div>
         </div>
     </div>

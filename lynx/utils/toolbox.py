@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
@@ -52,3 +52,22 @@ def clean_dct(dct: dict) -> dict:
         pass
 
     return dct
+
+
+def keep_string_only(
+    data: Union[list, Dict[str, list]]
+) -> Union[list, Dict[str, list]]:
+    filtered_data = None
+    if isinstance(data, list):
+        filtered_data = [d for d in data if isinstance(d, str) and len(d) > 0]
+    elif isinstance(data, dict):
+        filtered_data = {}
+        for k in data:
+            filtered_data[k] = [v for v in data[k] if isinstance(v, str) and len(v) > 0]
+    else:
+        raise TypeError
+
+    if filtered_data:
+        return filtered_data
+    else:
+        raise ValueError

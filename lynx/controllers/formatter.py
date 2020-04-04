@@ -35,7 +35,18 @@ class Formatter(object):
         return delta
 
     def format_mods(self, info: dict) -> dict:
-        mod_type_lst = info.get("MOD_TYPE", [])
+        raw_mod_type_lst = info.get("MOD_TYPE", [])
+        mod_type_lst = []
+        if raw_mod_type_lst and len(raw_mod_type_lst) > 1:
+            if raw_mod_type_lst[0] not in ["DB", ""]:
+                mod_type_lst.append(raw_mod_type_lst[0])
+                for idx in range(1, len(mod_type_lst) + 1):
+                    if raw_mod_type_lst[idx]not in ["DB", ""]:
+                        mod_type_lst.append(raw_mod_type_lst[idx])
+            else:
+                mod_type_lst = raw_mod_type_lst
+        else:
+            mod_type_lst = raw_mod_type_lst
         mod_site_lst = info.get("MOD_SITE", [])
         mod_site_info_lst = info.get("MOD_SITE_INFO", [])
         mod_site_lst = [s.strip(" ") for s in mod_site_lst]
@@ -54,18 +65,21 @@ class Formatter(object):
                         logger.debug(f"mod_type: {mod_type} identified as {matched_cv}")
                         formatted_mod_type_lst.append(matched_cv)
                         if matched_cv == "Delta":
-                            mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get("LEVEL", 0)
+                            mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get(
+                                "LEVEL", 0
+                            )
                             mass_shift_dct[matched_cv] = int(mod_type)
                             break
                         else:
                             mod_lv_dct[matched_cv] = max(
-                                mod_lv_dct.get(matched_cv, 0), self.alias2cv[alia].get("LEVEL", 0)
+                                mod_lv_dct.get(matched_cv, 0),
+                                self.alias2cv[alia].get("LEVEL", 0),
                             )
 
         if (
             mod_type_lst
             and formatted_mod_type_lst
-            and len(mod_type_lst) == formatted_mod_type_lst
+            and len(mod_type_lst) == len(formatted_mod_type_lst)
         ):
             info["MOD_TYPE"] = formatted_mod_type_lst
 
@@ -80,7 +94,14 @@ class Formatter(object):
             formatted_mod_lst = zip(
                 formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
             )
+        elif len(formatted_mod_type_lst) == len(mod_site_lst):
+            mod_site_info_lst = [""] * len(formatted_mod_type_lst)
+            formatted_mod_lst = zip(
+                formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
+            )
         else:
+            if 0 < len(mod_site_lst) < len(formatted_mod_type_lst):
+                logger.warning(f'mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}')
             formatted_mod_lst = []
 
         mod_info_dct = {}
@@ -88,13 +109,15 @@ class Formatter(object):
             for mod_tp in formatted_mod_lst:
                 mod_type = mod_tp[0]
                 mod_order = self.raw_cv[mod_type].get("ORDER", 0)
-                existed_mod_count = mod_info_dct.get(f'{mod_order}_{mod_type}', {}).get("MOD_COUNT", 0)
-                existed_mod_site_lst = mod_info_dct.get(f'{mod_order}_{mod_type}', {}).get(
-                    "MOD_SITE", []
+                existed_mod_count = mod_info_dct.get(f"{mod_order}_{mod_type}", {}).get(
+                    "MOD_COUNT", 0
                 )
-                existed_mod_site_info_lst = mod_info_dct.get(f'{mod_order}_{mod_type}', {}).get(
-                    "MOD_SITE_INFO", []
-                )
+                existed_mod_site_lst = mod_info_dct.get(
+                    f"{mod_order}_{mod_type}", {}
+                ).get("MOD_SITE", [])
+                existed_mod_site_info_lst = mod_info_dct.get(
+                    f"{mod_order}_{mod_type}", {}
+                ).get("MOD_SITE_INFO", [])
                 existed_mod_site_lst.append(mod_tp[1]),
                 existed_mod_site_info_lst.append(mod_tp[2])
                 mod_level = 0
@@ -124,6 +147,13 @@ class Formatter(object):
                         pass
                 else:
                     mod_level = mod_lv_dct.get(mod_type, 0)
+                    if mod_tp[1] != "" and mod_tp[2] == "":
+                        mod_level += 1
+                    elif mod_tp[1] != "" and mod_tp[2] != "":
+                        mod_level += 2
+                    else:
+                        pass
+
                 mod_level += db_mod_level
                 updated_mod_info = {
                     "MOD_CV": mod_type,
@@ -131,19 +161,28 @@ class Formatter(object):
                     "MOD_COUNT": mod_count,
                     "MOD_SITE": existed_mod_site_lst,
                     "MOD_SITE_INFO": existed_mod_site_info_lst,
-                    "MOD_ORDER": mod_order
+                    "MOD_ORDER": mod_order,
                 }
                 if mod_type in self.raw_cv:
-                    updated_mod_info["MOD_ELEMENTS"] = self.raw_cv[mod_type].get("ELEMENTS", {})
-                    if mod_type not in ["Delta", "DB"] and mod_type not in mass_shift_dct:
-                        updated_mod_info["MOD_MASS_SHIFT"] = self.to_mass_shift(updated_mod_info["MOD_ELEMENTS"])
+                    updated_mod_info["MOD_ELEMENTS"] = self.raw_cv[mod_type].get(
+                        "ELEMENTS", {}
+                    )
+                    if (
+                        mod_type not in ["Delta", "DB"]
+                        and mod_type not in mass_shift_dct
+                    ):
+                        updated_mod_info["MOD_MASS_SHIFT"] = self.to_mass_shift(
+                            updated_mod_info["MOD_ELEMENTS"]
+                        )
                     elif mod_type == "Delta" and mod_type in mass_shift_dct:
-                        updated_mod_info["MOD_MASS_SHIFT"] = mass_shift_dct.get("Delta", 0)
+                        updated_mod_info["MOD_MASS_SHIFT"] = mass_shift_dct.get(
+                            "Delta", 0
+                        )
                     else:
                         updated_mod_info["MOD_MASS_SHIFT"] = 0
                 else:
                     raise ValueError(f"Unsupported modification type: {mod_type}")
-                mod_info_dct[f'{mod_order}_{mod_type}'] = updated_mod_info
+                mod_info_dct[f"{mod_order}_{mod_type}"] = updated_mod_info
         else:
             pass
         mod_seg_levels_lst = []
@@ -179,9 +218,12 @@ class Formatter(object):
         num_o_lst = info.get("NUM_O", ["0"])
         num_o = 0
         if num_o_lst:
-            if num_o_lst[0] != "":
+            if num_o_lst[0] not in ["", " "]:
                 num_o_str = str(num_o_lst[0]).strip("O")
-                num_o = int(num_o_str)
+                try:
+                    num_o = int(num_o_str)
+                except ValueError:
+                    pass
             else:
                 pass
         else:

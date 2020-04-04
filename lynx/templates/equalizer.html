@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    LipidLynxX
+    Equalizer@LipidLynxX
 {% endblock %}
 
 {% block body %}
@@ -13,6 +13,7 @@
                 <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
                     <h2>Set the LipidLynxX level(s)</h2>
                     <h2></h2>
+                    <h5>You can set one level (e.g. B0) or multiple levels separated by "," (e.g. B0,D0).</h5>
                     <div>
                         <form id="in_form" method="post" action="{{ url_for('.equalize_lipid') }}"
                               enctype="multipart/form-data">
