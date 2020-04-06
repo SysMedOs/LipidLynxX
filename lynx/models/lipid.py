@@ -23,8 +23,6 @@ from ..models.defaults import (
     mod_db_level_lst,
 )
 from lynx.utils.log import logger
-from .patterns import fa_rgx, pl_rgx, sp_rgx, gl_rgx, cl_rgx
-from .residue import LipidClass, FattyAcid
 
 
 class Lipid(object):
