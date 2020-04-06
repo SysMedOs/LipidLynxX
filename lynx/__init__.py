@@ -19,9 +19,7 @@ from werkzeug.utils import secure_filename
 
 # from .liblynx.LynxParser import parse_lipidlynx
 
-from lynx.config import api_url_info
-from lynx.config import blueprint
-from lynx.config import DevConfig
+from lynx.config import api_url_info, base_url, blueprint, DevConfig
 from lynx.forms import (
     ConverterTableInputForm,
     ConverterTextInputForm,
@@ -37,10 +35,7 @@ lynx_version = 0.2
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
-# app.config['SERVER_NAME'] = 'lypidlynx.local'
-# init rest api to blue print
-
-base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
+# app.config['SERVER_NAME'] = 'lynx.local'
 
 
 def run_converter(data: Union[List[str], Dict[str, List[str]]]):
@@ -109,7 +104,9 @@ def index():
 
 @blueprint.route("/")
 def home():
-    return render_template("home.html", lynx_version=lynx_version, api_version=api_version)
+    return render_template(
+        "home.html", lynx_version=lynx_version, api_version=api_version
+    )
 
 
 @blueprint.route("/converter", methods=["GET", "POST"])

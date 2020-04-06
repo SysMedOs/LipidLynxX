@@ -18,7 +18,7 @@ from lynx.models.defaults import (
     res_schema_path,
     default_output_rules,
 )
-from lynx.models.mod import Mods, merge_mods
+from lynx.models.modification import Modifications, merge_mods
 from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
 
@@ -47,7 +47,7 @@ class Residue(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        self.mod_obj = Mods(mod_info)
+        self.mod_obj = Modifications(mod_info)
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level

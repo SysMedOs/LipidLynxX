@@ -36,16 +36,18 @@ class DevConfig(Config):
 
 
 base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
+app_name = "lynx"
 app_url_prefix = "/lynx"
 
 blueprint = Blueprint(
-    "lynx",
+    app_name,
     __name__,
     template_folder=r"templates",
     static_folder=r"static",
     url_prefix=app_url_prefix,
 )
 
+# init rest api to blue print
 api = Api(blueprint)
 api_cfg_info = {
     "convert": (ConverterAPI, f"/api/{api_version}/converter/"),

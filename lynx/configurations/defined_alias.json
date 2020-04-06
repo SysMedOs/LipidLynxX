@@ -1,0 +1,25 @@
+{
+  "RESIDUES": {
+    "RESIDUE": {
+      "22:6<OH>": ["HDoHE"],
+      "22:5<OH>": ["HDoPE"],
+      "22:4<OH>": ["HDoTE"],
+      "20:5<OH>": ["HEPE"],
+      "20:4<OH>": ["HETE"]
+    }
+  },
+  "LIPID_CLASSES": {
+    "FA01": {
+      "FA2:0":  ["ethanoic acid", "acetic acid"],
+      "FA3:0":  ["propanoic acid"],
+      "FA4:0":  ["butanoic acid","butyric acid"],
+      "FA5:0":  ["pentanoic acid", "valeric acid"],
+      "FA16:0":  ["hexadecanoic acid", "palmitic acid"],
+      "22:6<OH>": ["HDoHE"],
+      "22:5<OH>": ["HDoPE"],
+      "22:4<OH>": ["HDoTE"],
+      "20:5<OH>": ["HEPE"],
+      "20:4<OH>": ["HETE"]
+    }
+  }
+}

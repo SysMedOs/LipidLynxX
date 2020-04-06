@@ -27,7 +27,7 @@ from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
 
 
-class Mods(object):
+class Modifications(object):
     def __init__(
         self,
         mod_info: dict,
@@ -356,7 +356,7 @@ def merge_mods(
     schema: str = "lynx_mod",
     output_rules: dict = default_output_rules,
     nomenclature: str = "LipidLynxX",
-) -> Mods:
+) -> Modifications:
     sum_mods_dct = {}
     if isinstance(mods_collection, list):
         pass
@@ -371,7 +371,7 @@ def merge_mods(
         )
 
     for mod_seg in mods_collection:
-        if isinstance(mod_seg, Mods):
+        if isinstance(mod_seg, Modifications):
             mod_info = mod_seg.mod_info
         elif isinstance(mod_seg, dict):
             mod_info = mod_seg.get("MOD_INFO", {})
@@ -405,7 +405,7 @@ def merge_mods(
             sum_mod_seg_info["MOD_SITE_INFO"] = [""] * mod_seg_count
         sum_mods_dct[sum_mod_idx] = sum_mod_seg_info
 
-    sum_mod_obj = Mods({"MOD_LEVEL": max_level, "MOD_INFO": sum_mods_dct})
+    sum_mod_obj = Modifications({"MOD_LEVEL": max_level, "MOD_INFO": sum_mods_dct})
 
     return sum_mod_obj
 
@@ -438,7 +438,7 @@ if __name__ == "__main__":
         },
     }
 
-    usr_mod_obj = Mods(usr_mod_info)
+    usr_mod_obj = Modifications(usr_mod_info)
     logger.debug(usr_mod_obj)
     mod_json = usr_mod_obj.to_json()
 
