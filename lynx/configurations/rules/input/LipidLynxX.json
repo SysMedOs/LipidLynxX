@@ -143,11 +143,26 @@
         "34:1<+O,-2H>"
       ]
     },
+    "RESIDUE_ALIAS": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "ALIAS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR"
+      ],
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "ALIAS": "[-,0-9a-zA-Z\\s]{3,}",
+      "EXAMPLES": [
+        "HETE",
+        "/HDoTE"
+      ]
+    },
     "SUM_RESIDUES": {
       "ORDER": [
         "RESIDUE"
       ],
-      "RESIDUE": "($.RESIDUES.RESIDUE.0)|(($.SEPARATORS.RESIDUE_SEPARATOR.0)?(?P<SPECIFIC_RESIDUE>[-,0-9a-zA-Z]{3,}))",
+      "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
       "REPEAT": {
         "RESIDUE": [1, 4]
       },
@@ -163,6 +178,31 @@
     }
   },
   "LIPID_CLASSES": {
+    "FA_ALIAS": {
+      "LMSD_CLASSES": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04",
+        "FA07"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "CLASS"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "Acylcarnitine[\\s]?",
+      "CLASS":  "",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "Palmitic acid"
+      ]
+    },
     "FA": {
       "LMSD_CLASSES": [
         "FA01",

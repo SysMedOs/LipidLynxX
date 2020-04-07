@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
@@ -14,164 +14,13 @@ import regex as re
 
 from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import (
-    api_version,
-    mod_level_lst,
-    hg_schema,
-    hg_schema_path,
     res_schema,
     res_schema_path,
     default_output_rules,
 )
-from lynx.models.modifications import Modifications
-from lynx.models.mod import Mods, merge_mods
-from lynx.models.patterns import fa_rgx
+from lynx.models.modification import Modifications, merge_mods
 from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
-
-
-class LipidClass(object):
-    def __init__(self, hg_code: str):
-        self.hg = hg_code
-        self.schema = "lynx_hg"
-        self.lynx_type = "HeadGroup"
-        resolver = RefResolver(
-            referrer=hg_schema, base_uri=f"file://{os.path.dirname(hg_schema_path)}/"
-        )
-        self.validator = Draft7Validator(hg_schema, resolver=resolver)
-
-        self.sum_info = {
-            "api_version": api_version,
-            "id": hg_code,
-            "type": self.lynx_type,
-            "level": "S",
-        }
-        self.id = hg_code
-
-    def to_json(self):
-        mod_json_str = json.dumps(self.sum_info)
-        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
-            return mod_json_str
-        else:
-            raise Exception(f"Schema test FAILED. Schema {self.schema}")
-
-
-class FattyAcid(object):
-    def __init__(self, lipid_code: str, db: int = 0):
-
-        self.lipid_code = lipid_code.strip("FA")
-        self.schema = "lynx_fa"
-        self.type = "FattyAcid"
-        resolver = RefResolver(
-            referrer=res_schema, base_uri=f"file://{os.path.dirname(res_schema_path)}/"
-        )
-        self.validator = Draft7Validator(res_schema, resolver=resolver)
-
-        self.fa_info_dct = self.__post_init__()
-        self.fa_info_dct["id"] = self.lipid_code
-        self.info = self.fa_info_dct["info"]
-
-        self.mod_info = self.fa_info_dct.get("mod_obj", None)
-        if db and db < self.fa_info_dct["info"]["db"]:
-            self.db_count = db
-        else:
-            self.db_count = self.fa_info_dct["info"]["db"]
-        self.id = self.fa_info_dct.get("id", "")
-        self.fa_level = self.fa_info_dct.get("level", "")
-        self.is_modified = self.fa_info_dct["info"].get("is_modified", False)
-        self.fa_linked_ids = self.fa_info_dct.get("linked_ids", {})
-        logger.debug(
-            f"Level {self.fa_level:4s} FattyAcid created from: {self.lipid_code}"
-        )
-
-    def __post_init__(self):
-
-        fa_info_dct = {"api_version": api_version, "type": self.type, "info": {}}
-        fa_match = fa_rgx.match(self.lipid_code)
-
-        is_modified = False
-
-        if fa_match:
-
-            fa_matched_dct = fa_match.groupdict()
-            mod_code = fa_matched_dct.get("mod", None)
-            fa_link = fa_matched_dct.get("link", "")
-            if not fa_link:
-                fa_link = "FA"
-            fa_info_dct["info"] = {
-                "c": int(fa_matched_dct.get("c", 0)),
-                "db": int(fa_matched_dct.get("db", 0)),
-                "link": fa_link,
-            }
-            fa_seg_str = (
-                f'{fa_link}{fa_matched_dct.get("c", 0)}:{fa_matched_dct.get("db", 0)}'
-            )
-            if fa_seg_str.lower().startswith("none"):
-                fa_seg_str = fa_seg_str[4:]
-            if mod_code and mod_code.strip("<>"):  # mod_code can be None or '<>'
-                mod_obj = Modifications(mod_code)
-                fa_info_dct["mod_obj"] = mod_obj
-                fa_info_dct["level"] = f"{mod_obj.mod_level}"
-                fa_linked_ids_dct = {}
-                mod_linked_ids_dct = mod_obj.mod_linked_ids  # type: dict
-                for lv in mod_linked_ids_dct:
-                    fa_linked_ids_dct[f"{lv}"] = f"{fa_seg_str}{mod_linked_ids_dct[lv]}"
-                fa_info_dct["linked_ids"] = fa_linked_ids_dct
-
-                if mod_obj.mod_list:
-                    for mod_seg in mod_obj.mod_list:
-                        if (
-                            mod_seg.get("cv", "DB") != "DB"
-                            and mod_seg.get("count", 0) != 0
-                        ):
-                            is_modified = True
-                            fa_info_dct["info"]["is_modified"] = is_modified
-                            fa_info_dct["info"]["modifications"] = mod_obj.sum_mod_info
-                        else:
-                            fa_info_dct["info"]["is_modified"] = is_modified
-            else:
-                if fa_matched_dct.get("db", 0) == 0:
-                    fa_info_dct["level"] = "5.2"
-                    for mod_lv in mod_level_lst:
-                        fa_info_dct["linked_ids"][mod_lv] = fa_seg_str
-                else:
-                    fa_info_dct["level"] = "5"
-                    fa_info_dct["linked_ids"] = {
-                        "0": fa_seg_str,
-                        "1": fa_seg_str,
-                        "2": fa_seg_str,
-                        "3": fa_seg_str,
-                        "4": fa_seg_str,
-                        "5": fa_seg_str,
-                    }
-                if self.lipid_code != fa_seg_str:
-                    self.lipid_code = fa_seg_str
-                fa_info_dct["info"]["is_modified"] = is_modified
-            return fa_info_dct
-        else:
-            raise ValueError(f"Cannot parse FA sting: {self.lipid_code}")
-
-    def to_json(self):
-        fa_lite_info_dct = self.fa_info_dct
-        fa_lite_info_dct.pop("mod_obj", None)
-        fa_json_str = json.dumps(fa_lite_info_dct)
-        if check_json(self.validator, json.loads(fa_json_str)):
-            return fa_json_str
-        else:
-            raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
-
-    def to_segments(self, mod_level: str):
-
-        out_fa_info_dct = self.info
-        if (
-            self.mod_info
-            and self.mod_info.mod_linked_ids
-            and mod_level in mod_level_lst
-            and float(mod_level) <= float(mod_level)
-        ):
-            out_fa_info_dct["mod_id"] = self.mod_info.mod_linked_ids.get(mod_level, "")
-        else:
-            out_fa_info_dct["mod_id"] = ""
-        return out_fa_info_dct
 
 
 class Residue(object):
@@ -198,7 +47,7 @@ class Residue(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        self.mod_obj = Mods(mod_info)
+        self.mod_obj = Modifications(mod_info)
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level

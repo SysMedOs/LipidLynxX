@@ -18,7 +18,7 @@ from lynx.models.rules import InputRules, OutputRules
 from lynx.utils.file_readers import get_abs_path
 
 test_input_files = [
-    # r"../lynx/configurations/rules/input/LipidLynxX.json",
+    r"../lynx/configurations/rules/input/LipidLynxX.json",
     r"../lynx/configurations/rules/input/MS-DIAL.json",
     r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json"
 ]
@@ -51,7 +51,6 @@ def test_input_rule(test_file):
 def test_output_rule(test_file):
     logger.debug("SETUP TESTS...")
     logger.info(test_file)
-    # in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     in_file = None
     if test_file:
         in_file = get_abs_path(test_file)

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
@@ -31,8 +29,8 @@ cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
 api_version = cfg_info_dct.get("api_version", '0.1')
 default_input_rules = build_input_rules(cfg_info_dct["input_rules"])
 default_output_rules = build_output_rules(cfg_info_dct["output_rules"])
-
 default_cv_file = get_abs_path(cfg_info_dct["controlled_vocabularies"])
+default_alias_file = get_abs_path(cfg_info_dct["defined_alias"])
 with open(default_cv_file, "r") as cv_js:
     cv_alias_json = json.load(cv_js)
 cv_order_list = []
@@ -44,7 +42,7 @@ for _mod in cv_alias_json:
     cv_elements_info[_mod["cv"]] = _mod["elements"]
 
 cv_rgx_dct = build_mod_parser(cv_alias_info)
-abbr_cfg_df = pd.read_excel(cfg_info_dct["defined_alias"])
+# abbr_cfg_df = pd.read_excel(cfg_info_dct["defined_alias"])
 
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "4", "5"]

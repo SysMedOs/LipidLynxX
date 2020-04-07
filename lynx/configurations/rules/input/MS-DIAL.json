@@ -112,6 +112,21 @@
         "/18:2(9Z,12Z)"
       ]
     },
+    "RESIDUE_ALIAS": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "ALIAS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR"
+      ],
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "ALIAS": "[-,0-9a-zA-Z\\s]{3,}",
+      "EXAMPLES": [
+        "HETE",
+        "/HDoTE"
+      ]
+    },
     "SUM_RESIDUES": {
       "ORDER": [
         "RESIDUE"
@@ -122,7 +137,7 @@
           4
         ]
       },
-      "RESIDUE": "($.RESIDUES.RESIDUE.0)|(($.SEPARATORS.RESIDUE_SEPARATOR.0)?(?P<SPECIFIC_RESIDUE>[-,0-9a-zA-Z]{3,}))",
+      "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",
