@@ -308,23 +308,27 @@ if __name__ == "__main__":
         # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
         # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
         # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
-        "TG(16:0/18:2/HETE)",
-        # "DHA",
+        # "TG(16:0/18:2/PA)",
+        "PE O-p 32:1",
+        "PE O-a 36:2",
+        "PE O-18:1a/18:1",
+        "PE O-p 36:2",
+        "PE O-18:1p/18:1",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in, import_rules=default_input_rules)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
-        t_lv = "B0"
-        t2_out = lynx_gen.export_level(
-            t_in, level=t_lv, import_rules=default_input_rules
-        )
-        logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
-        t_lv_lst = ["B0"]
-        t3_out = lynx_gen.export_levels(
-            t_in, levels=t_lv_lst, import_rules=default_input_rules
-        )
-        logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
+        # t_lv = "B0"
+        # t2_out = lynx_gen.export_level(
+        #     t_in, level=t_lv, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
+        # t_lv_lst = ["B0"]
+        # t3_out = lynx_gen.export_levels(
+        #     t_in, levels=t_lv_lst, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
         t4_out = lynx_gen.export_all_levels(t_in, import_rules=default_input_rules)
         logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
