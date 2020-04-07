@@ -6,12 +6,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from typing import Dict, Union
+from typing import Dict, Union, List, Any
 
 from natsort import natsorted
 import regex as re
 
 from lynx.controllers.formatter import Formatter
+from lynx.models.alias import Alias
 from lynx.models.defaults import default_input_rules
 from lynx.utils.log import logger
 
@@ -20,6 +21,7 @@ class Decoder(object):
     def __init__(self, rules: dict = default_input_rules):
         self.rules = rules
         self.formatter = Formatter()
+        self.alias = Alias()
 
     def check_segments(self, lipid_name: str, rule_class: str, rule: str):
         c = rule_class
@@ -29,7 +31,7 @@ class Decoder(object):
         if c_search_rgx.search(lipid_name):
             is_this_class = True
         else:
-            if rule_class in ["RESIDUE", "SUM_RESIDUES"]:
+            if rule_class in ["RESIDUE", "SUM_RESIDUES", "RESIDUE_ALIAS", "ALIAS"]:
                 is_this_class = True
             else:
                 pass
@@ -48,26 +50,47 @@ class Decoder(object):
                     raise ValueError(f"Can not find rule: {rule} in configuration.")
             else:
                 raise ValueError(f"Must provide a {rule} in configuration to search.")
-                # for m in c_match_rgx_dct:
-                #     m_pattern = c_match_rgx_dct[m]["MATCH"]
-                #     m_groups = c_match_rgx_dct[m]["GROUPS"]  # type: list
-                #     m_match = m_pattern.match(lipid_name)
-                #     if m_match:
-                #         matched_dct = {}
-                #         matched_groups = m_match.capturesdict()
-                #         matched_info_dct[m] = matched_groups
+
         return matched_info_dct
+
+    def check_alias(self, alias: str, alias_type: str = "RESIDUE") -> str:
+        defined_id = ""
+        if alias_type.upper().startswith("RESIDUE"):
+            lite_alias_info = self.alias.residue_alias
+        elif alias_type.upper().startswith("LIPID"):
+            lite_alias_info = self.alias.lipid_alias
+        else:
+            raise ValueError(
+                f"Cannot load alias_type {alias_type} from defined_alias.json"
+            )
+
+        for alias_rgx in lite_alias_info:
+            if re.search(alias_rgx, alias):
+                defined_id = lite_alias_info[alias_rgx]
+            else:
+                pass
+
+        if not defined_id:
+            logger.warning(
+                f"Cannot decode alias: {alias} using alias_type: {alias_type}."
+            )
+
+        return defined_id
 
     def check_residues(
         self,
         rule: str,
         residues: list,
         sum_residues: str,
+        alias=None,
+        alias_rule: str = "LipidLynxX.json#LipidLynxX",
         max_residues: int = 1,
         separator_levels: dict = None,
         separator: str = "-|/",
     ) -> dict:
 
+        if alias is None:
+            alias = []
         if separator_levels is None:
             separator_levels = {"B": "", "D": "_", "S": "/"}
 
@@ -93,8 +116,16 @@ class Decoder(object):
 
         if len(res_lst) <= max_residues or len(res_true_lst) <= max_residues:
             for res in res_lst:
-                # todo: Add rgx here
-                matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
+                if res in alias:
+                    if res != "":
+                        def_res = self.check_alias(res, "RESIDUE")
+                        if def_res:
+                            res = def_res
+                    matched_info_dct = self.check_segments(
+                        res, "RESIDUE", rule=alias_rule
+                    )
+                else:
+                    matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
                 matched_dct = self.formatter.format_residue(matched_info_dct)
                 logger.debug(matched_dct)
                 out_res_lst.append(res)
@@ -129,6 +160,48 @@ class Decoder(object):
             "RESIDUES_SEPARATOR_LEVEL": lv_min,
         }
 
+    def extract_by_class_rule(self, lipid_name: str, c: str) -> dict:
+        c_lmsd_classes = self.rules[c].get("LMSD_CLASSES", None)
+        c_max_res = self.rules[c].get("MAX_RESIDUES", 1)
+        res_sep = self.rules[c].get("RESIDUES_SEPARATOR", None)  # type: str
+        sep_levels = self.rules[c].get("SEPARATOR_LEVELS", {})  # type: dict
+        c_rules = self.rules[c].get("MATCH", {})
+        matched_info_dct = {}
+        lynx_rule_idx = "LipidLynxX.json#LipidLynxX"
+        for lr in c_rules:
+            if re.search(r"Lynx", lr, re.IGNORECASE):
+                lynx_rule_idx = lr
+        for r in c_rules:
+            matched_dct = self.check_segments(lipid_name, c, r)
+            sum_residues_lst = matched_dct.get("SUM_RESIDUES", [])
+            obs_residues_lst = matched_dct.get("RESIDUE", [])
+            alias_lst: list = matched_dct.get("ALIAS", [])
+            if sum_residues_lst and len(sum_residues_lst) == 1 and obs_residues_lst:
+                residues_dct = self.check_residues(
+                    r,
+                    obs_residues_lst,
+                    sum_residues_lst[0],
+                    alias=alias_lst,
+                    alias_rule=lynx_rule_idx,
+                    max_residues=c_max_res,
+                    separator_levels=sep_levels,
+                    separator=res_sep,
+                )
+                matched_info_dct[r] = {
+                    "LMSD_CLASSES": c_lmsd_classes,
+                    "SEGMENTS": matched_dct,
+                    "RESIDUES": residues_dct,
+                    # "RESIDUES_SEPARATOR": res_sep,
+                    # "SEPARATOR_LEVELS": sep_levels,
+                }
+            elif obs_residues_lst and len(obs_residues_lst) > 1:
+                raise ValueError(
+                    f"More than two parts of SUM residues matched: {obs_residues_lst}"
+                )
+            else:
+                pass  # nothing found. the rule is not used.
+        return matched_info_dct
+
     def extract(self, lipid_name: str) -> Dict[str, Union[str, dict]]:
 
         """
@@ -144,42 +217,17 @@ class Decoder(object):
         extracted_info_dct = {}
 
         for c in self.rules:
-            c_lmsd_classes = self.rules[c].get("LMSD_CLASSES", None)
-            c_max_res = self.rules[c].get("MAX_RESIDUES", 1)
-            res_sep = self.rules[c].get("RESIDUES_SEPARATOR", None)  # type: str
-            sep_levels = self.rules[c].get("SEPARATOR_LEVELS", {})  # type: dict
-
-            c_rules = self.rules[c].get("MATCH", {})
-            matched_info_dct = {}
-            for r in c_rules:
-                matched_dct = self.check_segments(lipid_name, c, r)
-                sum_residues_lst = matched_dct.get("SUM_RESIDUES", [])
-                obs_residues_lst = matched_dct.get("RESIDUE", [])
-                if sum_residues_lst and len(sum_residues_lst) == 1 and obs_residues_lst:
-                    residues_dct = self.check_residues(
-                        r,
-                        obs_residues_lst,
-                        sum_residues_lst[0],
-                        max_residues=c_max_res,
-                        separator_levels=sep_levels,
-                        separator=res_sep,
-                    )
-                    matched_info_dct[r] = {
-                        "LMSD_CLASSES": c_lmsd_classes,
-                        "SEGMENTS": matched_dct,
-                        "RESIDUES": residues_dct,
-                        # "RESIDUES_SEPARATOR": res_sep,
-                        # "SEPARATOR_LEVELS": sep_levels,
-                    }
-                elif obs_residues_lst and len(obs_residues_lst) > 1:
-                    raise ValueError(
-                        f"More than two parts of SUM residues matched: {obs_residues_lst}"
-                    )
-                else:
-                    pass  # nothing found. the rule is not used.
-
+            matched_info_dct = self.extract_by_class_rule(lipid_name, c)
             if matched_info_dct:
                 extracted_info_dct[c] = matched_info_dct
+            else:
+                if lipid_name:
+                    def_alias = self.check_alias(lipid_name, "LIPID")
+                    if def_alias:
+                        logger.warning(f'Found Alias: {lipid_name} -> change to {def_alias}')
+                        matched_info_dct = self.extract_by_class_rule(def_alias, c)
+                        if matched_info_dct:
+                            extracted_info_dct[c] = matched_info_dct
 
         if not extracted_info_dct:
             logger.error(f"Failed to decode Lipid: {lipid_name}")
@@ -197,7 +245,9 @@ if __name__ == "__main__":
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
 
     # MS-DIAL
-    t_in = "TG(16:0/18:2/9:0<oxo{9}>)"
+    # t_in = "TG(16:0/18:2/20:4<OH>)"
+    # t_in = "TG(16:0/18:2/HETE)"
+    t_in = "Palmitic acid"
 
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)

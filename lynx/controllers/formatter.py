@@ -56,9 +56,9 @@ class Formatter(object):
         mod_lv_dct = {}
         mass_shift_dct = {}
         for mod_type in mod_type_lst:
-            for alia in self.alias2cv:
-                alia_rgx = self.alias2cv[alia].get("MATCH", None)
-                matched_cv = self.alias2cv[alia].get("CV", None)
+            for cv_alias in self.alias2cv:
+                alia_rgx = self.alias2cv[cv_alias].get("MATCH", None)
+                matched_cv = self.alias2cv[cv_alias].get("CV", None)
                 if alia_rgx and matched_cv is not None:
                     alia_match = alia_rgx.match(mod_type)
                     if alia_match:
@@ -73,9 +73,8 @@ class Formatter(object):
                         else:
                             mod_lv_dct[matched_cv] = max(
                                 mod_lv_dct.get(matched_cv, 0),
-                                self.alias2cv[alia].get("LEVEL", 0),
+                                self.alias2cv[cv_alias].get("LEVEL", 0),
                             )
-
         if (
             mod_type_lst
             and formatted_mod_type_lst
@@ -99,10 +98,28 @@ class Formatter(object):
             formatted_mod_lst = zip(
                 formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
             )
+        elif len(formatted_mod_type_lst) > 0 and not mod_site_lst and not mod_site_info_lst:
+            mod_site_lst = [""] * len(formatted_mod_type_lst)
+            mod_site_info_lst = [""] * len(formatted_mod_type_lst)
+            formatted_mod_lst = zip(
+                formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
+            )
         else:
             if 0 < len(mod_site_lst) < len(formatted_mod_type_lst):
                 logger.warning(f'mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}')
-            formatted_mod_lst = []
+                formatted_mod_lst = []
+            elif 0 < len(formatted_mod_type_lst) < len(mod_site_lst):
+                if list(set(formatted_mod_type_lst)) == ["DB"]:
+                    formatted_mod_type_lst = ["DB"] * len(mod_site_lst)
+                    if not mod_site_info_lst:
+                        mod_site_info_lst = [""] * len(mod_site_lst)
+                    else:
+                        mod_site_info_lst = mod_site_info_lst + [""] * (len(mod_site_lst) - len(mod_site_lst))
+                    formatted_mod_lst = zip(
+                        formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
+                    )
+            else:
+                formatted_mod_lst = []
 
         mod_info_dct = {}
         if formatted_mod_lst:
@@ -238,9 +255,7 @@ class Formatter(object):
         return residue_info_dct
 
     def format(self, info: dict) -> dict:
-        formatted_info = {}
-
-        formatted_info["RESIDUE"] = self.format_residue(info)
+        formatted_info = {"RESIDUE": self.format_residue(info)}
 
         return formatted_info
 
