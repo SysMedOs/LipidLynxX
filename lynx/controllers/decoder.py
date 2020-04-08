@@ -245,8 +245,8 @@ if __name__ == "__main__":
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
 
     # MS-DIAL
-    # t_in = "TG(16:0/18:2/20:4<OH>)"
-    # t_in = "TG(16:0/18:2/HETE)"
+    t_in = "TG(16:0/18:2/20:4<OH>)"
+    t_in = "TG(16:0/18:2/HETE)"
     t_in = "Palmitic acid"
 
     extractor = Decoder(rules=default_input_rules)

@@ -32,7 +32,7 @@ class ConverterForm(FlaskForm):
 
 class EqualizerInputForm(FlaskForm):
     input_id_str = TextAreaField(
-        "Input LipidLynx level here:", validators=[DataRequired()]
+        "Input LipidLynx level(s) here:", validators=[DataRequired()]
     )
     input_file_str = FileField("Select input file:", validators=[DataRequired()])
 

@@ -31,7 +31,7 @@ from lynx.models.defaults import logger, cfg_info_dct, api_version
 from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
 
-lynx_version = 0.2
+lynx_version = 0.4
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
@@ -296,6 +296,18 @@ def download():
             as_attachment=True,
         )
 
+
+@blueprint.route("/levels")
+def levels():
+    return render_template(
+        "levels.html"
+    )
+
+@blueprint.route("/nomenclature")
+def nomenclature():
+    return render_template(
+        "nomenclature.html"
+    )
 
 @blueprint.route("/about")
 def about():

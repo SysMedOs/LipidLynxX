@@ -24,6 +24,20 @@ class Alias(object):
         self._residue_alias = self._info.get("RESIDUE_ALIAS")
         self._lipid_alias = self._info.get("LIPID_ALIAS")
 
+    @staticmethod
+    def __get_alias_info__(raw_alias_cat_info: dict) -> dict:
+        alias_abbr_info = {}
+        for alias_class in raw_alias_cat_info:
+            raw_alias_class_info = raw_alias_cat_info[alias_class]
+            for abbr in raw_alias_class_info:
+                alias_lst = raw_alias_class_info[abbr]
+                for alias in alias_lst:
+                    if re.match(r'[-_\dA-Z]{2,}', alias):  # if alias all uppercase
+                        alias_abbr_info[re.compile(alias)] = abbr
+                    else:
+                        alias_abbr_info[re.compile(alias, re.IGNORECASE)] = abbr
+        return alias_abbr_info
+
     def __load__(self) -> dict:
         alias_info = {}
         raw_alias_info = self.__load_raw__()
@@ -32,20 +46,10 @@ class Alias(object):
         for alias_category in raw_alias_info:
             if alias_category.upper().startswith("RESIDUE"):
                 raw_alias_cat_info = raw_alias_info[alias_category]
-                for alias_class in raw_alias_cat_info:
-                    raw_alias_class_info = raw_alias_cat_info[alias_class]
-                    for abbr in raw_alias_class_info:
-                        alias_lst = raw_alias_class_info[abbr]
-                        for alias in alias_lst:
-                            residue_alias_info[re.compile(alias, re.IGNORECASE)] = abbr
+                residue_alias_info = self.__get_alias_info__(raw_alias_cat_info)
             elif alias_category.upper().startswith("LIPID"):
                 raw_alias_cat_info = raw_alias_info[alias_category]
-                for alias_class in raw_alias_cat_info:
-                    raw_alias_class_info = raw_alias_cat_info[alias_class]
-                    for abbr in raw_alias_class_info:
-                        alias_lst = raw_alias_class_info[abbr]
-                        for alias in alias_lst:
-                            lipid_alias_info[re.compile(f'{alias}\M', re.IGNORECASE)] = abbr
+                lipid_alias_info = self.__get_alias_info__(raw_alias_cat_info)
             else:
                 pass
         alias_info = {"RESIDUE_ALIAS": residue_alias_info, "LIPID_ALIAS": lipid_alias_info}

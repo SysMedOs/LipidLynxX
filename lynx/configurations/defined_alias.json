@@ -40,6 +40,31 @@
         "hexadecanoic\\s*acid",
         "palmitic\\s*acid"
       ],
+      "FA18:0": [
+        "SA",
+        "bassinic\\s*acid",
+        "cetylacetic\\s*acid",
+        "lactaric\\s*acid",
+        "octadecanoic\\s*acid",
+        "stearic\\s*acid",
+        "stearophanic\\s*acid",
+        "talgic\\s*acid"
+      ],
+      "FA18:1<{9Z}>": [
+        "OA",
+        "elaic\\s*acid",
+        "elaidoic\\s*acid",
+        "octadecenoic\\s*acid",
+        "oleic\\s*acid",
+        "octadecylenic\\s*acid",
+        "rapinic\\s*acid"
+      ],
+      "FA18:2<{9Z,12Z}>": [
+        "LA",
+        "octadecadienoic\\s*acid",
+        "linoleic\\s*acid",
+        "telfairic\\s*acid"
+      ],
       "FA20:4<{5Z,8Z,11Z,14Z}>": [
         "AA",
         "ARA",
