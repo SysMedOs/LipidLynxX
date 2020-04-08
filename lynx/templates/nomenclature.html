@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Nomenclature @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <h4>&nbsp;</h4>
+    <h3>LipidLynxX nomenclature</h3>
+    <h5>&nbsp;</h5>
+    <ul>
+        <li><p>
+            <span>Preserved characters: </span>
+        </p>
+            <img class="img-fluid" src="../static/images/nomenclature_char.png" alt="levels_hint">
+        </li>
+        <li><p>
+            <span>Controlled vocabularies (CV): </span>
+        </p>
+            <img class="img-fluid" src="../static/images/nomenclature_cv.png" alt="levels_hint">
+        </li>
+        <li><p>
+            <span>Basic examples of the nomenclature: </span>
+        </p>
+            <img class="img-fluid" src="../static/images/nomenclature_basics.png" alt="levels_hint">
+        </li>
+        <li><p>
+            <span>Lipid nomenclature levels: </span>
+        </p>
+            <img class="img-fluid" src="../static/images/nomenclature_levels.png" alt="levels_hint">
+                <div>
+                    * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
+                    LipidLynx Nomenclature Level Matrix </a>
+                </div>
+        </li>
+    </ul>
+
+{% endblock %}

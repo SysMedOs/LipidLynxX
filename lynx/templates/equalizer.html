@@ -10,20 +10,57 @@
         <h1>LipidLynxX Nomenclature Equalizer</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
-                <div class="col-6 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
+                <div class="col-7 text-left" style="z-index: 10000;">
                     <div class="row">
                         <h4>&nbsp;</h4>
                     </div>
                     <div class="row">
                         <h4>LipidLynx Nomenclature Level Matrix</h4>
+                        <p>&nbsp;</p>
+                    </div>
+                    <ul class="nav nav-tabs" id="levelsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="unmod-tab" data-toggle="tab" href="#unmod" role="tab"
+                               aria-controls="unmod" aria-selected="true">Unmodified Lipids</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="mod_lite-tab" data-toggle="tab" href="#mod_lite" role="tab"
+                               aria-controls="mod_lite" aria-selected="false">Modified Lipids</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
+                               aria-controls="mod_full" aria-selected="false">All Levels</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="cross_match-tab" data-toggle="tab" href="#cross_match" role="tab"
+                               aria-controls="cross_match" aria-selected="false">Cross level matching</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="levelsTabContent">
+                        <div class="tab-pane fade show active" id="unmod" role="tabpanel"
+                             aria-labelledby="unmod-tab">
+                            <h3>Levels for unmodified lipids</h3>
+                            <img class="img-fluid" src="../static/images/levels_unmod.png" alt="levels_hint">
+                        </div>
+                        <div class="tab-pane fade" id="mod_lite" role="tabpanel" aria-labelledby="mod_lite-tab">
+                            <h3>Main levels for modified lipids</h3>
+                            <img class="img-fluid" src="../static/images/levels_mod_lite.png" alt="levels_hint">
+                        </div>
+                        <div class="tab-pane fade" id="mod_full" role="tabpanel" aria-labelledby="mod_full-tab">
+                            <h3>Full matrix of levels</h3>
+                            <img class="img-fluid" src="../static/images/levels_mod_full.png" alt="levels_hint">
+                        </div>
+                        <div class="tab-pane fade" id="cross_match" role="tabpanel" aria-labelledby="cross_match-tab">
+                            <h3>Cross level matching</h3>
+                            <img class="img-fluid" src="../static/images/nomenclature_levels.png" alt="levels_hint">
+                        </div>
                     </div>
                     <div class="row">
-                        Learn more about <a href="{{ url_for('.levels') }}" target="_blank"> the
-                                LipidLynx Nomenclature Level Matrix </a>
+                        * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
+                        LipidLynx Nomenclature Level Matrix </a>
                     </div>
-                        <img class="img-fluid" src="../static/images/levels_hint.png" alt="levels_hint">
                 </div>
-                <div class="col-6 col-md-6 mb-4 mb-md-0" style="z-index: 10000;">
+                <div class="col-5" style="z-index: 10000;">
                     <p>&nbsp;</p>
                     <div>
                         <form id="in_form" method="post" action="{{ url_for('.equalize_lipid') }}"

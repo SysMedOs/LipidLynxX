@@ -27,49 +27,91 @@
                 </div>
                 <div class="col-1" style="z-index: 10000;"></div>
                 <div class="col-8" style="z-index: 10000;">
-                    <div class="row">&nbsp;</div>
-                    <div class="row"><h2>Nomenclature Tools:<br></h2></div>
-                    <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-3">
-                            <a href="{{ url_for('.converter') }}"><img alt="image" class="img-fluid"
-                                                                       src="../static/images/converter_logo.png"></a>
 
-                        </div>
-                        <div class="col-9">
+                    <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
+                               aria-controls="tools" aria-selected="true">LipidLynx Tools</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
+                               aria-controls="namesys" aria-selected="false">Nomenclature system</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="levelsTabContent">
+                        <div class="tab-pane fade show active" id="tools" role="tabpanel"
+                             aria-labelledby="tools-tab">
+                            <div class="row"><h2>LipidLynx Nomenclature Tools:<br></h2></div>
+                            <div class="row">&nbsp;</div>
                             <div class="row">
-                                <h4>LipidLynxX Nomenclature Converter</h4>
-                                <p>Convert different abbreviations to unified LipidLynxX identifier.</p>
+                                <div class="col-3">
+                                    <a href="{{ url_for('.converter') }}"><img alt="image" class="img-fluid"
+                                                                               src="../static/images/converter_logo.png"></a>
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <h4>LipidLynxX Nomenclature Converter</h4>
+                                        <p>Convert different abbreviations to unified LipidLynxX identifier.</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4"><a class="btn btn-info mt-4 btn-block"
+                                                              href="{{ url_for('.converter') }}">
+                                            Run Converter</a><br></div>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="row">&nbsp;</div>
                             <div class="row">
-                                <div class="col-4"><a class="btn btn-info mt-4 btn-block"
-                                                      href="{{ url_for('.converter') }}">
-                                    Run Converter</a><br></div>
+                                <div class="col-3">
+                                    <a href="{{ url_for('.equalizer') }}"><img alt="image" class="img-fluid"
+                                                                               src="../static/images/equalizer_logo.png"></a>
+                                </div>
+                                <div class="col-9">
+                                    <div class="row">
+                                        <h4>LipidLynxX Nomenclature Equalizer</h4>
+                                        <p>Bring lipid identifiers into same level of information and perform cross
+                                            level matching.</p>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Run
+                                                Equalizer</a><br></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
+                            <div class="row"><h2>LipidLynx Nomenclature System:<br></h2></div>
+                            <div class="row">&nbsp;</div>
+                            <div class="row">
+                                <div class="col-8">
+                                    <div class="row">
+                                        <h4>LipidLynxX Nomenclature system</h4>
+                                        <p>An unified lipid nomenclature systems across different information levels.</p>
+                                        <a class="btn btn-info mt-4 btn-block"
+                                                              href="{{ url_for('.nomenclature') }}">
+                                            Read more about LipidLynxX Nomenclature</a><br>
+                                    </div>
+                                    <div class="row"><p>&nbsp;</p></div>
+                                    <div class="row">
+                                        <h4>Lipid Level Matrix</h4>
+                                        <p>Lipid levels defined in LipidLynxX nomenclature allows cross level matching of lipids.</p>
+                                        <a class="btn btn-info mt-4 btn-block"
+                                                              href="{{ url_for('.levels') }}">
+                                            Read more about Lipid Level Matrix</a><br>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <a href="{{ url_for('.nomenclature') }}"><img alt="image" class="img-fluid"
+                                                                               src="../static/images/nomenclatue_logo.png"></a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-3">
-                            <a href="{{ url_for('.equalizer') }}"><img alt="image" class="img-fluid"
-                                                                       src="../static/images/equalizer_logo.png"></a>
-                        </div>
-                        <div class="col-9">
-                            <div class="row">
-                                <h4>LipidLynxX Nomenclature Equalizer</h4>
-                                <p>Bring lipid identifiers into same level of information and perform cross
-                                    level matching.</p>
-                            </div>
-                            <div class="row">
-                                <div class="col-4">
-                                    <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Run
-                                        Equalizer</a><br></div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
-        </div>
         </div>
     </section>
 

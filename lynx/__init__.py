@@ -303,6 +303,12 @@ def levels():
         "levels.html"
     )
 
+@blueprint.route("/nomenclature")
+def nomenclature():
+    return render_template(
+        "nomenclature.html"
+    )
+
 @blueprint.route("/about")
 def about():
     return render_template(
