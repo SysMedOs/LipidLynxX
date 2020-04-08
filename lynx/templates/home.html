@@ -35,14 +35,13 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
-                               aria-controls="namesys" aria-selected="false">Nomenclature system</a>
+                               aria-controls="namesys" aria-selected="false">Nomenclature & Levels</a>
                         </li>
                     </ul>
                     <div class="tab-content" id="levelsTabContent">
                         <div class="tab-pane fade show active" id="tools" role="tabpanel"
                              aria-labelledby="tools-tab">
-                            <div class="row"><h2>LipidLynx Nomenclature Tools:<br></h2></div>
-                            <div class="row">&nbsp;</div>
+                            <div class="row"><h2>&nbsp;<br></h2></div>
                             <div class="row">
                                 <div class="col-3">
                                     <a href="{{ url_for('.converter') }}"><img alt="image" class="img-fluid"
@@ -50,7 +49,7 @@
                                 </div>
                                 <div class="col-9">
                                     <div class="row">
-                                        <h4>LipidLynxX Nomenclature Converter</h4>
+                                        <h4>LipidLynxX Converter</h4>
                                         <p>Convert different abbreviations to unified LipidLynxX identifier.</p>
                                     </div>
                                     <div class="row">
@@ -63,8 +62,9 @@
                             <div class="row">&nbsp;</div>
                             <div class="row">
                                 <div class="col-3">
-                                    <a href="{{ url_for('.equalizer') }}"><img alt="image" class="img-fluid"
-                                                                               src="../static/images/equalizer_logo.png"></a>
+                                    <a href="{{ url_for('.equalizer') }}">
+                                        <img alt="image" class="img-fluid"
+                                             src="../static/images/equalizer_logo.png"></a>
                                 </div>
                                 <div class="col-9">
                                     <div class="row">
@@ -81,29 +81,39 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
-                            <div class="row"><h2>LipidLynx Nomenclature System:<br></h2></div>
-                            <div class="row">&nbsp;</div>
+                            <div class="row"><h2>&nbsp;<br></h2></div>
                             <div class="row">
-                                <div class="col-8">
+                                <div class="col-9">
                                     <div class="row">
-                                        <h4>LipidLynxX Nomenclature system</h4>
-                                        <p>An unified lipid nomenclature systems across different information levels.</p>
+                                        <h4>Nomenclature used by LipidLynxX</h4>
+                                        <p>The Nomenclature used by LipidLynxX is based on the widely used <a
+                                                href="https://www.jlr.org/content/54/6/1523"
+                                                target="_blank">"Shorthand
+                                            notation for lipid structures"</a>
+                                            published by <a href="https://www.jlr.org/content/54/6/1523"
+                                                            target="_blank">Gerhard Liebisch, et al. (2013).</a></p>
+                                        <p>Additional features for modified lipids including ordered controlled
+                                            vocabularies and lipid levels matrix are
+                                            introduced by LipidLynxX to perform cross level matching.</p>
                                         <a class="btn btn-info mt-4 btn-block"
-                                                              href="{{ url_for('.nomenclature') }}">
-                                            Read more about LipidLynxX Nomenclature</a><br>
+                                           href="{{ url_for('.nomenclature') }}">
+                                            Read more about nomenclature used by LipidLynxX</a><br>
                                     </div>
                                     <div class="row"><p>&nbsp;</p></div>
                                     <div class="row">
                                         <h4>Lipid Level Matrix</h4>
-                                        <p>Lipid levels defined in LipidLynxX nomenclature allows cross level matching of lipids.</p>
+                                        <p>Lipid levels defined by three sub levels allow cross level matching
+                                            of lipids including residues levels, modification levels, and double bond
+                                            levels .</p>
                                         <a class="btn btn-info mt-4 btn-block"
-                                                              href="{{ url_for('.levels') }}">
-                                            Read more about Lipid Level Matrix</a><br>
+                                           href="{{ url_for('.levels') }}">
+                                            Read more about lipid level matrix</a><br>
                                     </div>
                                 </div>
-                                <div class="col-4">
-                                    <a href="{{ url_for('.nomenclature') }}"><img alt="image" class="img-fluid"
-                                                                               src="../static/images/nomenclatue_logo.png"></a>
+                                <div class="col-3">
+                                    <div class="row"><p>&nbsp;</p></div>
+                                    <a href="{{ url_for('.nomenclature') }}">
+                                        <img alt="image" class="img-fluid" src="../static/images/nomenclatue_logo.png"></a>
                                 </div>
                             </div>
                         </div>

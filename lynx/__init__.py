@@ -297,17 +297,26 @@ def download():
         )
 
 
-@blueprint.route("/levels")
-def levels():
+@blueprint.route("/user_guide")
+def user_guide():
     return render_template(
-        "levels.html"
+        "user_guide.html", lynx_version=lynx_version, api_version=api_version
     )
+
 
 @blueprint.route("/nomenclature")
 def nomenclature():
     return render_template(
         "nomenclature.html"
     )
+
+
+@blueprint.route("/levels")
+def levels():
+    return render_template(
+        "levels.html"
+    )
+
 
 @blueprint.route("/about")
 def about():
