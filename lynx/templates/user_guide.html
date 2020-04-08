@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+    User Guide @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <h4>&nbsp;</h4>
+    <h3>LipidLynxX User Guide</h3>
+
+    <h4>&nbsp;</h4>
+    <h5>The LipidLynxX project is aimed to provide a unified identifier for major lipids,<br> especially oxidized lipids
+        in the epilipidome.</h5>
+     <h4>&nbsp;</h4>
+    <h5>Key Features</h5>
+    <ul>
+        <li>Optimized for manual interpretation and computer processing</li>
+        <li>Suitable for both unmodified lipids and modified lipids</li>
+        <li>Unified modification controlled vocabularies</li>
+        <li>Unified position specific annotations</li>
+        <li>Cross level match based on shared levels</li>
+        <li>Extract key information from LipidLynxX ID</li>
+        <li>Strictly controlled format using JSON schema</li>
+        <li>Easy to use Graphic User Interface</li>
+        <li>API access for professional users</li>
+    </ul>
+    <h5>Main Modules</h5>
+    <ul>
+        <li><p><strong>LipidLynxX Converter</strong></p>
+            <ul>
+                <li>Convert different abbreviations to uniformed LipidLynxX ID</li>
+            </ul>
+        </li>
+        <li><p><strong>LipidLynxX Equalizer</strong></p>
+            <ul>
+                <li>Cross link different level of LipidLynxX ID on selected level</li>
+            </ul>
+        </li>
+    </ul>
+    <h5>This user guide is designed for:</h5>
+    <ul>
+        <li><h6>LipidLynxX version: {{ lynx_version }}</h6></li>
+        <li><h6>API version: {{ api_version }}</h6></li>
+    </ul>
+    <h5>Instructions:</h5>
+    <h5>......</h5>
+{% endblock %}

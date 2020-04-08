@@ -6,8 +6,16 @@
 
 {% block body %}
     <h4>&nbsp;</h4>
-    <h3>LipidLynxX nomenclature</h3>
+    <h3>Nomenclature used by LipidLynxX</h3>
     <h5>&nbsp;</h5>
+    <p>The Nomenclature used by LipidLynxX is based on the widely used "Shorthand notation for lipid structures"
+        published by <a href="https://www.jlr.org/content/54/6/1523" target="_blank">Gerhard Liebisch, et al. (2013)*</a></p>
+    <p>Additional features for modified lipids including ordered controlled vocabularies and lipid levels matrix are
+        introduced by LipidLynxX to perform cross level matching.</p>
+    <p> *.<a href="https://www.jlr.org/content/54/6/1523" target="_blank">Liebisch, Gerhard, Juan
+        Antonio Vizcaíno, Harald Köfeler, Martin Trötzmüller, William J. Griffiths, Gerd Schmitz, Friedrich Spener, and
+        Michael JO Wakelam. "Shorthand notation for lipid structures derived from mass spectrometry." Journal of lipid
+        research 54, no. 6 (2013): 1523-1530.</a></p>
     <ul>
         <li><p>
             <span>Preserved characters: </span>
@@ -28,10 +36,10 @@
             <span>Lipid nomenclature levels: </span>
         </p>
             <img class="img-fluid" src="../static/images/nomenclature_levels.png" alt="levels_hint">
-                <div>
-                    * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
-                    LipidLynx Nomenclature Level Matrix </a>
-                </div>
+            <div>
+                * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
+                LipidLynx Nomenclature Level Matrix </a>
+            </div>
         </li>
     </ul>
 
