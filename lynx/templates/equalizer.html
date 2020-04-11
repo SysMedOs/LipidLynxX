@@ -7,7 +7,7 @@
 {% block body %}
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="False">
-        <h1>LipidLynxX Nomenclature Equalizer</h1>
+        <h1>LipidLynxX ID Equalizer</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
                 <div class="col-7 text-left" style="z-index: 10000;">
@@ -15,7 +15,7 @@
                         <h4>&nbsp;</h4>
                     </div>
                     <div class="row">
-                        <h4>LipidLynx Nomenclature Level Matrix</h4>
+                        <h4>LipidLynx ID Level Matrix</h4>
                         <p>&nbsp;</p>
                     </div>
                     <ul class="nav nav-tabs" id="levelsTab" role="tablist">
@@ -30,10 +30,6 @@
                         <li class="nav-item">
                             <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
                                aria-controls="mod_full" aria-selected="false">All Levels</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="cross_match-tab" data-toggle="tab" href="#cross_match" role="tab"
-                               aria-controls="cross_match" aria-selected="false">Cross level matching</a>
                         </li>
                     </ul>
                     <div class="tab-content" id="levelsTabContent">
@@ -50,14 +46,10 @@
                             <h5 style="text-align: center; line-height: 2">Full matrix of levels</h5>
                             <img class="img-fluid" src="../static/images/levels_mod_full.png" alt="levels_hint">
                         </div>
-                        <div class="tab-pane fade" id="cross_match" role="tabpanel" aria-labelledby="cross_match-tab">
-                            <h5 style="text-align: center; line-height: 2">Cross level matching</h5>
-                            <img class="img-fluid" src="../static/images/nomenclature_levels.png" alt="levels_hint">
-                        </div>
                     </div>
                     <div class="row">
                         * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
-                        LipidLynx Nomenclature Level Matrix </a>
+                        LipidLynx ID Level Matrix </a>
                     </div>
                 </div>
                 <div class="col-5" style="z-index: 10000;">
