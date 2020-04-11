@@ -27,7 +27,7 @@ class InputRules(object):
         else:
             raise TypeError
         self.raw_rules = rules
-        self.source = self.raw_rules["SOURCE"]
+        self.sources = self.raw_rules["SOURCES"]
         self.date = self.raw_rules.get("_DATE", 20200214)
         self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
         self.supported_mods = list(self.raw_rules["MODS"].keys())
@@ -49,7 +49,7 @@ class InputRules(object):
         self.rules = self.build()
         self.is_validated = self.validate()
         logger.info(
-            f"Load input rule: {self.source}\n"
+            f"Load input rule: {self.sources}\n"
             f"Last modified: {self.date}\n"
             f"Authors: {self.authors}"
         )
@@ -139,7 +139,7 @@ class InputRules(object):
     def __check__(self):
         is_structure_valid = False
         if (
-            isinstance(self.source, list)
+            isinstance(self.sources, list)
             and isinstance(self.supported_residues, list)
             and isinstance(self.supported_classes, list)
         ):
@@ -321,7 +321,7 @@ class InputRules(object):
                             else:
                                 raise ValueError(
                                     f"Number of residues exceed the defined limit: "
-                                    f"{max_res_count} for Lipid_Class: {c} from source: {self.source}"
+                                    f"{max_res_count} for Lipid_Class: {c} from source: {self.sources}"
                                 )
                         else:
                             valid_lst.append(True)
