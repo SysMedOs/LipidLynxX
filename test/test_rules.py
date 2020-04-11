@@ -20,7 +20,7 @@ from lynx.utils.file_readers import get_abs_path
 test_input_files = [
     r"../lynx/configurations/rules/input/LipidLynxX.json",
     r"../lynx/configurations/rules/input/MS-DIAL.json",
-    r"../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json"
+    r"../lynx/configurations/rules/input/Shorthand_LMSD.json"
 ]
 
 test_output_files = [r"../lynx/configurations/rules/output/LipidLynxX.json"]
@@ -39,11 +39,11 @@ def test_input_rule(test_file):
     logger.info(f"Test file {in_file}")
     rule = InputRules(test_file)
     logger.debug(f"Got infile {in_file}")
-    logger.debug(f"test input rule {rule.source}")
+    logger.debug(f"test input rule {rule.sources}")
     if rule.is_validated is False:
-        raise Exception(f"FAILED: test input rule {rule.source}")
+        raise Exception(f"FAILED: test input rule {rule.sources}")
     else:
-        logger.info(f"PASSED: test input rule  {rule.source}")
+        logger.info(f"PASSED: test input rule  {rule.sources}")
     logger.info(f"test PASSED")
 
 

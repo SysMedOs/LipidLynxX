@@ -58,11 +58,13 @@ class Encoder(object):
                 if c_num_lv > num_lv:
                     best_id_dct = c_info[c]
                     max_str = c_max_str
+                    num_lv = c_num_lv
                 else:
                     c_max_str = c_info[c].get(c_lv_lst[-1], "")
                     if len(c_max_str) > len(max_str):
                         best_id_dct = c_info[c]
                         max_str = c_max_str
+                        num_lv = c_num_lv
                     else:
                         pass
 
@@ -161,6 +163,20 @@ class Encoder(object):
         segments_dct = {}
         lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
         segments = parsed_info["SEGMENTS"]
+        c_prefix_lst = segments.get("PREFIX", [])
+        c_suffix_lst = segments.get("SUFFIX", [])
+        c_has_prefix = False
+        if len(c_prefix_lst) == 1 and c_prefix_lst[0]:
+            c_prefix_seg = c_prefix_lst[0]
+            c_has_prefix = True
+        else:
+            c_prefix_seg = ''
+        c_has_suffix = False
+        if len(c_suffix_lst) == 1 and c_suffix_lst[0]:
+            c_suffix_seg = c_suffix_lst[0]
+            c_has_suffix = True
+        else:
+            c_suffix_seg = ''
         residues = parsed_info.get("RESIDUES", {})
         sum_res_id_lv_dct = self.get_residues(residues)
         obs_c_seg_lst = segments.get("CLASS", [])
@@ -177,10 +193,15 @@ class Encoder(object):
                         if c_identifier.match(obs_c_seg):
                             c_seg = c_identifier_dct.get(c_identifier, "")
                             for lv in sum_res_id_lv_dct:
-                                c_segments_dct[lv] = {
+                                c_lv_segments = {
                                     "CLASS": c_seg,
                                     "SUM_RESIDUES": sum_res_id_lv_dct[lv],
                                 }
+                                if c_has_prefix:
+                                    c_lv_segments["PREFIX"] = c_prefix_seg
+                                if c_has_suffix:
+                                    c_lv_segments["SUFFIX"] = c_suffix_seg
+                                c_segments_dct[lv] = c_lv_segments
                         else:
                             pass
                 else:
@@ -224,11 +245,11 @@ class Encoder(object):
         self, lipid_name: str, import_rules: dict = default_input_rules
     ) -> dict:
 
-        parsed_info = self.extractor.extract(lipid_name)
+        extracted_info = self.extractor.extract(lipid_name)
         export_info = []
-        if parsed_info:
-            for p in parsed_info:
-                p_info = parsed_info[p]
+        if extracted_info:
+            for p in extracted_info:
+                p_info = extracted_info[p]
                 logger.info(p_info)
                 for in_r in p_info:
                     r_info = p_info[in_r]  # type: dict
@@ -309,11 +330,13 @@ if __name__ == "__main__":
         # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
         # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
         # "TG(16:0/18:2/PA)",
-        "PE O-p 32:1",
-        "PE O-a 36:2",
-        "PE O-18:1a/18:1",
-        "PE O-p 36:2",
-        "PE O-18:1p/18:1",
+        # "PE O-p 32:1",
+        # "PE O-a 36:2",
+        # "PE O-18:1a/18:1",
+        # "PE O-p 36:2",
+        # "PE O-18:1p/18:1",
+        "PE-C16:0-C18:2",
+        # "HETE",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:

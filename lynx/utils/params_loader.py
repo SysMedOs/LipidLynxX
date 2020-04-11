@@ -149,7 +149,7 @@ def build_input_rules(folder: str) -> dict:
 
     for f in file_path_lst:
         temp_rules = InputRules(f)
-        idx_lst = [os.path.basename(f)] + temp_rules.source
+        idx_lst = [os.path.basename(f)] + temp_rules.sources
         idx = "#".join(idx_lst)
         for c in temp_rules.rules:
             c_class_str = temp_rules.rules[c].get("CLASS", "")

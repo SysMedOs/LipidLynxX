@@ -4,11 +4,12 @@
     "zhixu.ni@uni-leipzig.de"
   ],
   "SOURCES": [
-    "HMDB",
-    "LIPIDMAPS",
-    "LMSD",
-    "Lipostar",
-    "Swisslipids"
+    "Greazy",
+    "LipidFrag",
+    "LipidSearch",
+    "LIQUID",
+    "MetFrag",
+    "MZmine2"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",

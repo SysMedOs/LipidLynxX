@@ -4,11 +4,7 @@
     "zhixu.ni@uni-leipzig.de"
   ],
   "SOURCES": [
-    "HMDB",
-    "LIPIDMAPS",
-    "LMSD",
-    "Lipostar",
-    "Swisslipids"
+    "LipidMatch"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",
@@ -222,6 +218,7 @@
         "GL03"
       ],
       "ORDER": [
+        "PREFIX_OP",
         "CLASS",
         "LIPID_CLASS_SEPARATOR",
         "BRACKET_LEFT",
@@ -230,10 +227,12 @@
         "TAIL"
       ],
       "OPTIONAL": [
+        "PREFIX_OP",
         "LIPID_CLASS_SEPARATOR",
         "TAIL"
       ],
       "MAX_RESIDUES": 3,
+      "PREFIX_OP": "[OP]-|Plasmenyl-|Plasmanyl-",
       "CLASS": "TG|DG|MG",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
@@ -264,7 +263,9 @@
         "GP20"
       ],
       "ORDER": [
+        "PREFIX_OX",
         "PREFIX",
+        "PREFIX_OP",
         "CLASS",
         "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
@@ -274,13 +275,17 @@
         "TAIL"
       ],
       "OPTIONAL": [
+        "PREFIX_OX",
         "PREFIX",
+        "PREFIX_OP",
         "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
         "TAIL"
       ],
       "MAX_RESIDUES": 2,
+      "PREFIX_OX": "Ox",
       "PREFIX": "L|Lyso",
+      "PREFIX_OP": "[OP]-|Plasmenyl-|Plasmanyl-",
       "CLASS": "P[ACEDGSI]|PIP|PIP[2-6]",
       "SUFFIX": "\\[([,]?[1-6]'){1,5}\\]",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
@@ -399,6 +404,7 @@
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX_SKIPPED",
         "LIPID_CLASS_SEPARATOR",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
@@ -406,11 +412,13 @@
       ],
       "OPTIONAL": [
         "PREFIX",
+        "SUFFIX_SKIPPED",
         "LIPID_CLASS_SEPARATOR"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",
       "CLASS": "Cer[P]?|SPB|SM|GM[1-3]?",
+      "SUFFIX_SKIPPED": "_[ABEHN][OD]{0,2}[SP]",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
