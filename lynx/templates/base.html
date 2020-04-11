@@ -5,6 +5,9 @@
     <title>{% block title %}LipidLynxX{% endblock %}</title>
     {# use bootstrap v4 from cdn #}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <style type="text/css">
         .chart {
             margin-top: 30px;
@@ -17,8 +20,8 @@
 <header data-block-type="headers" data-id="1" data-vivaldi-spatnav-clickable="1">
     <nav class="navbar navbar-expand-lg" style="background-color: #e97C31;">
         <a class="navbar-brand text-light" href="{{ url_for('index') }}">
-            <img src="{{ url_for('.static', filename='images/LipidLynxX_Logo.png') }}" height="42" alt="logo">
-            LipidLynx
+            <img src="../static/images/LipidLynxX_Logo_128.jpg" height="42" alt="logo">
+            LipidLynxX
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav1"
                 aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,16 +34,28 @@
                     <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Home </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> User Guide </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.converter') }}" target="_blank">
+                        Converter </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Lipid Levels </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.equalizer') }}" target="_blank">
+                        Equalizer </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> Nomenclature </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.user_guide') }}" target="_blank"> User
+                        Guide </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fr-view text-light" href="{{ url_for('.home') }}" target="_blank"> About </a>
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.nomenclature') }}" target="_blank">
+                        Nomenclature </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.levels') }}" target="_blank"> Lipid
+                        Levels </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fr-view text-light" href="{{ url_for('.about') }}" target="_blank"> About
+                        LipidLynxX </a>
                 </li>
             </ul>
         </div>
@@ -73,7 +88,7 @@
         </div>
         <div class="row">
             <div class="col text-center">
-                <h6 class="text-dark">Under development by team SysMedOs</h6>
+                <h6 class="text-dark">Developed by team SysMedOs</h6>
             </div>
         </div>
     </div>

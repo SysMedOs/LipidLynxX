@@ -1,10 +1,10 @@
 {
-  "_DATE": 20200303,
+  "_DATE": 20200403,
   "_AUTHORS": [
     "zhixu.ni@uni-leipzig.de"
   ],
   "SOURCE": [
-    "MS-DIAL"
+    "LDA"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",

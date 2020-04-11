@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
@@ -13,25 +13,13 @@ from typing import Union, List, Dict
 
 from flask import Flask, send_file
 from flask import abort, render_template, redirect, request, url_for
-from flask_restful import Api
 import pandas as pd
 
 from werkzeug.utils import secure_filename
 
-from .liblynx.LynxParser import parse_lipidlynx
+# from .liblynx.LynxParser import parse_lipidlynx
 
-from lynx.utils.config import app_cfg_dct
-from lynx.utils.config import blueprint
-from lynx.utils.config import DevConfig
-from lynx.controllers.rest.api import (
-    StringConverterAPI,
-    DictConverterAPI,
-    ListConverterAPI,
-    ConverterAPI,
-    LevelEqualizerAPI,
-    MultiLevelEqualizerAPI,
-    EqualizerAPI,
-)
+from lynx.config import api_url_info, base_url, blueprint, DevConfig
 from lynx.forms import (
     ConverterTableInputForm,
     ConverterTextInputForm,
@@ -40,41 +28,33 @@ from lynx.forms import (
     EqualizerInputForm,
 )
 from lynx.models.defaults import logger, cfg_info_dct, api_version
-from lynx.models.patterns import rgx_blank
 from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
 
+lynx_version = 0.4
+
 app = Flask(__name__)
 app.config.from_object(DevConfig)
-# app.config['SERVER_NAME'] = 'lypidlynx.local'
-# init rest api to blue print
-api = Api(blueprint)
-api.add_resource(ConverterAPI, f"/api/{api_version}/converter/")
-api.add_resource(StringConverterAPI, f"/api/{api_version}/converter/string/")
-api.add_resource(ListConverterAPI, f"/api/{api_version}/converter/list/")
-api.add_resource(DictConverterAPI, f"/api/{api_version}/converter/dict/")
-api.add_resource(EqualizerAPI, f"/api/{api_version}/equalizer/")
-api.add_resource(LevelEqualizerAPI, f"/api/{api_version}/equalizer/level/")
-api.add_resource(MultiLevelEqualizerAPI, f"/api/{api_version}/equalizer/levels/")
-
-base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
+# app.config['SERVER_NAME'] = 'lynx.local'
 
 
 def run_converter(data: Union[List[str], Dict[str, List[str]]]):
     out_dct = {}
     if isinstance(data, list):
-        r_url = f"{base_url}{api.url_for(ListConverterAPI)}"
+        r_url = api_url_info.get("convert_list")
         logger.info(f"Use API - ListConverterAPI: {r_url}")
     elif isinstance(data, dict):
-        r_url = f"{base_url}{api.url_for(DictConverterAPI)}"
+        r_url = api_url_info.get("convert_dict")
         logger.info(f"Use API - DictConverterAPI: {r_url}")
     else:
-        r_url = f"{base_url}{api.url_for(ConverterAPI)}"
+        r_url = api_url_info.get("convert")
         logger.info(f"Use API - ConverterAPI: {r_url}")
 
     r = requests.get(r_url, params={"data": json.dumps(data)}).json()
     excel_data = r["data"]
-    output_name = f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    output_name = (
+        f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    )
 
     for k in excel_data:
         if isinstance(excel_data[k], dict):
@@ -96,8 +76,10 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
 
 def run_equalizer(data: dict, level: Union[str, List[str]]):
     submitted = 0
-    output_name = f"LipidLynxX-Equalizer_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
-    r_url = f"{base_url}{api.url_for(EqualizerAPI)}"
+    output_name = (
+        f"LipidLynxX-Equalizer_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    )
+    r_url = api_url_info.get("equalize")
     logger.info(f"Use API - EqualizerAPI: {r_url}")
     r = requests.get(
         r_url, params={"data": json.dumps(data), "level": json.dumps(level)}
@@ -122,7 +104,9 @@ def index():
 
 @blueprint.route("/")
 def home():
-    return render_template("home.html")
+    return render_template(
+        "home.html", lynx_version=lynx_version, api_version=api_version
+    )
 
 
 @blueprint.route("/converter", methods=["GET", "POST"])
@@ -269,15 +253,15 @@ def equalize_lipid():
     )
 
 
-@blueprint.route("/parser", methods=("GET", "POST"))
-def parser():
-    in_form = ParserInputForm()
-    if in_form.validate_on_submit():
-        out_dct = parse_lipidlynx(in_form.lion_id_str.data)
-    else:
-        out_dct = {}
-
-    return render_template("parser.html", out_dct=out_dct, in_form=in_form)
+# @blueprint.route("/parser", methods=("GET", "POST"))
+# def parser():
+#     in_form = ParserInputForm()
+#     if in_form.validate_on_submit():
+#         out_dct = parse_lipidlynx(in_form.lion_id_str.data)
+#     else:
+#         out_dct = {}
+#
+#     return render_template("parser.html", out_dct=out_dct, in_form=in_form)
 
 
 @blueprint.route("/downloads", methods=["GET", "POST"])
@@ -311,6 +295,34 @@ def download():
             attachment_filename=filename,
             as_attachment=True,
         )
+
+
+@blueprint.route("/user_guide")
+def user_guide():
+    return render_template(
+        "user_guide.html", lynx_version=lynx_version, api_version=api_version
+    )
+
+
+@blueprint.route("/nomenclature")
+def nomenclature():
+    return render_template(
+        "nomenclature.html"
+    )
+
+
+@blueprint.route("/levels")
+def levels():
+    return render_template(
+        "levels.html"
+    )
+
+
+@blueprint.route("/about")
+def about():
+    return render_template(
+        "about.html", lynx_version=lynx_version, api_version=api_version
+    )
 
 
 app.register_blueprint(blueprint)

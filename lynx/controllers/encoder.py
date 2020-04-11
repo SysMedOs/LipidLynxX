@@ -68,28 +68,28 @@ class Encoder(object):
 
         return best_id_dct
 
-    def check_rest(self, segment_text: str, segment_name: str, lmsd_class: str):
-        patterns_dct = self.class_rules[lmsd_class].get(segment_name)
-        out_seg_lst = []
-        if segment_text and patterns_dct:
-            for s_rgx in patterns_dct:
-                logger.debug(
-                    f"Test {segment_text} on {segment_name} of {lmsd_class} using {s_rgx}"
-                )
-                s_matched = s_rgx.match(segment_text)
-                if s_matched:
-                    defined_seg = patterns_dct[s_rgx]
-                    if defined_seg == "EXCEPTIONS":
-                        if lmsd_class in ["GP12"]:
-                            out_seg_lst.append(segment_text)
-                        if lmsd_class in ["SP05", "SP06"]:
-                            out_seg_lst.append(segment_text)
-                    else:
-                        out_seg_lst.append(defined_seg)
-
-            out_seg_lst = list(filter(None, list(set(out_seg_lst))))
-
-        return self.get_best_candidate(out_seg_lst)
+    # def check_rest(self, segment_text: str, segment_name: str, lmsd_class: str):
+    #     patterns_dct = self.class_rules[lmsd_class].get(segment_name)
+    #     out_seg_lst = []
+    #     if segment_text and patterns_dct:
+    #         for s_rgx in patterns_dct:
+    #             logger.debug(
+    #                 f"Test {segment_text} on {segment_name} of {lmsd_class} using {s_rgx}"
+    #             )
+    #             s_matched = s_rgx.match(segment_text)
+    #             if s_matched:
+    #                 defined_seg = patterns_dct[s_rgx]
+    #                 if defined_seg == "EXCEPTIONS":
+    #                     if lmsd_class in ["GP12"]:
+    #                         out_seg_lst.append(segment_text)
+    #                     if lmsd_class in ["SP05", "SP06"]:
+    #                         out_seg_lst.append(segment_text)
+    #                 else:
+    #                     out_seg_lst.append(defined_seg)
+    #
+    #         out_seg_lst = list(filter(None, list(set(out_seg_lst))))
+    #
+    #     return self.get_best_candidate(out_seg_lst)
 
     def get_residues(self, residues: dict):
         residues_order = residues.get("RESIDUES_ORDER", [])
@@ -124,6 +124,11 @@ class Encoder(object):
 
         sum_res_id_lv_dct = {}
         sum_res_sep_lv_lst = []
+
+        # set FA or class with one Res into level s
+        if len(residues_order) == 1 and len(sum_lv_lst) > 0:
+            if '0.1' in sum_lv_lst and residues_sep_level == "B":
+                residues_sep_level = "S"
 
         if residues_sep_level == "S":
             sum_res_sep_lv_lst = ["B", "D", "S"]
@@ -300,24 +305,30 @@ class Encoder(object):
 
 if __name__ == "__main__":
     t_in_lst = [
-        "GM3(d18:1/18:2(9Z,11Z)(12OH))",
-        "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
-        "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
+        # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
+        # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        # "TG(16:0/18:2/PA)",
+        "PE O-p 32:1",
+        "PE O-a 36:2",
+        "PE O-18:1a/18:1",
+        "PE O-p 36:2",
+        "PE O-18:1p/18:1",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in, import_rules=default_input_rules)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
-        t_lv = "B0"
-        t2_out = lynx_gen.export_level(
-            t_in, level=t_lv, import_rules=default_input_rules
-        )
-        logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
-        t_lv_lst = ["B0", "D0"]
-        t3_out = lynx_gen.export_levels(
-            t_in, levels=t_lv_lst, import_rules=default_input_rules
-        )
-        logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
+        # t_lv = "B0"
+        # t2_out = lynx_gen.export_level(
+        #     t_in, level=t_lv, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
+        # t_lv_lst = ["B0"]
+        # t3_out = lynx_gen.export_levels(
+        #     t_in, levels=t_lv_lst, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
         t4_out = lynx_gen.export_all_levels(t_in, import_rules=default_input_rules)
         logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 

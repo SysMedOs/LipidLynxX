@@ -9,9 +9,9 @@
 from io import BytesIO
 import base64
 
-from rdkit import Chem
-from rdkit.Chem import Draw
-from rdkit.Chem import AllChem, rdMolDescriptors
+# from rdkit import Chem
+# from rdkit.Chem import Draw
+# from rdkit.Chem import AllChem, rdMolDescriptors
 
 from lynx.utils.log import logger
 from ..liblynx.LipidNomenclature import ParserFA, ParserPL

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, FileField
 from wtforms.validators import DataRequired, Length
@@ -31,7 +32,7 @@ class ConverterForm(FlaskForm):
 
 class EqualizerInputForm(FlaskForm):
     input_id_str = TextAreaField(
-        "Input LipidLynx level here:", validators=[DataRequired()]
+        "Input LipidLynx level(s) here:", validators=[DataRequired()]
     )
     input_file_str = FileField("Select input file:", validators=[DataRequired()])
 

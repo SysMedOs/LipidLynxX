@@ -1,74 +1,124 @@
 {% extends "base.html" %}
 
 {% block title %}
-    LipidLynxX
+    Equalizer @ LipidLynxX
 {% endblock %}
 
 {% block body %}
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="False">
-        <h1>LipidLynxX Equalizer</h1>
+        <h1>LipidLynxX ID Equalizer</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
-                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
-                    <h2>Set the LipidLynxX level(s)</h2>
-                    <h2></h2>
-                    <h5>You can set one level (e.g. B0) or multiple levels separated by "," (e.g. B0,D0).</h5>
+                <div class="col-7 text-left" style="z-index: 10000;">
+                    <div class="row">
+                        <h4>&nbsp;</h4>
+                    </div>
+                    <div class="row">
+                        <h4>LipidLynx ID Level Matrix</h4>
+                        <p>&nbsp;</p>
+                    </div>
+                    <ul class="nav nav-tabs" id="levelsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="unmod-tab" data-toggle="tab" href="#unmod" role="tab"
+                               aria-controls="unmod" aria-selected="true">Unmodified Lipids</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="mod_lite-tab" data-toggle="tab" href="#mod_lite" role="tab"
+                               aria-controls="mod_lite" aria-selected="false">Modified Lipids</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
+                               aria-controls="mod_full" aria-selected="false">All Levels</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="levelsTabContent">
+                        <div class="tab-pane fade show active" id="unmod" role="tabpanel"
+                             aria-labelledby="unmod-tab">
+                            <h5 style="text-align: center; line-height: 2">Levels for unmodified lipids</h5>
+                            <img class="img-fluid" src="../static/images/levels_unmod.png" alt="levels_hint">
+                        </div>
+                        <div class="tab-pane fade" id="mod_lite" role="tabpanel" aria-labelledby="mod_lite-tab">
+                            <h5 style="text-align: center; line-height: 2">Main levels for modified lipids</h5>
+                            <img class="img-fluid" src="../static/images/levels_mod_lite.png" alt="levels_hint">
+                        </div>
+                        <div class="tab-pane fade" id="mod_full" role="tabpanel" aria-labelledby="mod_full-tab">
+                            <h5 style="text-align: center; line-height: 2">Full matrix of levels</h5>
+                            <img class="img-fluid" src="../static/images/levels_mod_full.png" alt="levels_hint">
+                        </div>
+                    </div>
+                    <div class="row">
+                        * Learn more about &nbsp;<a href="{{ url_for('.levels') }}" target="_blank"> the
+                        LipidLynx ID Level Matrix </a>
+                    </div>
+                </div>
+                <div class="col-5" style="z-index: 10000;">
+                    <p>&nbsp;</p>
                     <div>
                         <form id="in_form" method="post" action="{{ url_for('.equalize_lipid') }}"
                               enctype="multipart/form-data">
                             {{ in_form.hidden_tag() }}
-                            <div class="form-group">
-                                {{ in_form.input_id_str.label }}
-                                {% if in_form.input_id_str.errors %}
-                                    {% for e in in_form.input_id_str.errors %}
-                                        <p class="help-block">{{ e }}</p>
-                                    {% endfor %}
+                            <div class="row"><h4># 1 Upload table</h4></div>
+                            <div class="row">
+                                <input id="file1" class="btn btn-info mt-4 btn-block" type="file"
+                                       name="user_file">
+                            </div>
+                            <div class="row">
+                                Support.csv or .xlsx format
+                            </div>
+                            <div class="row">
+                                <h4># 2 Set the LipidLynxX level(s)</h4>
+                                <ul>
+                                    <li>You can set one level (e.g. B0) or multiple levels separated by "," (e.g.
+                                        B0,D0,D1).
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    {{ in_form.input_id_str.label }}
+                                    {% if in_form.input_id_str.errors %}
+                                        {% for e in in_form.input_id_str.errors %}
+                                            <p class="help-block">{{ e }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                    {{ in_form.input_id_str(class_='form-control') }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <h4># 3 Run Equalizer</h4>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input class="btn btn-primary mt-4 btn-block" type="submit"
+                                           value="Equalize">
+                                </div>
+                            </div>
+                            <div class="row">
+                                {% if output_name != "" %}
+                                    <h2>Output generated!</h2>
+                                    Output file: {{ output_name }}
+                                    <a class="btn btn-success mt-4"
+                                       href="{{ url_for('.download', filename=output_name, data=excel_data) }}">
+                                        Save output as .xlsx file
+                                    </a>
                                 {% endif %}
-                                {{ in_form.input_id_str(class_='form-control') }}
-                            </div>
-                            <h2>Upload table</h2>
-                            <div class="col-12">
-                                <div class="row">
-                                    <input id="file1" class="btn btn-info mt-4 btn-block" type="file"
-                                           name="user_file">
-                                </div>
-                                <div class="row">
-                                    Support.csv or .xlsx format
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input class="btn btn-primary mt-4 btn-block" type="submit"
-                                               value="Equalize">
+                                {% if submitted == 1 and alerts %}
+                                    <div class="alert alert-warning" role="alert">
+                                        {% if submitted == 1 and output_name == "" %}
+                                            <h5>Not able to convert any lipid abbreviation, please check your
+                                                input.</h5>
+                                        {% endif %}
                                     </div>
-                                </div>
+                                    <div class="alert alert-dark" role="alert">
+                                        {% for alert_info in alerts %}
+                                            <p>{{ alert_info }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-
                         </form>
                     </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" style="z-index: 10000;">
-                    {% if output_name != "" %}
-                        <h2>Output generated!</h2>
-                        <h2></h2>
-                        <a class="btn btn-success mt-4"
-                           href="{{ url_for('.download', filename=output_name, data=excel_data) }}">
-                            Save output as .xlsx file
-                        </a>
-                    {% endif %}
-                    {% if submitted == 1 and alerts %}
-                        <div class="alert alert-warning" role="alert">
-                            {% if submitted == 1 and output_name == "" %}
-                                <h5>Not able to convert any lipid abbreviation, please check your input.</h5>
-                            {% endif %}
-                        </div>
-                        <div class="alert alert-dark" role="alert">
-                            {% for alert_info in alerts %}
-                                <p>{{ alert_info }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
