@@ -20,7 +20,7 @@ in the epilipidome.
 -   Easy to use Graphic User Interface
 -   API access for professional users
 
-![LipidLynx_01_Home](doc/images/LipidLynx_01_Home.png) 
+![LipidLynx_01_Home](doc/images/LipidLynxX_Start_fox.png) 
 
 ### Main Modules
 
@@ -31,14 +31,6 @@ in the epilipidome.
 -   **LipidLynxX Equalizer**
 
     -   Cross link different level of LipidLynxX ID on selected level
-    
--   **LipidLynxX Parser**
-
-    -   Decode LipidLynxX ID and export information into JSON format
-
--   **LipidLynxX Generator**
-
-    -   LipidLynxX ID to SMILES/ MOL / SDF conversion
     
 ### LipidLynxX Nomenclature
 
@@ -91,61 +83,12 @@ in the epilipidome.
 
     - Example
     
-|Bulk|Discrete| | |sn Specific| | |
-|---|---|---|---|---|---|---|
-|**B**|**D**| | |**S**| | |
-|PC(38:5)|PC(18:1_20:4)| | |PC(18:1/20:4)| | |
-| | |**D0.1**| | |**S0.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15}>)| |
-| | | |**D0.2**| | |**S0.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E}>)|
-|**B1**|**D1**| | |**S1**| | |
-|PC(38:5<+46>)|PC(18:1_20:4<+46>)| | |PC(18:1/20:4<+46>)| | |
-| | |**D1.1**| | |**S1.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},+46>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},+46>)| |
-| | | |**D1.2**| | |**S1.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},+46>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},+46>)|
-|**B2**|**D2**| | |**S2**| | |
-|PC(38:5<+3O,-2H>)|PC(18:1_20:4<+3O,-2H>)| | |PC(18:1/20:4<+3O,-2H>)| | |
-| | |**D2.1**| | |**S2.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},+3O,-2H>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},+3O,-2H>)| |
-| | | |**D2.2**| | |**S2.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},+3O,-2H>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},+3O,-2H>)|
-|**B3**|**D3**| | |**S3**| | |
-|PC(38:5<2OH,oxo>)|PC(18:1_20:4<2OH,oxo>)| | |PC(18:1/20:4<2OH,oxo>)| | |
-| | |**D3.1**| | |**S3.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH,oxo>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH,oxo>)| |
-| | | |**D3.2**| | |**S3.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH,oxo>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH,oxo>)|
-| |**D4**| | |**S4**| | |
-| |PC(18:1_20:4<2OH{8,11},oxo{14}>)| | |PC(18:1/20:4<2OH{8,11},oxo{14}>)| | |
-| | |**D4.1**| | |**S4.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH{8,11},oxo{14}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH{8,11},oxo{14}>)| |
-| | | |**D4.2**| | |**S4.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH{8,11},oxo{14}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH{8,11},oxo{14}>)|
-| |**D5**| | |**S5**| | |
-| |PC(18:1_20:4<2OH{8R,11S},oxo{14}>)| | |PC(18:1/20:4<2OH{8R,11S},oxo{14}>)| | |
-| | |**D5.1**| | |**S5.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH{8R,11S},oxo{14}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH{8R,11S},oxo{14}>)| |
-| | | |**D5.2**| | |**S5.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH{8R,11S},oxo{14}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH{8R,11S},oxo{14}>)|
+    ![LipidLynx_01_Home](lynx/static/images/levels_mod_full.png)
 
+-   Currently supported modification controlled vocabularies
+    ![LipidLynx_01_Home](doc/images/nomenclature_cv.png)
 
--   Currently supported modifications
-
-    -   `DB`: C=C bond
-    -   `OH`: hydroxy
-    -   `Hp`: hydroperoxy
-    -   `NH2`: amino
-    -   `Me`: methyl
-    -   `oxo`: keto/oxo
-    -   `Ep`: epoxy
-    -   `SH`: thio
-    -   `My`: methylene
-    -   `Br`: bromo
-    -   `Cl`: chloro
-    -   `F`: fluoro
-    -   `CN`: cyano
+    
 
 -   Example of LipidLynx abbreviations for Major lipid classes
 
@@ -188,9 +131,13 @@ in the epilipidome.
 
     -   Main dependencies are:
 
-        -   Data processing: `pandas`
+        -   Data processing:
 
-        -   SDF generation: `rdkit`
+            -   `jsonschema`, `natsort`, `pandas`, `openpyxl`, `xlrd`, `xlwt`
+            
+        -    UI and webservice:
+            
+            -   `flask`, `requests`, `wtforms`, `werkzeug`, `zerorpc`
 
     -   Test source code installation
 
@@ -208,9 +155,9 @@ in the epilipidome.
 
 ### Screenshots
 -   **GUI**
-    ![LipidLynx_02_Converter](doc/images/LipidLynx_02_Converter.png) 
+    ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png) 
 -   **API**
-    ![ApiLynx_01_StringConverterAPI](doc/images/ApiLynx_01_StringConverterAPI.png) 
+    ![ApiLynx_01_StringConverterAPI](doc/images/LipidLynX_api_01_StringConverterAPI.png) 
 
 ### License
 
@@ -224,7 +171,7 @@ in the epilipidome.
 
 -   Please cite our publication in an appropriate form.
 
-    -   LipidLynx is based on the previous project epiLION
+    -   LipidLynx is based on the previous project [epiLION](https://github.com/SysMedOs/epiLION)
     
         -   Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
         "Computational solutions in redox lipidomics–Current strategies and future perspectives."
