@@ -131,8 +131,12 @@ class Decoder(object):
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 
+        if len(out_res_lst) > 1 and lv_min == "B":
+            lv_min = "D"
+
         if lv_min == "D":
             no_res_lst = []
+            spb_lst = []
             o_lst = []
             p_lst = []
             r_lst = []
@@ -153,6 +157,7 @@ class Decoder(object):
                 + natsorted(r_lst)
             )
 
+
         return {
             "RESIDUES_ORDER": out_res_lst,
             "RESIDUES_INFO": out_res_dct,
@@ -160,14 +165,13 @@ class Decoder(object):
             "RESIDUES_SEPARATOR_LEVEL": lv_min,
         }
 
-    def extract_by_class_rule(self, lipid_name: str, c: str) -> dict:
+    def extract_by_class_rule(self, lipid_name: str, c: str, lynx_rule_idx: str = "LipidLynxX.json#LipidLynxX") -> dict:
         c_lmsd_classes = self.rules[c].get("LMSD_CLASSES", None)
         c_max_res = self.rules[c].get("MAX_RESIDUES", 1)
         res_sep = self.rules[c].get("RESIDUES_SEPARATOR", None)  # type: str
         sep_levels = self.rules[c].get("SEPARATOR_LEVELS", {})  # type: dict
         c_rules = self.rules[c].get("MATCH", {})
         matched_info_dct = {}
-        lynx_rule_idx = "LipidLynxX.json#LipidLynxX"
         for lr in c_rules:
             if re.search(r"Lynx", lr, re.IGNORECASE):
                 lynx_rule_idx = lr
@@ -187,6 +191,20 @@ class Decoder(object):
                     separator_levels=sep_levels,
                     separator=res_sep,
                 )
+                # set specific classes into
+                for c_lmsd in c_lmsd_classes:
+                    if c_lmsd.upper().startswith("FA"):
+                        residues_dct["RESIDUES_SEPARATOR_LEVEL"] = "S"
+                    elif c_lmsd.upper().startswith("SP"):
+                        residues_dct["RESIDUES_SEPARATOR_LEVEL"] = "S"
+                        sp_res_abbr_lst = residues_dct["RESIDUES_ORDER"]
+                        if len(sp_res_abbr_lst) == 2:
+                            if ';' in sp_res_abbr_lst[1] and ';' not in sp_res_abbr_lst[0]:
+                                residues_dct["RESIDUES_ORDER"] = [sp_res_abbr_lst[1], sp_res_abbr_lst[0]]
+                            elif re.match(r'[mdt].*', sp_res_abbr_lst[1]) and not re.match(r'[mdt].*', sp_res_abbr_lst[0]):
+                                residues_dct["RESIDUES_ORDER"] = [sp_res_abbr_lst[1], sp_res_abbr_lst[0]]
+                    elif c_lmsd.upper().startswith("ST"):
+                        residues_dct["RESIDUES_SEPARATOR_LEVEL"] = "S"
                 matched_info_dct[r] = {
                     "LMSD_CLASSES": c_lmsd_classes,
                     "SEGMENTS": matched_dct,

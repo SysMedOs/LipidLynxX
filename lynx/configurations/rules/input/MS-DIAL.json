@@ -3,8 +3,9 @@
   "_AUTHORS": [
     "zhixu.ni@uni-leipzig.de"
   ],
-  "SOURCE": [
-    "MS-DIAL"
+  "SOURCES": [
+    "MS-DIAL",
+    "LipidCreator"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",

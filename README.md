@@ -136,17 +136,16 @@ in the epilipidome.
             -   `jsonschema`, `natsort`, `pandas`, `openpyxl`, `xlrd`, `xlwt`
             
         -    UI and webservice:
-            
             -   `flask`, `requests`, `wtforms`, `werkzeug`, `zerorpc`
-
-    -   Test source code installation
-
-        -   LipidLynxX is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS.
-
-        -   [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynx/master.svg)](https://travis-ci.com/SysMedOs/LipidLynxX/branches)
-
-        -   You can also use py.test to test LipidLynxX in your python environment, all test files can be found in `./test` folder.
-
+        
+-   Test source code installation
+    
+    -   LipidLynxX is configured to use [travis-ci](https://travis-ci.com) with `py.test` to test on Windows, Linux, and macOS.
+    
+    -   [Current status of the master branch ![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynx/master.svg)](https://travis-ci.com/SysMedOs/LipidLynxX/branches)
+    
+    -   You can also use py.test to test LipidLynxX in your python environment, all test files can be found in `./test` folder.
+    
 -   Errors/bugs
 
       In case you experienced any problems with running LipidHunter
@@ -170,6 +169,13 @@ in the epilipidome.
     -   For commercial use: please contact the develop team by email.
 
 -   Please cite our publication in an appropriate form.
+    
+    - LipidLynxX preprint on `bioRxiv.org`
+      
+        -   Zhixu Ni, Maria Fedorova.
+        "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+            
+            - DOI: [10.1101/2020.04.09.033894](https://www.biorxiv.org/content/10.1101/2020.04.09.033894v1)
 
     -   LipidLynx is based on the previous project [epiLION](https://github.com/SysMedOs/epiLION)
     
