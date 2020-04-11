@@ -1,6 +1,4 @@
-# ![LipidLynx_Logo](doc/images/LipidLynxX_Logo.png)
-
-## LipidLynxX
+# LipidLynxX ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg) 
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynxX/master.svg)](https://travis-ci.com/SysMedOs/LipidLynx)
@@ -19,6 +17,10 @@ in the epilipidome.
 -   Cross level match based on shared levels
 -   Extract key information from LipidLynxX ID
 -   Strictly controlled format using JSON schema
+-   Easy to use Graphic User Interface
+-   API access for professional users
+
+![LipidLynx_01_Home](doc/images/LipidLynxX_Start_fox.png) 
 
 ### Main Modules
 
@@ -30,33 +32,28 @@ in the epilipidome.
 
     -   Cross link different level of LipidLynxX ID on selected level
     
--   **LipidLynxX Parser**
-
-    -   Decode LipidLynxX ID and export information into JSON format
-
--   **LipidLynxX Generator**
-
-    -   LipidLynxX ID to SMILES/ MOL / SDF conversion
-    
 ### LipidLynxX Nomenclature
 
 -   LipidLynxX levels
     
-    -   Lipid level: **B**: Bulk,  **D**: Discrete,  **S**: sn Specific
+    -   Lipid level: 
+        -   **B**: Bulk
+        -   **D**: Discrete
+        -   **S**: sn Specific
     -   Modification levels:
     
-        -   0 no modification
-        -   1 mass shift
-        -   2 element shift
-        -   3 number and type of modification
-        -   4 modification position information
-        -   5 additional information (e.g. R-/S-)
+        -   0 : no modification
+        -   1 : mass shift
+        -   2 : element shift
+        -   3 : number and type of modification
+        -   4 : modification position information
+        -   5 : additional information (e.g. R-/S-)
         
     -   Double bond levels:
         
-        -   .0 no information of double bond position
-        -   .1 double bond position information given
-        -   .2 cis- / trans- information of all C=C bond 
+        -   .0 : no information of double bond position (.0 should always be skipped, e.g. B0.0 -> B0)
+        -   .1 : double bond position information given
+        -   .2 : cis- / trans- information of all C=C bond 
 
 -   LipidLynxX level matrix
     
@@ -86,61 +83,12 @@ in the epilipidome.
 
     - Example
     
-|Bulk|Discrete| | |sn Specific| | |
-|---|---|---|---|---|---|---|
-|**B**|**D**| | |**S**| | |
-|PC(38:5)|PC(18:1_20:4)| | |PC(18:1/20:4)| | |
-| | |**D0.1**| | |**S0.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15}>)| |
-| | | |**D0.2**| | |**S0.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E}>)|
-|**B1**|**D1**| | |**S1**| | |
-|PC(38:5<+46>)|PC(18:1_20:4<+46>)| | |PC(18:1/20:4<+46>)| | |
-| | |**D1.1**| | |**S1.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},+46>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},+46>)| |
-| | | |**D1.2**| | |**S1.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},+46>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},+46>)|
-|**B2**|**D2**| | |**S2**| | |
-|PC(38:5<+3O,-2H>)|PC(18:1_20:4<+3O,-2H>)| | |PC(18:1/20:4<+3O,-2H>)| | |
-| | |**D2.1**| | |**S2.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},+3O,-2H>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},+3O,-2H>)| |
-| | | |**D2.2**| | |**S2.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},+3O,-2H>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},+3O,-2H>)|
-|**B3**|**D3**| | |**S3**| | |
-|PC(38:5<2OH,Ke>)|PC(18:1_20:4<2OH,Ke>)| | |PC(18:1/20:4<2OH,Ke>)| | |
-| | |**D3.1**| | |**S3.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH,Ke>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH,Ke>)| |
-| | | |**D3.2**| | |**S3.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH,Ke>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH,Ke>)|
-| |**D4**| | |**S4**| | |
-| |PC(18:1_20:4<2OH{8,11},Ke{14}>)| | |PC(18:1/20:4<2OH{8,11},Ke{14}>)| | |
-| | |**D4.1**| | |**S4.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH{8,11},Ke{14}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH{8,11},Ke{14}>)| |
-| | | |**D4.2**| | |**S4.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH{8,11},Ke{14}>)|
-| |**D5**| | |**S5**| | |
-| |PC(18:1_20:4<2OH{8R,11S},Ke{14}>)| | |PC(18:1/20:4<2OH{8R,11S},Ke{14}>)| | |
-| | |**D5.1**| | |**S5.1**| |
-| | |PC(18:1<{9}>_20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>)| | |PC(18:1<{9}>/20:4<{5,9,12,15},2OH{8R,11S},Ke{14}>)| |
-| | | |**D5.2**| | |**S5.2**|
-| | | |PC(18:1<{9Z}>_20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)| | |PC(18:1<{9Z}>/20:4<{5Z,9E,12E,15E},2OH{8R,11S},Ke{14}>)|
+    ![LipidLynx_01_Home](lynx/static/images/levels_mod_full.png)
 
+-   Currently supported modification controlled vocabularies
+    ![LipidLynx_01_Home](doc/images/nomenclature_cv.png)
 
--   Currently supported modifications
-
-    -   `DB`: C=C bond
-    -   `OH`: hydroxy
-    -   `Hp`: hydroperoxy
-    -   `NH2`: amino
-    -   `Me`: methyl
-    -   `Ke`: keto/oxo
-    -   `Ep`: epoxy
-    -   `SH`: thio
-    -   `My`: methylene
-    -   `Br`: bromo
-    -   `Cl`: chloro
-    -   `F`: fluoro
-    -   `CN`: cyano
+    
 
 -   Example of LipidLynx abbreviations for Major lipid classes
 
@@ -149,15 +97,15 @@ in the epilipidome.
         -   FA18:0
         -   O-16:0
         -   P-18:0
-        -   20:4\<2OH,1Ke>
+        -   20:4\<2OH,oxo>
         -   20:4\<{5Z,9E,11Z,14Z},OH{8S}>
-        -   20:4\<{5Z,9E,12E,15E},2OH{8S,11R},1Ke{14}>
+        -   20:4\<{5Z,9E,12E,15E},2OH{8S,11R},oxo{14}>
 
     -   Phospholipids
         -   PC(O-16:0/18:1)
         -   PE(P-16:0_18:1)
-        -   PC(16:0/20:4\<2OH,Ke>)
-        -   PE(16:0/20:4\<{5,9,12,15},2OH{8,11},Ke{14}>)
+        -   PC(16:0/20:4\<2OH,oxo>)
+        -   PE(16:0/20:4\<{5,9,12,15},2OH{8,11},oxo{14}>)
 
 ## Instructions
 
@@ -183,9 +131,13 @@ in the epilipidome.
 
     -   Main dependencies are:
 
-        -   Data processing: `pandas`
+        -   Data processing:
 
-        -   SDF generation: `rdkit`
+            -   `jsonschema`, `natsort`, `pandas`, `openpyxl`, `xlrd`, `xlwt`
+            
+        -    UI and webservice:
+            
+            -   `flask`, `requests`, `wtforms`, `werkzeug`, `zerorpc`
 
     -   Test source code installation
 
@@ -201,6 +153,12 @@ in the epilipidome.
 
       please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidLynxX/issues) or contact us.
 
+### Screenshots
+-   **GUI**
+    ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png) 
+-   **API**
+    ![ApiLynx_01_StringConverterAPI](doc/images/LipidLynX_api_01_StringConverterAPI.png) 
+
 ### License
 
 -   LipidLynxX is Dual-licensed
@@ -213,7 +171,7 @@ in the epilipidome.
 
 -   Please cite our publication in an appropriate form.
 
-    -   LipidLynx is based on the previous project epiLION
+    -   LipidLynx is based on the previous project [epiLION](https://github.com/SysMedOs/epiLION)
     
         -   Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
         "Computational solutions in redox lipidomics–Current strategies and future perspectives."

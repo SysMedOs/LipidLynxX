@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Matrix of levels @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <h4>&nbsp;</h4>
+    <h3>LipidLynxX nomenclature matrix of levels</h3>
+    <h5>&nbsp;</h5>
+    <ul>
+        <li><p><span>Three component levels</span></p>
+            <ul>
+                <li><p>
+                    <span>Residue levels: </span>
+                    <ul>
+                        <li><strong><span>B</span></strong><span>: Bulk,  </span></li>
+                        <li><strong><span>D</span></strong><span>: Discrete,  </span></li>
+                        <li><strong><span>S</span></strong><span>: sn Specific</span></li>
+                    </ul>
+                    </p></li>
+                <li><p><span>Modification levels:</span></p>
+                    <ul>
+                        <li><span>0 : no modification</span></li>
+                        <li><span>1 : mass shift</span></li>
+                        <li><span>2 : element shift</span></li>
+                        <li><span>3 : number and type of modification</span></li>
+                        <li><span>4 : modification position information</span></li>
+                        <li><span>5 : additional information (e.g. R-/S-)</span></li>
+                    </ul>
+                </li>
+                <li><p><span>Double bond levels:</span></p>
+                    <ul>
+                        <li><span>.0 : no information of double bond position (.0 should always be skipped, e.g. B0.0 -> B0)</span>
+                        </li>
+                        <li><span>.1 : double bond position information given</span></li>
+                        <li><span>.2 : cis- / trans- information of all C=C bond </span></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><p><span>LipidLynxX level matrix</span></p>
+            <ul>
+                <li><p><span>The combinations of 3 sub-levels result in a matrix of LipidLynxX levels</span></p>
+                    <ul>
+                        <li><span>e.g. B2 , D4, and S4.2</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ul class="nav nav-tabs" id="levelsTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="unmod-tab" data-toggle="tab" href="#unmod" role="tab"
+               aria-controls="unmod" aria-selected="true">Unmodified Lipids</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="mod_lite-tab" data-toggle="tab" href="#mod_lite" role="tab"
+               aria-controls="mod_lite" aria-selected="false">Modified Lipids</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
+               aria-controls="mod_full" aria-selected="false">All Levels</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="cross_match-tab" data-toggle="tab" href="#cross_match" role="tab"
+               aria-controls="cross_match" aria-selected="false">Cross level matching</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="levelsTabContent">
+        <div class="tab-pane fade show active" id="unmod" role="tabpanel"
+             aria-labelledby="unmod-tab">
+            <h3>Levels for unmodified lipids</h3>
+            <img class="img-fluid" src="../static/images/levels_unmod.png" alt="levels_hint">
+        </div>
+        <div class="tab-pane fade" id="mod_lite" role="tabpanel" aria-labelledby="mod_lite-tab">
+            <h3>Main levels for modified lipids</h3>
+            <img class="img-fluid" src="../static/images/levels_mod_lite.png" alt="levels_hint">
+        </div>
+        <div class="tab-pane fade" id="mod_full" role="tabpanel" aria-labelledby="mod_full-tab">
+            <h3>Full matrix of levels</h3>
+            <img class="img-fluid" src="../static/images/levels_mod_full.png" alt="levels_hint">
+        </div>
+        <div class="tab-pane fade" id="cross_match" role="tabpanel" aria-labelledby="cross_match-tab">
+            <h3>Cross level matching</h3>
+            <img class="img-fluid" src="../static/images/nomenclature_levels.png" alt="levels_hint">
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{
+  "RESIDUES": {
+    "RESIDUE": {
+      "22:6<OH>": [
+        "HDoHE"
+      ],
+      "22:5<OH>": [
+        "HDoPE"
+      ],
+      "22:4<OH>": [
+        "HDoTE"
+      ],
+      "20:5<OH>": [
+        "HEPE"
+      ],
+      "20:4<OH>": [
+        "HETE"
+      ]
+    }
+  },
+  "LIPID_CLASSES": {
+    "FA01": {
+      "FA2:0": [
+        "ethanoic\\s*acid",
+        "acetic\\s*acid"
+      ],
+      "FA3:0": [
+        "propanoic\\s*acid"
+      ],
+      "FA4:0": [
+        "butanoic\\s*acid",
+        "butyric\\s*acid"
+      ],
+      "FA5:0": [
+        "pentanoic\\s*acid",
+        "valeric\\s*acid"
+      ],
+      "FA16:0": [
+        "PA",
+        "hexadecanoic\\s*acid",
+        "palmitic\\s*acid"
+      ],
+      "FA18:0": [
+        "SA",
+        "bassinic\\s*acid",
+        "cetylacetic\\s*acid",
+        "lactaric\\s*acid",
+        "octadecanoic\\s*acid",
+        "stearic\\s*acid",
+        "stearophanic\\s*acid",
+        "talgic\\s*acid"
+      ],
+      "FA18:1<{9Z}>": [
+        "OA",
+        "elaic\\s*acid",
+        "elaidoic\\s*acid",
+        "octadecenoic\\s*acid",
+        "oleic\\s*acid",
+        "octadecylenic\\s*acid",
+        "rapinic\\s*acid"
+      ],
+      "FA18:2<{9Z,12Z}>": [
+        "LA",
+        "octadecadienoic\\s*acid",
+        "linoleic\\s*acid",
+        "telfairic\\s*acid"
+      ],
+      "FA20:4<{5Z,8Z,11Z,14Z}>": [
+        "AA",
+        "ARA",
+        "Arachidonate",
+        "eicosatetraenoic\\s*acid",
+        "icosatetraenoic\\s*acid",
+        "Eicosatetraenoic acid"
+      ],
+      "FA22:6<{4Z,7Z,10Z,13Z,16Z,19Z}>": [
+        "DHA",
+        "Cervonic\\s*acid",
+        "Docosahexaenoic\\s*acid"
+      ],
+      "FA22:6<OH>": [
+        "HDoHE"
+      ],
+      "FA22:5<OH>": [
+        "HDoPE"
+      ],
+      "FA22:4<OH>": [
+        "HDoTE"
+      ],
+      "FA20:5<OH>": [
+        "HEPE"
+      ],
+      "FA20:4<OH>": [
+        "HETE"
+      ]
+    }
+  }
+}

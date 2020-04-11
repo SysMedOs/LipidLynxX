@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# -*- coding: utf-8 -*-
-#
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
@@ -12,34 +10,39 @@ import json
 
 import pandas as pd
 
-from ..models.log import logger
-from ..controllers.params_loader import load_cfg_info, build_parser, build_mod_parser
-from ..controllers.general_functions import get_abs_path
+from lynx.utils.log import logger
+from lynx.utils.params_loader import (
+    load_cfg_info,
+    build_parser,
+    build_mod_parser,
+    build_input_rules,
+    build_output_rules,
+)
+from lynx.utils.file_readers import get_abs_path
 
 # Define default values across LipidLynx
-
-api_version = "0.1"
-
 # load default values from files defined in config.ini
 # following parameters generated will be used as global values
-with open(get_abs_path(r"lynx/configurations/CV.json"), "r") as cv_js:
-    cv_alias_json = json.load(cv_js)
 
+default_cfg_path = "/lynx/config.ini"
+cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
+api_version = cfg_info_dct.get("api_version", '0.1')
+default_input_rules = build_input_rules(cfg_info_dct["input_rules"])
+default_output_rules = build_output_rules(cfg_info_dct["output_rules"])
+default_cv_file = get_abs_path(cfg_info_dct["controlled_vocabularies"])
+default_alias_file = get_abs_path(cfg_info_dct["defined_alias"])
+with open(default_cv_file, "r") as cv_js:
+    cv_alias_json = json.load(cv_js)
 cv_order_list = []
 cv_alias_info = {}
 cv_elements_info = {}
-
 for _mod in cv_alias_json:
     cv_alias_info[_mod["cv"]] = _mod["alias"]
     cv_order_list.append(_mod["cv"])
     cv_elements_info[_mod["cv"]] = _mod["elements"]
 
-default_cfg_path = "/lynx/config.ini"
-cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
-class_rgx_dct, rgx_class_dct = build_parser(cfg_info_dct["rules"])
 cv_rgx_dct = build_mod_parser(cv_alias_info)
-mod_cfg_df = pd.read_csv(cfg_info_dct["mod_cfg"], index_col=0, na_values=None)
-abbr_cfg_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+# abbr_cfg_df = pd.read_excel(cfg_info_dct["defined_alias"])
 
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "4", "5"]
@@ -64,23 +67,65 @@ mod_db_level_lst = [
     "5.1",
     "5.2",
 ]
+supported_levels = [
+    "B0",
+    "B1",
+    "B2",
+    "B3",
+    "D0",
+    "D0.1",
+    "D0.2",
+    "D1",
+    "D1.1",
+    "D1.2",
+    "D2",
+    "D2.1",
+    "D2.2",
+    "D3",
+    "D3.1",
+    "D3.2",
+    "D4",
+    "D4.1",
+    "D4.2",
+    "D5",
+    "D5.1",
+    "D5.2",
+    "S0",
+    "S0.1",
+    "S0.2",
+    "S1",
+    "S1.1",
+    "S1.2",
+    "S2",
+    "S2.1",
+    "S2.2",
+    "S3",
+    "S3.1",
+    "S3.2",
+    "S4",
+    "S4.1",
+    "S4.2",
+    "S5",
+    "S5.1",
+    "S5.2",
+]
 
 lynx_schema_cfg = {
     "lynx_mod": r"lynx/models/schema/lynx_mod.schema.json",
-    "lynx_fa": r"lynx/models/schema/lynx_fa.schema.json",
-    "lynx_hg": r"lynx/models/schema/lynx_hg.schema.json",
+    "lynx_residue": r"lynx/models/schema/lynx_residue.schema.json",
+    "lynx_lipidclass": r"lynx/models/schema/lynx_lipidclass.schema.json",
     "lynx_core": r"lynx/models/schema/lynx_core.schema.json",
 }
 
 core_schema_path = get_abs_path(lynx_schema_cfg["lynx_core"])
 with open(core_schema_path, "r") as core_obj:
     core_schema = json.load(core_obj)
-hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_hg"])
+hg_schema_path = get_abs_path(lynx_schema_cfg["lynx_lipidclass"])
 with open(hg_schema_path, "r") as hg_json_obj:
     hg_schema = json.load(hg_json_obj)
-fa_schema_path = get_abs_path(lynx_schema_cfg["lynx_fa"])
-with open(fa_schema_path, "r") as fa_json_obj:
-    fa_schema = json.load(fa_json_obj)
+res_schema_path = get_abs_path(lynx_schema_cfg["lynx_residue"])
+with open(res_schema_path, "r") as res_json_obj:
+    res_schema = json.load(res_json_obj)
 mod_schema_path = get_abs_path(lynx_schema_cfg["lynx_mod"])
 with open(mod_schema_path, "r") as mod_json_obj:
     mod_schema = json.load(mod_json_obj)

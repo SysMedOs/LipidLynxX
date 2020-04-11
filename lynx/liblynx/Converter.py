@@ -40,7 +40,7 @@ class Converter:
                 abbr_df = pd.read_csv(file, sep="\t")
             else:
                 abbr_df = pd.DataFrame()
-                logger.error(f"Can Not load file: {file}")
+                logger.error(f"Can Not __load__ file: {file}")
         else:
             raise FileNotFoundError
         abbr_df.fillna("", inplace=True)
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 
     test_in_file = r"../test/test_input/test_crosscheck.xlsx"
     test_out_file = r"../test/test_output/test_crosscheck_output.xlsx"
-    cfg_file = r"../configurations/LinearFA_abbreviations.xlsx"
+    cfg_file = r"../configurations/defined_alias.xlsx"
 
     converter = Converter(cfg_file)
 

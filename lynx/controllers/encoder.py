@@ -1,547 +1,335 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from collections import Counter
-import re
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List
 
 from natsort import natsorted
 
-from ..models.defaults import lipid_class_alias_info, cv_order_list, cv_alias_info
-
-from ..models.log import logger
-from ..controllers.general_functions import seg_to_str
-from ..controllers.parser import parse, parse_mod
-
-
-def lynx_encode(parsed_dct: Dict[str, Union[str, dict, list]]) -> str:
-    """
-    The general encoder to generate lion code from parsed information
-    Args:
-        parsed_dct:
-
-    Returns:
-
-    """
-    input_abbr = parsed_dct.get("INPUT_ABBR", None)
-    logger.debug(f"Try to encode lipid: {input_abbr}")
-    lynx_code_candidates_lst = []
-    parsed_dct["CLASS_INFO"] = []
-    for reg_pattern in parsed_dct["OUTPUT_INFO"]:
-        tmp_parsed_dct = parsed_dct["OUTPUT_INFO"][reg_pattern]
-        lipid_class = tmp_parsed_dct.get("RULE_CLASS", "")
-
-        if lipid_class is not None:
-            if lipid_class in "FA":
-                lynx_code_candidates_lst.append(encode_fa(tmp_parsed_dct))
-            elif lipid_class == "SPB":
-                lynx_code_candidates_lst.append(encode_spb(tmp_parsed_dct))
-            elif lipid_class == "PL":
-                lynx_code_candidates_lst.append(encode_pl(tmp_parsed_dct))
-            elif lipid_class in ["Cer", "SM", "SP"]:
-                lynx_code_candidates_lst.append(encode_sp(tmp_parsed_dct))
-            elif lipid_class == "GL":
-                lynx_code_candidates_lst.append(encode_gl(tmp_parsed_dct))
-            elif lipid_class == "CL":
-                lynx_code_candidates_lst.append(encode_cl(tmp_parsed_dct))
-            elif lipid_class == "BMP":
-                lynx_code_candidates_lst.append(encode_bmp(tmp_parsed_dct))
-
-        parsed_dct["CLASS_INFO"].append(tmp_parsed_dct.get("PARSED_CLASS", ""))
-
-    class_info_lst = parsed_dct["CLASS_INFO"]
-    try:
-        best_class = str(Counter(class_info_lst).most_common(1)[0][0])
-        logger.debug(f"Best class is: {best_class}")
-    except IndexError:
-        best_class = None
-        logger.warning(f"Failed to propose best class for this lipid.")
-    lynx_code = get_best_abbreviation(
-        lynx_code_candidates_lst, target_class=best_class, abbr=input_abbr
-    )
-
-    add_mod = parsed_dct.get("ADDITIONAL_MOD", None)
-    if add_mod:
-        add_mod_lst = decode_mod(add_mod)
-        if add_mod_lst:
-            add_mod_str = seg_to_str(add_mod_lst).strip("[]")
-            add_mod_str = seg_to_str(add_mod_lst).strip("<>")
-            lynx_code += f"<{add_mod_str}>"
-
-    return lynx_code
+from lynx.utils.params_loader import load_output_rule
+from lynx.controllers.decoder import Decoder
+from lynx.models.residue import Residue, merge_residues
+from lynx.models.defaults import (
+    default_output_rules,
+    default_input_rules,
+    supported_levels,
+)
+from lynx.utils.log import logger
 
 
-def batch_encode(
-    sum_parsed_info: Union[
-        Dict[any, Dict[str, Union[str, dict]]],
-        List[Dict[str, Union[str, dict]]],
-        Tuple[Dict[str, Union[str, dict]]],
-    ]
-) -> Dict[str, str]:
-    """
-    Load sum of parsed info to generate a dictionary of lion code output
-    Args:
-        sum_parsed_info:
+class Encoder(object):
+    def __init__(
+        self,
+        output_rules: dict = default_output_rules,
+        rule: str = "LipidLynxX",
+        input_rules: dict = default_input_rules,
+    ):
+        self.output_rules = load_output_rule(output_rules, rule)
+        self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
+        self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
+        self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
+        self.residue_rules = self.output_rules.get("RESIDUES", {}).get("RESIDUE", {})
+        self.separator_levels = self.output_rules.get("SEPARATORS", {}).get(
+            "SEPARATOR_LEVELS", {}
+        )
+        self.separators = self.output_rules.get("SEPARATORS", {})
+        self.extractor = Decoder(rules=input_rules)
 
-    Returns:
+    @staticmethod
+    def get_best_id(candidate: Dict[str, str]) -> str:
+        c_lv_lst = natsorted(list(candidate.keys()))
+        c_max_str = candidate.get(c_lv_lst[-1], "")
+        return c_max_str
 
-    """
-
-    sum_lynx_code_dct = {}
-
-    for p in sum_parsed_info:
-
-        if isinstance(sum_parsed_info, list) or isinstance(sum_parsed_info, tuple):
-            parsed_dct = p
-        elif isinstance(sum_parsed_info, dict):
-            parsed_dct = sum_parsed_info[p]
-        else:
-            raise TypeError(f"Can NOT process input type {type(sum_parsed_info)}")
-        lynx_code = lynx_encode(parsed_dct)
-        abbr = parsed_dct.get("INPUT_ABBR", None)
-        if not abbr:
-            abbr = lynx_code
-
-        sum_lynx_code_dct[abbr] = lynx_code
-
-    return sum_lynx_code_dct
-
-
-def get_best_abbreviation(
-    candidates_lst: List[str], target_class: str = None, abbr: str = None
-) -> str:
-    lynx_code = ""
-    candidates_lst = list(filter(None, list(set(candidates_lst))))
-    if abbr:
-        if re.search(r":\d[oep]", abbr) or re.search(r"[OP]-\d{1,2}:\da?", abbr):
-            for c in candidates_lst:
-                if c.startswith("FA"):
-                    candidates_lst.remove(c)
-    if len(candidates_lst) > 1:
-        code_len = 1
-        for tmp_lion in candidates_lst:
-            tmp_len = len(tmp_lion)
-            if target_class:
-                if tmp_lion.startswith(target_class) and tmp_len > code_len:
-                    code_len = tmp_len
-                    lynx_code = tmp_lion
-            else:
-                if tmp_len > code_len:
-                    code_len = tmp_len
-                    lynx_code = tmp_lion
-                elif tmp_len == code_len and tmp_lion.startswith(("O-", "P-")):
-                    code_len = tmp_len
-                    lynx_code = tmp_lion
-
-    elif len(candidates_lst) == 1:
-        lynx_code = candidates_lst[0]
-    else:
-        logger.warning("Failed to generate epiLION abbreviation for this lipid...")
-
-    if lynx_code is None:
-        lynx_code = ""
-
-    return lynx_code
-
-
-def decode_mod(mod_info: str, front: str = "position", end: str = "count") -> List[str]:
-    if mod_info:
-        mod_dct = parse_mod(mod_info)
-    else:
-        return ""
-
-    if front:
-        if front.lower().startswith("count") or "[" in mod_info:
-            front = "count"
-        elif mod_info.startswith("+"):
-            front = "count"
-        else:
-            front = "position"
-    else:
-        front = "position"
-    if not end:
-        end = "count"
-
-    mod_encode_dct = {}
-
-    for cv in mod_dct:
-        cv_info_lst = mod_dct[cv]
-        cv_position_lst = []
-        cv_replace_lst = []
-        cv_count = 0
-
-        for cv_info in cv_info_lst:
-            tmp_front = cv_info.get("FRONT", None)
-            tmp_end = cv_info.get("END", None)
-            tmp_replace = cv_info.get("REPLACE", None)
-            if tmp_front and re.match(r"\d\d?[xX]$", tmp_front):
-                tmp_front = tmp_front[:-1]
-                front = "count"
-            if tmp_front and tmp_end:
-                cv_position_lst.append(str(tmp_front))
-                cv_count += 1
-            elif tmp_front and not tmp_end:
-                if front == "position":
-                    cv_position_lst.append(str(tmp_front))
-                    cv_count += 1
+    @staticmethod
+    def get_best_id_series(candidates: List[dict]) -> dict:
+        best_id_dct = {}
+        num_lv = 0
+        max_str = ""
+        for c_info in candidates:
+            for c in c_info:
+                c_lv_lst = natsorted(list(c_info[c].keys()))
+                c_num_lv = len(c_lv_lst)
+                c_max_str = c_info[c].get(c_lv_lst[-1], "")
+                if c_num_lv > num_lv:
+                    best_id_dct = c_info[c]
+                    max_str = c_max_str
                 else:
-                    try:
-                        _count = int(tmp_front)
-                    except ValueError:
-                        _count = 1
-                    cv_count += _count
-            elif not tmp_front and tmp_end and end.lower() == "count":
-                try:
-                    _count = int(tmp_end)
-                except ValueError:
-                    _count = 1
-                cv_count += _count
-            else:
-                cv_count += 1
-
-            if tmp_replace:
-                rep_pos = re.match(r"@[CHNOP](?P<REPLACE>\d\d?)", tmp_replace)
-                if rep_pos:
-                    cv_replace_lst.append(rep_pos.groupdict()["REPLACE"])
-
-        if cv_count == 1:
-            cv_count_str = ""
-        else:
-            cv_count_str = str(cv_count)
-        if cv_position_lst:
-            position_str = "{" + seg_to_str(cv_position_lst) + "}"
-            mod_encode_dct[cv] = f"{cv_count_str}{cv}{position_str}"
-        elif cv_replace_lst:
-            replace_str = "@{" + seg_to_str(cv_replace_lst) + "}"
-            mod_encode_dct[cv] = f"{cv_count_str}{cv}{replace_str}"
-        else:
-            mod_encode_dct[cv] = f"{cv_count_str}{cv}"
-
-    # Sort modifications by order
-    encoded_mod_lst = []
-
-    for c in cv_order_list:
-        if c in mod_encode_dct:
-            encoded_mod_lst.append(mod_encode_dct[c])
-    # encoded_mod_str = seg_to_str(encoded_mod_lst)
-
-    return encoded_mod_lst
-
-
-def get_mod_code(parsed_info: dict, add_mod: str = None, brackets: bool = True) -> str:
-
-    mod_code = ""
-    mod_lst = []
-    c_count = parsed_info.get("C", None)
-    db_info = parsed_info.get("DB_INFO", None)
-    mod_info = parsed_info.get("MOD_INFO", None)
-    o_info = parsed_info.get("O_INFO", None)
-    mod_info_lst = []
-
-    if db_info is not None:
-        mod_lst.append("DB{" + db_info.strip("()[]<>") + "}")
-    if mod_info is not None:
-        mod_info_lst.append(mod_info)
-    if add_mod is not None:
-        mod_info_lst.append(add_mod)
-    if mod_info_lst:
-        for mod_str in mod_info_lst:
-            if mod_str.strip("()") in ["COOH", "CHO"]:
-                rep_str = "@{" + c_count.strip("()[]<>") + "}"
-                seg_mod_lst = decode_mod(mod_str)
-                seg_code_lst = []
-                for seg_mod in seg_mod_lst:
-                    if "@{" in seg_mod:
-                        seg_code_lst.append(seg_mod)
+                    c_max_str = c_info[c].get(c_lv_lst[-1], "")
+                    if len(c_max_str) > len(max_str):
+                        best_id_dct = c_info[c]
+                        max_str = c_max_str
                     else:
-                        seg_code_lst.append(seg_mod + rep_str)
-                mod_lst.extend(seg_code_lst)
+                        pass
+
+        return best_id_dct
+
+    # def check_rest(self, segment_text: str, segment_name: str, lmsd_class: str):
+    #     patterns_dct = self.class_rules[lmsd_class].get(segment_name)
+    #     out_seg_lst = []
+    #     if segment_text and patterns_dct:
+    #         for s_rgx in patterns_dct:
+    #             logger.debug(
+    #                 f"Test {segment_text} on {segment_name} of {lmsd_class} using {s_rgx}"
+    #             )
+    #             s_matched = s_rgx.match(segment_text)
+    #             if s_matched:
+    #                 defined_seg = patterns_dct[s_rgx]
+    #                 if defined_seg == "EXCEPTIONS":
+    #                     if lmsd_class in ["GP12"]:
+    #                         out_seg_lst.append(segment_text)
+    #                     if lmsd_class in ["SP05", "SP06"]:
+    #                         out_seg_lst.append(segment_text)
+    #                 else:
+    #                     out_seg_lst.append(defined_seg)
+    #
+    #         out_seg_lst = list(filter(None, list(set(out_seg_lst))))
+    #
+    #     return self.get_best_candidate(out_seg_lst)
+
+    def get_residues(self, residues: dict):
+        residues_order = residues.get("RESIDUES_ORDER", [])
+        residues_sep_level = residues.get("RESIDUES_SEPARATOR_LEVEL", "")
+        residues_info = residues.get("RESIDUES_INFO", [])
+        res_count = len(residues_order)
+        sum_residues_str = ""
+        res_lv_id_dct = {}
+        res_lv_dct = {}
+        sum_lv_lst = []
+        for res_abbr in residues_info:
+            res_obj = Residue(residues_info[res_abbr])
+            res_lv_id_dct[res_abbr] = res_obj.linked_ids
+            res_lv_dct[res_abbr] = list(res_obj.linked_ids.keys())
+            sum_lv_lst.extend(res_lv_dct[res_abbr])
+
+        sum_lv_lst = natsorted(set(sum_lv_lst))
+        for res in res_lv_id_dct:
+            r_lv_dct = res_lv_id_dct[res]
+            if list(r_lv_dct.keys()) == ["0"]:
+                for lv in sum_lv_lst:
+                    r_lv_dct[lv] = r_lv_dct["0"]
+        res_lv_id_lst_dct = {}
+        for sum_lv in sum_lv_lst:
+            lv_id_lst = []
+            for r in residues_order:
+                r_lv_id = res_lv_id_dct.get(r, {}).get(sum_lv, None)
+                if r_lv_id:
+                    lv_id_lst.append(r_lv_id)
+            if len(lv_id_lst) == res_count:
+                res_lv_id_lst_dct[sum_lv] = lv_id_lst
+
+        sum_res_id_lv_dct = {}
+        sum_res_sep_lv_lst = []
+
+        # set FA or class with one Res into level s
+        if len(residues_order) == 1 and len(sum_lv_lst) > 0:
+            if '0.1' in sum_lv_lst and residues_sep_level == "B":
+                residues_sep_level = "S"
+
+        if residues_sep_level == "S":
+            sum_res_sep_lv_lst = ["B", "D", "S"]
+        elif residues_sep_level == "D":
+            sum_res_sep_lv_lst = ["B", "D"]
+        elif residues_sep_level == "B":
+            sum_res_sep_lv_lst = ["B"]
+
+        for sep_lv in sum_res_sep_lv_lst:
+            if sep_lv == "B":
+                # prepare bulk level
+                merged_res_obj = merge_residues(residues_info)
+                merged_res_linked_ids = merged_res_obj.linked_ids
+                merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())
+                for merged_res_lv in merged_res_lv_lst:
+                    sum_res_id_lv_dct[f"B{merged_res_lv}"] = merged_res_linked_ids[
+                        merged_res_lv
+                    ]
             else:
-                mod_lst.extend(decode_mod(mod_str))
+                for res_lv in res_lv_id_lst_dct:
+                    sum_res_id_lv_dct[
+                        f"{sep_lv}{res_lv}"
+                    ] = f"{self.separator_levels[sep_lv]}".join(
+                        res_lv_id_lst_dct[res_lv]
+                    )
 
-    if o_info is not None:
-        o_info_len = len(o_info)
-        if o_info_len <= 2 and re.match(r"\d{1,2}", o_info):
-            mod_lst.append(f"{o_info}O")
-        elif 2 <= o_info_len <= 3 and re.match(r"\d{1,2}O", o_info):
-            mod_lst.append(o_info)
-        elif o_info_len > 3 and re.match(r"\d{1,2}\(.*\)", o_info):
-            mod_lst.extend(decode_mod(o_info[1:].strip("()[]<>")))
-        else:
-            mod_lst.extend(decode_mod(o_info))
-    sorted_mod_lst = []
-    mod_lst = [m for m in mod_lst if m is not None]
-    mod_lst = [m for m in mod_lst if m != ""]
-    if mod_lst:
-        for mod in cv_order_list:
-            if mod in cv_alias_info:
-                mod_alias_lst = cv_alias_info[mod]
-                for mod_alia in mod_alias_lst:
-                    for obs_mod in mod_lst:
-                        if obs_mod and re.match(
-                            r"\d{0,2}%s[@]?({([,]?\d{1,2}[EZez]?)+})?$" % mod_alia,
-                            obs_mod,
-                        ):
-                            if obs_mod.startswith("DB"):
-                                obs_mod = obs_mod.strip("DB")
-                            sorted_mod_lst.append(obs_mod)
+        return sum_res_id_lv_dct
 
-            else:
-                logger.warning(f"Modification {mod} do not have defined alias.")
-
-    if sorted_mod_lst:
-        mod_code = seg_to_str(sorted_mod_lst)
-        if mod_code and brackets:
-            mod_code = f"<{mod_code}>"
-
-    return mod_code
-
-
-def encode_fa(parsed_info: dict, add_mod: str = None) -> str:
-    logger.debug(parsed_info)
-
-    # carefully detect if FA is FA , O- or P-
-    class_code = parsed_info.get("CLASS", None)
-    if class_code:
-        class_code = check_fa_link(class_code)
-    link = parsed_info.get("LINK", None)
-    if link:
-        link_code = check_fa_link(link)
-    else:
-        link_code = None
-    if not class_code:
-        class_code = "FA"
-    if link_code and class_code != link_code:
-        class_code = link_code
-
-    lynx_code = f'{class_code}{parsed_info["C"]}:{parsed_info["DB"]}'
-    lynx_code += get_mod_code(parsed_info, add_mod)
-    parsed_info["PARSED_CLASS"] = class_code
-
-    return lynx_code
-
-
-def encode_spb(parsed_info: dict, add_mod: str = None, is_sub: bool = False) -> str:
-    logger.debug(parsed_info)
-    link_prefix = parsed_info.get("CLASS", None)
-    if link_prefix:
-        link_prefix = link_prefix.upper()
-        if link_prefix == "SPBP":
-            link_prefix = "SPBP<PO4>"
-    else:
-        link_prefix = "SPB"
-
-    lynx_code = f'{parsed_info["C"]}:{parsed_info["DB"]}'
-    lynx_code += get_mod_code(parsed_info, add_mod)
-
-    if is_sub:
-        pass
-    else:
-        lynx_code = f"{link_prefix}({lynx_code})"
-
-    return lynx_code
-
-
-def encode_sub_fa(fa_abbr: str, add_mod: str = None):
-    fa_candidates_lst = []
-    class_info_lst = []
-    if fa_abbr:
-        fa_dct = parse(fa_abbr)["OUTPUT_INFO"]
-
-        for reg_pattern in fa_dct:
-            tmp_parsed_dct = fa_dct[reg_pattern]
-            lipid_class = tmp_parsed_dct.get("RULE_CLASS", "")
-            if lipid_class == "FA":
-                fa_candidates_lst.append(encode_fa(tmp_parsed_dct, add_mod=add_mod))
-            if lipid_class == "SPB":
-                fa_candidates_lst.append(
-                    encode_spb(tmp_parsed_dct, add_mod=add_mod, is_sub=True)
-                )
-            class_info_lst.append(tmp_parsed_dct.get("PARSED_CLASS", ""))
-    try:
-        best_class = str(Counter(class_info_lst).most_common(1)[0][0])
-    except IndexError:
-        best_class = ""
-    logger.debug(f"Best class for {fa_abbr} is: {best_class}")
-
-    fa_lynx_code = get_best_abbreviation(
-        fa_candidates_lst, target_class=best_class, abbr=fa_abbr
-    )
-    fa_lynx_code = fa_lynx_code.strip("FA")
-
-    return fa_lynx_code
-
-
-def encode_all_sub_fa(
-    parsed_info: dict, fa_count: int, brackets: bool = True, sort_discrete: bool = True
-) -> str:
-
-    fa_count_lst = list(range(1, fa_count + 1))
-    position_lst = list(range(1, fa_count))
-
-    fa_info_lst = []
-    position_info_lst = []
-    encode_info_lst = []
-
-    for f in fa_count_lst:
-        fa_abbr = parsed_info.get(f"FA{f}", "")
-        if fa_abbr:
-            fa_code = encode_sub_fa(fa_abbr, add_mod=parsed_info.get(f"FA{f}_MOD", ""))
-        else:
-            fa_code = ""
-        fa_info_lst.append(fa_code)
-        encode_info_lst.append(fa_code)
-        if f in position_lst:
-            position_info_lst.append(parsed_info.get(f"POSITION{f}", ""))
-            encode_info_lst.append(parsed_info.get(f"POSITION{f}", ""))
-
-    if position_info_lst == ["_"] * len(position_info_lst):
-        if sort_discrete is True:
-            mod_op_lst = []
-            unmod_op_lst = []
-            mod_fa_lst = []
-            unmod_fa_lst = []
-
-            for fa in fa_info_lst:
-                if fa.startswith(("O-", "P-")):
-                    if "[" in fa:
-                        mod_op_lst.append(fa)
-                    elif "<" in fa:
-                        mod_op_lst.append(fa)
-                    else:
-                        unmod_op_lst.append(fa)
-                elif "[" in fa:
-                    mod_fa_lst.append(fa)
-                elif "<" in fa:
-                    mod_fa_lst.append(fa)
+    def check_segments(self, parsed_info: dict, input_rule: str):
+        segments_dct = {}
+        lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
+        segments = parsed_info["SEGMENTS"]
+        residues = parsed_info.get("RESIDUES", {})
+        sum_res_id_lv_dct = self.get_residues(residues)
+        obs_c_seg_lst = segments.get("CLASS", [])
+        c_seg = ""
+        if obs_c_seg_lst and len(obs_c_seg_lst) == 1:
+            obs_c_seg = obs_c_seg_lst[0]
+            for c in lmsd_classes:
+                c_segments_dct = {}
+                c_orders = []
+                if c in self.class_rules:
+                    c_orders = self.class_rules[c].get("ORDER", [])
+                    c_identifier_dct = self.class_rules[c].get("CLASS", {})
+                    for c_identifier in c_identifier_dct:
+                        if c_identifier.match(obs_c_seg):
+                            c_seg = c_identifier_dct.get(c_identifier, "")
+                            for lv in sum_res_id_lv_dct:
+                                c_segments_dct[lv] = {
+                                    "CLASS": c_seg,
+                                    "SUM_RESIDUES": sum_res_id_lv_dct[lv],
+                                }
+                        else:
+                            pass
                 else:
-                    unmod_fa_lst.append(fa)
-
-            if natsorted(fa_info_lst) == natsorted(
-                mod_op_lst + unmod_op_lst + mod_fa_lst + unmod_fa_lst
-            ):
-                sorted_fa_info_lst = (
-                    natsorted(unmod_op_lst)
-                    + natsorted(mod_op_lst)
-                    + natsorted(unmod_fa_lst)
-                    + natsorted(mod_fa_lst)
-                )
-            else:
-                logger.warning("Failed to sort lipid.")
-                sorted_fa_info_lst = natsorted(fa_info_lst)
-
-            fa_code = f'{seg_to_str(sorted_fa_info_lst, sep="_")}'
+                    pass
+                if c_segments_dct and c_orders:
+                    segments_dct[c] = {"ORDER": c_orders, "INFO": c_segments_dct}
         else:
-            fa_code = f'{seg_to_str(fa_info_lst, sep="_")}'
-    else:
-        fa_code = f'{seg_to_str(encode_info_lst, sep="")}'
+            logger.warning(f"No Class identified!")
 
-    if brackets:
-        fa_code = f"({fa_code})"
+        return segments_dct
 
-    return fa_code
+    def compile_segments(self, segments: dict):
+        comp_seg_dct = {}
+        for c in segments:
+            c_lv_id_dct = {}
+            c_seg_dct = segments[c]
+            c_seg_order = c_seg_dct.get("ORDER", [])
+            c_comp_seg_dct = c_seg_dct.get("INFO", {})
+            c_optional_seg = self.class_rules.get(c, {}).get("OPTIONAL", [])
+            for lv in c_comp_seg_dct:
+                lv_seg_info = c_comp_seg_dct[lv]
+                lv_seg_lst = []
+                for c_seg in c_seg_order:
+                    if c_seg in lv_seg_info:
+                        lv_seg_lst.append(lv_seg_info[c_seg])
+                    elif c_seg in self.separators and c_seg != "SEPARATOR_LEVELS":
+                        lv_seg_lst.append(self.separators[c_seg])
+                    else:
+                        if c_seg not in c_optional_seg:
+                            logger.debug(
+                                f"Segments not found: {c_seg}, defined orders {c_seg_order}"
+                            )
+                        else:
+                            pass
+                c_lv_id_dct[lv] = "".join(lv_seg_lst)
+            comp_seg_dct[c] = c_lv_id_dct
 
+        return comp_seg_dct
 
-def check_empty_fa(abbr: str) -> list:
-    no_fa_rgx = re.compile(r"[_/(\-]0:0")
-    no_fa_lst = no_fa_rgx.findall(abbr)
-    return no_fa_lst
+    def export_all_levels(
+        self, lipid_name: str, import_rules: dict = default_input_rules
+    ) -> dict:
 
+        parsed_info = self.extractor.extract(lipid_name)
+        export_info = []
+        if parsed_info:
+            for p in parsed_info:
+                p_info = parsed_info[p]
+                logger.info(p_info)
+                for in_r in p_info:
+                    r_info = p_info[in_r]  # type: dict
+                    checked_seg_info = self.check_segments(r_info, in_r)
+                    comp_dct = self.compile_segments(checked_seg_info)
+                    export_info.append(comp_dct)
+            best_export_dct = self.get_best_id_series(export_info)
+            logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
+        else:
+            best_export_dct = {}
 
-def check_fa_link(link: str) -> str:
-    prefix = ""
-    if link in ["o", "e", "O-a", "O-e", "O-o", "O-"]:
-        prefix = "O-"
-    elif link in ["p", "O-p", "P-"]:
-        prefix = "P-"
-    elif link in ["a"]:
-        prefix = "FA"
-    elif link.upper().startswith(("MO-", "MP-")):
-        prefix = f"{link[1:]}"
-    elif link.upper().startswith(("DO-", "DP-")):
-        prefix = f"2{link[1:]}"
-    elif link.upper().startswith(("TO-", "TP-")):
-        prefix = f"3{link[1:]}"
-    return prefix
+        return best_export_dct
 
+    def convert(self, lipid_name: str, import_rules: dict = default_input_rules) -> str:
+        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
+        best_id = ""
+        if all_lv_id_dct:
+            best_id = self.get_best_id(all_lv_id_dct)
+        else:
+            pass
+        return best_id
 
-def check_lipid_class_alias(lipid_class: str) -> str:
-    if lipid_class in lipid_class_alias_info:
-        lipid_class = lipid_class_alias_info[lipid_class]["CLASS"]
-    return lipid_class
+    def export_level(
+        self,
+        lipid_name: str,
+        level: str = "B0",
+        import_rules: dict = default_input_rules,
+    ):
 
+        lv_id = ""
+        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
+        if level in supported_levels:
+            if level in all_lv_id_dct:
+                lv_id = all_lv_id_dct[level]
+            else:
+                raise ValueError(
+                    f"Lipid: {lipid_name} cannot be converted into level: {level}. "
+                    f"Can be converted into: {all_lv_id_dct}"
+                )
+        else:
+            raise ValueError(
+                f"Level: {level} not supported. Supported levels: {supported_levels}"
+            )
 
-def encode_pl(parsed_info: dict) -> str:
-    logger.debug(parsed_info)
-    lyso_prefix = parsed_info.get("CLASS_PREFIX", None)
-    if lyso_prefix:
-        lyso_prefix = lyso_prefix.upper()
-    else:
-        lyso_prefix = ""
-    fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=2)
-    # replace legacy pl class e.g. GPCho to PC
-    class_code = check_lipid_class_alias(parsed_info["CLASS"])
-    lynx_code = f"{lyso_prefix}{class_code}{fa_code}"
+        return lv_id
 
-    if len(check_empty_fa(lynx_code)) == 1 and not lynx_code.startswith("L"):
-        lynx_code = f"L{lynx_code}"
+    def export_levels(
+        self,
+        lipid_name: str,
+        levels: list = None,
+        import_rules: dict = default_input_rules,
+    ) -> dict:
 
-    return lynx_code
+        if levels is None:
+            levels = ["B0"]
+        lv_id_dct = {}
+        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
+        for level in levels:
+            if level in supported_levels:
+                if level in all_lv_id_dct:
+                    lv_id_dct[level] = all_lv_id_dct[level]
+                else:
+                    raise ValueError(
+                        f"Lipid: {lipid_name} cannot be converted into level: {level}. "
+                        f"Can be converted into: {all_lv_id_dct}"
+                    )
+            else:
+                raise ValueError(
+                    f"Level: {level} not supported. Supported levels: {supported_levels}"
+                )
 
-
-def encode_sp(parsed_info: dict) -> str:
-    logger.debug(parsed_info)
-    spb_abbr = parsed_info["SPB"]
-    if not spb_abbr.startswith("SPB"):
-        spb_abbr = f"SPB{spb_abbr}"
-    spb_code = encode_sub_fa(spb_abbr, add_mod=parsed_info.get("SPB_MOD", None))
-    fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=1, brackets=False)
-    class_code = check_lipid_class_alias(parsed_info["CLASS"])
-    if fa_code:
-        lynx_code = f"{class_code}({spb_code}/{fa_code})"
-    else:
-        lynx_code = f"{class_code}({spb_code})"
-    return lynx_code
-
-
-def encode_gl(parsed_info: dict) -> str:
-    logger.debug(parsed_info)
-    fa_code = encode_all_sub_fa(parsed_info=parsed_info, fa_count=3)
-    class_code = check_lipid_class_alias(parsed_info["CLASS"])
-    lynx_code = f"{class_code}{fa_code}"
-
-    if len(check_empty_fa(lynx_code)) == 1 and not lynx_code.startswith("DG"):
-        lynx_code = f"DG{lynx_code[3:]}"
-    elif len(check_empty_fa(lynx_code)) == 2 and not lynx_code.startswith("MG"):
-        lynx_code = f"MG{lynx_code[3:]}"
-
-    return lynx_code
-
-
-def encode_cl(parsed_info: dict) -> str:
-    logger.debug(parsed_info)
-    lynx_code = parsed_info["CLASS"] + encode_all_sub_fa(
-        parsed_info=parsed_info, fa_count=4
-    )
-
-    return lynx_code
-
-
-def encode_bmp(parsed_info: dict) -> str:
-    return encode_cl(parsed_info)
+        return lv_id_dct
 
 
 if __name__ == "__main__":
+    t_in_lst = [
+        # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
+        # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
+        # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        # "TG(16:0/18:2/PA)",
+        "PE O-p 32:1",
+        "PE O-a 36:2",
+        "PE O-18:1a/18:1",
+        "PE O-p 36:2",
+        "PE O-18:1p/18:1",
+    ]
+    lynx_gen = Encoder()
+    for t_in in t_in_lst:
+        t1_out = lynx_gen.convert(t_in, import_rules=default_input_rules)
+        logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        # t_lv = "B0"
+        # t2_out = lynx_gen.export_level(
+        #     t_in, level=t_lv, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
+        # t_lv_lst = ["B0"]
+        # t3_out = lynx_gen.export_levels(
+        #     t_in, levels=t_lv_lst, import_rules=default_input_rules
+        # )
+        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
+        t4_out = lynx_gen.export_all_levels(t_in, import_rules=default_input_rules)
+        logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
-    # x = encode_mod("+2O")
-    # print(x)
-    # y = encode_mod("+O2")
-    # print(y)
-    # z = lynx_encode(parse("PE O-18:1p/18:1"))
-    z = lynx_encode(parse(r"FA (18:2) + O"))
-    print(z)
+    logger.info("fin")
