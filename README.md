@@ -12,6 +12,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
+[![codecov](https://codecov.io/gh/SysMedOs/LipidLynxX/branch/master/graph/badge.svg)](https://codecov.io/gh/SysMedOs/LipidLynxX)
 [![Build Status](https://travis-ci.com/SysMedOs/LipidLynxX.svg?branch=master)](https://travis-ci.com/SysMedOs/LipidLynxX)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
