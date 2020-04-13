@@ -3,6 +3,10 @@
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
+![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=orange)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -22,7 +26,7 @@ for major lipid classes from following databases and programs:
       `LipidMatch`, `LipidPro`, `LipidSearch`, `Lipostar`, `LIQUID`, `LPPtiger`, `MetFrag`, `MS-DIAL`, `MZmine2`
 
 - Common abbreviations (customizable):
-  -  Abbreviations such as DHA, PAPE, PLPC, POPNC .etc are also included as `defined alias`.
+  -  Abbreviations such as DHA, PAPE, PLPC, PONPC .etc are also included as `defined alias`.
   detailed settings can be found in `lynx\configurations\defined_alias.json`
 
 **If your database / program is not included in the list above**, you can test if any of the configuration files located in `lynx\configurations\rules\input` would fit to your database / program.
@@ -35,7 +39,9 @@ here](https://github.com/SysMedOs/LipidLynxX/issues)
 
 ### Notice to general users
 
-An easy to use .exe version for Windows platform users will be available soon.
+An easy to use .exe version for Windows platform users is available for test purpose only.
+[LipidLynxX v0.4.12-beta preview release for Windows 10.](https://github.com/SysMedOs/LipidLynxX/releases/tag/v0.4.12-beta)
+
 For macOS users, a installation pack is under development and will be ready in approximately end of May 2020.
 If you really want to have an early access to the exe version, please contact us by email.
 
