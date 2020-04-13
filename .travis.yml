@@ -17,6 +17,7 @@ matrix:
     - codecov
 
   - os: osx
+    python: 3.7
     language: sh
     install:
       - pip install -r requirements.txt
@@ -29,6 +30,7 @@ matrix:
       - codecov
 
   - os: windows
+    python: 3.7
     language: sh
     install:
       - echo $PATH
