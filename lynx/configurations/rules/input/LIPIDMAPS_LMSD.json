@@ -8,7 +8,7 @@
     "LIPIDMAPS",
     "LMSD",
     "Lipostar",
-    "Swisslipids"
+    "SwissLipids"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",
