@@ -1,9 +1,8 @@
 # LipidLynxX ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
-[![Travis (.com) all](https://img.shields.io/travis/com/SysMedOs/LipidLynxX/master.svg)](https://travis-ci.com/SysMedOs/LipidLynx)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c02db70257b64538af60df36c480b042)](https://app.codacy.com/app/zhixu.ni/LipidLynx?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynx&utm_campaign=Badge_Grade_Dashboard)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -14,8 +13,8 @@ in the epilipidome.
 The current LipidLynxX source code was tested using our collection of lipid abbreviations
 for major lipid classes from following databases and programs:
 
-- Databases (3):
-  - `HMDB`, `LIPID MAPS`, `Swisslipid`
+- Databases (4):
+  - `HMDB`, `LIPID MAPS`, `LipidHome`, `SwissLipids`
 
 - Programs (17):
 

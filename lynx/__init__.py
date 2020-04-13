@@ -31,7 +31,7 @@ from lynx.models.defaults import logger, cfg_info_dct, api_version
 from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
 
-lynx_version = 0.4
+lynx_version = "0.4.12"
 
 app = Flask(__name__)
 app.config.from_object(DevConfig)
