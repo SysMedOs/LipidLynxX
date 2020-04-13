@@ -19,8 +19,18 @@ from lynx.utils.file_readers import get_abs_path
 
 test_input_files = [
     r"../lynx/configurations/rules/input/LipidLynxX.json",
-    r"../lynx/configurations/rules/input/MS-DIAL.json",
-    r"../lynx/configurations/rules/input/Shorthand_LMSD.json"
+    r"../lynx/configurations/rules/input/ALEX123.json",
+    "../lynx/configurations/rules/input/LDA.json",
+    "../lynx/configurations/rules/input/LipidBlast.json",
+    "../lynx/configurations/rules/input/LipiDex.json",
+    "../lynx/configurations/rules/input/LipidHome.json",
+    "../lynx/configurations/rules/input/LipidLynxX.json",
+    "../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json",
+    "../lynx/configurations/rules/input/LipidMatch.json",
+    "../lynx/configurations/rules/input/LipidPro.json",
+    "../lynx/configurations/rules/input/LPPtiger.json",
+    "../lynx/configurations/rules/input/MS-DIAL.json",
+    "../lynx/configurations/rules/input/Shorthand_based.json",
 ]
 
 test_output_files = [r"../lynx/configurations/rules/output/LipidLynxX.json"]

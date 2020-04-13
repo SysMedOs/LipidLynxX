@@ -1,13 +1,18 @@
-# LipidLynxX ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
+# LipidLynxX 
+
+![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
 ![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=orange)
+
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SysMedOs/LipidLynxX)
 ![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
+[![Build Status](https://travis-ci.com/SysMedOs/LipidLynxX.svg?branch=master)](https://travis-ci.com/SysMedOs/LipidLynxX)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
