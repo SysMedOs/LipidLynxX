@@ -18,34 +18,33 @@ from lynx.models.rules import InputRules, OutputRules
 from lynx.utils.file_readers import get_abs_path
 
 test_input_files = [
-    r"../lynx/configurations/rules/input/LipidLynxX.json",
-    r"../lynx/configurations/rules/input/ALEX123.json",
-    "../lynx/configurations/rules/input/LDA.json",
-    "../lynx/configurations/rules/input/LipidBlast.json",
-    "../lynx/configurations/rules/input/LipiDex.json",
-    "../lynx/configurations/rules/input/LipidHome.json",
-    "../lynx/configurations/rules/input/LipidLynxX.json",
-    "../lynx/configurations/rules/input/LIPIDMAPS_LMSD.json",
-    "../lynx/configurations/rules/input/LipidMatch.json",
-    "../lynx/configurations/rules/input/LipidPro.json",
-    "../lynx/configurations/rules/input/LPPtiger.json",
-    "../lynx/configurations/rules/input/MS-DIAL.json",
-    "../lynx/configurations/rules/input/Shorthand_based.json",
+    r"lynx/configurations/rules/input/LipidLynxX.json",
+    r"/lynx/configurations/rules/input/ALEX123.json",
+    r"lynx/configurations/rules/input/LDA.json",
+    r"lynx/configurations/rules/input/LipidBlast.json",
+    r"lynx/configurations/rules/input/LipiDex.json",
+    r"lynx/configurations/rules/input/LipidHome.json",
+    r"lynx/configurations/rules/input/LipidLynxX.json",
+    r"lynx/configurations/rules/input/LIPIDMAPS_LMSD.json",
+    r"lynx/configurations/rules/input/LipidMatch.json",
+    r"lynx/configurations/rules/input/LipidPro.json",
+    r"lynx/configurations/rules/input/LPPtiger.json",
+    r"lynx/configurations/rules/input/MS-DIAL.json",
+    r"lynx/configurations/rules/input/Shorthand_based.json",
 ]
 
-test_output_files = [r"../lynx/configurations/rules/output/LipidLynxX.json"]
+test_output_files = [r"lynx/configurations/rules/output/LipidLynxX.json"]
 
 
 @pytest.mark.parametrize("test_file", test_input_files)
 def test_input_rule(test_file):
     logger.debug("SETUP TESTS...")
     logger.info(test_file)
-    # in_file = get_abs_path("test_input/Input_LIPIDMAPS_ShortHand.csv")
     in_file = None
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path(r"../lynx/configurations/rules/input/LipidLynxX.json")
+        in_file = get_abs_path(r"lynx/configurations/rules/input/LipidLynxX.json")
     logger.info(f"Test file {in_file}")
     rule = InputRules(test_file)
     logger.debug(f"Got infile {in_file}")
@@ -65,7 +64,7 @@ def test_output_rule(test_file):
     if test_file:
         in_file = get_abs_path(test_file)
     if not in_file:
-        in_file = get_abs_path(r"../lynx/configurations/rules/output/LipidLynxX.json")
+        in_file = get_abs_path(r"lynx/configurations/rules/output/LipidLynxX.json")
     logger.info(f"Test file {in_file}")
     rule = OutputRules(test_file)
     logger.debug(f"Got Output infile {in_file}")
