@@ -335,8 +335,9 @@ if __name__ == "__main__":
         # "PE O-18:1a/18:1",
         # "PE O-p 36:2",
         # "PE O-18:1p/18:1",
-        "PE-C16:0-C18:2",
+        # "PE-C16:0-C18:2",
         # "HETE",
+        "TG(16:0/18:2/18:2[2xDB,1xOH])",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:
