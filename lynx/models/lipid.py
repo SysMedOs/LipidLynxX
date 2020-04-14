@@ -14,7 +14,7 @@ import re
 from jsonschema import Draft7Validator
 from natsort import natsorted
 
-from lynx.utils.file_readers import get_abs_path
+from lynx.utils.file_handler import get_abs_path
 from lynx.utils.toolbox import check_json
 from ..models.defaults import (
     api_version,

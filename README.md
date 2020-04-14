@@ -67,6 +67,7 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
 - Strictly controlled format using JSON schema
 - Easy to use Graphic User Interface
 - API access for professional users
+- Command line tools for professional users
 
 ![LipidLynx_01_Home](doc/images/LipidLynxX_Start_fox.png)
 
@@ -210,6 +211,21 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
     ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
 - **API**
     ![ApiLynx_01_StringConverterAPI](doc/images/LipidLynX_api_01_StringConverterAPI.png)
+    
+- **Terminal Tools**
+    
+    - Converter
+    
+    ```bash
+    python LynxConverter.py -i doc\sample_data\input\LipidLynxX_test.xlsx -o doc\sample_data\output\LipidLynxX_test_converter_out.xlsx
+    ```
+
+    - Equalizer
+
+    ```bash
+    python LynxEqualizer.py -l "B0,D0,D1" -i doc\sample_data\input\LipidLynxX_test.csv -o doc\sample_data\output\LipidLynxX_test_equalizer_out.xlsx
+    ```
+    
 
 ### License
 

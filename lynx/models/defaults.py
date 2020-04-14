@@ -18,7 +18,7 @@ from lynx.utils.params_loader import (
     build_input_rules,
     build_output_rules,
 )
-from lynx.utils.file_readers import get_abs_path
+from lynx.utils.file_handler import get_abs_path
 
 # Define default values across LipidLynx
 # load default values from files defined in config.ini

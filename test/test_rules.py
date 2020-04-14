@@ -15,7 +15,7 @@ sys.path.insert(0, lipidlynx_Path + "/../")
 
 from lynx.utils.log import logger
 from lynx.models.rules import InputRules, OutputRules
-from lynx.utils.file_readers import get_abs_path
+from lynx.utils.file_handler import get_abs_path
 
 test_input_files = [
     r"lynx/configurations/rules/input/LipidLynxX.json",
