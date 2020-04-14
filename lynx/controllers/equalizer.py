@@ -12,7 +12,7 @@ import pandas as pd
 
 from lynx.controllers.encoder import Encoder
 from lynx.models.lipid import Lipid
-from lynx.utils.file_readers import get_abs_path, create_equalizer_output
+from lynx.utils.file_handler import get_abs_path, create_equalizer_output
 from lynx.utils.log import logger
 
 

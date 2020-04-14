@@ -22,7 +22,7 @@ from lynx.models.defaults import (
     mod_db_level_lst,
     default_output_rules,
 )
-from lynx.utils.file_readers import get_abs_path
+from lynx.utils.file_handler import get_abs_path
 from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
 

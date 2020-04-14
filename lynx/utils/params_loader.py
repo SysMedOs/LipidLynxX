@@ -14,7 +14,7 @@ from natsort import natsorted
 import pandas as pd
 import regex as re
 
-from lynx.utils.file_readers import get_abs_path, load_folder
+from lynx.utils.file_handler import get_abs_path, load_folder
 from lynx.models.rules import InputRules, OutputRules
 from lynx.utils.log import logger
 

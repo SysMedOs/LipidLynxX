@@ -123,8 +123,8 @@ def load_folder(folder: str, file_type: str = "") -> List[str]:
     return file_abs_path_lst
 
 
-def create_output(data: dict) -> BytesIO:
-    excel_io = None
+def create_converter_output(data: dict, output_name: str = None) -> Union[BytesIO, str]:
+    excel_info = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
     if data:
@@ -159,28 +159,50 @@ def create_output(data: dict) -> BytesIO:
             ).T
 
         if not converted_df.empty:
-            excel_io = BytesIO()
-            output_writer = pd.ExcelWriter(
-                excel_io, engine="openpyxl"
-            )  # write to BytesIO instead of file path
-            converted_df.to_excel(output_writer, sheet_name="converted", index=False)
-            if not not_converted_df.empty:
-                not_converted_df.to_excel(
-                    output_writer, sheet_name="skipped", index=False
+            if output_name and isinstance(output_name, str):
+                try:
+                    converted_df.to_excel(
+                        output_name, sheet_name="converted", index=False
+                    )
+                    excel_info = get_abs_path(output_name)
+                except IOError:
+                    excel_info = (
+                        f"[IO error] Cannot create file: {output_name} as output."
+                    )
+            else:
+                excel_info = BytesIO()
+                output_writer = pd.ExcelWriter(
+                    excel_info, engine="openpyxl"
+                )  # write to BytesIO instead of file path
+                converted_df.to_excel(
+                    output_writer, sheet_name="converted", index=False
                 )
-            output_writer.save()
-            excel_io.seek(0)
+                if not not_converted_df.empty:
+                    not_converted_df.to_excel(
+                        output_writer, sheet_name="skipped", index=False
+                    )
+                output_writer.save()
+                excel_info.seek(0)
 
-    return excel_io
+    return excel_info
 
 
-def create_equalizer_output(sum_data: dict) -> BytesIO:
-
+def create_equalizer_output(sum_data: dict, output_name: str = None) -> Union[BytesIO, str]:
+    table_info = None
+    is_file_name = False
     if sum_data:
-        table_io = BytesIO()
-        table_writer = pd.ExcelWriter(
-            table_io, engine="openpyxl"
-        )  # write to BytesIO instead of file path
+        if output_name and isinstance(output_name, str):
+            try:
+                table_writer = pd.ExcelWriter(output_name, engine="openpyxl")
+                is_file_name = True
+                table_info = output_name
+            except IOError:
+                table_info = f"[IO error] Cannot create file: {output_name} as output."
+        else:
+            table_info = BytesIO()
+            table_writer = pd.ExcelWriter(
+                table_info, engine="openpyxl"
+            )  # write to BytesIO instead of file path
         for lv in sum_data:
             data = sum_data[lv]
             for k in data:
@@ -194,12 +216,19 @@ def create_equalizer_output(sum_data: dict) -> BytesIO:
                         out_matched_df.sort_index().to_excel(
                             table_writer, sheet_name=f"matched_{lv}"
                         )
-                elif k.lower().startswith("equalized"):
+                    else:
+                        pass
+                else:
+                    pass
+            for k in data:
+                if k.lower().startswith("equalized"):
                     equalized_dct = data[k]
                     if equalized_dct:
                         pd.DataFrame.from_dict(
                             equalized_dct, orient="index"
                         ).sort_index().to_excel(table_writer, sheet_name=f"unmatched")
+                    else:
+                        pass
                 elif k.lower().startswith("skipped"):
                     skipped_dct = data[k]
                     if skipped_dct:
@@ -208,14 +237,17 @@ def create_equalizer_output(sum_data: dict) -> BytesIO:
                         ).T.sort_index().to_excel(
                             table_writer, sheet_name="skipped", index=False
                         )
+                    else:
+                        pass
                 else:
                     pass
 
         table_writer.save()
-        table_io.seek(0)
+        if not is_file_name:
+            table_info.seek(0)
     else:
-        table_io = None
-    return table_io
+        table_info = None
+    return table_info
 
 
 def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
