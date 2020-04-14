@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import getopt
-import os.path
 import sys
 
-from lynx.models.defaults import default_cfg_path, logger
-from lynx.liblynx.Converter import Converter
+from lynx.controllers.converter import Converter
+from lynx.utils.file_handler import create_converter_output, get_abs_path, get_table
+from lynx.utils.log import logger
+from lynx.utils.toolbox import keep_string_only
 
 
 def main(argv):
@@ -23,19 +24,20 @@ def main(argv):
     out_file = ""
 
     is_output = False
+    abs_out_file = ""
 
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["infile=", "outfile="])
+        opts, args = getopt.getopt(argv, "hi:o:", ["help", "infile=", "outfile="])
         logger.debug(f"User input: {opts}, {args}")
     except getopt.GetoptError:
         logger.info(
-            "LynxConverter.py -i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
+            "-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
         )
         return is_output
     for opt, arg in opts:
-        if opt == "-h":
+        if opt in ("-h", "--help"):
             logger.info(
-                "LynxConverter.py -i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
+                "-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
             )
             return is_output
         elif opt in ("-i", "--infile"):
@@ -43,14 +45,22 @@ def main(argv):
         elif opt in ("-o", "--outfile"):
             out_file = arg
 
-    if os.path.isfile(in_file):
+    if in_file and out_file:
+        table_info = get_table(in_file)
         logger.info(f"Load input file: {in_file}")
-        converter = Converter(default_cfg_path)
-        converter.convert_table(in_file, out_file)
+        table_dct = keep_string_only(table_info)
+        if table_dct:
+            converter = Converter()
+            converted_dct = converter.convert_dict(table_dct)
+            abs_out_file = create_converter_output(converted_dct, output_name=out_file)
+            if abs_out_file.lower().endswith('.xlsx'):
+                abs_out_file = get_abs_path(abs_out_file)
+                is_output = True
 
-        logger.info(f"Save output file: {out_file}")
+    if is_output:
+        logger.info(f"Save output file: {abs_out_file}")
         logger.info("FINISHED")
-        is_output = True
+
         logger.info(f"is_output {is_output}")
     else:
         logger.error(f"Can NOT open input file:")

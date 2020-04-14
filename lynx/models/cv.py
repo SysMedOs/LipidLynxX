@@ -11,7 +11,7 @@ import json
 import regex as re
 
 from lynx.models.defaults import default_cv_file
-from lynx.utils.file_readers import get_json
+from lynx.utils.file_handler import get_json
 
 
 class CV(object):

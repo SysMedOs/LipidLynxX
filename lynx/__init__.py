@@ -28,7 +28,7 @@ from lynx.forms import (
     EqualizerInputForm,
 )
 from lynx.models.defaults import logger, cfg_info_dct, api_version
-from lynx.utils.file_readers import get_table, create_output, create_equalizer_output
+from lynx.utils.file_handler import get_table, create_converter_output, create_equalizer_output
 from lynx.utils.toolbox import keep_string_only
 
 lynx_version = "0.4.12"
@@ -275,15 +275,15 @@ def download():
         data = json.loads(data)
     if isinstance(data, dict):
         if filename.startswith("LipidLynxX-Convert"):
-            excel_io = create_output(data)
+            excel_io = create_converter_output(data)
         elif filename.startswith("LipidLynxX-Equal"):
             excel_io = create_equalizer_output(data)
         else:
             try:
-                excel_io = create_output(data)
+                excel_io = create_converter_output(data)
             except Exception as e:
                 try:
-                    excel_io = create_output(data)
+                    excel_io = create_converter_output(data)
                 except Exception as e:
                     raise ValueError()
     else:
