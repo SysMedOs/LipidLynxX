@@ -5,9 +5,6 @@
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
 ![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=orange)
-
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SysMedOs/LipidLynxX)
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -19,7 +16,7 @@ The current LipidLynxX source code was tested using our collection of lipid abbr
 for major lipid classes from following databases and programs:
 
 - Databases (4):
-  - `HMDB`, `LIPID MAPS`, `LipidHome`, `SwissLipids`
+  - `HMDB`, `LIPID MAPS LMSD`,`LIPID MAPS COMP_DB`, `LipidHome`, `SwissLipids`
 
 - Programs (17):
 
@@ -64,7 +61,7 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
 - API access for professional users
 - Command line tools for professional users
 
-![LipidLynx_01_Home](images/LipidLynxX_Start_Chromium.png)
+![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Chromium.png)
 
 ### Main Modules
 
@@ -171,10 +168,12 @@ cross-platform compatibility on Linux, macOS and  Windows.
 - Current status of the master branch 
 
     [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-    [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard)
-    [![codecov](https://codecov.io/gh/SysMedOs/LipidLynxX/branch/master/graph/badge.svg)](https://codecov.io/gh/SysMedOs/LipidLynxX)
-    [![Build Status](https://travis-ci.com/SysMedOs/LipidLynxX.svg?branch=master)](https://travis-ci.com/SysMedOs/LipidLynxX)
-
+    [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2180cda82034653ba57eed4473ed135)](https://app.codacy.com/gh/SysMedOs/LipidLynxX?utm_source=github.com&utm_medium=referral&utm_content=SysMedOs/LipidLynxX&utm_campaign=Badge_Grade_Dashboard) 
+    ![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg)
+    
+    [![Travis-CI Build Status](https://travis-ci.com/SysMedOs/LipidLynxX.svg?branch=master)](https://travis-ci.com/SysMedOs/LipidLynxX)
+    ![GitHub Actions Python application](https://github.com/SysMedOs/LipidLynxX/workflows/Python%20application/badge.svg)
+    
 - You can also use py.test to test LipidLynxX in your python environment, all test files can be found in `./test` folder.
 
 ### Errors/bugs
