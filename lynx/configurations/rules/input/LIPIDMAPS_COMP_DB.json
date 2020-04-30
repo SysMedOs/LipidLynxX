@@ -1,13 +1,14 @@
 {
-  "_DATE": 20200403,
+  "_DATE": 20200303,
   "_AUTHORS": [
     "zhixu.ni@uni-leipzig.de"
   ],
   "SOURCES": [
-    "ALEX123 lipid calculator"
+    "LIPIDMAPS_COMP_DB"
   ],
   "SEPARATORS": {
-    "RESIDUE_SEPARATOR": "-|/",
+    "RESIDUE_SEPARATOR": "_|/",
+    "MOD_SEPARATOR": "-",
     "SPACE": "\\s",
     "COLON": ":",
     "SEMICOLON": ";",
@@ -15,51 +16,8 @@
     "BRACKET_RIGHT": "\\)",
     "SEPARATOR_LEVELS": {
       "B": "",
-      "D": "-",
+      "D": "_",
       "S": "/"
-    }
-  },
-  "MODS": {
-    "MOD": {
-      "ORDER": [
-        "MOD_SITE",
-        "MOD_SITE_INFO",
-        "MOD_TYPE"
-      ],
-      "OPTIONAL": [
-        "MOD_SITE_INFO",
-        "MOD_TYPE"
-      ],
-      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
-      "MOD_SITE_INFO": "([EZRS])?",
-      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
-      "EXAMPLES": [
-        "9",
-        "9Z",
-        "9OH",
-        "9S-OH"
-      ]
-    },
-    "SUM_MODS": {
-      "ORDER": [
-        "BRACKET_LEFT",
-        "MOD",
-        "BRACKET_RIGHT"
-      ],
-      "REPEAT": {
-        "MOD": [
-          1,
-          10
-        ]
-      },
-      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
-      "MOD": "$.MODS.MOD.0",
-      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
-      "EXAMPLES": [
-        "(9Z)",
-        "(9Z,12Z)",
-        "(9OH,12OH)"
-      ]
     }
   },
   "RESIDUES": {
@@ -70,45 +28,29 @@
         "NUM_C",
         "DB_SEPARATOR",
         "DB",
-        "LINK_SUFFIX",
         "O_SEPARATOR",
-        "NUM_O",
-        "SUM_MODS"
+        "NUM_O"
       ],
       "OPTIONAL": [
         "RESIDUE_SEPARATOR",
         "LINK",
         "DB",
-        "LINK_SUFFIX",
         "O_SEPARATOR",
-        "NUM_O",
-        "SUM_MODS"
+        "NUM_O"
       ],
-      "REPEAT": {
-        "SUM_MODS": [
-          0,
-          10
-        ]
-      },
       "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
-      "LINK": "[OP]-[ap]?|C|[mdt]|h",
+      "LINK": "[OP]-|C|[mdt]|h",
       "NUM_C": "[0-9]{1,2}",
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
-      "LINK_SUFFIX":"[ap]?\\s?",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?O?",
-      "SUM_MODS": "$.MODS.SUM_MODS.0",
+      "NUM_O": "O[1-3]?",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",
         "18:2",
         "9:0",
-        "26:0;(2OH)",
-        "34:1;2O(FA 16:0)",
-        "18:2(9Z,12Z)",
-        "-18:2(9Z,12Z)",
-        "/18:2(9Z,12Z)"
+        "26:0;(2OH)"
       ]
     },
     "RESIDUE_ALIAS": {
@@ -130,25 +72,12 @@
       "ORDER": [
         "RESIDUE"
       ],
-      "REPEAT": {
-        "RESIDUE": [
-          1,
-          4
-        ]
-      },
       "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",
         "18:2",
-        "9:0",
-        "26:0;(2OH)",
-        "18:2;3O/18:2",
-        "18:2;O_18:2",
-        "18:0/20:4",
-        "18:0_20:4",
-        "18:0_9:0",
-        "18:0_26:0;(2OH)"
+        "9:0"
       ]
     }
   },
@@ -195,23 +124,16 @@
       ],
       "OPTIONAL": [],
       "MAX_RESIDUES": 3,
-      "CLASS": "TAG|DAG|MAG",
+      "CLASS": "TG|DG|MG",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
-        "MAG 16:0",
-        "DAG 34:2",
-        "DAG 16:0-18:2",
-        "DAG O-34:2",
-        "DAG O-16:0-18:2",
-        "DAG P-34:2",
-        "DAG P-16:0-18:2",
-        "TAG 52:2",
-        "TAG 16:0-18:2-18:0",
-        "TAG O-52:2",
-        "TAG O-16:0-18:2-18:0",
-        "TAG P-52:2",
-        "TAG P-16:0-18:2-18:0"
+        "MG 16:0",
+        "DG 34:2",
+        "DG O-34:2",
+        "DG P-34:2",
+        "TG 52:2",
+        "TG O-52:2"
       ]
     },
     "PL": {
@@ -247,31 +169,13 @@
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
         "LPE 16:0",
-        "LPE 16:0/0:0",
         "LPE O-18:1",
         "LPE P-16:0",
         "PE 34:2",
-        "PE 16:0-18:2",
         "PE O-34:2",
-        "PE O-16:0-18:2",
         "PE P-34:2",
-        "PE P-16:0-18:2",
         "PIP 34:1",
-        "PIP 16:0-18:1",
-        "LPIP 16:0",
-        "LPIP 16:0/0:0",
-        "PIP2 34:2",
-        "PIP2 16:0-18:2",
-        "LPIP2 16:0",
-        "LPIP2 16:0/0:0",
-        "PIP3 34:2",
-        "PIP3 16:0-18:2",
-        "LPIP3 16:0",
-        "LPIP3 16:0/0:0",
-        "PEtOH 34:2",
-        "PEtOH 16:0-18:2",
-        "BMP 34:1",
-        "BMP 16:0-18:1"
+        "BMP 34:1"
       ]
     },
     "BMP": {
@@ -281,13 +185,11 @@
       "ORDER": [
         "PREFIX",
         "CLASS",
-        "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
-        "PREFIX",
-        "SUFFIX"
+        "PREFIX"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "L",
@@ -295,9 +197,7 @@
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
-        "BMP 34:1",
-        "BMP 16:0-18:1",
-        "BMP 16:0/18:1"
+        "BMP 34:1"
       ]
     },
     "CL": {
@@ -319,10 +219,7 @@
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
-        "CL 72:7",
-        "CL 18:1/18:2/18:2/18:2",
-        "MLCL 18:1-18:2-18:2",
-        "DLCL 18:1-18:2"
+        "CL 72:7"
       ]
     },
     "SPB": {
@@ -339,13 +236,13 @@
       ],
       "MAX_RESIDUES": 1,
       "CLASS": "[Ss]phingosine|SPBP?",
+      "SUFFIX": "P",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
-        "Sphingosine18:1",
-        "SPB 18:0;2O",
-        "SPB 18:1;2O",
-        "SPB 18:0;3O"
+        "SPB 18:0;O",
+        "SPB 18:1;O2",
+        "SPBP 18:0;O3"
       ]
     },
     "SP": {
@@ -370,33 +267,10 @@
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "EXAMPLES": [
-        "Cer 18:0;2O/26:0",
-        "Cer 18:0;2O/26:0;O",
-        "Cer 18:0;2O/26:0;(2OH)",
-        "Cer 18:0;2O/26:0;(3OH)",
-        "Cer 18:1;2O/26:0",
-        "Cer 18:1;2O/26:0;O",
-        "Cer 18:1;2O/26:0;(2OH)",
-        "Cer 18:1;2O/26:0;(3OH)",
-        "Cer 18:0;3O/26:0",
-        "Cer 18:0;3O/26:0;O",
-        "Cer 18:0;3O/26:0;(2OH)",
-        "Cer 18:0;3O/26:0;(3OH)",
-        "CerP 18:0;2O/16:0",
-        "CerP 18:1;2O/26:0",
-        "CerP 18:1;3O/26:0",
-        "SM 18:1;2O/16:0",
-        "PE-Cer 16:1;2O/16:0",
-        "HexCer 18:1;2O/26:0",
-        "HexCer 18:1;2O/26:0;O",
-        "HexCer 18:1;2O/26:0;(2OH)",
-        "HexCer 18:1;2O/26:0;(3OH)",
-        "Hex2Cer 18:1;2O/26:0",
-        "Hex3Cer 18:1;2O/26:0",
-        "AHexCer (O-16:0)18:1;2O/22:0;O",
-        "GM3 18:1;2O/18:0",
-        "SHexCer 18:1;2O/18:0",
-        "SHexCer 18:1;2O/18:0;O"
+        "Cer 34:1;O2",
+        "ACer 34:1;O2",
+        "CerP 34:1;O2",
+        "SM 34:1;O2"
       ]
     },
     "ST": {

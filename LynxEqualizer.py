@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -30,24 +40,24 @@ def main(argv):
     abs_out_file = ""
 
     try:
-        opts, args = getopt.getopt(argv, "hl:i:o:", ["help", "levels=", "infile=", "outfile="])
+        opts, args = getopt.getopt(
+            argv, "hl:i:o:", ["help", "levels=", "infile=", "outfile="]
+        )
         logger.debug(f"User input: {opts}, {args}")
     except getopt.GetoptError:
-        logger.info(
-            "-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
-        )
+        logger.info("-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>")
         return is_output
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             logger.info(
                 '-l<list of levels separated by , e.g.: "B0,D0,D1"> '
-                '-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>'
+                "-i <input .csv/.xlsx file> -o <output .csv/.xlsx file>"
             )
             return is_output
         elif opt in ("-l", "--levels"):
             arg = arg.strip("'")
             arg = arg.strip('"')
-            levels = arg.split(',')
+            levels = arg.split(",")
             levels = [_lv.strip(" ") for _lv in levels]
         elif opt in ("-i", "--infile"):
             in_file = arg
@@ -63,7 +73,7 @@ def main(argv):
                 equalized_dct[lv] = equalizer.cross_match()
 
             abs_out_file = create_equalizer_output(equalized_dct, output_name=out_file)
-            if abs_out_file.lower().endswith('.xlsx'):
+            if abs_out_file.lower().endswith(".xlsx"):
                 abs_out_file = get_abs_path(abs_out_file)
                 is_output = True
 

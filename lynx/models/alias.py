@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -15,7 +25,6 @@ from lynx.utils.file_handler import get_json
 
 
 class Alias(object):
-
     def __init__(self, alias_file: str = default_alias_file):
         self.alias_file = alias_file
         self._raw_cv = {}
@@ -32,7 +41,7 @@ class Alias(object):
             for abbr in raw_alias_class_info:
                 alias_lst = raw_alias_class_info[abbr]
                 for alias in alias_lst:
-                    if re.match(r'[-_\dA-Z]{2,}', alias):  # if alias all uppercase
+                    if re.match(r"[-_\dA-Z]{2,}", alias):  # if alias all uppercase
                         alias_abbr_info[re.compile(alias)] = abbr
                     else:
                         alias_abbr_info[re.compile(alias, re.IGNORECASE)] = abbr
@@ -52,7 +61,10 @@ class Alias(object):
                 lipid_alias_info = self.__get_alias_info__(raw_alias_cat_info)
             else:
                 pass
-        alias_info = {"RESIDUE_ALIAS": residue_alias_info, "LIPID_ALIAS": lipid_alias_info}
+        alias_info = {
+            "RESIDUE_ALIAS": residue_alias_info,
+            "LIPID_ALIAS": lipid_alias_info,
+        }
         return alias_info
 
     def __load_raw__(self) -> dict:
@@ -78,9 +90,9 @@ class Alias(object):
         return self._raw_cv
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    usr_alias = r'lynx/configurations/defined_alias.json'
+    usr_alias = r"lynx/configurations/defined_alias.json"
 
     alias_obj = Alias(usr_alias)
     print(alias_obj.info)

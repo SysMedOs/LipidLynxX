@@ -32,9 +32,9 @@
     {"order":5.31,"level":3,"cv":"NH2","alias":["NH2"],"elements":{},"remarks":""},
     {"order":5.32,"level":3,"cv":"NO2","alias":["NO2"],"elements":{"H":-1,"N":1,"O":2},"remarks":"nitro"},
     {"order":5.33,"level":3,"cv":"NO3","alias":["NO3"],"elements":{"H":-1,"N":1,"O":3},"remarks":"nitrate"},
-    {"order":5.41,"level":3,"cv":"SH","alias":["SH"],"elements":{},"remarks":""},
-    {"order":6.01,"level":3,"cv":"Me","alias":["Me"],"elements":{},"remarks":""},
-    {"order":6.02,"level":3,"cv":"Et","alias":["Et"],"elements":{},"remarks":""},
-    {"order":6.03,"level":3,"cv":"OMe","alias":["OMe"],"elements":{},"remarks":""},
+    {"order":5.41,"level":3,"cv":"SH","alias":["SH"],"elements":{"S":1},"remarks":""},
+    {"order":6.01,"level":3,"cv":"Me","alias":["Me"],"elements":{"C":1,"H":2},"remarks":""},
+    {"order":6.02,"level":3,"cv":"Et","alias":["Et"],"elements":{"C":2,"H":4},"remarks":""},
+    {"order":6.03,"level":3,"cv":"OMe","alias":["OMe"],"elements":{"C":1,"H":2,"O":1},"remarks":""},
     {"order":9.01,"level":3,"cv":"COOH","alias":["COOH"],"elements":{"O":2},"remarks":"carboxylic acid"}
 ]

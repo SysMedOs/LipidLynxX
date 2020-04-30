@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -41,7 +51,7 @@ class Formatter(object):
             if raw_mod_type_lst[0] not in ["DB", ""]:
                 mod_type_lst.append(raw_mod_type_lst[0])
                 for idx in range(1, len(mod_type_lst) + 1):
-                    if raw_mod_type_lst[idx]not in ["DB", ""]:
+                    if raw_mod_type_lst[idx] not in ["DB", ""]:
                         mod_type_lst.append(raw_mod_type_lst[idx])
             else:
                 mod_type_lst = raw_mod_type_lst
@@ -98,7 +108,11 @@ class Formatter(object):
             formatted_mod_lst = zip(
                 formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
             )
-        elif len(formatted_mod_type_lst) > 0 and not mod_site_lst and not mod_site_info_lst:
+        elif (
+            len(formatted_mod_type_lst) > 0
+            and not mod_site_lst
+            and not mod_site_info_lst
+        ):
             mod_site_lst = [""] * len(formatted_mod_type_lst)
             mod_site_info_lst = [""] * len(formatted_mod_type_lst)
             formatted_mod_lst = zip(
@@ -106,7 +120,9 @@ class Formatter(object):
             )
         else:
             if 0 < len(mod_site_lst) < len(formatted_mod_type_lst):
-                logger.warning(f'mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}')
+                logger.warning(
+                    f"mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}"
+                )
                 formatted_mod_lst = []
             elif 0 < len(formatted_mod_type_lst) < len(mod_site_lst):
                 if list(set(formatted_mod_type_lst)) == ["DB"]:
@@ -114,7 +130,9 @@ class Formatter(object):
                     if not mod_site_info_lst:
                         mod_site_info_lst = [""] * len(mod_site_lst)
                     else:
-                        mod_site_info_lst = mod_site_info_lst + [""] * (len(mod_site_lst) - len(mod_site_lst))
+                        mod_site_info_lst = mod_site_info_lst + [""] * (
+                            len(mod_site_lst) - len(mod_site_lst)
+                        )
                     formatted_mod_lst = zip(
                         formatted_mod_type_lst, mod_site_lst, mod_site_info_lst
                     )
