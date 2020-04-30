@@ -186,7 +186,16 @@ please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidL
 - **GUI**
     ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
 - **API**
-    ![ApiLynx_01_StringConverterAPI](doc/images/LipidLynX_api_01_StringConverterAPI.png)
+
+    Examples:
+    ```bash
+    curl http://127.0.0.1:5000/lynx/api/0.1/converter/str/ -d 'data="PLPC"' -X GET
+    curl http://127.0.0.1:5000/lynx/api/0.1/converter/list/ -d 'data=["PAPE", "PE 36:4"]' -X GET
+    curl http://127.0.0.1:5000/lynx/api/0.1/converter/dict/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2"]}' -X GET
+    curl http://127.0.0.1:5000/lynx/api/0.1/equalizer/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)", "DPPE"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2", "PG 18:0_18:3"]}&level=D0' -X GET
+    ```
+     ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
+    
     
 - **Terminal Tools**
     

@@ -159,9 +159,8 @@ if __name__ == "__main__":
 
     test_in_file = r"../test/test_input/test_crosscheck.xlsx"
     test_out_file = r"../test/test_output/test_crosscheck_output.xlsx"
-    cfg_file = r"../configurations/defined_alias.xlsx"
 
-    converter = Converter(cfg_file)
+    converter = Converter()
 
     converter.convert_table(test_in_file, test_out_file)
 
