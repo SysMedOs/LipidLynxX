@@ -5,7 +5,7 @@
   ],
   "SOURCES": [
     "HMDB",
-    "LIPIDMAPS",
+    "LIPIDMAPS_LMSD",
     "LMSD",
     "Lipostar",
     "SwissLipids"

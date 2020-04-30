@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -13,11 +23,7 @@ from jsonschema import Draft7Validator, RefResolver
 import regex as re
 
 from lynx.utils.params_loader import load_output_rule
-from lynx.models.defaults import (
-    res_schema,
-    res_schema_path,
-    default_output_rules,
-)
+from lynx.models.defaults import res_schema, res_schema_path, default_output_rules
 from lynx.models.modification import Modifications, merge_mods
 from lynx.utils.log import logger
 from lynx.utils.toolbox import check_json
@@ -135,7 +141,8 @@ def merge_residues(
         )
 
     all_mod_lst = [
-        all_residues[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}}) for rm in all_residues
+        all_residues[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}})
+        for rm in all_residues
     ]
     sum_mods_obj = merge_mods(all_mod_lst)
 
@@ -164,7 +171,10 @@ def merge_residues(
                     else:
                         pass
 
-    sum_res_dct["MOD"] = {"MOD_LEVEL": sum_mods_obj.mod_level, "MOD_INFO": sum_mods_obj.mod_info}
+    sum_res_dct["MOD"] = {
+        "MOD_LEVEL": sum_mods_obj.mod_level,
+        "MOD_INFO": sum_mods_obj.mod_info,
+    }
 
     sum_res_obj = Residue(sum_res_dct, schema, output_rules, nomenclature)
 

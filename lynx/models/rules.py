@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -30,7 +40,11 @@ class InputRules(object):
         self.sources = self.raw_rules["SOURCES"]
         self.date = self.raw_rules.get("_DATE", 20200214)
         self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
-        self.supported_mods = list(self.raw_rules["MODS"].keys())
+        mods = self.raw_rules.get("MODS", {})
+        if mods:
+            self.supported_mods = list(mods.keys())
+        else:
+            self.supported_mods = []
         self.supported_residues = list(self.raw_rules["RESIDUES"].keys())
         self.supported_classes = list(self.raw_rules["LIPID_CLASSES"].keys())
         self.supported_keys = (

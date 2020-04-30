@@ -7,11 +7,12 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 if __name__ == "__main__":
-
+    import os
     import webbrowser
-    from lynx import app
+
+    import lynx
     from lynx.models.defaults import cfg_info_dct
 
     base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
     webbrowser.open(f"{base_url}/lynx", new=1, autoraise=True)
-    app.run(debug=True)
+    lynx.app.run(debug=True)

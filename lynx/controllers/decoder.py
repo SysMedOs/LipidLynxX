@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -157,7 +167,6 @@ class Decoder(object):
                 + natsorted(r_lst)
             )
 
-
         return {
             "RESIDUES_ORDER": out_res_lst,
             "RESIDUES_INFO": out_res_dct,
@@ -165,7 +174,9 @@ class Decoder(object):
             "RESIDUES_SEPARATOR_LEVEL": lv_min,
         }
 
-    def extract_by_class_rule(self, lipid_name: str, c: str, lynx_rule_idx: str = "LipidLynxX.json#LipidLynxX") -> dict:
+    def extract_by_class_rule(
+        self, lipid_name: str, c: str, lynx_rule_idx: str = "LipidLynxX.json#LipidLynxX"
+    ) -> dict:
         c_lmsd_classes = self.rules[c].get("LMSD_CLASSES", None)
         c_max_res = self.rules[c].get("MAX_RESIDUES", 1)
         res_sep = self.rules[c].get("RESIDUES_SEPARATOR", None)  # type: str
@@ -199,10 +210,21 @@ class Decoder(object):
                         residues_dct["RESIDUES_SEPARATOR_LEVEL"] = "S"
                         sp_res_abbr_lst = residues_dct["RESIDUES_ORDER"]
                         if len(sp_res_abbr_lst) == 2:
-                            if ';' in sp_res_abbr_lst[1] and ';' not in sp_res_abbr_lst[0]:
-                                residues_dct["RESIDUES_ORDER"] = [sp_res_abbr_lst[1], sp_res_abbr_lst[0]]
-                            elif re.match(r'[mdt].*', sp_res_abbr_lst[1]) and not re.match(r'[mdt].*', sp_res_abbr_lst[0]):
-                                residues_dct["RESIDUES_ORDER"] = [sp_res_abbr_lst[1], sp_res_abbr_lst[0]]
+                            if (
+                                ";" in sp_res_abbr_lst[1]
+                                and ";" not in sp_res_abbr_lst[0]
+                            ):
+                                residues_dct["RESIDUES_ORDER"] = [
+                                    sp_res_abbr_lst[1],
+                                    sp_res_abbr_lst[0],
+                                ]
+                            elif re.match(
+                                r"[mdt].*", sp_res_abbr_lst[1]
+                            ) and not re.match(r"[mdt].*", sp_res_abbr_lst[0]):
+                                residues_dct["RESIDUES_ORDER"] = [
+                                    sp_res_abbr_lst[1],
+                                    sp_res_abbr_lst[0],
+                                ]
                     elif c_lmsd.upper().startswith("ST"):
                         residues_dct["RESIDUES_SEPARATOR_LEVEL"] = "S"
                 matched_info_dct[r] = {
@@ -242,7 +264,9 @@ class Decoder(object):
                 if lipid_name:
                     def_alias = self.check_alias(lipid_name, "LIPID")
                     if def_alias:
-                        logger.warning(f'Found Alias: {lipid_name} -> change to {def_alias}')
+                        logger.warning(
+                            f"Found Alias: {lipid_name} -> change to {def_alias}"
+                        )
                         matched_info_dct = self.extract_by_class_rule(def_alias, c)
                         if matched_info_dct:
                             extracted_info_dct[c] = matched_info_dct

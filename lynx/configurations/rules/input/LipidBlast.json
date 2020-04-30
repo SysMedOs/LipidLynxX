@@ -349,7 +349,7 @@
     },
     "SPB": {
       "LMSD_CLASSES": [
-        "SP01"
+        "SP01", "SP0105"
       ],
       "ORDER": [
         "PREFIX",
