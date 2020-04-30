@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -129,7 +139,7 @@ class Encoder(object):
 
         # set FA or class with one Res into level s
         if len(residues_order) == 1 and len(sum_lv_lst) > 0:
-            if '0.1' in sum_lv_lst and residues_sep_level == "B":
+            if "0.1" in sum_lv_lst and residues_sep_level == "B":
                 residues_sep_level = "S"
 
         if residues_sep_level == "S":
@@ -170,13 +180,13 @@ class Encoder(object):
             c_prefix_seg = c_prefix_lst[0]
             c_has_prefix = True
         else:
-            c_prefix_seg = ''
+            c_prefix_seg = ""
         c_has_suffix = False
         if len(c_suffix_lst) == 1 and c_suffix_lst[0]:
             c_suffix_seg = c_suffix_lst[0]
             c_has_suffix = True
         else:
-            c_suffix_seg = ''
+            c_suffix_seg = ""
         residues = parsed_info.get("RESIDUES", {})
         sum_res_id_lv_dct = self.get_residues(residues)
         obs_c_seg_lst = segments.get("CLASS", [])
@@ -339,7 +349,7 @@ if __name__ == "__main__":
         # "HETE",
         # "TG(16:0/18:2/18:2[2xDB,1xOH])",
         "PC 16:0/18:2[9,12]",
-        "DG 16:2[9,12]_O-18:2_0:0"
+        "DG 16:2[9,12]_O-18:2_0:0",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:

@@ -7,6 +7,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
+import os
 import requests
 from datetime import datetime
 from typing import Union, List, Dict
@@ -17,8 +18,6 @@ import pandas as pd
 
 from werkzeug.utils import secure_filename
 
-# from .liblynx.LynxParser import parse_lipidlynx
-
 from lynx.config import api_url_info, base_url, blueprint, DevConfig
 from lynx.forms import (
     ConverterTableInputForm,
@@ -28,7 +27,11 @@ from lynx.forms import (
     EqualizerInputForm,
 )
 from lynx.models.defaults import logger, cfg_info_dct, api_version
-from lynx.utils.file_handler import get_table, create_converter_output, create_equalizer_output
+from lynx.utils.file_handler import (
+    get_table,
+    create_converter_output,
+    create_equalizer_output,
+)
 from lynx.utils.toolbox import keep_string_only
 
 lynx_version = "0.4.12"
@@ -306,16 +309,12 @@ def user_guide():
 
 @blueprint.route("/nomenclature")
 def nomenclature():
-    return render_template(
-        "nomenclature.html"
-    )
+    return render_template("nomenclature.html")
 
 
 @blueprint.route("/levels")
 def levels():
-    return render_template(
-        "levels.html"
-    )
+    return render_template("levels.html")
 
 
 @blueprint.route("/about")

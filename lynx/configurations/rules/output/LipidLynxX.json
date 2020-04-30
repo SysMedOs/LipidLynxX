@@ -600,6 +600,7 @@
     "SP01": {
       "ORDER": [
         "CLASS",
+        "SUFFIX",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -608,6 +609,20 @@
         "INPUT": [
           "SPB",
           "[Ss]phingosine"
+        ]
+      }
+    },
+    "SP0105": {
+      "ORDER": [
+        "CLASS",
+        "SUFFIX",
+        "SUM_RESIDUES"
+      ],
+      "MAX_RESIDUES": 1,
+      "CLASS": {
+        "OUTPUT": "SPBP",
+        "INPUT": [
+          "SPBP"
         ]
       }
     },

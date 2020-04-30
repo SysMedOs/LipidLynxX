@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -15,6 +25,7 @@ import pandas as pd
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
+import lynx.utils
 from lynx.utils.log import logger
 
 
@@ -30,6 +41,17 @@ def get_abs_path(file_path: str) -> str:
     """
 
     abs_path = ""
+
+    # Force change to LipidLynxX folder for macOS
+    cwd = os.getcwd()
+    lynx_utils_dir = os.path.dirname(lynx.utils.__file__)
+    lynx_dir = os.path.dirname(lynx_utils_dir)
+    project_dit = os.path.dirname(lynx_dir)
+    if cwd != project_dit:
+        os.chdir(project_dit)
+        print("Change to LipidLynxX project folder", os.getcwd())
+    else:
+        print("Working on folder", os.getcwd())
 
     if os.path.isdir(file_path):
         abs_path = os.path.abspath(file_path)
@@ -53,7 +75,9 @@ def get_abs_path(file_path: str) -> str:
                 break
 
     if not abs_path:
-        raise FileNotFoundError(f"Can not find file: {file_path}")
+        raise FileNotFoundError(
+            f"Can not find file: {file_path} from path {os.getcwd()}"
+        )
 
     return abs_path
 
@@ -187,7 +211,9 @@ def create_converter_output(data: dict, output_name: str = None) -> Union[BytesI
     return excel_info
 
 
-def create_equalizer_output(sum_data: dict, output_name: str = None) -> Union[BytesIO, str]:
+def create_equalizer_output(
+    sum_data: dict, output_name: str = None
+) -> Union[BytesIO, str]:
     table_info = None
     is_file_name = False
     if sum_data:

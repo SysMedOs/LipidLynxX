@@ -3,6 +3,16 @@
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
+#
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
@@ -26,7 +36,7 @@ from lynx.utils.file_handler import get_abs_path
 
 default_cfg_path = "/lynx/config.ini"
 cfg_info_dct = load_cfg_info(cfg_path=default_cfg_path)
-api_version = cfg_info_dct.get("api_version", '0.1')
+api_version = cfg_info_dct.get("api_version", "0.1")
 default_input_rules = build_input_rules(cfg_info_dct["input_rules"])
 default_output_rules = build_output_rules(cfg_info_dct["output_rules"])
 default_cv_file = get_abs_path(cfg_info_dct["controlled_vocabularies"])

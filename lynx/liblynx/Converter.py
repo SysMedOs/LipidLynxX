@@ -1,7 +1,17 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
 # SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# LipidLynxX is Dual-licensed
+#   For academic and non-commercial use: GPLv2 License:
+#   For commercial use: please contact the SysMedOs team by email.
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
@@ -149,9 +159,8 @@ if __name__ == "__main__":
 
     test_in_file = r"../test/test_input/test_crosscheck.xlsx"
     test_out_file = r"../test/test_output/test_crosscheck_output.xlsx"
-    cfg_file = r"../configurations/defined_alias.xlsx"
 
-    converter = Converter(cfg_file)
+    converter = Converter()
 
     converter.convert_table(test_in_file, test_out_file)
 
