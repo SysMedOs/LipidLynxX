@@ -41,7 +41,7 @@
         "4-HNE"
       ],
       "FA16:0": [
-        "PA",
+        "^PA\\s*$",
         "hexadecanoic\\s*acid",
         "palmitic\\s*acid"
       ],
@@ -97,47 +97,441 @@
       ],
       "FA20:4<OH>": [
         "HETE"
+      ],
+      "FA20:2<+3O>": [
+        "Prostaglandin\\s*F1\\s*alpha",
+        "PGF\\s*1\\s*a",
+        "PGF\\s*1"
+      ],
+      "FA20:3<+4O>": [
+        "Thromboxane\\s*B2",
+        "TXB\\s*2"
+      ],
+      "FA20:4<+3O>": [
+        "Thromboxane\\s*A2",
+        "TXA\\s*2"
+      ],
+      "FA20:4<+2O>": [
+        "Prostaglandin\\s*A1",
+        "PGA\\s*1",
+        "Prostaglandin\\s*J1",
+        "PGJ\\s*1"
+      ],
+      "FA20:4<+3O>": [
+        "Prostaglandin\\s*E2",
+        "Dinoprostone",
+        "PGE\\s*2",
+        "Prostaglandin\\s*D\\s*2",
+        "PGD\\s*2"
+      ],
+      "FA20:5<+2O>": [
+        "Prostaglandin\\s*A\\s*2",
+        "PGA\\s*2",
+        "Prostaglandin\\s*J\\s*2",
+        "PGJ\\s*2"
       ]
     },
     "GP01": {
-      "PC(16:0/16:0)": ["DPPC"],
-      "PC(16:0/18:0)": ["PSPC"],
-      "PC(16:0/18:1)": ["POPC"],
-      "PC(16:0/18:2)": ["PLPC"],
-      "PC(16:0/20:4)": ["PAPC"],
-      "PC(16:0/22:6)": ["PDPC"],
-      "PC(18:0/16:0)": ["DSPC"],
-      "PC(18:0/18:0)": ["DSPC"],
-      "PC(18:0/18:1)": ["SOPC"],
-      "PC(18:0/18:2)": ["SLPC"],
-      "PC(18:0/20:4)": ["SAPC"],
-      "PC(18:0/22:6)": ["SDPC"],
-      "PC(16:0/5:0<oxo{5}>)": ["POVPC"],
-      "PC(16:0/5:0<COOH{@5}>)": ["PGPC"],
-      "PC(16:0/9:0<oxo{9}>)": ["PNPC", "PONPC", "16:0-09:0 (ALDO) PC"],
-      "PC(18:0/5:0<oxo{5}>)": ["SOVPC"],
-      "PC(18:0/5:0<COOH{@5}>)": ["SGPC"],
-      "PC(18:0/9:0<oxo{9}>)": ["SNPC", "SONPC", "18:0-09:0 (ALDO) PC"]
+      "PC(16:0/16:0)": [
+        "DPPC"
+      ],
+      "PC(16:0/18:0)": [
+        "PSPC"
+      ],
+      "PC(16:0/18:1)": [
+        "POPC"
+      ],
+      "PC(16:0/18:2)": [
+        "PLPC"
+      ],
+      "PC(16:0/20:4)": [
+        "PAPC"
+      ],
+      "PC(16:0/22:6)": [
+        "PDPC"
+      ],
+      "PC(18:0/16:0)": [
+        "DSPC"
+      ],
+      "PC(18:0/18:0)": [
+        "DSPC"
+      ],
+      "PC(18:0/18:1)": [
+        "SOPC"
+      ],
+      "PC(18:0/18:2)": [
+        "SLPC"
+      ],
+      "PC(18:0/20:4)": [
+        "SAPC"
+      ],
+      "PC(18:0/22:6)": [
+        "SDPC"
+      ],
+      "PC(16:0/5:0<oxo{5}>)": [
+        "POVPC"
+      ],
+      "PC(16:0/5:0<COOH{@5}>)": [
+        "PGPC"
+      ],
+      "PC(16:0/9:0<oxo{9}>)": [
+        "PNPC",
+        "PONPC",
+        "16:0-09:0 (ALDO) PC"
+      ],
+      "PC(18:0/5:0<oxo{5}>)": [
+        "SOVPC"
+      ],
+      "PC(18:0/5:0<COOH{@5}>)": [
+        "SGPC"
+      ],
+      "PC(18:0/9:0<oxo{9}>)": [
+        "SNPC",
+        "SONPC",
+        "18:0-09:0 (ALDO) PC"
+      ]
     },
     "GP02": {
-      "PE(16:0/16:0)": ["DPPE"],
-      "PE(16:0/18:0)": ["PSPE"],
-      "PE(16:0/18:1)": ["POPE"],
-      "PE(16:0/18:2)": ["PLPE"],
-      "PE(16:0/20:4)": ["PAPE"],
-      "PE(16:0/22:6)": ["PDPE"],
-      "PE(18:0/16:0)": ["DSPE"],
-      "PE(18:0/18:0)": ["DSPE"],
-      "PE(18:0/18:1)": ["SOPE"],
-      "PE(18:0/18:2)": ["SLPE"],
-      "PE(18:0/20:4)": ["SAPE"],
-      "PE(18:0/22:6)": ["SDPE"],
-      "PE(16:0/5:0<oxo{5}>)": ["POVPE"],
-      "PE(16:0/5:0<COOH{@5}>)": ["PGPE"],
-      "PE(16:0/9:0<oxo{9}>)": ["PNPE", "PONPE", "16:0-09:0 (ALDO) PE"],
-      "PE(18:0/5:0<oxo{5}>)": ["SOVPE"],
-      "PE(18:0/5:0<COOH{@5}>)": ["SGPE"],
-      "PE(18:0/9:0<oxo{9}>)": ["SNPE", "SONPE", "18:0-09:0 (ALDO) PE"]
+      "PE(16:0/16:0)": [
+        "DPPE"
+      ],
+      "PE(16:0/18:0)": [
+        "PSPE"
+      ],
+      "PE(16:0/18:1)": [
+        "POPE"
+      ],
+      "PE(16:0/18:2)": [
+        "PLPE"
+      ],
+      "PE(16:0/20:4)": [
+        "PAPE"
+      ],
+      "PE(16:0/22:6)": [
+        "PDPE"
+      ],
+      "PE(18:0/16:0)": [
+        "DSPE"
+      ],
+      "PE(18:0/18:0)": [
+        "DSPE"
+      ],
+      "PE(18:0/18:1)": [
+        "SOPE"
+      ],
+      "PE(18:0/18:2)": [
+        "SLPE"
+      ],
+      "PE(18:0/20:4)": [
+        "SAPE"
+      ],
+      "PE(18:0/22:6)": [
+        "SDPE"
+      ],
+      "PE(16:0/5:0<oxo{5}>)": [
+        "POVPE"
+      ],
+      "PE(16:0/5:0<COOH{@5}>)": [
+        "PGPE"
+      ],
+      "PE(16:0/9:0<oxo{9}>)": [
+        "PNPE",
+        "PONPE",
+        "16:0-09:0 (ALDO) PE"
+      ],
+      "PE(18:0/5:0<oxo{5}>)": [
+        "SOVPE"
+      ],
+      "PE(18:0/5:0<COOH{@5}>)": [
+        "SGPE"
+      ],
+      "PE(18:0/9:0<oxo{9}>)": [
+        "SNPE",
+        "SONPE",
+        "18:0-09:0 (ALDO) PE"
+      ]
+    },
+    "SP03": {
+      "SM(18:1;2/12:0)": [
+        "C?12(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?12(:0)?"
+      ],
+      "SM(18:1;2/14:0)": [
+        "C?14(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?14(:0)?"
+      ],
+      "SM(18:1;2/16:0)": [
+        "C?16(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?16(:0)?"
+      ],
+      "SM(18:1;2/16:1)": [
+        "C?16:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?16:1"
+      ],
+      "SM(18:1;2/18:0)": [
+        "C?18(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18(:0)?"
+      ],
+      "SM(18:1;2/18:1)": [
+        "C?18:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18:1"
+      ],
+      "SM(18:1;2/18:2)": [
+        "C?18:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18:2"
+      ],
+      "SM(18:1;2/20:0)": [
+        "C?20(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20(:0)?"
+      ],
+      "SM(18:1;2/20:1)": [
+        "C?20:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:1"
+      ],
+      "SM(18:1;2/20:2)": [
+        "C?20:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:2"
+      ],
+      "SM(18:1;2/20:3)": [
+        "C?20:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:3"
+      ],
+      "SM(18:1;2/20:4)": [
+        "C?20:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:4"
+      ],
+      "SM(18:1;2/20:5)": [
+        "C?20:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:5"
+      ],
+      "SM(18:1;2/20:6)": [
+        "C?20:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:6"
+      ],
+      "SM(18:1;2/22:0)": [
+        "C?22(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22(:0)?"
+      ],
+      "SM(18:1;2/22:1)": [
+        "C?22:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:1"
+      ],
+      "SM(18:1;2/22:2)": [
+        "C?22:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:2"
+      ],
+      "SM(18:1;2/22:3)": [
+        "C?22:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:3"
+      ],
+      "SM(18:1;2/22:4)": [
+        "C?22:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:4"
+      ],
+      "SM(18:1;2/22:5)": [
+        "C?22:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:5"
+      ],
+      "SM(18:1;2/22:6)": [
+        "C?22:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:6"
+      ],
+      "SM(18:1;2/24:0)": [
+        "C?24(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24(:0)?"
+      ],
+      "SM(18:1;2/24:1)": [
+        "C?24:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:1"
+      ],
+      "SM(18:1;2/24:2)": [
+        "C?24:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:2"
+      ],
+      "SM(18:1;2/24:3)": [
+        "C?24:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:3"
+      ],
+      "SM(18:1;2/24:4)": [
+        "C?24:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:4"
+      ],
+      "SM(18:1;2/24:5)": [
+        "C?24:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:5"
+      ],
+      "SM(18:1;2/24:6)": [
+        "C?24:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:6"
+      ],
+      "SM(18:1;2/26:0)": [
+        "C?26(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26(:0)?"
+      ],
+      "SM(18:1;2/26:1)": [
+        "C?26:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:1"
+      ],
+      "SM(18:1;2/26:2)": [
+        "C?26:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:2"
+      ],
+      "SM(18:1;2/26:3)": [
+        "C?26:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:3"
+      ],
+      "SM(18:1;2/26:4)": [
+        "C?26:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:4"
+      ],
+      "SM(18:1;2/26:5)": [
+        "C?26:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:5"
+      ],
+      "SM(18:1;2/26:6)": [
+        "C?26:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:6"
+      ],
+      "SM(18:0;2/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?12(:0)?"
+      ],
+      "SM(18:0;2/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?14(:0)?"
+      ],
+      "SM(18:0;2/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?16(:0)?"
+      ],
+      "SM(18:0;2/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?16:1"
+      ],
+      "SM(18:0;2/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?18(:0)?"
+      ],
+      "SM(18:0;2/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?18:1"
+      ],
+      "SM(18:0;2/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?18:2"
+      ],
+      "SM(18:0;2/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20(:0)?"
+      ],
+      "SM(18:0;2/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:1"
+      ],
+      "SM(18:0;2/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:2"
+      ],
+      "SM(18:0;2/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:3"
+      ],
+      "SM(18:0;2/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:4"
+      ],
+      "SM(18:0;2/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:5"
+      ],
+      "SM(18:0;2/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:6"
+      ],
+      "SM(18:0;2/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22(:0)?"
+      ],
+      "SM(18:0;2/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:1"
+      ],
+      "SM(18:0;2/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:2"
+      ],
+      "SM(18:0;2/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:3"
+      ],
+      "SM(18:0;2/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:4"
+      ],
+      "SM(18:0;2/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:5"
+      ],
+      "SM(18:0;2/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:6"
+      ],
+      "SM(18:0;2/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24(:0)?"
+      ],
+      "SM(18:0;2/24:1)": [
+        "C?24:1\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:1"
+      ],
+      "SM(18:0;2/24:2)": [
+        "C?24:2\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:2"
+      ],
+      "SM(18:0;2/24:3)": [
+        "C?24:3\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:3"
+      ],
+      "SM(18:0;2/24:4)": [
+        "C?24:4\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:4"
+      ],
+      "SM(18:0;2/24:5)": [
+        "C?24:5\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:5"
+      ],
+      "SM(18:0;2/24:6)": [
+        "C?24:6\\[dD][hH]s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:6"
+      ],
+      "SM(18:0;2/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26(:0)?"
+      ],
+      "SM(18:0;2/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:1"
+      ],
+      "SM(18:0;2/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:2"
+      ],
+      "SM(18:0;2/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:3"
+      ],
+      "SM(18:0;2/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:4"
+      ],
+      "SM(18:0;2/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:5"
+      ],
+      "SM(18:0;2/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:6"
+      ]
     }
   }
 }

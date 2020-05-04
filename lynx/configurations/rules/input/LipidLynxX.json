@@ -65,8 +65,8 @@
         "MOD_SITES",
         "SITE_BRACKET_RIGHT"
       ],
-      "MOD_COUNT":  "(\\s?,)?([0-9]{1,2})",
-      "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_COUNT":  "[+-]?(\\s?,)?([0-9]{1,2})",
+      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
       "SITE_BRACKET_LEFT": "$.SEPARATORS.SITE_BRACKET_LEFT.0",
       "MOD_SITES": "$.MODS.MOD_SITES.0",
       "SITE_BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",

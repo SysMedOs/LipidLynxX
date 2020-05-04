@@ -97,6 +97,7 @@ class Decoder(object):
         max_residues: int = 1,
         separator_levels: dict = None,
         separator: str = "-|/",
+        lmsd_classes: List[str] = None
     ) -> dict:
 
         if alias is None:
@@ -121,8 +122,14 @@ class Decoder(object):
         out_res_dct = {}
         out_res_lst = []
         res_true_lst = []
-        if "0:0" in res_lst:
+        is_fa = False
+        for c_lmsd in lmsd_classes:
+            if c_lmsd.upper().startswith("FA"):
+                is_fa = True
+        if not is_fa and "0:0" in res_lst:
             res_true_lst = [res for res in res_lst if res != "0:0"]
+        else:
+            res_true_lst = res_lst
 
         if len(res_lst) <= max_residues or len(res_true_lst) <= max_residues:
             for res in res_lst:
@@ -201,6 +208,7 @@ class Decoder(object):
                     max_residues=c_max_res,
                     separator_levels=sep_levels,
                     separator=res_sep,
+                    lmsd_classes=c_lmsd_classes
                 )
                 # set specific classes into
                 for c_lmsd in c_lmsd_classes:
@@ -234,9 +242,9 @@ class Decoder(object):
                     # "RESIDUES_SEPARATOR": res_sep,
                     # "SEPARATOR_LEVELS": sep_levels,
                 }
-            elif obs_residues_lst and len(obs_residues_lst) > 1:
-                raise ValueError(
-                    f"More than two parts of SUM residues matched: {obs_residues_lst}"
+            elif sum_residues_lst and len(sum_residues_lst) > 1:
+                logger.error(
+                    f"More than two parts of SUM residues matched: {sum_residues_lst}"
                 )
             else:
                 pass  # nothing found. the rule is not used.
@@ -287,9 +295,10 @@ if __name__ == "__main__":
     # t_in = "TG (P-18:1/18:2(9Z,12Z)/5S,15R-DiHETE)"
 
     # MS-DIAL
-    t_in = "TG(16:0/18:2/20:4<OH>)"
-    t_in = "TG(16:0/18:2/HETE)"
-    t_in = "Palmitic acid"
+    # t_in = "TG(16:0/18:2/20:4<OH>)"
+    # t_in = "TG(16:0/18:2/HETE)"
+    # RefMet
+    t_in = "PGE2"
 
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)
