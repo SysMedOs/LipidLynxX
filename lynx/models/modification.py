@@ -104,7 +104,8 @@ class Modifications(object):
     def to_mass_shift(self) -> str:
         mass_shift = 0
         for mod in self.mod_info:
-            mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0)
+            mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
+            mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0) * mod_count
 
         return f"{mass_shift:+}"
 
@@ -115,9 +116,11 @@ class Modifications(object):
         for mod in self.mod_info:
             if self.mod_info[mod].get("MOD_CV", "") not in ["", "DB"]:
                 mod_elements = self.mod_info[mod].get("MOD_ELEMENTS", 0)
+                mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
                 for elem in mod_elements:
-                    sum_elements[elem] = sum_elements.get(elem, 0) + mod_elements.get(
-                        elem, 0
+                    sum_elements[elem] = (
+                        sum_elements.get(elem, 0)
+                        + mod_elements.get(elem, 0) * mod_count
                     )
 
         for mod_elem in mod_elem_lst:
@@ -144,6 +147,7 @@ class Modifications(object):
             mod_sites_lst = []
             mod_dct = self.mod_info[mod]
             cv = mod_dct.get("MOD_CV", None)
+            mod_lv = mod_dct.get("MOD_LEVEL", 0)
             if cv in ["", "DB"]:
                 db_idx = mod
             for o in self.mod_rule_orders:
@@ -151,14 +155,22 @@ class Modifications(object):
                     if o == "MOD_COUNT":
                         mod_count = mod_dct.get(o, 1)
                         if mod_count > 1 and cv not in ["", "DB"]:
+                            if mod_lv > 2:
+                                mod_seg_str += str(mod_count)
+                            else:
+                                mod_seg_str += f"+{mod_count}"
+                        elif mod_count < 0 and mod_lv < 3:
                             mod_seg_str += str(mod_count)
                         elif mod_count == 1:
-                            pass
+                            if mod_lv < 3:
+                                mod_seg_str += "+"
+                            else:
+                                pass
                         elif cv in ["", "DB"]:
                             pass
                         else:
                             raise ValueError(
-                                f"Modification count must >= 1, got value: {mod_count}"
+                                f"Modification count Error for modification level: {mod_lv}, got value: {mod_count}"
                             )
                     elif o == "MOD_CV":
                         if cv in ["", "DB"]:

@@ -15,8 +15,8 @@ in the epilipidome.
 The current LipidLynxX source code was tested using our collection of lipid abbreviations
 for major lipid classes from following databases and programs:
 
-- Databases (4):
-  - `HMDB`, `LIPID MAPS LMSD`,`LIPID MAPS COMP_DB`, `LipidHome`, `SwissLipids`
+- Databases (5):
+  - `HMDB`, `LIPID MAPS LMSD & COMP_DB`, `LipidHome`, `RefMet`, `SwissLipids`
 
 - Programs (17):
 
