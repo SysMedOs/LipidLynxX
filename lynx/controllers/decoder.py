@@ -50,17 +50,37 @@ class Decoder(object):
             if rule:
                 if rule in c_match_rgx_dct:
                     m_pattern = c_match_rgx_dct[rule]["MATCH"]
-                    m_groups = c_match_rgx_dct[rule]["GROUPS"]  # type: list
+                    # m_groups = c_match_rgx_dct[rule]["GROUPS"]  # type: list
                     m_match = m_pattern.match(lipid_name)
                     if m_match:
-                        matched_dct = {}
-                        matched_groups = m_match.capturesdict()
-                        matched_info_dct = matched_groups
+                        # matched_dct = {}
+                        matched_info_dct = m_match.capturesdict()
                 else:
                     raise ValueError(f"Can not find rule: {rule} in configuration.")
             else:
                 raise ValueError(f"Must provide a {rule} in configuration to search.")
 
+        links = matched_info_dct.get("LINK", None)
+        if links:
+            if isinstance(links, str):
+                if links.lower().startswith(("e", "o", "a")):
+                    matched_info_dct["LINK"] = "O-"
+                elif links.lower().startswith("p"):
+                    matched_info_dct["LINK"] = "P-"
+                else:
+                    pass
+            elif isinstance(links, list):
+                std_links = []
+                for link in links:
+                    if link.lower().startswith(("e", "o", "a")):
+                        std_links.append("O-")
+                    elif link.lower().startswith("p"):
+                        std_links.append("P-")
+                matched_info_dct["LINK"] = std_links
+            else:
+                pass
+        else:
+            pass
         return matched_info_dct
 
     def check_alias(self, alias: str, alias_type: str = "RESIDUE") -> str:
@@ -80,10 +100,10 @@ class Decoder(object):
             else:
                 pass
 
-        if not defined_id:
-            logger.warning(
-                f"Cannot decode alias: {alias} using alias_type: {alias_type}."
-            )
+        # if not defined_id:
+        #     logger.debug(
+        #         f"Cannot decode alias: {alias} using alias_type: {alias_type}."
+        #     )
 
         return defined_id
 
@@ -97,7 +117,7 @@ class Decoder(object):
         max_residues: int = 1,
         separator_levels: dict = None,
         separator: str = "-|/",
-        lmsd_classes: List[str] = None
+        lmsd_classes: List[str] = None,
     ) -> dict:
 
         if alias is None:
@@ -208,7 +228,7 @@ class Decoder(object):
                     max_residues=c_max_res,
                     separator_levels=sep_levels,
                     separator=res_sep,
-                    lmsd_classes=c_lmsd_classes
+                    lmsd_classes=c_lmsd_classes,
                 )
                 # set specific classes into
                 for c_lmsd in c_lmsd_classes:
@@ -272,7 +292,7 @@ class Decoder(object):
                 if lipid_name:
                     def_alias = self.check_alias(lipid_name, "LIPID")
                     if def_alias:
-                        logger.warning(
+                        logger.info(
                             f"Found Alias: {lipid_name} -> change to {def_alias}"
                         )
                         matched_info_dct = self.extract_by_class_rule(def_alias, c)
@@ -298,7 +318,7 @@ if __name__ == "__main__":
     # t_in = "TG(16:0/18:2/20:4<OH>)"
     # t_in = "TG(16:0/18:2/HETE)"
     # RefMet
-    t_in = "PGE2"
+    t_in = "PC(36:2e)"
 
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)

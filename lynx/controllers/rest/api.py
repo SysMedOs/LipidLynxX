@@ -56,7 +56,7 @@ class StringConverterAPI(Resource):
     @staticmethod
     def get():
         args = convert_get_parser.parse_args()
-        abbreviation = json.loads(args["data"])
+        abbreviation = args.get("data", None)
         if isinstance(abbreviation, str) and abbreviation:
             converted_dct = converter.convert_string(abbreviation)
             if converted_dct:
@@ -116,13 +116,19 @@ class ConverterAPI(Resource):
     @staticmethod
     def get():
         args = convert_get_parser.parse_args()
-        usr_data = json.loads(args["data"])
+        arg_data = args.get("data", None)
+        use_str = False
+        try:
+            usr_data = json.loads(arg_data)
+        except json.decoder.JSONDecodeError:
+            usr_data = arg_data
+            use_str = True
         converted_dct = {}
         if isinstance(usr_data, str) and usr_data:
             converted_dct = converter.convert_string(usr_data)
-        elif isinstance(usr_data, list) and usr_data:
+        elif isinstance(usr_data, list) and usr_data and use_str is False:
             converted_dct = converter.convert_list(usr_data)
-        elif usr_data and isinstance(usr_data, dict):
+        elif usr_data and isinstance(usr_data, dict) and use_str is False:
             converted_dct = converter.convert_dict(usr_data)
         else:
             return errors.input_error

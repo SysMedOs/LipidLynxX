@@ -54,6 +54,7 @@ blueprint = Blueprint(
     __name__,
     template_folder=r"templates",
     static_folder=r"static",
+    static_url_path=r"lynx/static",
     url_prefix=app_url_prefix,
 )
 

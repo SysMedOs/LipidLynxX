@@ -24,7 +24,7 @@
     {"order":4.06,"level":3,"cv":"c6","alias":["C6"],"elements":{},"remarks":""},
     {"order":5.01,"level":3,"cv":"OH","alias":["OH"],"elements":{"O":1},"remarks":"hydroxyl"},
     {"order":5.02,"level":3,"cv":"oxo","alias":["Ke","oxo","KETO"],"elements":{"H":-2,"O":1},"remarks":"oxo(keto/aldehyde depending on position)"},
-    {"order":5.03,"level":3,"cv":"ep","alias":["ep","EPOXY"],"elements":{"H":-2,"O":1},"remarks":"epoxy"},
+    {"order":5.03,"level":3,"cv":"ep","alias":["ep","EPOXY","Ep"],"elements":{"H":-2,"O":1},"remarks":"epoxy"},
     {"order":5.04,"level":3,"cv":"oxy","alias":["oxy"],"elements":{"O":1},"remarks":"alkoxy"},
     {"order":5.05,"level":3,"cv":"OO","alias":["Hp","OOH"],"elements":{"O":2},"remarks":"peroxy"},
     {"order":5.06,"level":3,"cv":"OOH","alias":["Hp","OOH"],"elements":{"O":2},"remarks":"hydroperoxide group"},

@@ -350,7 +350,12 @@ if __name__ == "__main__":
         # "TG(16:0/18:2/18:2[2xDB,1xOH])",
         # "PC 16:0/18:2[9,12]",
         # "DG 16:2[9,12]_O-18:2_0:0",
-        "PGE2"
+        # "14,15-HxB3 (13R)",
+        # "C22:5 CE",
+        # "15-Keto-PGF2α",
+        # "PGF2α",
+        # "8-iso PGF2a III",
+        "9-oxoODE",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:

@@ -49,9 +49,10 @@ def get_abs_path(file_path: str) -> str:
     project_dit = os.path.dirname(lynx_dir)
     if cwd != project_dit:
         os.chdir(project_dit)
-        print("Change to LipidLynxX project folder", os.getcwd())
+        # print("Change to LipidLynxX project folder", os.getcwd())
     else:
-        print("Working on folder", os.getcwd())
+        # print("Working on folder", os.getcwd())
+        pass
 
     if os.path.isdir(file_path):
         abs_path = os.path.abspath(file_path)
