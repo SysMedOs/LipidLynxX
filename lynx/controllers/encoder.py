@@ -355,7 +355,7 @@ if __name__ == "__main__":
         # "15-Keto-PGF2α",
         # "PGF2α",
         # "8-iso PGF2a III",
-        "9-oxoODE",
+        "palmitoleic acid",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:

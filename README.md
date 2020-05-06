@@ -14,9 +14,12 @@ in the epilipidome.
 
 ## *NEW* Try LipidLynxX simple converter demo on [`binder`](https://mybinder.org)
 Just click this button 👉
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/feature/binder?filepath=demo_notebook_app.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/master?filepath=converter_notebook.ipynb)
 
-LipidLynxX demo is powered by Binder and Jupyter Notebook.
+And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
+
+You can run the notebook named `converter_notebook.ipynb` in this repository as well.
+
 
 ## Important Notice
 

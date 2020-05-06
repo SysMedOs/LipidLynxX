@@ -21,67 +21,70 @@
   "LIPID_CLASSES": {
     "FA01": {
       "FA2:0": [
-        "ethanoic\\s*acid",
-        "acetic\\s*acid"
+        "^ethanoic\\s*acid",
+        "^acetic\\s*acid"
       ],
       "FA3:0": [
-        "propanoic\\s*acid"
+        "^propanoic\\s*acid"
       ],
       "FA4:0": [
-        "butanoic\\s*acid",
-        "butyric\\s*acid"
+        "^butanoic\\s*acid",
+        "^butyric\\s*acid"
       ],
       "FA5:0": [
-        "pentanoic\\s*acid",
-        "valeric\\s*acid"
+        "^pentanoic\\s*acid",
+        "^valeric\\s*acid"
       ],
       "FA9:0<{2E},OH{4},oxo{@1}>": [
-        "4-Hydroxy\\s*nonenal",
-        "HNE",
-        "4-HNE"
+        "^4-[Hh]ydroxy\\s*nonenal",
+        "^(4-)?hne",
+        "^(4-)?HNE"
       ],
       "FA16:0": [
         "^PA\\s*$",
         "hexadecanoic\\s*acid",
         "palmitic\\s*acid"
       ],
+      "FA16:1": [
+        "^[Pp]almitoleic\\s*acid"
+      ],
       "FA18:0": [
-        "SA",
-        "bassinic\\s*acid",
-        "cetylacetic\\s*acid",
-        "lactaric\\s*acid",
-        "octadecanoic\\s*acid",
-        "stearic\\s*acid",
-        "stearophanic\\s*acid",
-        "talgic\\s*acid"
+        "^SA\\s*$",
+        "^bassinic\\s*acid",
+        "^cetylacetic\\s*acid",
+        "^lactaric\\s*acid",
+        "^octadecanoic\\s*acid",
+        "^stearic\\s*acid",
+        "^stearophanic\\s*acid",
+        "^talgic\\s*acid"
       ],
       "FA18:1<{9Z}>": [
-        "OA",
-        "elaic\\s*acid",
-        "elaidoic\\s*acid",
-        "octadecenoic\\s*acid",
-        "oleic\\s*acid",
-        "octadecylenic\\s*acid",
-        "rapinic\\s*acid"
+        "^OA\\s*$",
+        "^elaic\\s*acid",
+        "^elaidoic\\s*acid",
+        "^octadecenoic\\s*acid",
+        "^oleic\\s*acid",
+        "^octadecylenic\\s*acid",
+        "^rapinic\\s*acid"
       ],
       "FA18:2<{9Z,12Z}>": [
-        "LA",
-        "octadecadienoic\\s*acid",
-        "linoleic\\s*acid",
-        "telfairic\\s*acid"
+        "^LA\\s*$",
+        "^octadecadienoic\\s*acid",
+        "^linoleic\\s*acid",
+        "^telfairic\\s*acid"
       ],
       "FA20:4<{5Z,8Z,11Z,14Z}>": [
         "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*AA",
         "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*ARA",
-        "Arachidonate",
-        "eicosatetraenoic\\s*acid",
-        "icosatetraenoic\\s*acid",
-        "Eicosatetraenoic acid"
+        "^Arachidonate",
+        "^eicosatetraenoic\\s*acid",
+        "^icosatetraenoic\\s*acid",
+        "^Eicosatetraenoic acid"
       ],
       "FA22:6<{4Z,7Z,10Z,13Z,16Z,19Z}>": [
-        "DHA",
-        "Cervonic\\s*acid",
-        "Docosahexaenoic\\s*acid"
+        "^DHA\\s*$",
+        "^Cervonic\\s*acid",
+        "^Docosahexaenoic\\s*acid"
       ],
       "FA17:3<OH>": [
         "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,1}\\s*-?\\s*HH(T[rR])?E"
