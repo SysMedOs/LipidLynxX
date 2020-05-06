@@ -10,6 +10,17 @@
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
 
+![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Chromium.png)
+
+## *NEW* Try LipidLynxX simple converter demo on [`binder`](https://mybinder.org)
+Just click this button 👉
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/master?filepath=converter_notebook.ipynb)
+
+And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
+
+You can run the notebook named `converter_notebook.ipynb` in this repository as well.
+
+
 ## Important Notice
 
 The current LipidLynxX source code was tested using our collection of lipid abbreviations
@@ -61,7 +72,6 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
 - API access for professional users
 - Command line tools for professional users
 
-![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Chromium.png)
 
 ### Main Modules
 
