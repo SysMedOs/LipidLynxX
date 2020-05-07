@@ -22,11 +22,11 @@ Just click this button 👉
 
 And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
 
-- You can run the notebook named `converter_notebook.ipynb` in this repository as well.
+- You can paste a list of lipid abbreviations and download the output table as `.csv` or `.xlsx`.
 
 - If you observed some IDs not converted in the Windows .exe version, try this demo to see if it got fixed.
 
-
+- You can run the notebook named `converter_notebook.ipynb` in this repository as well.
 
 ## Important Notice
 
