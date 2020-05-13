@@ -78,6 +78,21 @@ class Encoder(object):
                     else:
                         pass
 
+        # add levels for B0, D0, S0 lipids
+        if list(best_id_dct.keys())[-1].endswith("0"):
+            for lv in list(best_id_dct.keys()):
+                for lv_base in ["B", "D", "S"]:
+                    if lv.startswith(lv_base):
+                        lv_id = best_id_dct.get(lv)
+                        for add_lv in supported_levels:
+                            if add_lv.startswith(lv_base) and add_lv != lv:
+                                best_id_dct[add_lv] = lv_id
+
+        if best_id_dct.get("D1") and not best_id_dct.get("B1"):
+            best_id_dct["B1"] = best_id_dct["D1"]
+        if best_id_dct.get("D2") and not best_id_dct.get("B2"):
+            best_id_dct["B2"] = best_id_dct["D2"]
+
         return best_id_dct
 
     # def check_rest(self, segment_text: str, segment_name: str, lmsd_class: str):
@@ -169,7 +184,7 @@ class Encoder(object):
 
         return sum_res_id_lv_dct
 
-    def check_segments(self, parsed_info: dict, input_rule: str):
+    def check_segments(self, parsed_info: dict):
         segments_dct = {}
         lmsd_classes = parsed_info.get("LMSD_CLASSES", None)
         segments = parsed_info["SEGMENTS"]
@@ -252,7 +267,7 @@ class Encoder(object):
         return comp_seg_dct
 
     def export_all_levels(
-        self, lipid_name: str, import_rules: dict = default_input_rules
+        self, lipid_name: str
     ) -> dict:
 
         extracted_info = self.extractor.extract(lipid_name)
@@ -263,7 +278,7 @@ class Encoder(object):
                 logger.info(p_info)
                 for in_r in p_info:
                     r_info = p_info[in_r]  # type: dict
-                    checked_seg_info = self.check_segments(r_info, in_r)
+                    checked_seg_info = self.check_segments(r_info)
                     comp_dct = self.compile_segments(checked_seg_info)
                     export_info.append(comp_dct)
             best_export_dct = self.get_best_id_series(export_info)
@@ -273,24 +288,26 @@ class Encoder(object):
 
         return best_export_dct
 
-    def convert(self, lipid_name: str, import_rules: dict = default_input_rules) -> str:
-        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
-        best_id = ""
-        if all_lv_id_dct:
-            best_id = self.get_best_id(all_lv_id_dct)
+    def convert(self, lipid_name: str, level: str = None) -> str:
+        if level in supported_levels:
+            best_id = self.export_level(lipid_name, level=level)
         else:
-            pass
+            all_lv_id_dct = self.export_all_levels(lipid_name)
+            best_id = ""
+            if all_lv_id_dct:
+                best_id = self.get_best_id(all_lv_id_dct)
+            else:
+                pass
         return best_id
 
     def export_level(
         self,
         lipid_name: str,
-        level: str = "B0",
-        import_rules: dict = default_input_rules,
+        level: str = "B1",
     ):
 
         lv_id = ""
-        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
+        all_lv_id_dct = self.export_all_levels(lipid_name)
         if level in supported_levels:
             if level in all_lv_id_dct:
                 lv_id = all_lv_id_dct[level]
@@ -353,9 +370,9 @@ if __name__ == "__main__":
         # "14,15-HxB3 (13R)",
         # "C22:5 CE",
         # "15-Keto-PGF2α",
-        # "PGF2α",
+        "PGF2α",
         # "8-iso PGF2a III",
-        "9-oxoODE",
+        # "palmitoleic acid",
     ]
     lynx_gen = Encoder()
     for t_in in t_in_lst:
