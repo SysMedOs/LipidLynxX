@@ -116,7 +116,7 @@
       "DB_SEPARATOR": ":",
       "NUM_DB": "[1,2]?[0-9]",
       "O_SEPARATOR": ";",
-      "NUM_O": ";[1-3]?O?",
+      "NUM_O": ";[1-3]?",
       "MOD_BRACKET_LEFT": "$.SEPARATORS.MOD_BRACKET_LEFT.0",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "MOD_BRACKET_RIGHT": "$.SEPARATORS.MOD_BRACKET_LEFT.0"
@@ -175,6 +175,20 @@
         "OUTPUT": "FA",
         "INPUT": [
           "FA"
+        ]
+      }
+    },
+    "FA0705": {
+      "ORDER": [
+        "CLASS",
+        "SUM_RESIDUES"
+      ],
+      "MAX_RESIDUES": 1,
+      "CLASS": {
+        "OUTPUT": "CoA",
+        "INPUT": [
+          "FaCoA",
+          "CoA"
         ]
       }
     },

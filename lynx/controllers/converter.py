@@ -99,14 +99,14 @@ if __name__ == "__main__":
         # "HETE",
         # "SPBP 18:0;O",
         # "SPBP 18:0;O3",
-        "Cer 18:1;3O/20:4",
-        # "CoA(20:3(11Z,14Z,17Z))",
-        # "CoA 18:2;O",
-        # "FACoA 18:0"
+        # "Cer 18:1;3O/20:4",
+        "CoA(20:3(11Z,14Z,17Z))",
+        "CoA 18:2;O",
+        "FACoA 18:0"
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"
-    test_out_rule = "BioPAN"
+    test_out_rule = "LipidLynxX"
     lynx_converter = Converter(rule=test_out_rule)
     for t_in in t_in_lst:
         t1_out = lynx_converter.convert(t_in, level="B1")
