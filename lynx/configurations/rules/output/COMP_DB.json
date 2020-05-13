@@ -191,7 +191,7 @@
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
-        "OUTPUT": "FaCoA",
+        "OUTPUT": "CoA",
         "INPUT": [
           "FaCoA",
           "CoA"
