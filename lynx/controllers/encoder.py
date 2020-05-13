@@ -38,6 +38,7 @@ class Encoder(object):
         rule: str = "LipidLynxX",
         input_rules: dict = default_input_rules,
     ):
+        self.export_rule = rule
         self.output_rules = load_output_rule(output_rules, rule)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
@@ -128,7 +129,7 @@ class Encoder(object):
         res_lv_dct = {}
         sum_lv_lst = []
         for res_abbr in residues_info:
-            res_obj = Residue(residues_info[res_abbr])
+            res_obj = Residue(residues_info[res_abbr], nomenclature=self.export_rule)
             res_lv_id_dct[res_abbr] = res_obj.linked_ids
             res_lv_dct[res_abbr] = list(res_obj.linked_ids.keys())
             sum_lv_lst.extend(res_lv_dct[res_abbr])
@@ -167,7 +168,7 @@ class Encoder(object):
         for sep_lv in sum_res_sep_lv_lst:
             if sep_lv == "B":
                 # prepare bulk level
-                merged_res_obj = merge_residues(residues_info)
+                merged_res_obj = merge_residues(residues_info, nomenclature=self.export_rule)
                 merged_res_linked_ids = merged_res_obj.linked_ids
                 merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())
                 for merged_res_lv in merged_res_lv_lst:
@@ -333,7 +334,7 @@ class Encoder(object):
         if levels is None:
             levels = ["B0"]
         lv_id_dct = {}
-        all_lv_id_dct = self.export_all_levels(lipid_name, import_rules)
+        all_lv_id_dct = self.export_all_levels(lipid_name)
         for level in levels:
             if level in supported_levels:
                 if level in all_lv_id_dct:
@@ -374,9 +375,9 @@ if __name__ == "__main__":
         # "8-iso PGF2a III",
         # "palmitoleic acid",
     ]
-    lynx_gen = Encoder()
+    lynx_gen = Encoder(rule="BioPAN")
     for t_in in t_in_lst:
-        t1_out = lynx_gen.convert(t_in, import_rules=default_input_rules)
+        t1_out = lynx_gen.convert(t_in)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
         # t_lv = "B0"
         # t2_out = lynx_gen.export_level(
@@ -388,7 +389,7 @@ if __name__ == "__main__":
         #     t_in, levels=t_lv_lst, import_rules=default_input_rules
         # )
         # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
-        t4_out = lynx_gen.export_all_levels(t_in, import_rules=default_input_rules)
+        t4_out = lynx_gen.export_all_levels(t_in)
         logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
     logger.info("fin")

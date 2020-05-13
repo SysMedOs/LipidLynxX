@@ -111,6 +111,29 @@
         "SPB 18:2;O"
       ]
     },
+    "CoA": {
+      "LMSD_CLASSES": [
+        "FA0705"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "F[aA]\\s*",
+      "CLASS": "CoA",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "FaCoA 16:0"
+      ]
+    },
     "GL": {
       "LMSD_CLASSES": [
         "GL01",
