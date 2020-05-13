@@ -27,14 +27,14 @@ class Converter:
         self.encoder = Encoder()
 
     def convert_string(
-        self, input_str: str, output_dct: Dict[str, Union[List]] = None
+        self, input_str: str, output_dct: Dict[str, Union[List]] = None, level: str = None
     ) -> Dict[str, Union[List, List[Tuple]]]:
         if output_dct:
             pass
         else:
             output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
-            converted_id = self.encoder.convert(input_str)
+            converted_id = self.encoder.convert(input_str, level=level)
             if converted_id:
                 output_dct["input"].append(input_str)
                 output_dct["output"].append(converted_id)
@@ -44,17 +44,17 @@ class Converter:
         return output_dct
 
     def convert_list(
-        self, input_list: List[str]
+        self, input_list: List[str], level: str = None
     ) -> Dict[str, Union[List, List[Tuple]]]:
         output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
         if input_list and isinstance(input_list, list):
             input_list = keep_string_only(input_list)
             for abbr in input_list:
-                output_dct = self.convert_string(abbr, output_dct)
+                output_dct = self.convert_string(abbr, output_dct, level=level)
         return output_dct
 
     def convert_dict(
-        self, input_dct: Dict[str, Union[str, List[str]]]
+        self, input_dct: Dict[str, Union[str, List[str]]], level: str = None
     ) -> Dict[str, dict]:
         output_dct = {}
         if input_dct and isinstance(input_dct, dict):
@@ -66,19 +66,19 @@ class Converter:
                     else:
                         in_lst = [k_val]
                     if in_lst:
-                        output_dct[k] = self.convert_list(in_lst)
+                        output_dct[k] = self.convert_list(in_lst, level=level)
 
         return output_dct
 
-    def convert(self, data: Union[dict, List[str], str]) -> Dict[str, dict]:
+    def convert(self, data: Union[dict, List[str], str], level: str = None) -> Dict[str, dict]:
         output_dct = {}
 
         if isinstance(data, str):
-            output_dct = self.convert_string(data)
+            output_dct = self.convert_string(data, level=level)
         elif isinstance(data, list):
-            output_dct = self.convert_list(data)
+            output_dct = self.convert_list(data, level=level)
         elif isinstance(data, dict):
-            output_dct = self.convert_dict(data)
+            output_dct = self.convert_dict(data, level=level)
         else:
             raise TypeError(
                 f"Type: {type(data)} not supported. Supported types: str, List[str], and Dict[str, List[str]]."
@@ -95,17 +95,19 @@ if __name__ == "__main__":
         # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
         # "TG(16:0/18:2/9:0<oxo{9}>)",
         # "HETE",
-        "SPBP 18:0;O3"
+        "HETE",
+        # "SPBP 18:0;O3"
     ]
+    lv = "B1"
     lynx_converter = Converter()
     for t_in in t_in_lst:
-        t1_out = lynx_converter.convert(t_in)
+        t1_out = lynx_converter.convert(t_in, level="B1")
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
 
-    t2_out = lynx_converter.convert(t_in_lst)
-    logger.info(f"Input: {t_in_lst} -> Best Output: {t2_out}")
-
-    t3_out = lynx_converter.convert({"1": t_in_lst})
-    logger.info(f"Input: {t_in_lst} -> Best Output: {t3_out}")
+    # t2_out = lynx_converter.convert(t_in_lst)
+    # logger.info(f"Input: {t_in_lst} -> Best Output: {t2_out}")
+    #
+    # t3_out = lynx_converter.convert({"1": t_in_lst})
+    # logger.info(f"Input: {t_in_lst} -> Best Output: {t3_out}")
 
     logger.info("fin")
