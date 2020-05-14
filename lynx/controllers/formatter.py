@@ -275,11 +275,15 @@ class Formatter(object):
         num_o = 0
         if num_o_lst:
             if num_o_lst[0] not in ["", " "]:
-                num_o_str = str(num_o_lst[0]).strip("O")
-                try:
-                    num_o = int(num_o_str)
-                except ValueError:
-                    pass
+                if num_o_lst[0] in ["O", "o"]:
+                    num_o = 1
+                else:
+                    num_o_str = str(num_o_lst[0]).strip("O")
+                    num_o_str = num_o_str.strip("o")
+                    try:
+                        num_o = int(num_o_str)
+                    except ValueError:
+                        pass
             else:
                 pass
         else:

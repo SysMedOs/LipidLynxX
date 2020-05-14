@@ -167,7 +167,8 @@
         "FA02",
         "FA03",
         "FA04",
-        "FA07"
+        "FA07",
+        "FA0705"
       ],
       "ORDER": [
         "PREFIX",
@@ -213,6 +214,35 @@
         "Acylcarnitine C14:0",
         "C18:2",
         "C9:0"
+      ]
+    },
+    "FaCoA": {
+      "LMSD_CLASSES": [
+        "FA0705"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "F\\w{6}\\s*[aA]\\w{8}\\s*",
+      "CLASS": "CoA",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "FaCoA 16:0"
       ]
     },
     "GL": {

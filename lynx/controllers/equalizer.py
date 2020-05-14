@@ -27,7 +27,7 @@ from lynx.utils.log import logger
 
 
 class Equalizer(object):
-    def __init__(self, input_data: Union[str, dict], level: Union[str, List[str]]):
+    def __init__(self, input_data: Union[str, dict], level: Union[str, List[str]], rule: str = "LipidLynxX"):
 
         if isinstance(input_data, str):
             abs_path = get_abs_path(input_data)
@@ -47,7 +47,7 @@ class Equalizer(object):
             self.levels = [level]
         else:
             self.levels = level
-        self.encoder = Encoder()
+        self.encoder = Encoder(rule=rule)
         self.header_lst = self.data.keys()
 
     def convert_col(self, col_name):

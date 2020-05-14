@@ -94,7 +94,28 @@ class Residue(object):
                         res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
                     elif o == "NUM_O":
                         if num_o > 0:
-                            res_str += str(num_o)
+                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            if o_seg_rgx:
+                                if num_o == 1:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, "1"):
+                                        res_str += str("1")
+                                    elif re.match(o_seg_rgx, "O"):
+                                        res_str += str("O")
+                                    else:
+                                        res_str += str(num_o)
+                                else:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, f"{num_o}O"):
+                                        res_str += f"{num_o}O"
+                                    elif re.match(o_seg_rgx, f"O{num_o}"):
+                                        res_str += f"O{num_o}"
+                                    else:
+                                        res_str += str(num_o)
+                            else:
+                                res_str += str(num_o)
                         else:
                             pass
                     elif o.upper().endswith("_SEPARATOR"):
