@@ -163,8 +163,11 @@ class Decoder(object):
                     )
                 else:
                     matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
+                # num_o_chk_lst = matched_info_dct.get("NUM_O", [""])
+                # if isinstance(num_o_chk_lst, list) and re.match(r'\d?O|O\d?|\d', num_o_chk_lst[0]):
+                #     matched_info_dct["MOD_TYPE"] = ["O"] + matched_info_dct.get("MOD_TYPE", [])
                 matched_dct = self.formatter.format_residue(matched_info_dct)
-                logger.debug(matched_dct)
+                logger.debug(f'matched_dct: {matched_dct}')
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 

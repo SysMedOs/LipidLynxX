@@ -23,8 +23,8 @@ from lynx.utils.toolbox import keep_string_only
 
 
 class Converter:
-    def __init__(self):
-        self.encoder = Encoder()
+    def __init__(self, rule: str = "LipidLynxX"):
+        self.encoder = Encoder(rule=rule)
 
     def convert_string(
         self, input_str: str, output_dct: Dict[str, Union[List]] = None, level: str = None
@@ -87,22 +87,30 @@ class Converter:
 
 
 if __name__ == "__main__":
-    from lynx.utils.log import logger
+    # from lynx.utils.log import logger
 
     t_in_lst = [
         # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
         # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
+        # "TG P-18:1_18:2(9Z,11Z)_18:1(9)",
         # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
         # "TG(16:0/18:2/9:0<oxo{9}>)",
         # "HETE",
-        "HETE",
-        # "SPBP 18:0;O3"
+        # "HETE",
+        # "SPBP 18:0;O",
+        # "SPBP 18:0;O3",
+        # "Cer 18:1;3O/20:4",
+        "CoA(20:3(11Z,14Z,17Z))",
+        "CoA 18:2;O",
+        "FACoA 18:0"
     ]
     lv = "B1"
-    lynx_converter = Converter()
+    # test_out_rule = "COMP_DB"
+    test_out_rule = "LipidLynxX"
+    lynx_converter = Converter(rule=test_out_rule)
     for t_in in t_in_lst:
         t1_out = lynx_converter.convert(t_in, level="B1")
-        logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        # logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
 
     # t2_out = lynx_converter.convert(t_in_lst)
     # logger.info(f"Input: {t_in_lst} -> Best Output: {t2_out}")
@@ -110,4 +118,4 @@ if __name__ == "__main__":
     # t3_out = lynx_converter.convert({"1": t_in_lst})
     # logger.info(f"Input: {t_in_lst} -> Best Output: {t3_out}")
 
-    logger.info("fin")
+    # logger.info("fin")

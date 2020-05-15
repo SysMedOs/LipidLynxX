@@ -41,6 +41,11 @@ class Alias(object):
             for abbr in raw_alias_class_info:
                 alias_lst = raw_alias_class_info[abbr]
                 for alias in alias_lst:
+                    # force add end fit to alias
+                    if alias.endswith("$"):
+                        pass
+                    else:
+                        alias += "\\s*$"
                     if re.match(r"[-_\dA-Z]{2,}", alias):  # if alias all uppercase
                         alias_abbr_info[re.compile(alias)] = abbr
                     else:

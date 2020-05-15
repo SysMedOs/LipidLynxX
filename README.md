@@ -22,7 +22,7 @@ Just click this button 👉
 
 And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
 
-- You can paste a list of lipid abbreviations and download the output table as `.csv` or `.xlsx`.
+- You can paste a list of lipid abbreviations, select export style, and download the output table as `.csv` or `.xlsx`.
 
 - If you observed some IDs not converted in the Windows .exe version, try this demo to see if it got fixed.
 
