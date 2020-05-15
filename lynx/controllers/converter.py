@@ -23,8 +23,8 @@ from lynx.utils.toolbox import keep_string_only
 
 
 class Converter:
-    def __init__(self, rule: str = "LipidLynxX"):
-        self.encoder = Encoder(rule=rule)
+    def __init__(self, export_style: str = "LipidLynxX"):
+        self.encoder = Encoder(rule=export_style)
 
     def convert_string(
         self, input_str: str, output_dct: Dict[str, Union[List]] = None, level: str = None
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     lv = "B1"
     # test_out_rule = "COMP_DB"
     test_out_rule = "LipidLynxX"
-    lynx_converter = Converter(rule=test_out_rule)
+    lynx_converter = Converter(export_style=test_out_rule)
     for t_in in t_in_lst:
         t1_out = lynx_converter.convert(t_in, level="B1")
         # logger.info(f"Input: {t_in} -> Best Output: {t1_out}")

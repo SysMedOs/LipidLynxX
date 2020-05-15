@@ -56,8 +56,9 @@ class StringConverterAPI(Resource):
     def get():
         args = convert_get_parser.parse_args()
         abbreviation = args.get("data", None)
-        export_rule = args.get("rule", None)
-        converter = Converter(rule=export_rule)
+        export_style = args.get("export_style", "LipidLynxX")
+        print(f"Export style: {export_style}")
+        converter = Converter(export_style=export_style)
         if isinstance(abbreviation, str) and abbreviation:
             converted_dct = converter.convert_string(abbreviation)
             if converted_dct:
@@ -78,8 +79,9 @@ class ListConverterAPI(Resource):
     def get():
         args = convert_get_parser.parse_args()
         in_lst = json.loads(args["data"])
-        export_rule = args.get("rule", None)
-        converter = Converter(rule=export_rule)
+        export_style = args.get("export_style", "LipidLynxX")
+        print(f"Export style: {export_style}")
+        converter = Converter(export_style=export_style)
         if isinstance(in_lst, list) and in_lst:
             converted_dct = converter.convert_list(in_lst)
             if converted_dct:
@@ -100,8 +102,9 @@ class DictConverterAPI(Resource):
     def get():
         args = convert_get_parser.parse_args()
         usr_dct = json.loads(args["data"])
-        export_rule = args.get("rule", None)
-        converter = Converter(rule=export_rule)
+        export_style = args.get("export_style", "LipidLynxX")
+        print(f"Export style: {export_style}")
+        converter = Converter(export_style=export_style)
         if isinstance(usr_dct, dict) and usr_dct:
             converted_dct = converter.convert_dict(usr_dct)
             if converted_dct:
@@ -129,8 +132,9 @@ class ConverterAPI(Resource):
             usr_data = arg_data
             use_str = True
         converted_dct = {}
-        export_rule = args.get("rule", None)
-        converter = Converter(rule=export_rule)
+        export_style = args.get("export_style", "LipidLynxX")
+        print(f"Export style: {export_style}")
+        converter = Converter(export_style=export_style)
         if isinstance(usr_data, str) and usr_data:
             converted_dct = converter.convert_string(usr_data)
         elif isinstance(usr_data, list) and usr_data and use_str is False:

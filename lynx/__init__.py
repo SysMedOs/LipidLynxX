@@ -7,7 +7,6 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import os
 import requests
 from datetime import datetime
 from typing import Union, List, Dict
@@ -22,9 +21,10 @@ from lynx.config import api_url_info, base_url, blueprint, DevConfig
 from lynx.forms import (
     ConverterTableInputForm,
     ConverterTextInputForm,
-    ConverterForm,
-    ParserInputForm,
     EqualizerInputForm,
+    ExportStyleForm,
+    FileTypeForm,
+    ParserInputForm,
 )
 from lynx.models.defaults import logger, cfg_info_dct, api_version
 from lynx.utils.file_handler import (
@@ -41,7 +41,9 @@ app.config.from_object(DevConfig)
 # app.config['SERVER_NAME'] = 'lynx.local'
 
 
-def run_converter(data: Union[List[str], Dict[str, List[str]]]):
+def run_converter(
+    data: Union[List[str], Dict[str, List[str]]], export_style: str = "LipidLynxX"
+):
     out_dct = {}
     if isinstance(data, list):
         r_url = api_url_info.get("convert_list")
@@ -53,7 +55,9 @@ def run_converter(data: Union[List[str], Dict[str, List[str]]]):
         r_url = api_url_info.get("convert")
         logger.info(f"Use API - ConverterAPI: {r_url}")
 
-    r = requests.get(r_url, params={"data": json.dumps(data)}).json()
+    r = requests.get(
+        r_url, params={"data": json.dumps(data), "export_style": export_style}
+    ).json()
     excel_data = r["data"]
     output_name = (
         f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
@@ -119,32 +123,120 @@ def converter():
         out_dct={},
         in_form=ConverterTextInputForm(),
         table_form=ConverterTableInputForm(),
+        style_from=ExportStyleForm(),
         submitted=0,
         output_name="",
         alerts=[],
     )
 
 
-@blueprint.route("/converter/results/string", methods=["GET", "POST"])
-def convert_lipid_string():
+@blueprint.route("/converter/results", methods=["GET", "POST"])
+def convert_lipid():
+    export_style_from = ExportStyleForm()
     usr_input_form = ConverterTextInputForm()
+    usr_table_form = ConverterTableInputForm()
+    alerts = []
+    logger.info("triggered")
+    out_dct = {}
+    submitted = 0
+    output_name = ""
+    excel_data = {}
+    if export_style_from.validate_on_submit():
+        export_style = export_style_from.export_style.data
+        # logger.info(f"Export style: {export_style}")
+        if usr_table_form.validate_on_submit():
+            try:
+                usr_file = request.files["user_file"]
+                usr_file_name = usr_file.filename
+            except Exception as e:
+                logger.error(e)
+                usr_file, usr_file_name = None, None
+            if usr_file_name:
+                table_dct = keep_string_only(get_table(usr_file))
+                if table_dct:
+                    logger.info(
+                        {"code": 0, "msg": "Upload success.", "data": table_dct}
+                    )
+                    out_dct, output_name, excel_data = run_converter(
+                        table_dct, export_style=export_style
+                    )
+                    submitted = 1
+                else:
 
-    if usr_input_form.validate_on_submit():
-        usr_data = usr_input_form.input_id_str.data.strip("").split("\n")
-        usr_data = [s for s in usr_data if s]
-        out_dct, output_name, excel_data = run_converter(usr_data)
-        submitted = 1
+                    bad_input_lst = []
+                    alerts.append("Can not read file or file type not supported.")
+
+        elif usr_input_form.validate_on_submit():
+
+            usr_data = usr_input_form.input_id_str.data.strip("").split("\n")
+            usr_data = [s for s in usr_data if s]
+            out_dct, output_name, excel_data = run_converter(
+                usr_data, export_style=export_style
+            )
+            submitted = 1
+        else:
+            bad_input_lst = []
+            alerts.append("Please submit your input ID on the left.")
+
     else:
         submitted, out_dct, bad_input_lst, output_name, excel_data = 0, {}, [], "", None
+        alerts.append("Please select one output style.")
+    if out_dct:
+        pass
+    else:
+        alerts.append("Not able to convert.")
+    return render_template(
+        "converter.html",
+        out_dct=out_dct,
+        in_form=usr_input_form,
+        table_form=usr_table_form,
+        style_from=export_style_from,
+        submitted=submitted,
+        output_name=output_name,
+        excel_data=excel_data,
+        alerts=alerts,
+    )
+
+
+@blueprint.route("/converter/results/str", methods=["GET", "POST"])
+def convert_lipid_str():
+    usr_input_form = ConverterTextInputForm()
+    export_style_from = ExportStyleForm()
+    alerts = []
+    if export_style_from.validate_on_submit():
+        if usr_input_form.validate_on_submit():
+            export_style = export_style_from.export_style.data
+            usr_data = usr_input_form.input_id_str.data.strip("").split("\n")
+            usr_data = [s for s in usr_data if s]
+            out_dct, output_name, excel_data = run_converter(usr_data, export_style)
+            submitted = 1
+        else:
+            submitted, out_dct, bad_input_lst, output_name, excel_data, alerts = (
+                0,
+                {},
+                [],
+                "",
+                None,
+                [],
+            )
+            alerts.append("Please submit your input ID on the left.")
+    else:
+        submitted, out_dct, bad_input_lst, output_name, excel_data = 0, {}, [], "", None
+        alerts.append("Please select one output style.")
+    if out_dct:
+        pass
+    else:
+        alerts.append("Not able to convert.")
     return render_template(
         "converter.html",
         out_dct=out_dct,
         in_form=usr_input_form,
         table_form=ConverterTableInputForm(),
+        style_from=export_style_from,
         submitted=submitted,
         output_name=output_name,
         excel_data=excel_data,
-        alerts=[],
+        alerts=alerts,
     )
 
 
@@ -156,6 +248,8 @@ def convert_lipid_table():
     usr_file = request.files["user_file"]
     logger.info(usr_file)
     usr_table_form = ConverterTableInputForm()
+    export_style_from = ExportStyleForm()
+    export_style = export_style_from.export_style.data
     if usr_file.filename:
         table_dct = get_table(usr_file)
         submitted = 1
@@ -174,7 +268,9 @@ def convert_lipid_table():
     table_dct = keep_string_only(table_dct)
     if table_dct:
         logger.info({"code": 0, "msg": "Upload success.", "data": table_dct})
-        out_dct, output_name, excel_data = run_converter(table_dct)
+        out_dct, output_name, excel_data = run_converter(
+            table_dct, export_style=export_style
+        )
         submitted = 1
     else:
         output_name = ""
@@ -184,6 +280,7 @@ def convert_lipid_table():
         out_dct=out_dct,
         in_form=ConverterTextInputForm(),
         table_form=usr_table_form,
+        style_from=ExportStyleForm(),
         submitted=submitted,
         output_name=output_name,
         excel_data=excel_data,

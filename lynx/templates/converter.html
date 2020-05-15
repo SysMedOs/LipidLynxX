@@ -10,38 +10,49 @@
         <h1>LipidLynxX Nomenclature Converter</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
-                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
-                    <h2>Input lipid abbreviations</h2>
-                    <div>
-                        <form id="in_form" method="post" action="{{ url_for('.convert_lipid_string') }}">
-                            {{ in_form.hidden_tag() }}
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            {{ in_form.input_id_str.label }}
-                                            {% if in_form.input_id_str.errors %}
-                                                {% for e in in_form.input_id_str.errors %}
-                                                    <p class="help-block">{{ e }}</p>
-                                                {% endfor %}
-                                            {% endif %}
-                                            {{ in_form.input_id_str(class_='form-control') }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <input class="btn btn-primary btn-block" type="submit"
-                                               value="Convert abbreviations">
+                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;">
+                    <form id="in_form" method="post" action="{{ url_for('.convert_lipid') }}">
+                        <h2>Input lipid abbreviations</h2>
+                        {{ in_form.hidden_tag() }}
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        {{ in_form.input_id_str.label }}
+                                        {% if in_form.input_id_str.errors %}
+                                            {% for e in in_form.input_id_str.errors %}
+                                                <p class="help-block">{{ e }}</p>
+                                            {% endfor %}
+                                        {% endif %}
+                                        {{ in_form.input_id_str(class_='form-control') }}
                                     </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                            <h2>Upload table</h2>
+                            <div class="row">
+                                <input id="file1" class="btn btn-info mt-4 btn-block" type="file"
+                                       name="user_file">
+                            </div>
+                            <div class="row">
+                                Support .csv or .xlsx format
+                            </div>
+                            <h2>Select output style:</h2>
+                            <div class="row">
+                                {{ style_from.hidden_tag() }}
+                                {{ style_from.export_style }}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input class="btn btn-primary btn-block" type="submit"
+                                           value="Convert abbreviations">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                     <div><h2>&nbsp;</h2></div>
                     <h2>Upload table</h2>
                     <div>
-                        <form id="form1" method="post" action="{{ url_for('.convert_lipid_table') }}"
+                        <form id="form1" method="post" action="{{ url_for('.convert_lipid') }}"
                               enctype="multipart/form-data">
                             <div class="col-12">
                                 <div class="row">
