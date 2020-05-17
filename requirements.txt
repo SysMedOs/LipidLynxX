@@ -13,7 +13,7 @@ numpy==1.18.1
 openpyxl==3.0.3
 packaging==20.1
 pandas==1.0.3
-pytest==5.4.1
+pytest~=4.6.7
 pytest-cov==2.7.1
 python-dateutil==2.8.1
 regex==2020.2.20
@@ -28,3 +28,5 @@ zerorpc==0.6.3
 jupyter==1.0.0
 ipython==7.14.0
 ipywidgets==7.5.1
+fastapi>=0.54.1
+uvicorn>=0.11.3

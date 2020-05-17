@@ -33,7 +33,10 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
     cfg_path_dct = {}
     default_fields = [
         "api_version",
+        "api_url",
+        "api_port",
         "base_url",
+        "base_port",
         "controlled_vocabularies",
         "defined_alias",
         "input_rules",
@@ -68,7 +71,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
             ]:
                 cfg_path_dct[field] = get_abs_path(config.get(user_cfg, field))
             else:
-                pass
+                cfg_path_dct[field] = config.get(user_cfg, field)
 
     if "base_url" not in cfg_path_dct:
         cfg_path_dct["base_url"] = r"http://127.0.0.1:5000"
