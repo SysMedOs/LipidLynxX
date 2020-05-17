@@ -35,11 +35,11 @@ class Encoder(object):
     def __init__(
         self,
         output_rules: dict = default_output_rules,
-        rule: str = "LipidLynxX",
+        style: str = "LipidLynxX",
         input_rules: dict = default_input_rules,
     ):
-        self.export_rule = rule
-        self.output_rules = load_output_rule(output_rules, rule)
+        self.export_rule = style
+        self.output_rules = load_output_rule(output_rules, style)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
         self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
@@ -80,14 +80,15 @@ class Encoder(object):
                         pass
 
         # add levels for B0, D0, S0 lipids
-        if list(best_id_dct.keys())[-1].endswith("0"):
-            for lv in list(best_id_dct.keys()):
-                for lv_base in ["B", "D", "S"]:
-                    if lv.startswith(lv_base):
-                        lv_id = best_id_dct.get(lv)
-                        for add_lv in supported_levels:
-                            if add_lv.startswith(lv_base) and add_lv != lv:
-                                best_id_dct[add_lv] = lv_id
+        if best_id_dct:
+            if list(best_id_dct.keys())[-1].endswith("0"):
+                for lv in list(best_id_dct.keys()):
+                    for lv_base in ["B", "D", "S"]:
+                        if lv.startswith(lv_base):
+                            lv_id = best_id_dct.get(lv)
+                            for add_lv in supported_levels:
+                                if add_lv.startswith(lv_base) and add_lv != lv:
+                                    best_id_dct[add_lv] = lv_id
 
         if best_id_dct.get("D1") and not best_id_dct.get("B1"):
             best_id_dct["B1"] = best_id_dct["D1"]
@@ -375,7 +376,7 @@ if __name__ == "__main__":
         # "8-iso PGF2a III",
         # "palmitoleic acid",
     ]
-    lynx_gen = Encoder(rule="BioPAN")
+    lynx_gen = Encoder(style="BioPAN")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")

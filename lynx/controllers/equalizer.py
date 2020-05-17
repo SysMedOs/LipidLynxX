@@ -47,7 +47,7 @@ class Equalizer(object):
             self.levels = [level]
         else:
             self.levels = level
-        self.encoder = Encoder(rule=rule)
+        self.encoder = Encoder(style=rule)
         self.header_lst = self.data.keys()
 
     def convert_col(self, col_name):
