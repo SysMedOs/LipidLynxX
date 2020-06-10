@@ -17,9 +17,13 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from enum import Enum
-from typing import List
+from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, constr
+
+
+LipidNameType = constr(regex=r"^\s*.{2,512}\s*$")
+LvType = constr(regex=r"^[Bb][0-3]?$|^[DSds]([0-5](.[0-3])?)?$|^MAX$")
 
 
 class FileType(str, Enum):
@@ -27,23 +31,52 @@ class FileType(str, Enum):
     csv = "csv"
 
 
-class StyleName(str, Enum):
+class StyleType(str, Enum):
     lipidlynxx = "LipidLynxX"
     comp_db = "COMP_DB"
 
 
+class Levels(List[LvType]):
+    class Config:
+        schema_extra = {"example": ["B1", "D1"]}
+
+
+class InputStrData(BaseModel):
+    lipid_name: LipidNameType
+
+    class Config:
+        schema_extra = {"example": {"lipid_name": "PLPC"}}
+
+
 class InputListData(BaseModel):
-    lipid_names: List[str]
+    lipid_names: List[LipidNameType]
+
+    class Config:
+        schema_extra = {
+            "example": {"lipid_names": ["DHA", "PLPC", "PI 16:0-20:4", "Bad_Example_1"]}
+        }
+
+
+class InputDictData(BaseModel):
+    data: Dict[str, List[LipidNameType]]
 
     class Config:
         schema_extra = {
             "example": {
-                "lipid_names": ["DHA", "PLPC", "PI 16:0-20:4", "UNKOWN"]
+                "data": {
+                    "Source_1": ["DHA", "PLPC", "PI 16:0-20:4", "Bad_Example_1"],
+                    "Source_2": [
+                        "FA20:4",
+                        "PC 16:0_18:2",
+                        "PI(16:0/20:4)",
+                        "Bad_Example_2",
+                    ],
+                }
             }
         }
 
 
-class ExportListData(BaseModel):
+class ConverterExportListData(BaseModel):
     input: List[str]
     output: List[str]
     converted: List[List[str]]
@@ -52,31 +85,45 @@ class ExportListData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "input": [
-                    "DHA",
-                    "PLPC",
-                    "PI 16:0-20:4",
-                    "UNKOWN"
-                ],
-                "output": [
-                    "FA22:6",
-                    "PC(16:0/18:2)",
-                    "PI(16:0_20:4)"
-                ],
+                "input": ["DHA", "PLPC", "PI 16:0-20:4", "UNKOWN"],
+                "output": ["FA22:6", "PC(16:0/18:2)", "PI(16:0_20:4)"],
                 "converted": [
-                    [
-                        "DHA",
-                        "FA22:6"
-                    ],
-                    [
-                        "PLPC",
-                        "PC(16:0/18:2)"
-                    ],
-                    [
-                        "PI 16:0-20:4",
-                        "PI(16:0_20:4)"
-                    ]
+                    ["DHA", "FA22:6"],
+                    ["PLPC", "PC(16:0/18:2)"],
+                    ["PI 16:0-20:4", "PI(16:0_20:4)"],
                 ],
-                "skipped": ["UNKOWN"]
+                "skipped": ["Bad_Example_1"],
+            }
+        }
+
+
+class ConverterExportDictData(BaseModel):
+    data: Dict[str, ConverterExportListData]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "data": {
+                    "Source_1": {
+                        "input": ["DHA", "PLPC", "PI 16:0-20:4"],
+                        "output": ["FA22:6", "PC(34:2)", "PI(36:4)"],
+                        "converted": [
+                            ["DHA", "FA22:6"],
+                            ["PLPC", "PC(34:2)"],
+                            ["PI 16:0-20:4", "PI(36:4)"],
+                        ],
+                        "skipped": ["Bad_Example_1"],
+                    },
+                    "Source_2": {
+                        "input": ["FA20:4", "PC 16:0_18:2", "PI(16:0/20:4)"],
+                        "output": ["FA20:4", "PC(34:2)", "PI(36:4)"],
+                        "converted": [
+                            ["FA20:4", "FA20:4"],
+                            ["PC 16:0_18:2", "PC(34:2)"],
+                            ["PI(16:0/20:4)", "PI(36:4)"],
+                        ],
+                        "skipped": ["Bad_Example_2"],
+                    },
+                }
             }
         }

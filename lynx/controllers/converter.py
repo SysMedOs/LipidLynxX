@@ -19,6 +19,8 @@
 from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
+
+# from lynx.models.api_models import Level
 from lynx.utils.toolbox import keep_string_only
 
 
@@ -26,8 +28,11 @@ class Converter:
     def __init__(self, style: str = "LipidLynxX"):
         self.encoder = Encoder(style=style)
 
-    def convert_string(
-        self, input_str: str, output_dct: Dict[str, Union[List]] = None, level: str = None
+    def convert_str(
+        self,
+        input_str: str,
+        output_dct: Dict[str, Union[List]] = None,
+        level: str = None,
     ) -> Dict[str, Union[List, List[Tuple]]]:
         if output_dct:
             pass
@@ -50,7 +55,7 @@ class Converter:
         if input_list and isinstance(input_list, list):
             input_list = keep_string_only(input_list)
             for abbr in input_list:
-                output_dct = self.convert_string(abbr, output_dct, level=level)
+                output_dct = self.convert_str(abbr, output_dct, level=level)
         return output_dct
 
     def convert_dict(
@@ -70,11 +75,13 @@ class Converter:
 
         return output_dct
 
-    def convert(self, data: Union[dict, List[str], str], level: str = None) -> Dict[str, dict]:
+    def convert(
+        self, data: Union[dict, List[str], str], level: str = None
+    ) -> Dict[str, dict]:
         output_dct = {}
 
         if isinstance(data, str):
-            output_dct = self.convert_string(data, level=level)
+            output_dct = self.convert_str(data, level=level)
         elif isinstance(data, list):
             output_dct = self.convert_list(data, level=level)
         elif isinstance(data, dict):
@@ -102,7 +109,7 @@ if __name__ == "__main__":
         # "Cer 18:1;3O/20:4",
         "CoA(20:3(11Z,14Z,17Z))",
         "CoA 18:2;O",
-        "FACoA 18:0"
+        "FACoA 18:0",
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"

@@ -45,11 +45,11 @@ class DevConfig(Config):
     DEBUG = True
 
 
-api_version = "0.2"
-lynx_version = "0.5.16"
-base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
-app_name = "lynx"
-app_url_prefix = "/lynx"
+api_version: str = str(api_version)
+lynx_version: str = "0.5.16"
+base_url: str = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
+app_name: str = "lynx"
+app_url_prefix: str = "/lynx"
 
 blueprint = Blueprint(
     app_name,

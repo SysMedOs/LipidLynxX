@@ -30,13 +30,11 @@ from lynx.utils.log import logger
 
 
 def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
-    cfg_path_dct = {}
+    cfg_dct = {}
     default_fields = [
         "api_version",
-        "api_url",
-        "api_port",
-        "base_url",
-        "base_port",
+        "app_url",
+        "app_port",
         "controlled_vocabularies",
         "defined_alias",
         "input_rules",
@@ -69,14 +67,16 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
                 "input_rules",
                 "output_rules",
             ]:
-                cfg_path_dct[field] = get_abs_path(config.get(user_cfg, field))
+                cfg_dct[field] = get_abs_path(config.get(user_cfg, field))
             else:
-                cfg_path_dct[field] = config.get(user_cfg, field)
+                cfg_dct[field] = config.get(user_cfg, field)
 
-    if "base_url" not in cfg_path_dct:
-        cfg_path_dct["base_url"] = r"http://127.0.0.1:5000"
+    if "app_url" not in cfg_dct:
+        cfg_dct["app_url"] = "127.0.0.1"
+    if "app_port" not in cfg_dct:
+        cfg_dct["app_port"] = "1399"
 
-    return cfg_path_dct
+    return cfg_dct
 
 
 def build_parser(rules_file: str) -> Tuple[dict, dict]:

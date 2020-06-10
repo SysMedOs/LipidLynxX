@@ -169,7 +169,9 @@ class Encoder(object):
         for sep_lv in sum_res_sep_lv_lst:
             if sep_lv == "B":
                 # prepare bulk level
-                merged_res_obj = merge_residues(residues_info, nomenclature=self.export_rule)
+                merged_res_obj = merge_residues(
+                    residues_info, nomenclature=self.export_rule
+                )
                 merged_res_linked_ids = merged_res_obj.linked_ids
                 merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())
                 for merged_res_lv in merged_res_lv_lst:
@@ -268,9 +270,7 @@ class Encoder(object):
 
         return comp_seg_dct
 
-    def export_all_levels(
-        self, lipid_name: str
-    ) -> dict:
+    def export_all_levels(self, lipid_name: str) -> dict:
 
         extracted_info = self.extractor.extract(lipid_name)
         export_info = []
@@ -303,9 +303,7 @@ class Encoder(object):
         return best_id
 
     def export_level(
-        self,
-        lipid_name: str,
-        level: str = "B1",
+        self, lipid_name: str, level: str = "B1",
     ):
 
         lv_id = ""
@@ -314,12 +312,12 @@ class Encoder(object):
             if level in all_lv_id_dct:
                 lv_id = all_lv_id_dct[level]
             else:
-                raise ValueError(
+                logger.warning(
                     f"Lipid: {lipid_name} cannot be converted into level: {level}. "
                     f"Can be converted into: {all_lv_id_dct}"
                 )
         else:
-            raise ValueError(
+            logger.warning(
                 f"Level: {level} not supported. Supported levels: {supported_levels}"
             )
 
@@ -376,7 +374,7 @@ if __name__ == "__main__":
         # "8-iso PGF2a III",
         # "palmitoleic acid",
     ]
-    lynx_gen = Encoder(style="BioPAN")
+    lynx_gen = Encoder(style="COMP_DB")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
         logger.info(f"Input: {t_in} -> Best Output: {t1_out}")

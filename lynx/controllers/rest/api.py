@@ -59,7 +59,7 @@ class StringConverterAPI(Resource):
         export_rule = args.get("rule", None)
         converter = Converter(style=export_rule)
         if isinstance(abbreviation, str) and abbreviation:
-            converted_dct = converter.convert_string(abbreviation)
+            converted_dct = converter.convert_str(abbreviation)
             if converted_dct:
                 return {"code": 0, "msg": "Conversion success.", "data": converted_dct}
             else:
@@ -132,7 +132,7 @@ class ConverterAPI(Resource):
         export_rule = args.get("rule", None)
         converter = Converter(style=export_rule)
         if isinstance(usr_data, str) and usr_data:
-            converted_dct = converter.convert_string(usr_data)
+            converted_dct = converter.convert_str(usr_data)
         elif isinstance(usr_data, list) and usr_data and use_str is False:
             converted_dct = converter.convert_list(usr_data)
         elif usr_data and isinstance(usr_data, dict) and use_str is False:

@@ -22,7 +22,7 @@ from fastapi.templating import Jinja2Templates
 import pandas as pd
 
 from lynx.config import api_version, lynx_version
-from lynx.models.api_models import StyleName, InputListData
+from lynx.models.api_models import StyleType, InputListData
 import lynx.routers.api as api
 
 
@@ -37,12 +37,6 @@ async def home(request: Request):
                                       {"request": request, "lynx_version": lynx_version, "api_version": api_version})
 
 
-@router.get(f"/api_docs", include_in_schema=False)
-async def docs(request: Request):
-    return templates.TemplateResponse("docs.html",
-                                      {"request": request})
-
-
 @router.get("/converter/", include_in_schema=False)
 async def converter(request: Request):
     return templates.TemplateResponse(
@@ -53,7 +47,7 @@ async def converter(request: Request):
 @router.post("/converter/text/", include_in_schema=False)
 async def converter_text(request: Request, lipid_names: str = Form(...),
                          export_level: str = Form(...),
-                         export_style: StyleName = Form(...),
+                         export_style: StyleType = Form(...),
                          file_type: str = Form(...)):
     names = lipid_names.splitlines()
     input_data = InputListData(lipid_names=names)

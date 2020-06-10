@@ -29,8 +29,8 @@ api_app = FastAPI(debug=True)
 api_app.mount("/static", StaticFiles(directory="lynx/static"), name="static")
 
 
-api_url = cfg_info_dct.get("api_url", "127.0.0.1")
-api_port = int(cfg_info_dct.get("api_port", 1399))
+api_url = cfg_info_dct.get("app_url", "127.0.0.1")
+api_port = int(cfg_info_dct.get("app_port", 1399))
 
 app = FastAPI()
 
@@ -48,9 +48,7 @@ def custom_openapi():
         description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {
-        "url": "static/images/LipidLynxX_Logo.png"
-    }
+    openapi_schema["info"]["x-logo"] = {"url": "static/images/LipidLynxX_Logo.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
