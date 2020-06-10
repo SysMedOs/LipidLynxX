@@ -45,6 +45,8 @@ class DevConfig(Config):
     DEBUG = True
 
 
+api_version = "0.2"
+lynx_version = "0.5.16"
 base_url = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
 app_name = "lynx"
 app_url_prefix = "/lynx"

@@ -20,8 +20,8 @@ import os
 import sys
 import pytest
 
-lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, lipidlynx_Path + "/../")
+lynx_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lynx_path + "/../")
 
 from lynx.utils.log import logger
 from lynx.models.rules import InputRules, OutputRules

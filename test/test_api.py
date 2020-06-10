@@ -11,8 +11,8 @@ import os
 import sys
 import unittest
 
-lipidlynx_Path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, lipidlynx_Path + "/../")
+lynx_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lynx_path + "/../")
 
 from lynx import app
 from lynx.config import api_url_info
