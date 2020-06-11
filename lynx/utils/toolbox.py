@@ -21,6 +21,7 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
+from lynx.models.api_models import LvType
 from lynx.utils.log import logger
 
 
@@ -89,3 +90,11 @@ def keep_string_only(
         return filtered_data
     else:
         raise ValueError
+
+
+def get_level(lv) -> str:
+    if isinstance(lv, LvType) or isinstance(lv, str):
+        use_level = lv
+    else:
+        use_level = "MAX"
+    return use_level

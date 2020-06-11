@@ -33,4 +33,4 @@ jobs:
     - name: Pack with pyinstaller
       run: |
         pip install pyinstaller
-        pyinstaller --icon=./LipidLynxX_logo.ico LipidLynxX.py
+        pyinstaller --icon=./LipidLynxX_Logo.ico LipidLynxX.py

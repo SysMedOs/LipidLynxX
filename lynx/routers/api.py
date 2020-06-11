@@ -16,12 +16,11 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from typing import Dict, List, Optional, Union
+from typing import Optional
 
 from fastapi import APIRouter
 
 from lynx.controllers.converter import Converter
-from lynx.controllers.decoder import Decoder
 from lynx.controllers.encoder import Encoder
 from lynx.models.api_models import (
     LvType,
@@ -31,37 +30,51 @@ from lynx.models.api_models import (
     InputListData,
     InputStrData,
     ConverterExportDictData,
-    ConverterExportListData,
 )
-
+from lynx.utils.toolbox import get_level
 
 router = APIRouter()
 
 
-def get_level(lv) -> str:
-    if isinstance(lv, LvType) or isinstance(lv, str):
-        use_level = lv
-    else:
-        use_level = "MAX"
-    return use_level
-
-
-# Pure APIs
-@router.get("/parse/str/")
-def parse_str(data: LipidNameType = "PLPC"):
+# Get APIs
+@router.get("/convert/str/{lipid_name}")
+async def convert_name(
+    lipid_name: str, style: Optional[str] = "LipidLynxX", level: Optional[str] = "MAX"
+):
     """
-    Parse one lipid name
+    Convert one lipid name into supported levels and export to supported style
+    """
+    lynx_converter = Converter(style=style)
+    converted_results = lynx_converter.convert_str(
+        input_str=lipid_name, level=get_level(level)
+    )
+    converted_lst = converted_results.get("output", [])
+    if isinstance(converted_lst, list) and len(converted_lst) > 0:
+        converted_name = converted_lst[0]
+    else:
+        converted_name = f"Failed to convert: {lipid_name}"
+
+    return converted_name
+
+
+@router.get("/parse/str/{lipid_name}")
+async def parse_name(lipid_name: str = "PLPC"):
+    """
+    Parse one lipid name from path parameter
     """
     # extractor = Decoder()
     # parsed = extractor.extract(data)
     lynx_gen = Encoder()
-    parsed = lynx_gen.export_all_levels(data)
+    parsed = lynx_gen.export_all_levels(lipid_name)
 
     return parsed
 
 
+# Post APIs
 @router.post("/convert/str/")
-def convert_str(style: StyleType, data: InputStrData, level: Optional[LvType] = "MAX"):
+async def convert_str(
+    style: StyleType, data: InputStrData, level: Optional[LvType] = "MAX"
+):
     """
     Convert one lipid name into supported levels and export to supported style
     """
@@ -72,9 +85,9 @@ def convert_str(style: StyleType, data: InputStrData, level: Optional[LvType] = 
     return converted_results
 
 
-@router.post("/convert/list/", response_model=ConverterExportListData)
-def convert_list(
-    style: StyleType, data: InputListData, level: Optional[LvType] = "MAX"
+@router.post("/convert/list/", response_model=ConverterExportDictData)
+async def convert_list(
+    style: str, data: InputListData, level: Optional[LvType] = "MAX"
 ):
     """
     Convert a list of lipid names into supported levels and export to supported style
@@ -83,11 +96,25 @@ def convert_list(
     converted_results = lynx_converter.convert_list(
         data.lipid_names, level=get_level(level)
     )
+    # converted_results = {
+    #     "data": {
+    #         "TextInput": lynx_converter.convert_list(
+    #             data.lipid_names, level=get_level(level)
+    #         )
+    #     }
+    # }
+    converted_results = ConverterExportDictData(
+        data={
+            "TextInput": lynx_converter.convert_list(
+                data.lipid_names, level=get_level(level)
+            )
+        }
+    )
     return converted_results
 
 
 @router.post("/convert/dict/", response_model=ConverterExportDictData)
-def convert_dict(
+async def convert_dict(
     style: StyleType, data: InputDictData, level: Optional[LvType] = "MAX"
 ):
     """
@@ -98,3 +125,16 @@ def convert_dict(
         "data": lynx_converter.convert_dict(data.data, level=get_level(level))
     }
     return converted_results
+
+
+@router.post("/parse/str/")
+async def parse_str(data: LipidNameType = "PLPC"):
+    """
+    Parse one lipid name from data
+    """
+    # extractor = Decoder()
+    # parsed = extractor.extract(data)
+    lynx_gen = Encoder()
+    parsed = lynx_gen.export_all_levels(data)
+
+    return parsed

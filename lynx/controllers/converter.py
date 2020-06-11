@@ -20,7 +20,7 @@ from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
 
-# from lynx.models.api_models import Level
+from lynx.models.api_models import ConvertedListData
 from lynx.utils.toolbox import keep_string_only
 
 
@@ -50,7 +50,7 @@ class Converter:
 
     def convert_list(
         self, input_list: List[str], level: str = None
-    ) -> Dict[str, Union[List, List[Tuple]]]:
+    ) -> ConvertedListData:
         output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
         if input_list and isinstance(input_list, list):
             input_list = keep_string_only(input_list)

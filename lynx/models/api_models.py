@@ -76,7 +76,7 @@ class InputDictData(BaseModel):
         }
 
 
-class ConverterExportListData(BaseModel):
+class ConvertedListData(BaseModel):
     input: List[str]
     output: List[str]
     converted: List[List[str]]
@@ -96,9 +96,8 @@ class ConverterExportListData(BaseModel):
             }
         }
 
-
 class ConverterExportDictData(BaseModel):
-    data: Dict[str, ConverterExportListData]
+    data: Dict[str, ConvertedListData]
 
     class Config:
         schema_extra = {

@@ -26,6 +26,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 import lynx.utils
+from lynx.models.api_models import ConverterExportDictData, ConvertedListData
 from lynx.utils.log import logger
 
 
@@ -148,7 +149,9 @@ def load_folder(folder: str, file_type: str = "") -> List[str]:
     return file_abs_path_lst
 
 
-def create_converter_output(data: dict, output_name: str = None) -> Union[BytesIO, str]:
+def create_converter_output(
+    data: dict, output_name: str = None, file_type: str = ".xlsx"
+) -> Union[BytesIO, str]:
     excel_info = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
@@ -162,6 +165,13 @@ def create_converter_output(data: dict, output_name: str = None) -> Union[BytesI
                 if k_pairs and isinstance(k, str):
                     df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
 
+                if k_not_converted:
+                    not_converted_dct[f"{k}_skipped"] = k_not_converted
+            elif isinstance(data[k], ConvertedListData):
+                k_pairs = data[k].converted
+                if k_pairs and isinstance(k, str):
+                    df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
+                k_not_converted = data[k].skipped
                 if k_not_converted:
                     not_converted_dct[f"{k}_skipped"] = k_not_converted
             elif isinstance(data[k], list) and k == "converted":
@@ -182,13 +192,15 @@ def create_converter_output(data: dict, output_name: str = None) -> Union[BytesI
             not_converted_df = pd.DataFrame.from_dict(
                 not_converted_dct, orient="index"
             ).T
-
         if not converted_df.empty:
             if output_name and isinstance(output_name, str):
                 try:
-                    converted_df.to_excel(
-                        output_name, sheet_name="converted", index=False
-                    )
+                    if file_type.lower().endswith("csv"):
+                        converted_df.to_csv(output_name)
+                    else:
+                        converted_df.to_excel(
+                            output_name, sheet_name="converted", index=False
+                        )
                     excel_info = get_abs_path(output_name)
                 except IOError:
                     excel_info = (
@@ -196,17 +208,20 @@ def create_converter_output(data: dict, output_name: str = None) -> Union[BytesI
                     )
             else:
                 excel_info = BytesIO()
-                output_writer = pd.ExcelWriter(
-                    excel_info, engine="openpyxl"
-                )  # write to BytesIO instead of file path
-                converted_df.to_excel(
-                    output_writer, sheet_name="converted", index=False
-                )
-                if not not_converted_df.empty:
-                    not_converted_df.to_excel(
-                        output_writer, sheet_name="skipped", index=False
+                if file_type.lower().endswith("csv"):
+                    converted_df.to_csv(excel_info)
+                else:
+                    output_writer = pd.ExcelWriter(
+                        excel_info, engine="openpyxl"
+                    )  # write to BytesIO instead of file path
+                    converted_df.to_excel(
+                        output_writer, sheet_name="converted", index=False
                     )
-                output_writer.save()
+                    if not not_converted_df.empty:
+                        not_converted_df.to_excel(
+                            output_writer, sheet_name="skipped", index=False
+                        )
+                    output_writer.save()
                 excel_info.seek(0)
 
     return excel_info
@@ -286,3 +301,33 @@ def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
         abs_output_path = get_abs_path(file_name)
 
     return is_output, abs_output_path
+
+
+def table2html(converter_data: ConverterExportDictData):
+    data = converter_data.data
+    converted_html = ""
+    not_converted_html = ""
+    if data:
+        not_converted_dct = {}
+        df_lst = []
+        for k in data:
+            print(type(data[k]))
+            if isinstance(data[k], ConvertedListData):
+                k_pairs = data[k].converted
+                if k_pairs and isinstance(k, str):
+                    df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
+                k_not_converted = data[k].skipped
+                if k_not_converted:
+                    not_converted_dct[f"{k}_skipped"] = k_not_converted
+
+        if df_lst:
+            converted_df = pd.concat(df_lst, axis=1)
+            converted_df.index = converted_df.index + 1
+            converted_html = converted_df.to_html()
+        if not_converted_dct:
+            not_converted_df = pd.DataFrame.from_dict(
+                not_converted_dct, orient="index"
+            ).T
+            not_converted_df.index = not_converted_df.index + 1
+            not_converted_html = not_converted_df.to_html()
+    return converted_html, not_converted_html

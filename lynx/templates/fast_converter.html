@@ -10,7 +10,7 @@
         <h1>LipidLynxX Nomenclature Converter</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
-                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;"><p>
+                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;">
                     <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
@@ -30,45 +30,36 @@
                                     lipid_names <br>
                                     <textarea type="text" name="lipid_names" style="width:100%;" rows="5"> PLPC &#10; PLPE</textarea>
                                 </label></p>
+                                <p><label for="export_style">Choose the export style:
+                                    <select id="export_style" name="export_style">
+                                        <option value="LipidLynxX">LipidLynxX</option>
+                                        <option value="COMP_DB">COMP_DB</option>
+                                    </select></label></p>
                                 <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="D1">Discrete</option>
                                         <option value="Max">Max level</option>
                                     </select></label></p>
-                                <p><label for="export_style">Choose the export style:
-                                    <select id="export_style" name="export_style">
-                                        <option value="LipidLynxX">LipidLynxX</option>
-                                        <option value="COMP_DB">COMP_DB</option>
-                                    </select></label></p>
+                                <p><small>*. COMP_DB export in Bulk format only.</small></p>
                                 <p><label for="file_type">Choose the export style:
                                     <select id="file_type" name="file_type">
-                                        <option value=".xlsx">.xlsx</option>
-                                        <option value=".csv">.csv</option>
+                                        <option value="xlsx">.xlsx</option>
+                                        <option value="csv">.csv</option>
                                     </select></label></p>
                                 <p><input type="submit"></p></form>
-                            <div>
-                                Convert: <br>
-                                {{ lipid_names }}
-                                To level: <br>
-                                {{ export_level }}
-                                Using style: <br>
-                                {{ export_style }}
-                                As: <br>
-                                {{ file_type }}
-                            </div>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
                             <form action="/converter/file/" method="post" enctype="multipart/form-data">
                                 <p><label>
                                     Select file: <br>
                                     <input type="file" name="file_obj">
-                                    </label></p>
+                                </label></p>
                                 <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="D1">Discrete</option>
-                                        <option value="Max">Max level</option>
+                                        <option value="MAX">Max level</option>
                                     </select></label></p>
                                 <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
@@ -77,26 +68,61 @@
                                     </select></label></p>
                                 <p><label for="file_type">Choose the export style:
                                     <select id="file_type" name="file_type">
-                                        <option value=".xlsx">.xlsx</option>
-                                        <option value=".csv">.csv</option>
+                                        <option value="xlsx">.xlsx</option>
+                                        <option value="csv">.csv</option>
                                     </select></label></p>
                                 <p><input type="submit"></p></form>
                             <div>
                                 {% if file_name %}
-                                file: <br>
-                                {{ file_name }}
-                                To level: <br>
-                                {{ export_level }}
-                                Using style: <br>
-                                {{ export_style }}
-                                As: <br>
-                                {{ file_type }}
+                                    file: <br>
+                                    {{ file_name }}
+                                    To level: <br>
+                                    {{ export_level }}
+                                    Using style: <br>
+                                    {{ export_style }}
+                                    As: <br>
+                                    {{ file_type }}
                                 {% endif %}
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left">
+                    {% if converted_html %}
+                        <h2>LipidLynxX output</h2>
+                        <h4>&nbsp;</h4>
+                        <div></div>
+                        <div class="alert alert-info" role="alert">
+                            Converted to level: <strong>{{ export_level }}</strong>
+                            using <strong>{{ export_style }}</strong>
+                        </div>
+                        <div>
+                            <a class="btn btn-block btn-success"
+                               href="{{ url_for('get_download_file', data=output_file_data,
+                           file_type=output_file_type, file_name=output_file_name) }}">
+                                Save output as:<br>{{ output_file_name }}
+                            </a>
+                        </div>
+                        <p>&nbsp;</p>
+                        <div class="alert alert-success" role="alert">
+                            <h4>Converted abbreviations</h4>
+                            <p>&nbsp;</p>
+                            <div class="table-responsive">
+                                {{ converted_html|safe }}
+                            </div>
+                        </div>
+                        {% if not_converted_html %}
+                            <div class="alert alert-warning" role="alert">
+                                <h4>NOT Converted abbreviations</h4>
+                                <p>&nbsp;</p>
+                                <div class="table-responsive">
+                                    {{ not_converted_html|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </section>
-
 {% endblock %}
