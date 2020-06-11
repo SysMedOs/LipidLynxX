@@ -21,6 +21,7 @@ import json
 from typing import Union
 
 from fastapi import APIRouter, Request, File, Form, UploadFile
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 import pandas as pd
@@ -34,18 +35,20 @@ from lynx.models.api_models import (
 import lynx.routers.api as api
 from lynx.utils.file_handler import (
     create_converter_output,
-    create_equalizer_output, table2html,
+    create_equalizer_output,
+    table2html,
 )
 
 router = APIRouter()
 templates = Jinja2Templates(directory="lynx/templates")
+router.mount("/static", StaticFiles(directory="lynx/static"), name="static")
 
 
 # TemplateResponse from jinja2, ignored in API docs page
-@router.get(f"/", include_in_schema=False)
-async def home(request: Request):
+@router.get("/about", include_in_schema=False)
+def about(request: Request):
     return templates.TemplateResponse(
-        "home.html",
+        "about.html",
         {"request": request, "lynx_version": lynx_version, "api_version": api_version},
     )
 
@@ -53,7 +56,7 @@ async def home(request: Request):
 @router.get("/converter/", include_in_schema=False)
 async def converter(request: Request):
     return templates.TemplateResponse(
-        "fast_converter.html", {"request": request, "out_dct": {}}
+        "converter.html", {"request": request, "out_dct": {}}
     )
 
 
@@ -89,7 +92,7 @@ async def converter_text(
     data_json = json.dumps(converted_data.dict().get("data"))
     print(data_json)
     return templates.TemplateResponse(
-        "fast_converter.html",
+        "converter.html",
         {
             "request": request,
             "export_level": export_level,
@@ -115,7 +118,7 @@ async def converter_file(
     print(df)
     file_name = "Uploaded"
     return templates.TemplateResponse(
-        "fast_converter.html",
+        "converter.html",
         {
             "request": request,
             "file_obj": file_obj,
@@ -127,7 +130,11 @@ async def converter_file(
     )
 
 
-@router.get("/downloads/{data}/{file_type}/{file_name}", name="get_download_file", include_in_schema=False)
+@router.get(
+    "/downloads/{data}/{file_type}/{file_name}",
+    name="get_download_file",
+    include_in_schema=False,
+)
 def get_download_file(data: str, file_type: str, file_name: str):
     data = json.loads(data)
     if isinstance(data, dict):
@@ -146,6 +153,35 @@ def get_download_file(data: str, file_type: str, file_name: str):
     else:
         excel_io = None
     if file_name and excel_io:
-        return StreamingResponse(
-            excel_io, media_type="application/vnd.ms-excel"
-        )
+        return StreamingResponse(excel_io, media_type="application/vnd.ms-excel")
+
+
+@router.get(f"/", include_in_schema=False)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "home.html",
+        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
+    )
+
+
+@router.get("/levels", include_in_schema=False)
+def levels(request: Request):
+    return templates.TemplateResponse("levels.html", {"request": request})
+
+
+@router.get("/nomenclature", include_in_schema=False)
+def nomenclature(request: Request):
+    return templates.TemplateResponse("nomenclature.html", {"request": request})
+
+
+@router.get("/static/images/{image_name}", include_in_schema=False)
+def get_img(image_name: str):
+
+    return
+
+@router.get("/user_guide", include_in_schema=False)
+def user_guide(request: Request):
+    return templates.TemplateResponse(
+        "user_guide.html",
+        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
+    )

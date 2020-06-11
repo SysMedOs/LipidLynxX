@@ -22,8 +22,8 @@ from io import BytesIO
 from typing import List, Union
 
 import pandas as pd
-from werkzeug.datastructures import FileStorage
-from werkzeug.utils import secure_filename
+# from werkzeug.datastructures import FileStorage
+# from werkzeug.utils import secure_filename
 
 import lynx.utils
 from lynx.models.api_models import ConverterExportDictData, ConvertedListData
@@ -84,33 +84,33 @@ def get_abs_path(file_path: str) -> str:
     return abs_path
 
 
-def get_table(file: Union[str, FileStorage]) -> dict:
-    if isinstance(file, str):
-        try:
-            abs_path = get_abs_path(file)
-            file = abs_path
-        except FileNotFoundError:
-            raise FileNotFoundError
-    elif isinstance(file, FileStorage):
-        abs_path = secure_filename(file.filename)
-    else:
-        raise FileNotFoundError
-
-    if abs_path.lower().endswith(".csv"):
-        df = pd.read_csv(file)
-    elif abs_path.lower().endswith(".tsv"):
-        df = pd.read_csv(file, sep="\t")
-    elif abs_path.lower().endswith(".xlsx") or abs_path.lower().endswith(".xls"):
-        df = pd.read_excel(file)
-    else:
-        df = pd.DataFrame()
-
-    if not df.empty:
-        dct = df.to_dict(orient="list")
-    else:
-        dct = {}
-
-    return dct
+# def get_table(file: Union[str, FileStorage]) -> dict:
+#     if isinstance(file, str):
+#         try:
+#             abs_path = get_abs_path(file)
+#             file = abs_path
+#         except FileNotFoundError:
+#             raise FileNotFoundError
+#     elif isinstance(file, FileStorage):
+#         abs_path = secure_filename(file.filename)
+#     else:
+#         raise FileNotFoundError
+#
+#     if abs_path.lower().endswith(".csv"):
+#         df = pd.read_csv(file)
+#     elif abs_path.lower().endswith(".tsv"):
+#         df = pd.read_csv(file, sep="\t")
+#     elif abs_path.lower().endswith(".xlsx") or abs_path.lower().endswith(".xls"):
+#         df = pd.read_excel(file)
+#     else:
+#         df = pd.DataFrame()
+#
+#     if not df.empty:
+#         dct = df.to_dict(orient="list")
+#     else:
+#         dct = {}
+#
+#     return dct
 
 
 def get_json(file: str) -> dict:

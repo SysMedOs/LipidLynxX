@@ -3,19 +3,24 @@ jobs:
   include:
     - name: "Python 3.7 on Linux"
       python: 3.7
+      before_install:
+        - pip3 install -r requirements.txt
     - name: "Python 3.7 on macOS"
       os: osx
       osx_image: xcode11.2
       language: shell
+      before_install:
+        - python -m pip install --upgrade pip
+        - pip3 install --user -r requirements.txt
     - name: "Python 3.7 on Windows"
       os: windows
       language: shell
       before_install:
         - choco install python --version 3.7
         - python -m pip install --upgrade pip
+        - pip3 install -r requirements.txt
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
 install:
-  - pip3 install -r requirements.txt
   - pip3 install codecov
   - pip3 install pytest pytest-cov
 script:
