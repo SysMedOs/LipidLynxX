@@ -41,7 +41,6 @@ from lynx.utils.file_handler import (
 
 router = APIRouter()
 templates = Jinja2Templates(directory="lynx/templates")
-router.mount("/static", StaticFiles(directory="lynx/static"), name="static")
 
 
 # TemplateResponse from jinja2, ignored in API docs page

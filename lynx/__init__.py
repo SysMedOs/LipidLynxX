@@ -32,7 +32,8 @@ app = FastAPI(debug=True)
 
 app.include_router(api.router, prefix="/api", tags=["api"])
 app.include_router(frontend.router)
-app.mount("/static", StaticFiles(directory="lynx/static"), name="static")
+# app.mount("/static", StaticFiles(directory="lynx/static"), name="static")
+app.mount("/images", StaticFiles(directory="lynx/static/images"), name="images")
 
 
 def custom_openapi():
