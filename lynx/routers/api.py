@@ -121,9 +121,9 @@ async def convert_dict(
     Convert a dict of lipid names into supported levels and export to supported style
     """
     lynx_converter = Converter(style=style)
-    converted_results = {
-        "data": lynx_converter.convert_dict(data.data, level=get_level(level))
-    }
+    converted_results = ConverterExportDictData(
+        data=lynx_converter.convert_dict(data.data, level=get_level(level))
+    )
     return converted_results
 
 

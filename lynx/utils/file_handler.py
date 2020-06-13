@@ -16,18 +16,19 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from datetime import datetime
 import json
 import os
 from io import BytesIO
 from typing import List, Union
 
+from fastapi import File
 import pandas as pd
-# from werkzeug.datastructures import FileStorage
-# from werkzeug.utils import secure_filename
 
+from lynx.models.api_models import ConverterExportDictData, ConvertedListData, FileType
 import lynx.utils
-from lynx.models.api_models import ConverterExportDictData, ConvertedListData
 from lynx.utils.log import logger
+from lynx.utils.toolbox import keep_string_only
 
 
 def get_abs_path(file_path: str) -> str:
@@ -82,35 +83,6 @@ def get_abs_path(file_path: str) -> str:
         )
 
     return abs_path
-
-
-# def get_table(file: Union[str, FileStorage]) -> dict:
-#     if isinstance(file, str):
-#         try:
-#             abs_path = get_abs_path(file)
-#             file = abs_path
-#         except FileNotFoundError:
-#             raise FileNotFoundError
-#     elif isinstance(file, FileStorage):
-#         abs_path = secure_filename(file.filename)
-#     else:
-#         raise FileNotFoundError
-#
-#     if abs_path.lower().endswith(".csv"):
-#         df = pd.read_csv(file)
-#     elif abs_path.lower().endswith(".tsv"):
-#         df = pd.read_csv(file, sep="\t")
-#     elif abs_path.lower().endswith(".xlsx") or abs_path.lower().endswith(".xls"):
-#         df = pd.read_excel(file)
-#     else:
-#         df = pd.DataFrame()
-#
-#     if not df.empty:
-#         dct = df.to_dict(orient="list")
-#     else:
-#         dct = {}
-#
-#     return dct
 
 
 def get_json(file: str) -> dict:
@@ -292,15 +264,46 @@ def create_equalizer_output(
     return table_info
 
 
-def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
-    is_output = False
-    abs_output_path = None
-    if not df.empty:
-        df.to_excel(file_name)
-        is_output = True
-        abs_output_path = get_abs_path(file_name)
+def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
+    usr_file_name = uploaded_file.filename
+    if usr_file_name.lower().endswith("xlsx"):
+        table_dct = pd.read_excel(uploaded_file.file).to_dict(orient="list")
+    elif usr_file_name.lower().endswith("csv"):
+        table_dct = pd.read_csv(uploaded_file.file).to_dict(orient="list")
+    elif usr_file_name.lower().endswith("tsv"):
+        table_dct = pd.read_csv(uploaded_file.file, sep="\t").to_dict(orient="list")
+    else:
+        err_lst.append("File type not supported. Please upload .csv or .xlsx file.")
+        table_dct = {}
+    table_dct = keep_string_only(table_dct)
+    if table_dct:
+        pass
+    else:
+        err_lst.append(f"Can not read the uploaded file: {uploaded_file.filename}.")
 
-    return is_output, abs_output_path
+    return table_dct, err_lst
+
+
+def get_file_type(file_type: FileType) -> str:
+    if file_type == FileType.xlsx:
+        file_type = "xlsx"
+    elif file_type == FileType.csv:
+        file_type = "csv"
+    else:
+        file_type = "xlsx"
+
+    return file_type
+
+
+def get_output_name(tool: str = "", file_type: str = "xlsx") -> str:
+    if tool:
+        output_name = f"LipidLynxX-{tool}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_type}"
+    else:
+        output_name = (
+            f"LipidLynxX_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_type}"
+        )
+
+    return output_name
 
 
 def table2html(converter_data: ConverterExportDictData):
@@ -331,3 +334,14 @@ def table2html(converter_data: ConverterExportDictData):
             not_converted_df.index = not_converted_df.index + 1
             not_converted_html = not_converted_df.to_html()
     return converted_html, not_converted_html
+
+
+def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
+    is_output = False
+    abs_output_path = None
+    if not df.empty:
+        df.to_excel(file_name)
+        is_output = True
+        abs_output_path = get_abs_path(file_name)
+
+    return is_output, abs_output_path

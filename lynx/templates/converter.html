@@ -40,7 +40,7 @@
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="D1">Discrete</option>
-                                        <option value="Max">Max level</option>
+                                        <option value="MAX">Max level</option>
                                     </select></label></p>
                                 <p><small>*. COMP_DB export in Bulk format only.</small></p>
                                 <p><label for="file_type">Choose the export style:
@@ -48,47 +48,41 @@
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
                                     </select></label></p>
-                                <p><input type="submit"></p></form>
+                                <p><input type="submit" class="btn btn-primary"></p></form>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
                             <form action="/converter/file/" method="post" enctype="multipart/form-data">
                                 <p><label>
-                                    Select file: <br>
+                                    Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
                                     <input type="file" name="file_obj">
                                 </label></p>
+                                <p><label for="export_style">Choose the export style:
+                                    <select id="export_style" name="export_style">
+                                        <option value="LipidLynxX">LipidLynxX</option>
+                                        <option value="COMP_DB">COMP_DB</option>
+                                    </select></label></p>
                                 <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="D1">Discrete</option>
                                         <option value="MAX">Max level</option>
                                     </select></label></p>
-                                <p><label for="export_style">Choose the export style:
-                                    <select id="export_style" name="export_style">
-                                        <option value="LipidLynxX">LipidLynxX</option>
-                                        <option value="COMP_DB">COMP_DB</option>
-                                    </select></label></p>
+                                <p><small>*. COMP_DB export in Bulk format only.</small></p>
                                 <p><label for="file_type">Choose the export style:
                                     <select id="file_type" name="file_type">
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
                                     </select></label></p>
-                                <p><input type="submit"></p></form>
-                            <div>
-                                {% if file_name %}
-                                    file: <br>
-                                    {{ file_name }}
-                                    To level: <br>
-                                    {{ export_level }}
-                                    Using style: <br>
-                                    {{ export_style }}
-                                    As: <br>
-                                    {{ file_type }}
-                                {% endif %}
-                            </div>
+                                <p><input type="submit" class="btn btn-primary"></p></form>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left">
+                    {% if err_msg %}
+                        <div class="alert alert-danger" role="alert">
+                            <p>{{ err_msg }}</p>
+                        </div>
+                    {% endif %}
                     {% if converted_html %}
                         <h2>LipidLynxX output</h2>
                         <h4>&nbsp;</h4>

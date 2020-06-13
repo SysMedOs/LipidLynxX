@@ -16,12 +16,14 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import base64
 import json
+import re
 from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
-from lynx.models.api_models import LvType
+from lynx.models.api_models import level_rgx_str, LvType, StyleType
 from lynx.utils.log import logger
 
 
@@ -93,8 +95,42 @@ def keep_string_only(
 
 
 def get_level(lv) -> str:
-    if isinstance(lv, LvType) or isinstance(lv, str):
+    if isinstance(lv, LvType):
         use_level = lv
     else:
-        use_level = "MAX"
+        if isinstance(lv, str):
+            if re.match(level_rgx_str, lv):
+                use_level = lv
+            else:
+                use_level = "MAX"
+        else:
+            use_level = "MAX"
     return use_level
+
+
+def get_style_level(
+    export_style: StyleType, export_level: Union[str, LvType]
+) -> (str, str):
+    to_level = get_level(export_level)
+    if export_style == StyleType.lipidlynxx:
+        export_style = "LipidLynxX"
+    elif export_style == StyleType.comp_db:
+        export_style = "COMP_DB"
+        to_level = "B1"
+    else:
+        export_style = "LipidLynxX"
+
+    return export_style, to_level
+
+
+def get_url_safe_str(data: dict) -> str:
+    data_json: str = json.dumps(data)
+    data_bytes: bytes = base64.urlsafe_b64encode(data_json.encode("utf-8"))
+    data_str: str = data_bytes.decode("utf-8")
+
+    return data_str
+
+
+if __name__ == "__main__":
+    x = get_level("B1")
+    print(x)

@@ -16,28 +16,45 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from datetime import datetime
+import base64
 import json
-from typing import Union
+from typing import IO
+from tempfile import NamedTemporaryFile
 
-from fastapi import APIRouter, Request, File, Form, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    Header,
+    Request,
+    UploadFile,
+    HTTPException,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 import pandas as pd
+from starlette import status
 
 from lynx.config import api_version, lynx_version
-from lynx.models.api_models import (
-    FileType,
-    StyleType,
-    InputListData,
-)
+from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData
 import lynx.routers.api as api
 from lynx.utils.file_handler import (
     create_converter_output,
     create_equalizer_output,
+    get_table,
+    get_file_type,
+    get_output_name,
     table2html,
 )
+from lynx.utils.toolbox import get_style_level, get_url_safe_str
+
+
+# upload file size check
+# async def valid_content_length(content_length: int = Header(..., lt=10240_000)):
+#     return content_length
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="lynx/templates")
@@ -69,40 +86,23 @@ async def converter_text(
 ):
     names = lipid_names.splitlines()
     input_data = InputListData(lipid_names=names)
-    if export_style == StyleType.lipidlynxx:
-        export_style = "LipidLynxX"
-    elif export_style == StyleType.comp_db:
-        export_style = "COMP_DB"
-        export_level = "B1"
-    else:
-        export_style = "LipidLynxX"
-    if file_type == FileType.xlsx:
-        file_type = "xlsx"
-    elif file_type == FileType.csv:
-        file_type = "csv"
-    else:
-        file_type = "xlsx"
-    converted_data = await api.convert_list(
-        export_style, input_data, level=export_level
-    )
+    export_style, export_level = get_style_level(export_style, export_level)
+    converted_data = await api.convert_list(export_style, input_data, export_level)
     converted_html, not_converted_html = table2html(converted_data)
-    output_name = f"LipidLynxX-Converter_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_type}"
-    # d = get_download_file(converted_data.data, file_name=output_name, file_type=file_type)
-    data_json = json.dumps(converted_data.dict().get("data"))
-    print(data_json)
-    return templates.TemplateResponse(
-        "converter.html",
-        {
-            "request": request,
-            "export_level": export_level,
-            "export_style": export_style,
-            "output_file_name": output_name,
-            "output_file_type": file_type,
-            "output_file_data": data_json,
-            "converted_html": converted_html,
-            "not_converted_html": not_converted_html,
-        },
-    )
+    data_encoded = get_url_safe_str(converted_data.dict().get("data"))
+    file_type = get_file_type(file_type)
+    output_name = get_output_name("Converter", file_type)
+    render_data_dct = {
+        "request": request,
+        "export_level": export_level,
+        "export_style": export_style,
+        "output_file_name": output_name,
+        "output_file_type": file_type,
+        "output_file_data": data_encoded,
+        "converted_html": converted_html,
+        "not_converted_html": not_converted_html,
+    }
+    return templates.TemplateResponse("converter.html", render_data_dct)
 
 
 @router.post("/converter/file/", include_in_schema=False)
@@ -110,23 +110,30 @@ async def converter_file(
     request: Request,
     file_obj: UploadFile = File(...),
     export_level: str = Form(...),
-    export_style: str = Form(...),
-    file_type: str = Form(...),
+    export_style: StyleType = Form(...),
+    file_type: FileType = Form(...),
 ):
-    df = pd.read_csv(file_obj.file)
-    print(df)
-    file_name = "Uploaded"
-    return templates.TemplateResponse(
-        "converter.html",
-        {
-            "request": request,
-            "file_obj": file_obj,
-            "export_level": export_level,
-            "export_style": export_style,
-            "file_type": file_type,
-            "file_name": file_name,
-        },
-    )
+    table_info, err_lst = get_table(file_obj, err_lst=[])
+    export_style, export_level = get_style_level(export_style, export_level)
+    input_data = InputDictData(data=table_info)
+    converted_data = await api.convert_dict(export_style, input_data, export_level)
+    converted_html, not_converted_html = table2html(converted_data)
+    data_encoded = get_url_safe_str(converted_data.dict().get("data"))
+    file_type = get_file_type(file_type)
+    output_name = get_output_name("Converter", file_type)
+    render_data_dct = {
+        "request": request,
+        "err_msg": "<br>".join(err_lst),
+        "file_obj": file_obj,
+        "export_level": export_level,
+        "export_style": export_style,
+        "output_file_name": output_name,
+        "output_file_type": file_type,
+        "output_file_data": data_encoded,
+        "converted_html": converted_html,
+        "not_converted_html": not_converted_html,
+    }
+    return templates.TemplateResponse("converter.html", render_data_dct)
 
 
 @router.get(
@@ -135,7 +142,8 @@ async def converter_file(
     include_in_schema=False,
 )
 def get_download_file(data: str, file_type: str, file_name: str):
-    data = json.loads(data)
+    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
+    data = json.loads(decoded_data.decode("utf-8"))
     if isinstance(data, dict):
         if file_name.startswith("LipidLynxX-Convert"):
             excel_io = create_converter_output(data, file_type=file_type)
@@ -177,6 +185,7 @@ def nomenclature(request: Request):
 def get_img(image_name: str):
 
     return
+
 
 @router.get("/user_guide", include_in_schema=False)
 def user_guide(request: Request):

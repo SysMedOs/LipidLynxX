@@ -22,8 +22,10 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, Field, constr
 
 
-LipidNameType = constr(regex=r"^\s*.{2,512}\s*$")
-LvType = constr(regex=r"^[Bb][0-3]?$|^[DSds]([0-5](.[0-3])?)?$|^MAX$")
+lipid_name_rgx_str = r"^\s*.{2,512}\s*$"
+LipidNameType = constr(regex=lipid_name_rgx_str)
+level_rgx_str = r"^[Bb][0-3]?$|^[DSds]([0-5](.[0-3])?)?$|^[Mm][Aa][Xx]$"
+LvType = constr(regex=level_rgx_str)
 
 
 class FileType(str, Enum):
@@ -95,6 +97,7 @@ class ConvertedListData(BaseModel):
                 "skipped": ["Bad_Example_1"],
             }
         }
+
 
 class ConverterExportDictData(BaseModel):
     data: Dict[str, ConvertedListData]
