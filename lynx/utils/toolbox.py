@@ -94,7 +94,7 @@ def keep_string_only(
         raise ValueError
 
 
-def get_level(lv) -> str:
+def get_level(lv: Union[str, LvType]) -> str:
     if isinstance(lv, LvType):
         use_level = lv
     else:
@@ -106,6 +106,20 @@ def get_level(lv) -> str:
         else:
             use_level = "MAX"
     return use_level
+
+
+def get_levels(lv: Union[str, list, LvType]) -> List[str]:
+    levels = []
+    if isinstance(lv, LvType):
+        levels = [lv]
+    elif isinstance(lv, str):
+        if re.match(level_rgx_str, lv):
+            levels = [lv]
+        else:
+            levels
+    else:
+        levels = ["B1"]
+    return levels
 
 
 def get_style_level(

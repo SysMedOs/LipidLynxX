@@ -15,13 +15,14 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-
-from typing import Optional
+import json
+from typing import List, Optional, Union
 
 from fastapi import APIRouter
 
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
+from lynx.controllers.equalizer import Equalizer
 from lynx.models.api_models import (
     LvType,
     LipidNameType,
@@ -125,6 +126,27 @@ async def convert_dict(
         data=lynx_converter.convert_dict(data.data, level=get_level(level))
     )
     return converted_results
+
+
+@router.post("/equalize/dict/")
+async def equalize_dict(data: InputDictData, levels: Optional[Union[List[str]]] = "B1"):
+    """
+    Convert a dict of lipid names into supported levels and export to supported style
+    """
+    equalized_dct = {}
+    if isinstance(levels, str) and levels:
+        if "[" in levels:
+            levels = json.loads(levels)
+        else:
+            levels = [levels]
+    elif isinstance(levels, list) and levels:
+        pass
+    else:
+        levels = ["B1"]
+    for lv in levels:
+        equalizer = Equalizer(data, level=lv)
+        equalized_dct[lv] = equalizer.cross_match()
+    return equalized_dct
 
 
 @router.post("/parse/str/")

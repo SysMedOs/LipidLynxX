@@ -22,12 +22,18 @@ import pandas as pd
 
 from lynx.controllers.encoder import Encoder
 from lynx.models.lipid import Lipid
+from lynx.models.api_models import InputDictData
 from lynx.utils.file_handler import get_abs_path, create_equalizer_output
 from lynx.utils.log import logger
 
 
 class Equalizer(object):
-    def __init__(self, input_data: Union[str, dict], level: Union[str, List[str]], rule: str = "LipidLynxX"):
+    def __init__(
+        self,
+        input_data: Union[str, dict, InputDictData],
+        level: Union[str, List[str]],
+        rule: str = "LipidLynxX",
+    ):
 
         if isinstance(input_data, str):
             abs_path = get_abs_path(input_data)

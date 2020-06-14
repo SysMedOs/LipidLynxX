@@ -136,6 +136,38 @@ async def converter_file(
     return templates.TemplateResponse("converter.html", render_data_dct)
 
 
+@router.get("/equalizer/", include_in_schema=False)
+async def equalizer(request: Request):
+    return templates.TemplateResponse(
+        "equalizer.html", {"request": request, "out_dct": {}}
+    )
+
+
+@router.post("/equalizer/file/", include_in_schema=False)
+async def equalize_file(
+    request: Request,
+    file_obj: UploadFile = File(...),
+    export_level: str = Form(...),
+    export_style: StyleType = Form(...),
+    file_type: FileType = Form(...),
+):
+    table_info, err_lst = get_table(file_obj, err_lst=[])
+    input_data = InputDictData(data=table_info)
+    equalized_data = await api.equalize_dict(input_data, export_level)
+    data_encoded = get_url_safe_str(equalized_data.dict().get("data"))
+    file_type = get_file_type(file_type)
+    output_name = get_output_name("Converter", file_type)
+    render_data_dct = {
+        "request": request,
+        "err_msg": "<br>".join(err_lst),
+        "file_obj": file_obj,
+        "output_file_name": output_name,
+        "output_file_type": file_type,
+        "output_file_data": data_encoded,
+    }
+    return templates.TemplateResponse("equalizer.html", render_data_dct)
+
+
 @router.get(
     "/downloads/{data}/{file_type}/{file_name}",
     name="get_download_file",
