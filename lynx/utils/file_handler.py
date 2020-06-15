@@ -278,10 +278,9 @@ def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
     else:
         if usr_file_name:
             err_lst.append("File type not supported")
-            err_lst.append("Please upload .csv or .xlsx file.")
         else:
             err_lst.append("No file received.")
-            err_lst.append("Please upload .csv or .xlsx file.")
+        err_lst.append("Please upload a .csv or .xlsx file.")
         table_dct = {}
     table_dct = keep_string_only(table_dct)
     if table_dct:

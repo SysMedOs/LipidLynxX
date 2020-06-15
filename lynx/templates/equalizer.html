@@ -37,6 +37,8 @@
                                 &nbsp;&nbsp;&nbsp; or multiple levels separated by "," (e.g. B1, D1)</label>
                             <button type="submit" class="btn btn-primary" id="run_equalizer">Run Equalizer</button>
                         </form>
+                    </div>
+                    <div>
                         <div><p>&nbsp;</p></div>
                         <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
                             <strong>LipidLynxX is running...</strong>
@@ -54,11 +56,9 @@
                         </div>
                         <div id="results_info">
                             {% if err_msgs %}
-                                <div class="alert alert-danger" role="alert">
-                                    {% for err_msg in err_msgs %}
-                                        <p>{{ err_msg }}</p>
-                                    {% endfor %}
-                                </div>
+                                {% for err_msg in err_msgs %}
+                                    <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
+                                {% endfor %}
                             {% endif %}
                             {% if output_file_data %}
                                 <h2>LipidLynxX Equalizer output</h2>

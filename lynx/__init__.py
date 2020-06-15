@@ -36,7 +36,7 @@ app.include_router(frontend.router)
 app.mount("/images", StaticFiles(directory="lynx/static/images"), name="images")
 
 
-def custom_openapi():
+def custom_openapi(openapi_prefix: str):
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
@@ -44,6 +44,7 @@ def custom_openapi():
         version=api_version,
         description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
         routes=app.routes,
+        openapi_prefix=openapi_prefix,
     )
     openapi_schema["info"]["x-logo"] = {"url": "static/images/LipidLynxX_Logo.png"}
     app.openapi_schema = openapi_schema

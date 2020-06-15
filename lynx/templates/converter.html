@@ -99,17 +99,14 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" id="results_info">
-                    <h2>LipidLynxX output</h2>
                     {% if err_msgs %}
-                        <div class="alert alert-danger" role="alert">
-                            {% for err_msg in err_msgs %}
-                                <p>{{ err_msg }}</p>
-                            {% endfor %}
-                        </div>
+                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
+                        {% for err_msg in err_msgs %}
+                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
+                        {% endfor %}
                     {% endif %}
                     {% if converted_html %}
-                        <h4>&nbsp;</h4>
-                        <div></div>
+                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
                         <div class="alert alert-info" role="alert">
                             Converted to level: <strong>{{ export_level }}</strong>
                             using style:<strong>{{ export_style }}</strong>
