@@ -22,7 +22,7 @@ import pandas as pd
 
 from lynx.controllers.encoder import Encoder
 from lynx.models.lipid import Lipid
-from lynx.models.api_models import InputDictData
+from lynx.models.api_models import InputDictData, EqualizedLevelData, EqualizedData, EqualizerExportData
 from lynx.utils.file_handler import get_abs_path, create_equalizer_output
 from lynx.utils.log import logger
 
@@ -48,7 +48,7 @@ class Equalizer(object):
         elif isinstance(input_data, dict):
             self.data = input_data
         else:
-            raise ValueError(f"Not supported input {type(input_data)}")
+             raise ValueError(f"Not supported input {type(input_data)}")
         if isinstance(level, str):
             self.levels = [level]
         else:
@@ -81,10 +81,9 @@ class Equalizer(object):
                         skipped_id_lst.append(_id)
                 else:
                     skipped_id_lst.append(_id)
-
         return {"equalized": equalized_id_dct, "skipped": skipped_id_lst}
 
-    def convert_all(self):
+    def convert_all(self) -> dict:
         sum_dct = {"equalized": {}, "skipped": {}}
         for col_name in self.header_lst:
             _col_dct = self.convert_col(col_name)
@@ -92,13 +91,13 @@ class Equalizer(object):
             sum_dct["skipped"][col_name] = _col_dct["skipped"]
         return sum_dct
 
-    def cross_match(self):
+    def cross_match(self) -> EqualizerExportData:
         converted_dct = self.convert_all()
         equalized_dct = converted_dct["equalized"]
         sum_equalized_dct = {}
-        no_match_dct = {}
         for lv in self.levels:
             lv_equalized_dct = {}
+            lv_unmatched_dct = {}
             for ref in equalized_dct:
                 for source_id in equalized_dct[ref]:
                     lv_converted_id = equalized_dct[ref][source_id].get(lv, None)
@@ -107,26 +106,18 @@ class Equalizer(object):
                             lv_equalized_dct[lv_converted_id] = {ref: source_id}
                         else:
                             lv_equalized_dct[lv_converted_id][ref] = source_id
-            sum_matched_dct = {}
+            lv_matched_dct = {}
             for _id in lv_equalized_dct:
                 if len(list(lv_equalized_dct[_id].keys())) > 1:
-                    sum_matched_dct[_id] = lv_equalized_dct[_id]
+                    lv_matched_dct[_id] = lv_equalized_dct[_id]
                 else:
-                    no_match_dct[_id] = lv_equalized_dct[_id]
-            if sum_matched_dct:
-                sum_equalized_dct[lv] = sum_matched_dct
-            else:
-                pass
+                    lv_unmatched_dct[_id] = lv_equalized_dct[_id]
 
-        output_dct = {}
-        for m_lv in sum_equalized_dct:
-            output_dct[f"Matched@Lv{m_lv}"] = sum_equalized_dct[m_lv]
+            sum_equalized_dct[lv] = EqualizedLevelData(matched=lv_matched_dct, unmatched=lv_unmatched_dct)
 
-        output_dct["Equalized"] = no_match_dct
-        output_dct["Skipped"] = converted_dct["skipped"]
+        equalized_data = EqualizedData(equalized=sum_equalized_dct, skipped=converted_dct["skipped"])
+        export_data = EqualizerExportData(data=equalized_data)
+        return export_data
 
-        return output_dct
-
-    def export_dict(self):
-
-        return self.cross_match()
+    def export_dict(self) -> dict:
+        return self.cross_match().dict()

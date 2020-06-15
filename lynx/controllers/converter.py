@@ -56,11 +56,18 @@ class Converter:
             input_list = keep_string_only(input_list)
             for abbr in input_list:
                 output_dct = self.convert_str(abbr, output_dct, level=level)
-        return output_dct
+        converted_lst_obj = ConvertedListData(
+            input=output_dct.get("input"),
+            output=output_dct.get("output"),
+            converted=output_dct.get("converted"),
+            skipped=output_dct.get("skipped"),
+        )
+
+        return converted_lst_obj
 
     def convert_dict(
         self, input_dct: Dict[str, Union[str, List[str]]], level: str = None
-    ) -> Dict[str, dict]:
+    ) -> Dict[str, ConvertedListData]:
         output_dct = {}
         if input_dct and isinstance(input_dct, dict):
             for k in input_dct:

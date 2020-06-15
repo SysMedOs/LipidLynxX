@@ -24,13 +24,14 @@ from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
 from lynx.models.api_models import (
-    LvType,
-    LipidNameType,
-    StyleType,
+    ConverterExportData,
+    EqualizerExportData,
     InputDictData,
     InputListData,
     InputStrData,
-    ConverterExportDictData,
+    LipidNameType,
+    LvType,
+    StyleType,
 )
 from lynx.utils.toolbox import get_level
 
@@ -86,7 +87,7 @@ async def convert_str(
     return converted_results
 
 
-@router.post("/convert/list/", response_model=ConverterExportDictData)
+@router.post("/convert/list/", response_model=ConverterExportData)
 async def convert_list(
     style: str, data: InputListData, level: Optional[LvType] = "MAX"
 ):
@@ -94,17 +95,7 @@ async def convert_list(
     Convert a list of lipid names into supported levels and export to supported style
     """
     lynx_converter = Converter(style=style)
-    converted_results = lynx_converter.convert_list(
-        data.lipid_names, level=get_level(level)
-    )
-    # converted_results = {
-    #     "data": {
-    #         "TextInput": lynx_converter.convert_list(
-    #             data.lipid_names, level=get_level(level)
-    #         )
-    #     }
-    # }
-    converted_results = ConverterExportDictData(
+    converted_results = ConverterExportData(
         data={
             "TextInput": lynx_converter.convert_list(
                 data.lipid_names, level=get_level(level)
@@ -114,7 +105,7 @@ async def convert_list(
     return converted_results
 
 
-@router.post("/convert/dict/", response_model=ConverterExportDictData)
+@router.post("/convert/dict/", response_model=ConverterExportData)
 async def convert_dict(
     style: StyleType, data: InputDictData, level: Optional[LvType] = "MAX"
 ):
@@ -122,18 +113,19 @@ async def convert_dict(
     Convert a dict of lipid names into supported levels and export to supported style
     """
     lynx_converter = Converter(style=style)
-    converted_results = ConverterExportDictData(
+    converted_results = ConverterExportData(
         data=lynx_converter.convert_dict(data.data, level=get_level(level))
     )
     return converted_results
 
 
-@router.post("/equalize/dict/")
-async def equalize_dict(data: InputDictData, levels: Optional[Union[List[str]]] = "B1"):
+@router.post("/equalize/dict/", response_model=EqualizerExportData)
+async def equalize_dict(
+    data: InputDictData, levels: Optional[Union[str, List[str]]] = "B1"
+) -> EqualizerExportData:
     """
-    Convert a dict of lipid names into supported levels and export to supported style
+    Equalize a dict of lipid names into supported levels and export to supported style
     """
-    equalized_dct = {}
     if isinstance(levels, str) and levels:
         if "[" in levels:
             levels = json.loads(levels)
@@ -143,10 +135,9 @@ async def equalize_dict(data: InputDictData, levels: Optional[Union[List[str]]] 
         pass
     else:
         levels = ["B1"]
-    for lv in levels:
-        equalizer = Equalizer(data, level=lv)
-        equalized_dct[lv] = equalizer.cross_match()
-    return equalized_dct
+    equalizer = Equalizer(data.data, level=levels)
+    equalizer_data = equalizer.cross_match()
+    return equalizer_data
 
 
 @router.post("/parse/str/")

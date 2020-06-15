@@ -23,19 +23,14 @@ from tempfile import NamedTemporaryFile
 
 from fastapi import (
     APIRouter,
-    Depends,
     File,
     Form,
-    Header,
     Request,
     UploadFile,
-    HTTPException,
 )
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
-import pandas as pd
-from starlette import status
+
 
 from lynx.config import api_version, lynx_version
 from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData
@@ -48,7 +43,7 @@ from lynx.utils.file_handler import (
     get_output_name,
     table2html,
 )
-from lynx.utils.toolbox import get_style_level, get_url_safe_str
+from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
 
 
 # upload file size check
@@ -114,25 +109,31 @@ async def converter_file(
     file_type: FileType = Form(...),
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
-    export_style, export_level = get_style_level(export_style, export_level)
-    input_data = InputDictData(data=table_info)
-    converted_data = await api.convert_dict(export_style, input_data, export_level)
-    converted_html, not_converted_html = table2html(converted_data)
-    data_encoded = get_url_safe_str(converted_data.dict().get("data"))
-    file_type = get_file_type(file_type)
-    output_name = get_output_name("Converter", file_type)
-    render_data_dct = {
-        "request": request,
-        "err_msg": "<br>".join(err_lst),
-        "file_obj": file_obj,
-        "export_level": export_level,
-        "export_style": export_style,
-        "output_file_name": output_name,
-        "output_file_type": file_type,
-        "output_file_data": data_encoded,
-        "converted_html": converted_html,
-        "not_converted_html": not_converted_html,
-    }
+    if table_info:
+        export_style, export_level = get_style_level(export_style, export_level)
+        input_data = InputDictData(data=table_info)
+        converted_data = await api.convert_dict(export_style, input_data, export_level)
+        converted_html, not_converted_html = table2html(converted_data)
+        data_encoded = get_url_safe_str(converted_data.dict().get("data"))
+        file_type = get_file_type(file_type)
+        output_name = get_output_name("Converter", file_type)
+        render_data_dct = {
+            "request": request,
+            "err_msgs": err_lst,
+            "export_level": export_level,
+            "export_style": export_style,
+            "output_file_name": output_name,
+            "output_file_type": file_type,
+            "output_file_data": data_encoded,
+            "converted_html": converted_html,
+            "not_converted_html": not_converted_html,
+        }
+    else:
+        render_data_dct = {
+            "request": request,
+            "err_msgs": err_lst,
+        }
+
     return templates.TemplateResponse("converter.html", render_data_dct)
 
 
@@ -147,24 +148,29 @@ async def equalizer(request: Request):
 async def equalize_file(
     request: Request,
     file_obj: UploadFile = File(...),
-    export_level: str = Form(...),
-    export_style: StyleType = Form(...),
-    file_type: FileType = Form(...),
+    match_levels: str = Form(...)
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
-    input_data = InputDictData(data=table_info)
-    equalized_data = await api.equalize_dict(input_data, export_level)
-    data_encoded = get_url_safe_str(equalized_data.dict().get("data"))
-    file_type = get_file_type(file_type)
-    output_name = get_output_name("Converter", file_type)
-    render_data_dct = {
-        "request": request,
-        "err_msg": "<br>".join(err_lst),
-        "file_obj": file_obj,
-        "output_file_name": output_name,
-        "output_file_type": file_type,
-        "output_file_data": data_encoded,
-    }
+    if table_info:
+        input_data = InputDictData(data=table_info)
+        usr_levels = get_levels(match_levels)
+        export_data = await api.equalize_dict(input_data, usr_levels)
+        data_encoded = get_url_safe_str(export_data.dict().get("data"))
+        file_type = ".xlsx"
+        output_name = get_output_name("Equalizer", file_type)
+        render_data_dct = {
+            "request": request,
+            "err_msgs": err_lst,
+            "output_file_name": output_name,
+            "output_file_type": file_type,
+            "output_file_data": data_encoded,
+        }
+    else:
+        render_data_dct = {
+            "request": request,
+            "err_msgs": err_lst,
+        }
+
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 

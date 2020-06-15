@@ -79,19 +79,19 @@ def keep_string_only(
     data: Union[list, Dict[str, list]]
 ) -> Union[list, Dict[str, list]]:
     filtered_data = None
-    if isinstance(data, list):
-        filtered_data = [d for d in data if isinstance(d, str) and len(d) > 0]
-    elif isinstance(data, dict):
-        filtered_data = {}
-        for k in data:
-            filtered_data[k] = [v for v in data[k] if isinstance(v, str) and len(v) > 0]
+    if data:
+        if isinstance(data, list):
+            filtered_data = [d for d in data if isinstance(d, str) and len(d) > 0]
+        elif isinstance(data, dict):
+            filtered_data = {}
+            for k in data:
+                filtered_data[k] = [v for v in data[k] if isinstance(v, str) and len(v) > 0]
+        else:
+            logger.error(f"TypeError: {type(data)} NOT supported.")
     else:
-        raise TypeError
+        pass
 
-    if filtered_data:
-        return filtered_data
-    else:
-        raise ValueError
+    return filtered_data
 
 
 def get_level(lv: Union[str, LvType]) -> str:
@@ -116,7 +116,8 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         if re.match(level_rgx_str, lv):
             levels = [lv]
         else:
-            levels
+            levels = re.split(r', |; |\s+|\n', lv)
+            levels = [seg for seg in levels if re.match(level_rgx_str, seg)]
     else:
         levels = ["B1"]
     return levels

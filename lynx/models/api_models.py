@@ -99,7 +99,7 @@ class ConvertedListData(BaseModel):
         }
 
 
-class ConverterExportDictData(BaseModel):
+class ConverterExportData(BaseModel):
     data: Dict[str, ConvertedListData]
 
     class Config:
@@ -127,5 +127,52 @@ class ConverterExportDictData(BaseModel):
                         "skipped": ["Bad_Example_2"],
                     },
                 }
+            }
+        }
+
+
+class EqualizedLevelData(BaseModel):
+    matched: Dict[str, dict]
+    unmatched: Dict[str, dict]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "matched": {},
+                "unmatched": {},
+            }
+        }
+
+
+class EqualizedData(BaseModel):
+    equalized: Dict[str, EqualizedLevelData]
+    skipped: Dict[str, List[str]]
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "equalized": {
+                    "B1": {
+                        "matched": {},
+                        "unmatched": {},
+                    },
+                },
+                "skipped": {"Source01": ["bad_ID", "Unknown_id"]},
+            }
+        }
+
+
+class EqualizerExportData(BaseModel):
+    data: EqualizedData
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "data": {
+                    "equalized": {
+                        "B1": None,
+                    },
+                    "skipped": ["Bad_Example_1"],
+                },
             }
         }

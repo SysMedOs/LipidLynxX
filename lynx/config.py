@@ -34,7 +34,7 @@ class DevConfig(Config):
 
 
 api_version: str = str(api_version)
-lynx_version: str = "0.5.16"
+lynx_version: str = "0.6.14"
 base_url: str = cfg_info_dct.get("base_url", "http://127.0.0.1:5000")
 app_name: str = "lynx"
 app_url_prefix: str = "/lynx"

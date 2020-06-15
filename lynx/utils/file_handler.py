@@ -25,7 +25,7 @@ from typing import List, Union
 from fastapi import File
 import pandas as pd
 
-from lynx.models.api_models import ConverterExportDictData, ConvertedListData, FileType
+from lynx.models.api_models import ConverterExportData, ConvertedListData, FileType
 import lynx.utils
 from lynx.utils.log import logger
 from lynx.utils.toolbox import keep_string_only
@@ -124,7 +124,7 @@ def load_folder(folder: str, file_type: str = "") -> List[str]:
 def create_converter_output(
     data: dict, output_name: str = None, file_type: str = ".xlsx"
 ) -> Union[BytesIO, str]:
-    excel_info = None
+    file_info = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
     if data:
@@ -173,18 +173,19 @@ def create_converter_output(
                         converted_df.to_excel(
                             output_name, sheet_name="converted", index=False
                         )
-                    excel_info = get_abs_path(output_name)
+                    file_info = get_abs_path(output_name)
                 except IOError:
-                    excel_info = (
+                    file_info = (
                         f"[IO error] Cannot create file: {output_name} as output."
                     )
             else:
-                excel_info = BytesIO()
+                file_info = BytesIO()
                 if file_type.lower().endswith("csv"):
-                    converted_df.to_csv(excel_info)
+                    file_info.write(converted_df.to_csv().encode("utf-8"))
+
                 else:
                     output_writer = pd.ExcelWriter(
-                        excel_info, engine="openpyxl"
+                        file_info, engine="openpyxl"
                     )  # write to BytesIO instead of file path
                     converted_df.to_excel(
                         output_writer, sheet_name="converted", index=False
@@ -194,74 +195,76 @@ def create_converter_output(
                             output_writer, sheet_name="skipped", index=False
                         )
                     output_writer.save()
-                excel_info.seek(0)
+                file_info.seek(0)
 
-    return excel_info
+    return file_info
 
 
 def create_equalizer_output(
-    sum_data: dict, output_name: str = None
+    data: dict, output_name: str = None
 ) -> Union[BytesIO, str]:
-    table_info = None
+    file_info = None
     is_file_name = False
-    if sum_data:
+    if data:
         if output_name and isinstance(output_name, str):
             try:
                 table_writer = pd.ExcelWriter(output_name, engine="openpyxl")
                 is_file_name = True
-                table_info = output_name
+                file_info = output_name
             except IOError:
-                table_info = f"[IO error] Cannot create file: {output_name} as output."
+                file_info = f"[IO error] Cannot create file: {output_name} as output."
+                return file_info
         else:
-            table_info = BytesIO()
+            file_info = BytesIO()
             table_writer = pd.ExcelWriter(
-                table_info, engine="openpyxl"
+                file_info, engine="openpyxl"
             )  # write to BytesIO instead of file path
-        for lv in sum_data:
-            data = sum_data[lv]
-            for k in data:
+        equalized_data = data.get("equalized")
+        for lv in equalized_data:
+            lv_data = equalized_data.get(lv, {})
+            for k in lv_data:
                 if k.lower().startswith("match"):
-                    matched_dct = data[k]
+                    matched_dct = lv_data[k]
                     if matched_dct:
                         out_matched_df = pd.DataFrame.from_dict(
                             matched_dct, orient="index"
                         )
                         out_matched_df.index.names = [f"ID@Lv_{lv}"]
                         out_matched_df.sort_index().to_excel(
-                            table_writer, sheet_name=f"matched_{lv}"
+                            table_writer, sheet_name=f"Lv_{lv}_matched"
+                        )
+                    else:
+                        pass
+                elif k.lower().startswith("unmatched"):
+                    unmatched_dct = lv_data[k]
+                    if unmatched_dct:
+                        out_unmatched_df = pd.DataFrame.from_dict(
+                            unmatched_dct, orient="index"
+                        )
+                        out_unmatched_df.index.names = [f"ID@Lv_{lv}"]
+                        out_unmatched_df.sort_index().to_excel(
+                            table_writer, sheet_name=f"Lv_{lv}_unmatched"
                         )
                     else:
                         pass
                 else:
                     pass
-            for k in data:
-                if k.lower().startswith("equalized"):
-                    equalized_dct = data[k]
-                    if equalized_dct:
-                        pd.DataFrame.from_dict(
-                            equalized_dct, orient="index"
-                        ).sort_index().to_excel(table_writer, sheet_name=f"unmatched")
-                    else:
-                        pass
-                elif k.lower().startswith("skipped"):
-                    skipped_dct = data[k]
-                    if skipped_dct:
-                        pd.DataFrame.from_dict(
-                            skipped_dct, orient="index"
-                        ).T.sort_index().to_excel(
-                            table_writer, sheet_name="skipped", index=False
-                        )
-                    else:
-                        pass
-                else:
-                    pass
+        skipped_dct = data.get("skipped")
+        if skipped_dct:
+            pd.DataFrame.from_dict(
+                skipped_dct, orient="index"
+            ).T.sort_index().to_excel(
+                table_writer, sheet_name="skipped", index=False
+            )
+        else:
+            pass
 
         table_writer.save()
         if not is_file_name:
-            table_info.seek(0)
+            file_info.seek(0)
     else:
-        table_info = None
-    return table_info
+        file_info = None
+    return file_info
 
 
 def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
@@ -273,13 +276,19 @@ def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
     elif usr_file_name.lower().endswith("tsv"):
         table_dct = pd.read_csv(uploaded_file.file, sep="\t").to_dict(orient="list")
     else:
-        err_lst.append("File type not supported. Please upload .csv or .xlsx file.")
+        if usr_file_name:
+            err_lst.append("File type not supported")
+            err_lst.append("Please upload .csv or .xlsx file.")
+        else:
+            err_lst.append("No file received.")
+            err_lst.append("Please upload .csv or .xlsx file.")
         table_dct = {}
     table_dct = keep_string_only(table_dct)
     if table_dct:
         pass
     else:
-        err_lst.append(f"Can not read the uploaded file: {uploaded_file.filename}.")
+        if uploaded_file.filename:
+            err_lst.append(f"Can not read the uploaded file: {uploaded_file.filename}.")
 
     return table_dct, err_lst
 
@@ -306,7 +315,7 @@ def get_output_name(tool: str = "", file_type: str = "xlsx") -> str:
     return output_name
 
 
-def table2html(converter_data: ConverterExportDictData):
+def table2html(converter_data: ConverterExportData):
     data = converter_data.data
     converted_html = ""
     not_converted_html = ""
