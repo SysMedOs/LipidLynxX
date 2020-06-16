@@ -39,7 +39,7 @@ router = APIRouter()
 
 
 # Get APIs
-@router.get("/convert/str/{lipid_name}")
+@router.get("/convert/lipid/")
 async def convert_name(
     lipid_name: str, style: Optional[str] = "LipidLynxX", level: Optional[str] = "MAX"
 ):
@@ -59,7 +59,7 @@ async def convert_name(
     return converted_name
 
 
-@router.get("/parse/str/{lipid_name}")
+@router.get("/parse/lipid/")
 async def parse_name(lipid_name: str = "PLPC"):
     """
     Parse one lipid name from path parameter

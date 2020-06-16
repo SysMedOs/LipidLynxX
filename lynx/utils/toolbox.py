@@ -85,7 +85,9 @@ def keep_string_only(
         elif isinstance(data, dict):
             filtered_data = {}
             for k in data:
-                filtered_data[k] = [v for v in data[k] if isinstance(v, str) and len(v) > 0]
+                filtered_data[k] = [
+                    v for v in data[k] if isinstance(v, str) and len(v) > 0
+                ]
         else:
             logger.error(f"TypeError: {type(data)} NOT supported.")
     else:
@@ -116,7 +118,7 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         if re.match(level_rgx_str, lv):
             levels = [lv]
         else:
-            levels = re.split(r', |; |\s+|\n', lv)
+            levels = re.split(r", |; |\s+|\n", lv)
             levels = [seg for seg in levels if re.match(level_rgx_str, seg)]
     else:
         levels = ["B1"]

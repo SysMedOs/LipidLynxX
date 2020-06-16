@@ -16,21 +16,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os
-
 from lynx.models.defaults import cfg_info_dct, api_version
-
-
-class Config(object):
-    SECRET_KEY = os.urandom(24).hex()
-
-
-class ProdConfig(Config):
-    pass
-
-
-class DevConfig(Config):
-    DEBUG = True
 
 
 api_version: str = str(api_version)

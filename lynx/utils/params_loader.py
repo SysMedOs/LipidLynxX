@@ -115,9 +115,9 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
             if isinstance(r["EXAMPLE"], str):
                 if not rules.match(r["EXAMPLE"]):
                     rules_checker = False
-                    logger.warning(
-                        f'Rule example: "{r["EXAMPLE"]}" NOT fit with rule: "{rules_str}" -> skipped...'
-                    )
+                    # logger.warning(
+                    #     f'Rule example: "{r["EXAMPLE"]}" NOT fit with rule: "{rules_str}" -> skipped...'
+                    # )
 
             if rules_checker:
                 rules_class_dct[rules] = r["CLASS"]
@@ -126,9 +126,9 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
                 else:
                     class_rules_dct[r["CLASS"]].append(rules)
 
-                logger.debug(
-                    f'Rule added: "{r["CLASS"]}" -> "{r["REMARK"]}" -> "{r["EXAMPLE"]}"'
-                )
+                # logger.debug(
+                #     f'Rule added: "{r["CLASS"]}" -> "{r["REMARK"]}" -> "{r["EXAMPLE"]}"'
+                # )
 
     return class_rules_dct, rules_class_dct
 
@@ -158,7 +158,7 @@ def build_input_rules(folder: str) -> dict:
 
     input_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    # logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
         temp_rules = InputRules(f)
@@ -188,7 +188,7 @@ def build_input_rules(folder: str) -> dict:
                 "MAX_RESIDUES": temp_rules.rules[c].get("MAX_RESIDUES", 1),
             }
 
-    logger.debug(input_rules)
+    # logger.debug(input_rules)
 
     return input_rules
 
@@ -197,14 +197,14 @@ def build_output_rules(folder: str) -> dict:
 
     output_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    # logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
         temp_rules = OutputRules(f)
         idx = f"{temp_rules.nomenclature}@{temp_rules.date}"
         output_rules[idx] = temp_rules.rules
 
-    logger.debug(output_rules)
+    # logger.debug(output_rules)
 
     return output_rules
 

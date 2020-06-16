@@ -62,22 +62,22 @@ class InputRules(object):
             )
         self.rules = self.build()
         self.is_validated = self.validate()
-        logger.info(
-            f"Load input rule: {self.sources}\n"
-            f"Last modified: {self.date}\n"
-            f"Authors: {self.authors}"
-        )
+        # logger.info(
+        #     f"Load input rule: {self.sources}\n"
+        #     f"Last modified: {self.date}\n"
+        #     f"Authors: {self.authors}"
+        # )
 
     def __replace_refs__(self, rules: dict):
         ref_rgx = re.compile(r"(\$)((\.[A-Z_]{1,99})+)(\.0)")
         for rule in rules:
             rule_dct = rules[rule]
             pattern = rule_dct["PATTERN"]
-            logger.debug(f"Pattern: {pattern}")
+            # logger.debug(f"Pattern: {pattern}")
             ref_lst = re.findall(ref_rgx, pattern)
             ref_replace_dct = {}
             if ref_lst:
-                logger.info(f"Found Refs: {ref_lst}")
+                # logger.info(f"Found Refs: {ref_lst}")
                 for ref_tpl in ref_lst:
                     ref_seg_dct = {}
                     if len(ref_tpl) >= 2:
@@ -91,7 +91,7 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            # logger.info(f"Found Ref Pattern: {ref_lst}")
                                             ref_patt = (
                                                 r"\$\."
                                                 + "\\.".join(ref_seg_lst)
@@ -107,7 +107,7 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            # logger.info(f"Found Ref Pattern: {ref_lst}")
                                             ref_patt = (
                                                 r"\$\." + "\\.".join(ref_seg_lst) + ".0"
                                             )
@@ -121,7 +121,7 @@ class InputRules(object):
                                                 r"\$" + "".join(ref_pattern_lst) + ".0"
                                             )
                                             ref_replace_dct[ref_pattern] = ref_info
-                                            logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            # logger.info(f"Found Ref Pattern: {ref_lst}")
                                             break
                                         elif isinstance(ref_info, dict):
                                             ref_seg_dct = ref_info
@@ -133,7 +133,7 @@ class InputRules(object):
                             raise ValueError
                     else:
                         raise ValueError
-                logger.info(f"Replace Refs: {ref_replace_dct}")
+                # logger.info(f"Replace Refs: {ref_replace_dct}")
                 replace_match = False
                 for ref_replace in ref_replace_dct:
                     replaced_pattern = re.sub(
@@ -142,9 +142,9 @@ class InputRules(object):
                         rule_dct["PATTERN"],
                     )
                     rule_dct["PATTERN"] = replaced_pattern
-                    logger.info(
-                        f"Replaced pattern to {replaced_pattern} by {ref_replace}"
-                    )
+                    # logger.info(
+                    #     f"Replaced pattern to {replaced_pattern} by {ref_replace}"
+                    # )
                     replace_match = True
                 if replace_match:
                     rule_dct["MATCH"] = re.compile(rule_dct["PATTERN"])
@@ -294,7 +294,7 @@ class InputRules(object):
             if pattern_str and temp_c_dct:
 
                 max_res_count = self.raw_rules[seg_typ][c].get("MAX_RESIDUES", 1)
-                logger.debug(f"Validating {c} pattern: {pattern_str}")
+                # logger.debug(f"Validating {c} pattern: {pattern_str}")
                 c_pattern = re.compile(pattern_str)
                 test_lst = temp_c_dct.get("EXAMPLE", [])
                 test_dct = {}
@@ -302,15 +302,14 @@ class InputRules(object):
                     fit_class = False
                     class_rgx = re.compile(pattern_dct["CLASS"])
                     class_search = class_rgx.search(test_str)
-                    if class_search:
-                        logger.debug(f"{test_str} fit to class {c}")
-                    else:
-                        logger.error(f"{test_str} NOT fit to class {c}")
+                    # if class_search:
+                    #     logger.debug(f"{test_str} fit to class {c}")
+                    # else:
+                    #     logger.error(f"{test_str} NOT fit to class {c}")
                     c_match = c_pattern.match(test_str)
                     if c_match:
                         c_matched_res_dct = c_match.groupdict()
-                        print(f"Check: {test_str}")
-                        logger.debug(c_matched_res_dct)
+                        # logger.debug(c_matched_res_dct)
                         if "SUM_RESIDUES" in c_matched_res_dct:
                             c_sum_res = c_matched_res_dct["SUM_RESIDUES"]
                             c_sum_res_lst = re.split(
@@ -377,11 +376,11 @@ class OutputRules(object):
         self.residues = self.raw_rules.get("RESIDUES", {})
         self.rules = self.build()
         self.is_structure_valid = self.__check__()
-        logger.info(
-            f"Load rules for nomenclature {self.nomenclature}\n"
-            f"Last modified: {self.date}\n"
-            f"Authors: {self.authors}"
-        )
+        # logger.info(
+        #     f"Load rules for nomenclature {self.nomenclature}\n"
+        #     f"Last modified: {self.date}\n"
+        #     f"Authors: {self.authors}"
+        # )
 
     def __check__(self):
         is_structure_valid = False

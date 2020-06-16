@@ -17,7 +17,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, NewType
 
 from pydantic import BaseModel, Field, constr
 
@@ -26,6 +26,7 @@ lipid_name_rgx_str = r"^\s*.{2,512}\s*$"
 LipidNameType = constr(regex=lipid_name_rgx_str)
 level_rgx_str = r"^[Bb][0-3]?$|^[DSds]([0-5](.[0-3])?)?$|^[Mm][Aa][Xx]$"
 LvType = constr(regex=level_rgx_str)
+LevelType = NewType("LevelType", constr(regex=level_rgx_str))
 
 
 class FileType(str, Enum):

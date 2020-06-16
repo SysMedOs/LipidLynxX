@@ -200,9 +200,7 @@ def create_converter_output(
     return file_info
 
 
-def create_equalizer_output(
-    data: dict, output_name: str = None
-) -> Union[BytesIO, str]:
+def create_equalizer_output(data: dict, output_name: str = None) -> Union[BytesIO, str]:
     file_info = None
     is_file_name = False
     if data:
@@ -251,9 +249,7 @@ def create_equalizer_output(
                     pass
         skipped_dct = data.get("skipped")
         if skipped_dct:
-            pd.DataFrame.from_dict(
-                skipped_dct, orient="index"
-            ).T.sort_index().to_excel(
+            pd.DataFrame.from_dict(skipped_dct, orient="index").T.sort_index().to_excel(
                 table_writer, sheet_name="skipped", index=False
             )
         else:

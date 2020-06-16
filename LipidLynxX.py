@@ -8,7 +8,7 @@
 import webbrowser
 import uvicorn
 
-from lynx import app, app_url, app_port
+from lynx.app import app, app_url, app_port
 
 
 def start_lynx():
@@ -18,5 +18,5 @@ def start_lynx():
     uvicorn.run(app, host=app_url, port=app_port)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start_lynx()

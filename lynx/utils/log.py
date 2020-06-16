@@ -18,7 +18,9 @@
 
 import logging
 
-log_level = logging.DEBUG
+# log_level = logging.DEBUG
+log_level = logging.WARNING
+cli_level = logging.CRITICAL
 date_fmt = "%b-%d@%H:%M:%S"
 log_fmt = "%(asctime)s[%(levelname)-5s] %(message)s"
 logger = logging.getLogger("log")
