@@ -45,7 +45,7 @@ class Modifications(object):
         schema: str = "lynx_mod",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
-            logger=app_logger
+        logger=app_logger,
     ):
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.mod_rule = self.export_rule.get("MODS", None)
@@ -368,7 +368,10 @@ class Modifications(object):
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
 
-        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str, logger=self.logger)):
+        if check_json(
+            validator=self.validator,
+            json_obj=json.loads(mod_json_str, logger=self.logger),
+        ):
             return mod_json_str
         else:
             raise Exception(f"Schema test FAILED. Schema {self.schema}")

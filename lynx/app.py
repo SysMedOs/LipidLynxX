@@ -20,8 +20,8 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-from lynx.models.defaults import api_version, app_cfg_info, lynx_version
 from lynx.routers import api, frontend
+from lynx.utils.cfg_reader import api_version, app_cfg_info, lynx_version
 
 
 app_url = app_cfg_info.get("app_url", "127.0.0.1")

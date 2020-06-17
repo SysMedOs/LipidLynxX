@@ -145,9 +145,7 @@ async def equalizer(request: Request):
 
 @router.post("/equalizer/file/", include_in_schema=False)
 async def equalize_file(
-    request: Request,
-    file_obj: UploadFile = File(...),
-    match_levels: str = Form(...)
+    request: Request, file_obj: UploadFile = File(...), match_levels: str = Form(...)
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
     if table_info:

@@ -137,12 +137,7 @@ class EqualizedLevelData(BaseModel):
     unmatched: Dict[str, dict]
 
     class Config:
-        schema_extra = {
-            "example": {
-                "matched": {},
-                "unmatched": {},
-            }
-        }
+        schema_extra = {"example": {"matched": {}, "unmatched": {},}}
 
 
 class EqualizedData(BaseModel):
@@ -152,12 +147,7 @@ class EqualizedData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "equalized": {
-                    "B1": {
-                        "matched": {},
-                        "unmatched": {},
-                    },
-                },
+                "equalized": {"B1": {"matched": {}, "unmatched": {},},},
                 "skipped": {"Source01": ["bad_ID", "Unknown_id"]},
             }
         }
@@ -169,11 +159,6 @@ class EqualizerExportData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "data": {
-                    "equalized": {
-                        "B1": None,
-                    },
-                    "skipped": ["Bad_Example_1"],
-                },
+                "data": {"equalized": {"B1": None,}, "skipped": ["Bad_Example_1"],},
             }
         }

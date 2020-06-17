@@ -54,7 +54,9 @@ class Lipid(object):
         self.level = self.sum_info.get("level", "")
         self.linked_ids = self.sum_info.get("linked_ids", {})
         self.logger = logger
-        self.logger.info(f"Level {self.level:4s} FattyAcid created from: {self.lipid_code}")
+        self.logger.info(
+            f"Level {self.level:4s} FattyAcid created from: {self.lipid_code}"
+        )
 
     def __identify_class__(self):
         lipid_class = ""
@@ -321,7 +323,9 @@ class Lipid(object):
         sum_info = self.sum_info
         sum_info.pop("mod_obj", None)
         json_str = json.dumps(sum_info)
-        if check_json(validator=self.validator, json_obj=json.loads(json_str, logger=self.logger)):
+        if check_json(
+            validator=self.validator, json_obj=json.loads(json_str, logger=self.logger)
+        ):
             return json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")

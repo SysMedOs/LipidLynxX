@@ -76,7 +76,9 @@ class Formatter(object):
                 if alia_rgx and matched_cv is not None:
                     alia_match = alia_rgx.match(mod_type)
                     if alia_match:
-                        self.logger.debug(f"mod_type: {mod_type} identified as {matched_cv}")
+                        self.logger.debug(
+                            f"mod_type: {mod_type} identified as {matched_cv}"
+                        )
                         formatted_mod_type_lst.append(matched_cv)
                         if matched_cv == "Delta":
                             mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get(

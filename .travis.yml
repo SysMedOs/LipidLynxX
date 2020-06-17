@@ -20,10 +20,12 @@ jobs:
         - python -m pip install --upgrade pip
         - pip3 install -r requirements.txt
       env: PATH=/c/Python37:/c/Python37/Scripts:$PATH
-install:
-  - pip3 install codecov
-  - pip3 install pytest pytest-cov
+#install:
+#  - pip3 install codecov
+#  - pip3 install pytest pytest-cov
+#script:
+#  - pytest --cov=./
+#after_success:
+#  - codecov
 script:
-  - pytest --cov=./
-after_success:
-  - codecov
+  - python cli_lynx.py

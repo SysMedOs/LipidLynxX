@@ -36,7 +36,7 @@ class Residue(object):
         schema: str = "lynx_residues",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
-            logger=app_logger
+        logger=app_logger,
     ):
         self.logger = logger
         self.export_rule = load_output_rule(output_rules, nomenclature)

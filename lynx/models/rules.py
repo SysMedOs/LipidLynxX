@@ -327,7 +327,9 @@ class InputRules(object):
                                         valid_lst.append(True)
                                         test_dct[f"{test_str} # {res}"] = "passed"
                                         self.logger.debug(f"Check: {test_str} # {res}")
-                                        self.logger.debug(res_pat.match(res).groupdict())
+                                        self.logger.debug(
+                                            res_pat.match(res).groupdict()
+                                        )
                                     else:
                                         valid_lst.append(False)
                                         test_dct[f"{test_str} # {res}"] = "failed"

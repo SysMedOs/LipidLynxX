@@ -32,10 +32,13 @@ from lynx.utils.file_handler import (
     get_output_name,
 )
 from lynx.utils.log import cli_logger
+from lynx.utils.cfg_reader import lynx_version
 from lynx.utils.toolbox import get_levels, get_style_level
 
 
-cli_app = typer.Typer()
+cli_app = typer.Typer(
+    help=f"LipidLynxX CLI tools version {lynx_version}. Developed by developed by team SysMedOs @ University of Leipzig"
+)
 
 
 @cli_app.command()

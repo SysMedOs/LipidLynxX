@@ -26,11 +26,14 @@ jobs:
         pip install -r requirements.txt
     - name: Black Code Formatter
       uses: lgeiger/black-action@v1.0.1
-    - name: Test with pytest
+#    - name: Test with pytest
+#      run: |
+#        pip install codecov pytest pytest-cov
+#        pytest --cov=./
+#    - name: Pack with pyinstaller
+#      run: |
+#        pip install pyinstaller
+#        pyinstaller --icon=./LipidLynxX_Logo.ico LipidLynxX.py
+    - name: Test CLI app
       run: |
-        pip install codecov pytest pytest-cov
-        pytest --cov=./
-    - name: Pack with pyinstaller
-      run: |
-        pip install pyinstaller
-        pyinstaller --icon=./LipidLynxX_Logo.ico LipidLynxX.py
+        python cli_lynx.py

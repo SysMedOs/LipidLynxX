@@ -121,7 +121,9 @@ def create_converter_output(
                     elif isinstance(output_name, str):
                         pass
                     else:
-                        err_msg = f"[Type error] Cannot create file: {output_name} as output."
+                        err_msg = (
+                            f"[Type error] Cannot create file: {output_name} as output."
+                        )
                     if output_name.lower().endswith("csv"):
                         converted_df.to_csv(output_name)
                     else:
@@ -158,7 +160,9 @@ def create_converter_output(
     return file_info
 
 
-def create_equalizer_output(data: dict, output_name: Union[str, Path] = None) -> Union[BytesIO, str]:
+def create_equalizer_output(
+    data: dict, output_name: Union[str, Path] = None
+) -> Union[BytesIO, str]:
     file_info = None
     is_file_name = False
     if data:
@@ -170,13 +174,17 @@ def create_equalizer_output(data: dict, output_name: Union[str, Path] = None) ->
                 elif isinstance(output_name, str):
                     pass
                 else:
-                    err_msg = f"[Type error] Cannot create file: {output_name} as output."
-                if output_name.lower().endswith('.xlsx'):
+                    err_msg = (
+                        f"[Type error] Cannot create file: {output_name} as output."
+                    )
+                if output_name.lower().endswith(".xlsx"):
                     table_writer = pd.ExcelWriter(output_name, engine="openpyxl")
                     is_file_name = True
                     file_info = output_name
                 else:
-                    err_msg = f"[Type error] Cannot create file: {output_name} as output."
+                    err_msg = (
+                        f"[Type error] Cannot create file: {output_name} as output."
+                    )
                 if err_msg:
                     file_info = err_msg
             except IOError:
