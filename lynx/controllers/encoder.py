@@ -28,7 +28,7 @@ from lynx.models.defaults import (
     default_input_rules,
     supported_levels,
 )
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Encoder(object):
@@ -37,6 +37,7 @@ class Encoder(object):
         output_rules: dict = default_output_rules,
         style: str = "LipidLynxX",
         input_rules: dict = default_input_rules,
+        logger=app_logger,
     ):
         self.export_rule = style
         self.output_rules = load_output_rule(output_rules, style)
@@ -49,6 +50,7 @@ class Encoder(object):
         )
         self.separators = self.output_rules.get("SEPARATORS", {})
         self.extractor = Decoder(rules=input_rules)
+        self.logger = logger
 
     @staticmethod
     def get_best_id(candidate: Dict[str, str]) -> str:
@@ -102,7 +104,7 @@ class Encoder(object):
     #     out_seg_lst = []
     #     if segment_text and patterns_dct:
     #         for s_rgx in patterns_dct:
-    #             logger.debug(
+    #             self.logger.debug(
     #                 f"Test {segment_text} on {segment_name} of {lmsd_class} using {s_rgx}"
     #             )
     #             s_matched = s_rgx.match(segment_text)
@@ -238,7 +240,7 @@ class Encoder(object):
                 if c_segments_dct and c_orders:
                     segments_dct[c] = {"ORDER": c_orders, "INFO": c_segments_dct}
         else:
-            logger.warning(f"No Class identified!")
+            self.logger.warning(f"No Class identified!")
 
         return segments_dct
 
@@ -260,7 +262,7 @@ class Encoder(object):
                         lv_seg_lst.append(self.separators[c_seg])
                     else:
                         if c_seg not in c_optional_seg:
-                            logger.debug(
+                            self.logger.debug(
                                 f"Segments not found: {c_seg}, defined orders {c_seg_order}"
                             )
                         else:
@@ -277,14 +279,14 @@ class Encoder(object):
         if extracted_info:
             for p in extracted_info:
                 p_info = extracted_info[p]
-                logger.info(p_info)
+                self.logger.info(p_info)
                 for in_r in p_info:
                     r_info = p_info[in_r]  # type: dict
                     checked_seg_info = self.check_segments(r_info)
                     comp_dct = self.compile_segments(checked_seg_info)
                     export_info.append(comp_dct)
             best_export_dct = self.get_best_id_series(export_info)
-            logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
+            self.logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
         else:
             best_export_dct = {}
 
@@ -312,12 +314,12 @@ class Encoder(object):
             if level in all_lv_id_dct:
                 lv_id = all_lv_id_dct[level]
             else:
-                logger.warning(
+                self.logger.warning(
                     f"Lipid: {lipid_name} cannot be converted into level: {level}. "
                     f"Can be converted into: {all_lv_id_dct}"
                 )
         else:
-            logger.warning(
+            self.logger.warning(
                 f"Level: {level} not supported. Supported levels: {supported_levels}"
             )
 
@@ -377,18 +379,18 @@ if __name__ == "__main__":
     lynx_gen = Encoder(style="COMP_DB")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
-        logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        self.logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
         # t_lv = "B0"
         # t2_out = lynx_gen.export_level(
         #     t_in, level=t_lv, import_rules=default_input_rules
         # )
-        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
+        # self.logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
         # t_lv_lst = ["B0"]
         # t3_out = lynx_gen.export_levels(
         #     t_in, levels=t_lv_lst, import_rules=default_input_rules
         # )
-        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
+        # self.logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
         t4_out = lynx_gen.export_all_levels(t_in)
-        logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
+        self.logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
-    logger.info("fin")
+    self.logger.info("fin")

@@ -16,7 +16,6 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import configparser
 import os
 from typing import Dict, List, Tuple
 
@@ -24,62 +23,12 @@ from natsort import natsorted
 import pandas as pd
 import regex as re
 
-from lynx.utils.file_handler import get_abs_path, load_folder
 from lynx.models.rules import InputRules, OutputRules
-from lynx.utils.log import logger
+from lynx.utils.file_handler import load_folder
+from lynx.utils.log import app_logger
 
 
-def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
-    cfg_dct = {}
-    default_fields = [
-        "api_version",
-        "app_url",
-        "app_port",
-        "controlled_vocabularies",
-        "defined_alias",
-        "input_rules",
-        "output_rules",
-    ]
-    config = configparser.ConfigParser()
-    if cfg_path and isinstance(cfg_path, str):
-        config_path = get_abs_path(cfg_path)
-    else:
-        try:
-            config_path = get_abs_path("config.ini")
-        except FileNotFoundError:
-            config_path = get_abs_path("configure.ini")
-
-    config.read(config_path)
-    if config.has_section("settings"):
-        user_cfg = "settings"
-    elif config.has_section("default"):
-        user_cfg = "default"
-    else:
-        user_cfg = ""
-        raise ValueError(f"Cannot __load__ settings from file {config_path}")
-
-    if len(user_cfg) > 2:
-        options = config.options(user_cfg)
-        for field in default_fields:
-            if field in options and field in [
-                "controlled_vocabularies",
-                "defined_alias",
-                "input_rules",
-                "output_rules",
-            ]:
-                cfg_dct[field] = get_abs_path(config.get(user_cfg, field))
-            else:
-                cfg_dct[field] = config.get(user_cfg, field)
-
-    if "app_url" not in cfg_dct:
-        cfg_dct["app_url"] = "127.0.0.1"
-    if "app_port" not in cfg_dct:
-        cfg_dct["app_port"] = "1399"
-
-    return cfg_dct
-
-
-def build_parser(rules_file: str) -> Tuple[dict, dict]:
+def build_parser(rules_file: str, logger=app_logger) -> Tuple[dict, dict]:
     """
     Read predefined rules from configurations folder and export as a dictionary
 
@@ -115,9 +64,9 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
             if isinstance(r["EXAMPLE"], str):
                 if not rules.match(r["EXAMPLE"]):
                     rules_checker = False
-                    # logger.warning(
-                    #     f'Rule example: "{r["EXAMPLE"]}" NOT fit with rule: "{rules_str}" -> skipped...'
-                    # )
+                    logger.warning(
+                        f'Rule example: "{r["EXAMPLE"]}" NOT fit with rule: "{rules_str}" -> skipped...'
+                    )
 
             if rules_checker:
                 rules_class_dct[rules] = r["CLASS"]
@@ -126,9 +75,9 @@ def build_parser(rules_file: str) -> Tuple[dict, dict]:
                 else:
                     class_rules_dct[r["CLASS"]].append(rules)
 
-                # logger.debug(
-                #     f'Rule added: "{r["CLASS"]}" -> "{r["REMARK"]}" -> "{r["EXAMPLE"]}"'
-                # )
+                logger.debug(
+                    f'Rule added: "{r["CLASS"]}" -> "{r["REMARK"]}" -> "{r["EXAMPLE"]}"'
+                )
 
     return class_rules_dct, rules_class_dct
 
@@ -154,11 +103,11 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
     return cv_patterns_dct
 
 
-def build_input_rules(folder: str) -> dict:
+def build_input_rules(folder: str, logger=app_logger) -> dict:
 
     input_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
-    # logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
         temp_rules = InputRules(f)
@@ -188,12 +137,12 @@ def build_input_rules(folder: str) -> dict:
                 "MAX_RESIDUES": temp_rules.rules[c].get("MAX_RESIDUES", 1),
             }
 
-    # logger.debug(input_rules)
+    logger.debug(input_rules)
 
     return input_rules
 
 
-def build_output_rules(folder: str) -> dict:
+def build_output_rules(folder: str, logger=app_logger) -> dict:
 
     output_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
@@ -204,7 +153,7 @@ def build_output_rules(folder: str) -> dict:
         idx = f"{temp_rules.nomenclature}@{temp_rules.date}"
         output_rules[idx] = temp_rules.rules
 
-    # logger.debug(output_rules)
+    logger.debug(output_rules)
 
     return output_rules
 

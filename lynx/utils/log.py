@@ -18,16 +18,25 @@
 
 import logging
 
-# log_level = logging.DEBUG
-log_level = logging.WARNING
-cli_level = logging.CRITICAL
+from lynx.utils.cfg_reader import app_log_level, cli_log_level
+
+
 date_fmt = "%b-%d@%H:%M:%S"
 log_fmt = "%(asctime)s[%(levelname)-5s] %(message)s"
-logger = logging.getLogger("log")
-logger.setLevel(log_level)
+app_logger = logging.getLogger("app_log")
+app_logger.setLevel(app_log_level)
 
-if not logger.handlers:
+if not app_logger.handlers:
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
-    logger.info("Log started ...")
-    logger.addHandler(console_handler)
+    app_logger.info("Log started ...")
+    app_logger.addHandler(console_handler)
+
+cli_logger = logging.getLogger("log")
+cli_logger.setLevel(cli_log_level)
+
+if not cli_logger.handlers:
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+    cli_logger.info("Log started ...")
+    cli_logger.addHandler(console_handler)

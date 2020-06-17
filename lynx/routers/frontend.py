@@ -31,10 +31,9 @@ from fastapi import (
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
-
-from lynx.config import api_version, lynx_version
 from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData
 import lynx.routers.api as api
+from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
     create_converter_output,
     create_equalizer_output,

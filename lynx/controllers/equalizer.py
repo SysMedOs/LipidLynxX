@@ -22,9 +22,15 @@ import pandas as pd
 
 from lynx.controllers.encoder import Encoder
 from lynx.models.lipid import Lipid
-from lynx.models.api_models import InputDictData, EqualizedLevelData, EqualizedData, EqualizerExportData
-from lynx.utils.file_handler import get_abs_path, create_equalizer_output
-from lynx.utils.log import logger
+from lynx.models.api_models import (
+    InputDictData,
+    EqualizedLevelData,
+    EqualizedData,
+    EqualizerExportData,
+)
+from lynx.utils.file_handler import create_equalizer_output
+from lynx.utils.basics import get_abs_path
+from lynx.utils.log import app_logger
 
 
 class Equalizer(object):
@@ -33,6 +39,7 @@ class Equalizer(object):
         input_data: Union[str, dict, InputDictData],
         level: Union[str, List[str]],
         rule: str = "LipidLynxX",
+        logger=app_logger,
     ):
 
         if isinstance(input_data, str):
@@ -48,13 +55,14 @@ class Equalizer(object):
         elif isinstance(input_data, dict):
             self.data = input_data
         else:
-             raise ValueError(f"Not supported input {type(input_data)}")
+            raise ValueError(f"Not supported input {type(input_data)}")
         if isinstance(level, str):
             self.levels = [level]
         else:
             self.levels = level
         self.encoder = Encoder(style=rule)
         self.header_lst = self.data.keys()
+        self.logger = logger
 
     def convert_col(self, col_name):
         id_lst = self.data.get(col_name, [])
@@ -63,21 +71,21 @@ class Equalizer(object):
         if id_lst:
             for _id in id_lst:
                 if isinstance(_id, str) and _id:
-                    logger.info(f"Convert {_id} to level {self.levels}")
+                    self.logger.info(f"Convert {_id} to level {self.levels}")
                     try:
                         _lynx_lv_id_dct = self.encoder.export_levels(_id, self.levels)
                         if _lynx_lv_id_dct:
                             equalized_id_dct[_id] = _lynx_lv_id_dct
-                            logger.debug(
+                            self.logger.debug(
                                 f"Converted input {_id} to level {self.levels}: {_lynx_lv_id_dct}"
                             )
                         else:
                             skipped_id_lst.append(_id)
-                            logger.warning(
+                            self.logger.warning(
                                 f"Cannot converted input {_id} to level {self.levels}"
                             )
                     except Exception as e:
-                        logger.error(e)
+                        self.logger.error(e)
                         skipped_id_lst.append(_id)
                 else:
                     skipped_id_lst.append(_id)
@@ -113,9 +121,13 @@ class Equalizer(object):
                 else:
                     lv_unmatched_dct[_id] = lv_equalized_dct[_id]
 
-            sum_equalized_dct[lv] = EqualizedLevelData(matched=lv_matched_dct, unmatched=lv_unmatched_dct)
+            sum_equalized_dct[lv] = EqualizedLevelData(
+                matched=lv_matched_dct, unmatched=lv_unmatched_dct
+            )
 
-        equalized_data = EqualizedData(equalized=sum_equalized_dct, skipped=converted_dct["skipped"])
+        equalized_data = EqualizedData(
+            equalized=sum_equalized_dct, skipped=converted_dct["skipped"]
+        )
         export_data = EqualizerExportData(data=equalized_data)
         return export_data
 

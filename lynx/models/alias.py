@@ -16,22 +16,23 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import json
 
 import regex as re
 
-from lynx.models.defaults import logger, default_alias_file
+from lynx.models.defaults import default_alias_file
 from lynx.utils.file_handler import get_json
+from lynx.utils.log import app_logger
 
 
 class Alias(object):
-    def __init__(self, alias_file: str = default_alias_file):
+    def __init__(self, alias_file: str = default_alias_file, logger=app_logger):
         self.alias_file = alias_file
         self._raw_cv = {}
         self._raw_cv = self.__load_raw__()
         self._info = self.__load__()
         self._residue_alias = self._info.get("RESIDUE_ALIAS")
         self._lipid_alias = self._info.get("LIPID_ALIAS")
+        self.logger = logger
 
     @staticmethod
     def __get_alias_info__(raw_alias_cat_info: dict) -> dict:

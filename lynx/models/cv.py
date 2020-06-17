@@ -22,13 +22,15 @@ import regex as re
 
 from lynx.models.defaults import default_cv_file
 from lynx.utils.file_handler import get_json
+from lynx.utils.log import app_logger
 
 
 class CV(object):
-    def __init__(self, cv_file: str = default_cv_file):
+    def __init__(self, cv_file: str = default_cv_file, logger=app_logger):
         self.cv_file = cv_file
         self._info = self.__load__()
         self._raw_cv = self.__load_raw__()
+        self.logger = logger
 
     def __load__(self) -> dict:
         cv_info = {}

@@ -24,7 +24,7 @@ from typing import Dict, List, Union
 from jsonschema import Draft7Validator
 
 from lynx.models.api_models import level_rgx_str, LvType, StyleType
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 def seg_to_str(in_list: List[str], sep: str = ",") -> str:
@@ -46,7 +46,7 @@ def seg_to_str(in_list: List[str], sep: str = ",") -> str:
     return out_str
 
 
-def check_json(validator: Draft7Validator, json_obj: json) -> bool:
+def check_json(validator: Draft7Validator, json_obj: json, logger=app_logger) -> bool:
     is_valid = False
     if validator.is_valid(json_obj):
         logger.debug(f"JSON Schema check PASSED.")
@@ -76,7 +76,7 @@ def clean_dct(dct: dict) -> dict:
 
 
 def keep_string_only(
-    data: Union[list, Dict[str, list]]
+    data: Union[list, Dict[str, list]], logger=app_logger
 ) -> Union[list, Dict[str, list]]:
     filtered_data = None
     if data:
@@ -120,6 +120,11 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         else:
             levels = re.split(r", |; |\s+|\n", lv)
             levels = [seg for seg in levels if re.match(level_rgx_str, seg)]
+    elif isinstance(lv, list):
+        for temp_lv in lv:
+            temp_lv = temp_lv.strip()
+            if re.match(level_rgx_str, temp_lv):
+                levels.append(temp_lv)
     else:
         levels = ["B1"]
     return levels
@@ -146,8 +151,3 @@ def get_url_safe_str(data: dict) -> str:
     data_str: str = data_bytes.decode("utf-8")
 
     return data_str
-
-
-if __name__ == "__main__":
-    x = get_level("B1")
-    print(x)

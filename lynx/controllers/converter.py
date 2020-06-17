@@ -21,12 +21,14 @@ from typing import List, Dict, Union, Tuple
 from lynx.controllers.encoder import Encoder
 
 from lynx.models.api_models import ConvertedListData
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import keep_string_only
 
 
 class Converter:
-    def __init__(self, style: str = "LipidLynxX"):
-        self.encoder = Encoder(style=style)
+    def __init__(self, style: str = "LipidLynxX", logger=app_logger):
+        self.encoder = Encoder(style=style, logger=logger)
+        self.logger = logger
 
     def convert_str(
         self,
@@ -53,7 +55,7 @@ class Converter:
     ) -> ConvertedListData:
         output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
         if input_list and isinstance(input_list, list):
-            input_list = keep_string_only(input_list)
+            input_list = keep_string_only(input_list, self.logger)
             for abbr in input_list:
                 output_dct = self.convert_str(abbr, output_dct, level=level)
         converted_lst_obj = ConvertedListData(

@@ -15,7 +15,7 @@ lynx_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lynx_path + "/../")
 
 from lynx import app
-from lynx.config import api_url_info
+from lynx.models.defaults import base_url
 from lynx.utils.log import logger
 
 

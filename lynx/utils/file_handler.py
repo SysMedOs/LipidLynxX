@@ -20,69 +20,16 @@ from datetime import datetime
 import json
 import os
 from io import BytesIO
+from pathlib import Path
 from typing import List, Union
 
 from fastapi import File
 import pandas as pd
 
 from lynx.models.api_models import ConverterExportData, ConvertedListData, FileType
-import lynx.utils
-from lynx.utils.log import logger
+from lynx.utils.basics import get_abs_path
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import keep_string_only
-
-
-def get_abs_path(file_path: str) -> str:
-    """
-    check and get absolute file path from given file
-    Args:
-        file_path: The relative path to a file
-
-    Returns:
-        abs_path: the absolute path of input file
-
-    """
-
-    abs_path = ""
-
-    # Force change to LipidLynxX folder for macOS
-    cwd = os.getcwd()
-    lynx_utils_dir = os.path.dirname(lynx.utils.__file__)
-    lynx_dir = os.path.dirname(lynx_utils_dir)
-    project_dit = os.path.dirname(lynx_dir)
-    if cwd != project_dit:
-        os.chdir(project_dit)
-        # print("Change to LipidLynxX project folder", os.getcwd())
-    else:
-        # print("Working on folder", os.getcwd())
-        pass
-
-    if os.path.isdir(file_path):
-        abs_path = os.path.abspath(file_path)
-
-    elif os.path.isfile(file_path):
-        abs_path = os.path.abspath(file_path)
-    else:
-        in_file_lst = [
-            r"{path}".format(path=file_path),
-            r"./{path}".format(path=file_path),
-            r"../{path}".format(path=file_path),
-            r"../../{path}".format(path=file_path),
-            r"../../../{path}".format(path=file_path),
-        ]
-        for f in in_file_lst:
-            if os.path.isdir(f):
-                abs_path = os.path.abspath(f)
-                break
-            elif os.path.isfile(f):
-                abs_path = os.path.abspath(f)
-                break
-
-    if not abs_path:
-        raise FileNotFoundError(
-            f"Can not find file: {file_path} from path {os.getcwd()}"
-        )
-
-    return abs_path
 
 
 def get_json(file: str) -> dict:
@@ -95,12 +42,13 @@ def get_json(file: str) -> dict:
         raise IOError(f"Input file: {file} is not json file")
 
 
-def load_folder(folder: str, file_type: str = "") -> List[str]:
+def load_folder(folder: str, file_type: str = "", logger=app_logger) -> List[str]:
     """
      Load all files under given folder, optional with selected file suffix
      Args:
          folder: path of the folder.
-         file_type: type of the file, default value is "" for no file type filter
+         file_type: type of the file, default value is "" for no file type filter.
+         logger: logger for logging.
 
      Returns:
          file_abs_path_lst: the list of files under given folder in absolute path
@@ -122,7 +70,7 @@ def load_folder(folder: str, file_type: str = "") -> List[str]:
 
 
 def create_converter_output(
-    data: dict, output_name: str = None, file_type: str = ".xlsx"
+    data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx"
 ) -> Union[BytesIO, str]:
     file_info = None
     converted_df = pd.DataFrame()
@@ -165,15 +113,25 @@ def create_converter_output(
                 not_converted_dct, orient="index"
             ).T
         if not converted_df.empty:
-            if output_name and isinstance(output_name, str):
+            if output_name:
                 try:
-                    if file_type.lower().endswith("csv"):
+                    err_msg = None
+                    if isinstance(output_name, Path):
+                        output_name = output_name.as_posix()
+                    elif isinstance(output_name, str):
+                        pass
+                    else:
+                        err_msg = f"[Type error] Cannot create file: {output_name} as output."
+                    if output_name.lower().endswith("csv"):
                         converted_df.to_csv(output_name)
                     else:
                         converted_df.to_excel(
                             output_name, sheet_name="converted", index=False
                         )
-                    file_info = get_abs_path(output_name)
+                    if err_msg:
+                        file_info = err_msg
+                    else:
+                        file_info = get_abs_path(output_name)
                 except IOError:
                     file_info = (
                         f"[IO error] Cannot create file: {output_name} as output."
@@ -200,15 +158,27 @@ def create_converter_output(
     return file_info
 
 
-def create_equalizer_output(data: dict, output_name: str = None) -> Union[BytesIO, str]:
+def create_equalizer_output(data: dict, output_name: Union[str, Path] = None) -> Union[BytesIO, str]:
     file_info = None
     is_file_name = False
     if data:
-        if output_name and isinstance(output_name, str):
+        if output_name:
             try:
-                table_writer = pd.ExcelWriter(output_name, engine="openpyxl")
-                is_file_name = True
-                file_info = output_name
+                err_msg = None
+                if isinstance(output_name, Path):
+                    output_name = output_name.as_posix()
+                elif isinstance(output_name, str):
+                    pass
+                else:
+                    err_msg = f"[Type error] Cannot create file: {output_name} as output."
+                if output_name.lower().endswith('.xlsx'):
+                    table_writer = pd.ExcelWriter(output_name, engine="openpyxl")
+                    is_file_name = True
+                    file_info = output_name
+                else:
+                    err_msg = f"[Type error] Cannot create file: {output_name} as output."
+                if err_msg:
+                    file_info = err_msg
             except IOError:
                 file_info = f"[IO error] Cannot create file: {output_name} as output."
                 return file_info
@@ -256,14 +226,17 @@ def create_equalizer_output(data: dict, output_name: str = None) -> Union[BytesI
             pass
 
         table_writer.save()
-        if not is_file_name:
-            file_info.seek(0)
+        if is_file_name:
+            pass
+        else:
+            if isinstance(file_info, BytesIO):
+                file_info.seek(0)
     else:
         file_info = None
     return file_info
 
 
-def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
+def get_table(uploaded_file: File, err_lst: list, logger=app_logger) -> (dict, list):
     usr_file_name = uploaded_file.filename
     if usr_file_name.lower().endswith("xlsx"):
         table_dct = pd.read_excel(uploaded_file.file).to_dict(orient="list")
@@ -278,7 +251,7 @@ def get_table(uploaded_file: File, err_lst: list) -> (dict, list):
             err_lst.append("No file received.")
         err_lst.append("Please upload a .csv or .xlsx file.")
         table_dct = {}
-    table_dct = keep_string_only(table_dct)
+    table_dct = keep_string_only(table_dct, logger=logger)
     if table_dct:
         pass
     else:

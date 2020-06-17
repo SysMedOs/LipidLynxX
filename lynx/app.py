@@ -20,12 +20,12 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-from lynx.config import api_version, lynx_version
-from lynx.models.defaults import cfg_info_dct
+from lynx.models.defaults import api_version, app_cfg_info, lynx_version
 from lynx.routers import api, frontend
 
-app_url = cfg_info_dct.get("app_url", "127.0.0.1")
-app_port = int(cfg_info_dct.get("app_port", 1399))
+
+app_url = app_cfg_info.get("app_url", "127.0.0.1")
+app_port = int(app_cfg_info.get("app_port", 1399))
 
 app = FastAPI(debug=True)
 
