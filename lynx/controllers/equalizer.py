@@ -30,6 +30,10 @@ from lynx.models.api_models import (
 )
 from lynx.utils.file_handler import create_equalizer_output
 from lynx.utils.basics import get_abs_path
+from lynx.models.defaults import (
+    default_output_rules,
+    default_input_rules,
+)
 from lynx.utils.log import app_logger
 
 
@@ -39,6 +43,8 @@ class Equalizer(object):
         input_data: Union[str, dict, InputDictData],
         level: Union[str, List[str]],
         rule: str = "LipidLynxX",
+        input_rules: dict = default_input_rules,
+        output_rules: dict = default_output_rules,
         logger=app_logger,
     ):
 
@@ -60,7 +66,12 @@ class Equalizer(object):
             self.levels = [level]
         else:
             self.levels = level
-        self.encoder = Encoder(style=rule)
+        self.encoder = Encoder(
+            style=rule,
+            input_rules=input_rules,
+            output_rules=output_rules,
+            logger=logger,
+        )
         self.header_lst = self.data.keys()
         self.logger = logger
 

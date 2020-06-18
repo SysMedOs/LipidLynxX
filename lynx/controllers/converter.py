@@ -20,44 +20,67 @@ from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
 
-from lynx.models.api_models import ConvertedListData
+from lynx.models.api_models import ConvertedStrData, ConvertedListData
 from lynx.utils.log import app_logger
+from lynx.models.defaults import (
+    default_output_rules,
+    default_input_rules,
+)
 from lynx.utils.toolbox import keep_string_only
 
 
 class Converter:
-    def __init__(self, style: str = "LipidLynxX", logger=app_logger):
-        self.encoder = Encoder(style=style, logger=logger)
+    def __init__(
+        self,
+        style: str = "LipidLynxX",
+        input_rules: dict = default_input_rules,
+        output_rules: dict = default_output_rules,
+        logger=app_logger,
+    ):
+        self.encoder = Encoder(
+            style=style,
+            input_rules=input_rules,
+            output_rules=output_rules,
+            logger=logger,
+        )
         self.logger = logger
 
     def convert_str(
         self,
         input_str: str,
-        output_dct: Dict[str, Union[List]] = None,
         level: str = None,
-    ) -> Dict[str, Union[List, List[Tuple]]]:
-        if output_dct:
-            pass
-        else:
-            output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
+    ) -> ConvertedStrData:
+        output_dct = {}
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
             converted_id = self.encoder.convert(input_str, level=level)
             if converted_id:
-                output_dct["input"].append(input_str)
-                output_dct["output"].append(converted_id)
-                output_dct["converted"].append((input_str, converted_id))
+                output_dct["input"] = input_str
+                output_dct["output"] = converted_id
+                output_dct["converted"] = (input_str, converted_id)
             else:
-                output_dct["skipped"].append(input_str)
-        return output_dct
+                output_dct["skipped"] = input_str
+        converted_str_obj = ConvertedStrData(
+            input=output_dct.get("input", input_str),
+            output=output_dct.get("output", ""),
+            converted=output_dct.get("converted", tuple()),
+            skipped=output_dct.get("skipped", ""),
+        )
+        return converted_str_obj
 
     def convert_list(
         self, input_list: List[str], level: str = None
     ) -> ConvertedListData:
         output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
+        abbr_result_lst = []
         if input_list and isinstance(input_list, list):
             input_list = keep_string_only(input_list, self.logger)
             for abbr in input_list:
-                output_dct = self.convert_str(abbr, output_dct, level=level)
+                abbr_result_lst.append(self.convert_str(abbr, level=level).dict())
+        for abbr_result in abbr_result_lst:
+            for k in output_dct:
+                output_dct[k].append(abbr_result.get(k, ""))
+        for k in output_dct:
+            output_dct[k] = [v for v in output_dct[k] if v]  # remove "" or None
         converted_lst_obj = ConvertedListData(
             input=output_dct.get("input"),
             output=output_dct.get("output"),

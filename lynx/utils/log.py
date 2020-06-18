@@ -18,7 +18,7 @@
 
 import logging
 
-from lynx.utils.cfg_reader import app_log_level, cli_log_level
+from lynx.utils.cfg_reader import app_log_level, cli_log_level, get_log_level
 
 
 date_fmt = "%b-%d@%H:%M:%S"
@@ -27,16 +27,30 @@ app_logger = logging.getLogger("app_log")
 app_logger.setLevel(app_log_level)
 
 if not app_logger.handlers:
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
-    app_logger.info("Log started ...")
-    app_logger.addHandler(console_handler)
+    app_log_handler = logging.StreamHandler()
+    app_log_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+    app_logger.info("LipidLynxX Log started ...")
+    app_logger.addHandler(app_log_handler)
 
 cli_logger = logging.getLogger("log")
 cli_logger.setLevel(cli_log_level)
 
 if not cli_logger.handlers:
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
-    cli_logger.info("Log started ...")
-    cli_logger.addHandler(console_handler)
+    cli_log_handler = logging.StreamHandler()
+    cli_log_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+    cli_logger.info("LipidLynxX CLI Log started ...")
+    cli_logger.addHandler(cli_log_handler)
+
+
+def create_log(log_level="ERROR", name="log"):
+
+    logger = logging.getLogger(name)
+    logger.setLevel(get_log_level(log_level))
+
+    if not logger.handlers:
+        log_console_handler = logging.StreamHandler()
+        log_console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+        logger.info(f"Log started with level {log_level}...")
+        logger.addHandler(log_console_handler)
+
+    return logger

@@ -19,7 +19,6 @@
 import json
 
 from lynx.utils.cfg_reader import app_cfg_info
-from lynx.utils.log import app_logger
 from lynx.utils.params_loader import (
     build_mod_parser,
     build_input_rules,

@@ -23,7 +23,7 @@ from typing import Dict, List, Union
 
 from jsonschema import Draft7Validator
 
-from lynx.models.api_models import level_rgx_str, LvType, StyleType
+from lynx.models.api_models import level_rgx_str, level_rgx, LvType, StyleType
 from lynx.utils.log import app_logger
 
 
@@ -96,17 +96,18 @@ def keep_string_only(
     return filtered_data
 
 
-def get_level(lv: Union[str, LvType]) -> str:
+def get_level(lv: Union[str, LvType], default_level: str = "MAX") -> str:
     if isinstance(lv, LvType):
         use_level = lv
     else:
         if isinstance(lv, str):
-            if re.match(level_rgx_str, lv):
-                use_level = lv
+            m = level_rgx.match(lv.upper())
+            if m:
+                use_level = m.groupdict().get("level").upper()
             else:
-                use_level = "MAX"
+                use_level = default_level
         else:
-            use_level = "MAX"
+            use_level = default_level
     return use_level
 
 
@@ -116,10 +117,11 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         levels = [lv]
     elif isinstance(lv, str):
         if re.match(level_rgx_str, lv):
-            levels = [lv]
+            levels = [get_level(lv, default_level="B1")]
         else:
             levels = re.split(r", |; |\s+|\n", lv)
-            levels = [seg for seg in levels if re.match(level_rgx_str, seg)]
+            levels = [get_level(seg, default_level="B1") for seg in levels if re.match(level_rgx_str, seg)]
+            levels = list(set(levels))
     elif isinstance(lv, list):
         for temp_lv in lv:
             temp_lv = temp_lv.strip()

@@ -34,9 +34,9 @@ from lynx.utils.log import app_logger
 class Encoder(object):
     def __init__(
         self,
-        output_rules: dict = default_output_rules,
         style: str = "LipidLynxX",
         input_rules: dict = default_input_rules,
+        output_rules: dict = default_output_rules,
         logger=app_logger,
     ):
         self.export_rule = style
@@ -49,7 +49,7 @@ class Encoder(object):
             "SEPARATOR_LEVELS", {}
         )
         self.separators = self.output_rules.get("SEPARATORS", {})
-        self.extractor = Decoder(rules=input_rules)
+        self.extractor = Decoder(rules=input_rules, logger=logger)
         self.logger = logger
 
     @staticmethod
@@ -279,7 +279,7 @@ class Encoder(object):
         if extracted_info:
             for p in extracted_info:
                 p_info = extracted_info[p]
-                self.logger.info(p_info)
+                self.logger.debug(p_info)
                 for in_r in p_info:
                     r_info = p_info[in_r]  # type: dict
                     checked_seg_info = self.check_segments(r_info)
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     lynx_gen = Encoder(style="COMP_DB")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
-        self.logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
         # t_lv = "B0"
         # t2_out = lynx_gen.export_level(
         #     t_in, level=t_lv, import_rules=default_input_rules
@@ -391,6 +391,6 @@ if __name__ == "__main__":
         # )
         # self.logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
         t4_out = lynx_gen.export_all_levels(t_in)
-        self.logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
+        app_logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
-    self.logger.info("fin")
+    app_logger.info("fin")

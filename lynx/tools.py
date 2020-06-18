@@ -32,16 +32,29 @@ from lynx.utils.file_handler import (
     get_output_name,
 )
 from lynx.utils.log import cli_logger
-from lynx.utils.cfg_reader import lynx_version
+from lynx.utils.cfg_reader import app_cfg_info, lynx_version
+from lynx.utils.params_loader import (
+    build_input_rules,
+    build_output_rules,
+)
 from lynx.utils.toolbox import get_levels, get_style_level
 
 
 cli_app = typer.Typer(
-    help=f"LipidLynxX CLI tools version {lynx_version}. Developed by developed by team SysMedOs @ University of Leipzig"
+    help=f"LipidLynxX CLI tools version {lynx_version}. "
+         f"Developed by team SysMedOs @ University of Leipzig "
+         f"Please cite our publication in an appropriate form. "
+         f"LipidLynxX preprint on bioRxiv.org. Zhixu Ni, Maria Fedorova. "
+         f"'LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets' "
+         f"DOI: 10.1101/2020.04.09.033894"
 )
 
+default_input_rules = build_input_rules(app_cfg_info["input_rules"], cli_logger)
+default_output_rules = build_output_rules(app_cfg_info["output_rules"], cli_logger)
 
-@cli_app.command()
+
+@cli_app.command(name="convert-name")
+@cli_app.command(name="convert-lipid")
 def convert_lipid(
     lipid: str = typer.Argument(None),
     style: StyleType = typer.Option(
@@ -70,12 +83,15 @@ def convert_lipid(
 
     """
     style, level = get_style_level(style, level)
-    lynx_converter = Converter(style=style)
-    converted_results = lynx_converter.convert_str(input_str=lipid, level=level).get(
-        "output", []
+    lynx_converter = Converter(
+        style=style,
+        input_rules=default_input_rules,
+        output_rules=default_output_rules,
+        logger=cli_logger,
     )
-    if isinstance(converted_results, list) and len(converted_results) > 0:
-        converted_name = converted_results[0]
+    converted_name = lynx_converter.convert_str(input_str=lipid, level=level).output
+    if isinstance(converted_name, str) and len(converted_name) > 0:
+        pass
     else:
         converted_name = f"Failed to convert: {lipid}"
     typer.echo(
@@ -86,7 +102,8 @@ def convert_lipid(
     typer.echo(converted_name)
 
 
-@cli_app.command()
+@cli_app.command(name="convert")
+@cli_app.command(name="convert-file")
 def convert(
     file: Path = typer.Argument(None),
     output_file: Path = typer.Option(
@@ -115,7 +132,12 @@ def convert(
 
     table_dct = cli_get_table(file)
     style, level = get_style_level(style, level)
-    lynx_converter = Converter(style=style)
+    lynx_converter = Converter(
+        style=style,
+        input_rules=default_input_rules,
+        output_rules=default_output_rules,
+        logger=cli_logger,
+    )
     typer.echo(
         typer.style(
             f"Convert lipid names into {style} style @ {level} level.",
@@ -136,7 +158,8 @@ def convert(
     cli_save_output(output_info, output_file)
 
 
-@cli_app.command()
+@cli_app.command(name="equalize")
+@cli_app.command(name="equalize-file")
 def equalize(
     file: Path = typer.Argument(None),
     output_file: Path = typer.Option(
@@ -163,7 +186,13 @@ def equalize(
     )
     typer.echo(f"Processing file: {file.name} ...")
     with click_spinner.spinner():
-        equalizer = Equalizer(table_dct, level=levels)
+        equalizer = Equalizer(
+            table_dct,
+            level=levels,
+            input_rules=default_input_rules,
+            output_rules=default_output_rules,
+            logger=cli_logger,
+        )
         equalizer_data = equalizer.cross_match()
     if output_file:
         pass

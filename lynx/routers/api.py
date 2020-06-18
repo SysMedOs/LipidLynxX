@@ -31,11 +31,14 @@ from lynx.models.api_models import (
     InputStrData,
     LipidNameType,
     LvType,
+    LevelsData,
     StyleType,
 )
 from lynx.utils.toolbox import get_level
 
 router = APIRouter()
+
+default_levels = LevelsData(levels=["B1", "D1"])
 
 
 # Get APIs
@@ -50,9 +53,9 @@ async def convert_name(
     converted_results = lynx_converter.convert_str(
         input_str=lipid_name, level=get_level(level)
     )
-    converted_lst = converted_results.get("output", [])
-    if isinstance(converted_lst, list) and len(converted_lst) > 0:
-        converted_name = converted_lst[0]
+    converted_name = converted_results.output
+    if isinstance(converted_name, str) and len(converted_name) > 0:
+        pass
     else:
         converted_name = f"Failed to convert: {lipid_name}"
 
@@ -82,7 +85,7 @@ async def convert_str(
     """
     lynx_converter = Converter(style=style)
     converted_results = lynx_converter.convert_str(
-        input_str=data.lipid_name, level=get_level(level)
+        input_str=data.data, level=get_level(level)
     )
     return converted_results
 
@@ -98,7 +101,7 @@ async def convert_list(
     converted_results = ConverterExportData(
         data={
             "TextInput": lynx_converter.convert_list(
-                data.lipid_names, level=get_level(level)
+                data.data, level=get_level(level)
             )
         }
     )
@@ -119,23 +122,27 @@ async def convert_dict(
     return converted_results
 
 
-@router.post("/equalize/dict/", response_model=EqualizerExportData)
-async def equalize_dict(
-    data: InputDictData, levels: Optional[Union[str, List[str]]] = "B1"
+@router.post("/equalize/single-level/", response_model=EqualizerExportData)
+async def equalize_single_level(
+    data: InputDictData, level: Optional[str] = "B1"
 ) -> EqualizerExportData:
     """
     Equalize a dict of lipid names into supported levels and export to supported style
     """
-    if isinstance(levels, str) and levels:
-        if "[" in levels:
-            levels = json.loads(levels)
-        else:
-            levels = [levels]
-    elif isinstance(levels, list) and levels:
-        pass
-    else:
-        levels = ["B1"]
-    equalizer = Equalizer(data.data, level=levels)
+    equalizer = Equalizer(data.data, level=level)
+    equalizer_data = equalizer.cross_match()
+    return equalizer_data
+
+
+@router.post("/equalize/multiple-levels/", response_model=EqualizerExportData)
+async def equalize_multiple_levels(
+    data: InputDictData, levels: Optional[LevelsData] = default_levels
+) -> EqualizerExportData:
+    """
+    Equalize a dict of lipid names into supported levels and export to supported style
+    """
+    print(levels.levels)
+    equalizer = Equalizer(data.data, level=levels.levels)
     equalizer_data = equalizer.cross_match()
     return equalizer_data
 

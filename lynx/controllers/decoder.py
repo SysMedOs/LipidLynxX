@@ -31,7 +31,7 @@ class Decoder(object):
     def __init__(self, rules: dict = default_input_rules, logger=app_logger):
         self.rules = rules
         self.formatter = Formatter()
-        self.alias = Alias()
+        self.alias = Alias(logger=logger)
         self.logger = logger
 
     def check_segments(self, lipid_name: str, rule_class: str, rule: str):
@@ -296,7 +296,7 @@ class Decoder(object):
                 if lipid_name:
                     def_alias = self.check_alias(lipid_name, "LIPID")
                     if def_alias:
-                        self.logger.info(
+                        self.logger.debug(
                             f"Found Alias: {lipid_name} -> change to {def_alias}"
                         )
                         matched_info_dct = self.extract_by_class_rule(def_alias, c)
@@ -327,5 +327,5 @@ if __name__ == "__main__":
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 
-    logger.info(t_out)
-    logger.info("FIN")
+    app_logger.info(t_out)
+    app_logger.info("FIN")

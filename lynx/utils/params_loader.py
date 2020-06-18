@@ -34,6 +34,7 @@ def build_parser(rules_file: str, logger=app_logger) -> Tuple[dict, dict]:
 
     Args:
         rules_file: the path for the rules file
+        logger: for log output
 
     Returns:
         dict contains the regular expressions as a dict

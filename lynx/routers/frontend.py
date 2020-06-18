@@ -18,8 +18,6 @@
 
 import base64
 import json
-from typing import IO
-from tempfile import NamedTemporaryFile
 
 from fastapi import (
     APIRouter,
@@ -31,7 +29,7 @@ from fastapi import (
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
-from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData
+from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData, EqualizerExportData, LevelsData
 import lynx.routers.api as api
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
@@ -79,7 +77,7 @@ async def converter_text(
     file_type: FileType = Form(...),
 ):
     names = lipid_names.splitlines()
-    input_data = InputListData(lipid_names=names)
+    input_data = InputListData(data=names)
     export_style, export_level = get_style_level(export_style, export_level)
     converted_data = await api.convert_list(export_style, input_data, export_level)
     converted_html, not_converted_html = table2html(converted_data)
@@ -151,17 +149,30 @@ async def equalize_file(
     if table_info:
         input_data = InputDictData(data=table_info)
         usr_levels = get_levels(match_levels)
-        export_data = await api.equalize_dict(input_data, usr_levels)
-        data_encoded = get_url_safe_str(export_data.dict().get("data"))
-        file_type = ".xlsx"
-        output_name = get_output_name("Equalizer", file_type)
-        render_data_dct = {
-            "request": request,
-            "err_msgs": err_lst,
-            "output_file_name": output_name,
-            "output_file_type": file_type,
-            "output_file_data": data_encoded,
-        }
+        if isinstance(usr_levels, str):
+            export_data = await api.equalize_single_level(input_data, usr_levels)
+        elif isinstance(usr_levels, list):
+            levels_data = LevelsData(levels=usr_levels)
+            export_data = await api.equalize_multiple_levels(input_data, levels_data)
+        else:
+            export_data = None
+            err_lst.append(f'Invalid levels: {match_levels}')
+        if isinstance(export_data, EqualizerExportData):
+            data_encoded = get_url_safe_str(export_data.dict().get("data"))
+            file_type = "xlsx"
+            output_name = get_output_name("Equalizer", file_type)
+            render_data_dct = {
+                "request": request,
+                "err_msgs": err_lst,
+                "output_file_name": output_name,
+                "output_file_type": file_type,
+                "output_file_data": data_encoded,
+            }
+        else:
+            render_data_dct = {
+                "request": request,
+                "err_msgs": err_lst,
+            }
     else:
         render_data_dct = {
             "request": request,
@@ -214,12 +225,6 @@ def levels(request: Request):
 @router.get("/nomenclature", include_in_schema=False)
 def nomenclature(request: Request):
     return templates.TemplateResponse("nomenclature.html", {"request": request})
-
-
-@router.get("/static/images/{image_name}", include_in_schema=False)
-def get_img(image_name: str):
-
-    return
 
 
 @router.get("/user_guide", include_in_schema=False)
