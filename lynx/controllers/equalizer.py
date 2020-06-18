@@ -21,14 +21,13 @@ from typing import List, Union
 import pandas as pd
 
 from lynx.controllers.encoder import Encoder
-from lynx.models.lipid import Lipid
+# from lynx.models.lipid import Lipid
 from lynx.models.api_models import (
     InputDictData,
     EqualizedLevelData,
     EqualizedData,
     EqualizerExportData,
 )
-from lynx.utils.file_handler import create_equalizer_output
 from lynx.utils.basics import get_abs_path
 from lynx.models.defaults import (
     default_output_rules,

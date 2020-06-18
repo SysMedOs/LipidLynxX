@@ -16,15 +16,19 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+
+from enum import Enum
 import itertools
 import json
 from operator import itemgetter
 import re
+from typing import Dict, List
 
 from jsonschema import Draft7Validator
 from natsort import natsorted
+from pydantic import BaseModel, constr, conint
 
-from ..models.defaults import (
+from lynx.models.defaults import (
     lynx_schema_cfg,
     lipid_level_lst,
     mod_db_level_lst,
@@ -35,7 +39,34 @@ from lynx.utils.log import app_logger
 from lynx.utils.toolbox import check_json
 
 
-class Lipid(object):
+class LipidClassType(BaseModel):
+    main_class: str
+    sub_class: str
+    lmsd_main_class: str
+    lmsd_sub_class: str
+
+
+class ModType(BaseModel):
+    mod: str
+    is_modified: bool
+
+
+class ResidueType(BaseModel):
+    c: conint(ge=0, le=160)
+    db: conint(ge=0, le=32)
+    o: conint(ge=0, le=16)
+    mod: ModType
+    is_modified: bool
+
+
+class Lipid(BaseModel):
+    lipid_class: LipidClassType
+    residues: list
+    exact_sn_position: bool
+    is_modified: bool
+
+
+class Lipid_Legacy(object):
     def __init__(self, lipid_code: str, logger=app_logger):
 
         self.lipid_code = lipid_code
@@ -439,11 +470,11 @@ if __name__ == "__main__":
     counter = 0
     for pl in lipid_lst:
         counter += 1
-        self.logger.info(f"Test Lipid #{counter} : {pl}")
+        app_logger.info(f"Test Lipid #{counter} : {pl}")
         pl_obj = Lipid(lipid_code=pl)
-        self.logger.info(f"Export JSON \n {pl_obj.to_json()}")
-        self.logger.info(
+        app_logger.info(f"Export JSON \n {pl_obj.to_json()}")
+        app_logger.info(
             "".join([f"\n {s}: {pl_obj.linked_ids[s]}" for s in pl_obj.linked_ids])
         )
 
-    self.logger.info("FINISHED")
+    app_logger.info("FINISHED")
