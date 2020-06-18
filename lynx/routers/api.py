@@ -100,9 +100,7 @@ async def convert_list(
     lynx_converter = Converter(style=style)
     converted_results = ConverterExportData(
         data={
-            "TextInput": lynx_converter.convert_list(
-                data.data, level=get_level(level)
-            )
+            "TextInput": lynx_converter.convert_list(data.data, level=get_level(level))
         }
     )
     return converted_results

@@ -45,11 +45,7 @@ class Converter:
         )
         self.logger = logger
 
-    def convert_str(
-        self,
-        input_str: str,
-        level: str = None,
-    ) -> ConvertedStrData:
+    def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
         output_dct = {}
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
             converted_id = self.encoder.convert(input_str, level=level)

@@ -21,6 +21,7 @@ from typing import List, Union
 import pandas as pd
 
 from lynx.controllers.encoder import Encoder
+
 # from lynx.models.lipid import Lipid
 from lynx.models.api_models import (
     InputDictData,

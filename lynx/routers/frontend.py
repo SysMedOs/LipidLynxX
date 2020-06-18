@@ -29,7 +29,14 @@ from fastapi import (
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
-from lynx.models.api_models import FileType, StyleType, InputListData, InputDictData, EqualizerExportData, LevelsData
+from lynx.models.api_models import (
+    FileType,
+    StyleType,
+    InputListData,
+    InputDictData,
+    EqualizerExportData,
+    LevelsData,
+)
 import lynx.routers.api as api
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
@@ -156,7 +163,7 @@ async def equalize_file(
             export_data = await api.equalize_multiple_levels(input_data, levels_data)
         else:
             export_data = None
-            err_lst.append(f'Invalid levels: {match_levels}')
+            err_lst.append(f"Invalid levels: {match_levels}")
         if isinstance(export_data, EqualizerExportData):
             data_encoded = get_url_safe_str(export_data.dict().get("data"))
             file_type = "xlsx"

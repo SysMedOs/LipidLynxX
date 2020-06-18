@@ -49,7 +49,9 @@ def create_log(log_level="ERROR", name="log"):
 
     if not logger.handlers:
         log_console_handler = logging.StreamHandler()
-        log_console_handler.setFormatter(fmt=logging.Formatter(log_fmt, datefmt=date_fmt))
+        log_console_handler.setFormatter(
+            fmt=logging.Formatter(log_fmt, datefmt=date_fmt)
+        )
         logger.info(f"Log started with level {log_level}...")
         logger.addHandler(log_console_handler)
 

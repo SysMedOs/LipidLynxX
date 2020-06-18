@@ -22,12 +22,13 @@ import itertools
 import json
 from operator import itemgetter
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from jsonschema import Draft7Validator
 from natsort import natsorted
 from pydantic import BaseModel, constr, conint
 
+from lynx.models.api_models import LvType
 from lynx.models.defaults import (
     lynx_schema_cfg,
     lipid_level_lst,
@@ -40,33 +41,51 @@ from lynx.utils.toolbox import check_json
 
 
 class LipidClassType(BaseModel):
-    main_class: str
-    sub_class: str
-    lmsd_main_class: str
-    lmsd_sub_class: str
+    main_class: constr(min_length=1, max_length=8)
+    sub_class: Optional[str]
+    lmsd_main_class: Optional[str]
+    lmsd_sub_class: Optional[str]
+
+
+class SiteType(BaseModel):
+    site: conint(ge=0, le=64)
+    info: Optional[str]
 
 
 class ModType(BaseModel):
-    mod: str
-    is_modified: bool
+    cv: str
+    count: conint(ge=1, le=16) = 1
+    sites: Optional[List[SiteType]]
+    elements: Optional[Dict[str, int]]
+    shift: Optional[int]
+
+
+class DBType(BaseModel):
+    count: conint(ge=0, le=16) = 0
+    site: Optional[List[SiteType]]
+    elements: Optional[Dict[str, int]]
+    shift: Optional[int]
 
 
 class ResidueType(BaseModel):
-    c: conint(ge=0, le=160)
+    id: str
+    c: conint(ge=0, le=256)
     db: conint(ge=0, le=32)
-    o: conint(ge=0, le=16)
-    mod: ModType
+    o: conint(ge=0, le=32)
+    mods: List[ModType]
+    elements: Dict[str, int]
+    formula: str
     is_modified: bool
 
 
-class Lipid(BaseModel):
+class LipidType(BaseModel):
     lipid_class: LipidClassType
-    residues: list
+    residues: List[ResidueType]
     exact_sn_position: bool
     is_modified: bool
 
 
-class Lipid_Legacy(object):
+class LipidLegacy(object):
     def __init__(self, lipid_code: str, logger=app_logger):
 
         self.lipid_code = lipid_code

@@ -41,16 +41,16 @@ class LvType(str):
     @classmethod
     def validate(cls, v):
         if not isinstance(v, str):
-            raise TypeError('string required')
+            raise TypeError("string required")
         m = level_rgx.match(v.upper())
         if not m:
-            raise ValueError('invalid LipidLynxX level format')
+            raise ValueError("invalid LipidLynxX level format")
         else:
             lv = m.groupdict().get("level")
         return cls(lv)
 
     def __repr__(self):
-        return f'LvType({super().__repr__()})'
+        return f"LvType({super().__repr__()})"
 
     class Config:
         schema_extra = {"example": "B1"}
@@ -60,6 +60,7 @@ class LevelsType(BaseModel):
     """
     Define LipidLynxX level as specific Type.
     """
+
     levels: List[LvType]
 
     class Config:
@@ -70,6 +71,7 @@ class LevelsData(BaseModel):
     """
     Define LipidLynxX levels for input.
     """
+
     levels: List[str]
 
     class Config:
@@ -132,9 +134,7 @@ class ConvertedStrData(BaseModel):
             "example": {
                 "input": "PLPC",
                 "output": "PC(16:0/18:2)",
-                "converted": [
-                    ["PLPC", "PC(16:0/18:2)"],
-                ],
+                "converted": [["PLPC", "PC(16:0/18:2)"],],
                 "skipped": "",
             }
         }
@@ -179,7 +179,12 @@ class ConverterExportData(BaseModel):
                         "skipped": ["UNKNOWN_LIPID_1"],
                     },
                     "Source_2": {
-                        "input": ["FA20:4", "PC 16:0_18:2", "PI(16:0/20:4)", "UNKNOWN_LIPID_2"],
+                        "input": [
+                            "FA20:4",
+                            "PC 16:0_18:2",
+                            "PI(16:0/20:4)",
+                            "UNKNOWN_LIPID_2",
+                        ],
                         "output": ["FA20:4", "PC(34:2)", "PI(36:4)"],
                         "converted": [
                             ["FA20:4", "FA20:4"],

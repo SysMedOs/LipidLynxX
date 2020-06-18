@@ -42,11 +42,11 @@ from lynx.utils.toolbox import get_levels, get_style_level
 
 cli_app = typer.Typer(
     help=f"LipidLynxX CLI tools version {lynx_version}. "
-         f"Developed by team SysMedOs @ University of Leipzig "
-         f"Please cite our publication in an appropriate form. "
-         f"LipidLynxX preprint on bioRxiv.org. Zhixu Ni, Maria Fedorova. "
-         f"'LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets' "
-         f"DOI: 10.1101/2020.04.09.033894"
+    f"Developed by team SysMedOs @ University of Leipzig "
+    f"Please cite our publication in an appropriate form. "
+    f"LipidLynxX preprint on bioRxiv.org. Zhixu Ni, Maria Fedorova. "
+    f"'LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets' "
+    f"DOI: 10.1101/2020.04.09.033894"
 )
 
 default_input_rules = build_input_rules(app_cfg_info["input_rules"], cli_logger)

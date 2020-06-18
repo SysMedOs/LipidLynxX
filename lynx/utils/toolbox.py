@@ -120,7 +120,11 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
             levels = [get_level(lv, default_level="B1")]
         else:
             levels = re.split(r", |; |\s+|\n", lv)
-            levels = [get_level(seg, default_level="B1") for seg in levels if re.match(level_rgx_str, seg)]
+            levels = [
+                get_level(seg, default_level="B1")
+                for seg in levels
+                if re.match(level_rgx_str, seg)
+            ]
             levels = list(set(levels))
     elif isinstance(lv, list):
         for temp_lv in lv:
