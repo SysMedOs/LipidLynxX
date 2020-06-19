@@ -16,7 +16,6 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-
 from enum import Enum
 import itertools
 import json
@@ -79,8 +78,9 @@ class ResidueType(BaseModel):
 
 
 class LipidType(BaseModel):
-    lipid_class: LipidClassType
-    residues: List[ResidueType]
+    id: str
+    lipid_class: str
+    residues: dict
     exact_sn_position: bool
     is_modified: bool
 

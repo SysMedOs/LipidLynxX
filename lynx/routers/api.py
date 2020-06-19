@@ -15,14 +15,18 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
+
 import json
+import re
 from typing import List, Optional, Union
 
 from fastapi import APIRouter
+from pydantic import parse_obj_as
 
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
+from lynx.controllers.parser import parse_lipid
 from lynx.models.api_models import (
     ConverterExportData,
     EqualizerExportData,
@@ -34,6 +38,7 @@ from lynx.models.api_models import (
     LevelsData,
     StyleType,
 )
+from    lynx.models.lipid import LipidType
 from lynx.utils.toolbox import get_level
 
 router = APIRouter()
@@ -44,7 +49,7 @@ default_levels = LevelsData(levels=["B1", "D1"])
 # Get APIs
 @router.get("/convert/lipid/")
 async def convert_name(
-    lipid_name: str, style: Optional[str] = "LipidLynxX", level: Optional[str] = "MAX"
+    lipid_name: str = "PLPC", style: Optional[str] = "LipidLynxX", level: Optional[str] = "MAX"
 ):
     """
     Convert one lipid name into supported levels and export to supported style
@@ -67,12 +72,7 @@ async def parse_name(lipid_name: str = "PLPC"):
     """
     Parse one lipid name from path parameter
     """
-    # extractor = Decoder()
-    # parsed = extractor.extract(data)
-    lynx_gen = Encoder()
-    parsed = lynx_gen.export_all_levels(lipid_name)
-
-    return parsed
+    return parse_lipid(lipid_name)
 
 
 # Post APIs
@@ -146,13 +146,9 @@ async def equalize_multiple_levels(
 
 
 @router.post("/parse/str/")
-async def parse_str(data: LipidNameType = "PLPC"):
+async def parse_str(data: InputStrData):
     """
     Parse one lipid name from data
     """
-    # extractor = Decoder()
-    # parsed = extractor.extract(data)
-    lynx_gen = Encoder()
-    parsed = lynx_gen.export_all_levels(data)
 
-    return parsed
+    return parse_lipid(data.data)
