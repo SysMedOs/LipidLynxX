@@ -24,14 +24,15 @@ import regex as re
 from lynx.controllers.formatter import Formatter
 from lynx.models.alias import Alias
 from lynx.models.defaults import default_input_rules
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Decoder(object):
-    def __init__(self, rules: dict = default_input_rules):
+    def __init__(self, rules: dict = default_input_rules, logger=app_logger):
         self.rules = rules
         self.formatter = Formatter()
-        self.alias = Alias()
+        self.alias = Alias(logger=logger)
+        self.logger = logger
 
     def check_segments(self, lipid_name: str, rule_class: str, rule: str):
         c = rule_class
@@ -101,7 +102,7 @@ class Decoder(object):
                 pass
 
         # if not defined_id:
-        #     logger.debug(
+        #     self.logger.debug(
         #         f"Cannot decode alias: {alias} using alias_type: {alias_type}."
         #     )
 
@@ -167,7 +168,7 @@ class Decoder(object):
                 # if isinstance(num_o_chk_lst, list) and re.match(r'\d?O|O\d?|\d', num_o_chk_lst[0]):
                 #     matched_info_dct["MOD_TYPE"] = ["O"] + matched_info_dct.get("MOD_TYPE", [])
                 matched_dct = self.formatter.format_residue(matched_info_dct)
-                logger.debug(f'matched_dct: {matched_dct}')
+                self.logger.debug(f"matched_dct: {matched_dct}")
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 
@@ -266,7 +267,7 @@ class Decoder(object):
                     # "SEPARATOR_LEVELS": sep_levels,
                 }
             elif sum_residues_lst and len(sum_residues_lst) > 1:
-                logger.error(
+                self.logger.error(
                     f"More than two parts of SUM residues matched: {sum_residues_lst}"
                 )
             else:
@@ -295,7 +296,7 @@ class Decoder(object):
                 if lipid_name:
                     def_alias = self.check_alias(lipid_name, "LIPID")
                     if def_alias:
-                        logger.info(
+                        self.logger.debug(
                             f"Found Alias: {lipid_name} -> change to {def_alias}"
                         )
                         matched_info_dct = self.extract_by_class_rule(def_alias, c)
@@ -303,7 +304,7 @@ class Decoder(object):
                             extracted_info_dct[c] = matched_info_dct
 
         if not extracted_info_dct:
-            logger.error(f"Failed to decode Lipid: {lipid_name}")
+            self.logger.error(f"Failed to decode Lipid: {lipid_name}")
 
         return extracted_info_dct
 
@@ -326,5 +327,5 @@ if __name__ == "__main__":
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 
-    logger.info(t_out)
-    logger.info("FIN")
+    app_logger.info(t_out)
+    app_logger.info("FIN")

@@ -16,20 +16,28 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_restful import reqparse
+from typer.testing import CliRunner
 
-convert_get_parser = reqparse.RequestParser()
-convert_get_parser.add_argument(
-    "data", type=str, location=["args", "headers", "form", "json"]
-)
-convert_get_parser.add_argument(
-    "export_style", type=str, location=["args", "headers", "form", "json"]
-)
+from cli_lynx import cli_app
 
-equalizer_get_parser = reqparse.RequestParser()
-equalizer_get_parser.add_argument(
-    "data", type=str, location=["args", "headers", "form", "json"]
-)
-equalizer_get_parser.add_argument(
-    "level", type=str, location=["args", "headers", "form", "json"]
-)
+runner = CliRunner()
+
+
+def test_convert_lipid():
+    result = runner.invoke(cli_app, ["convert-lipid", "PLPC"])
+    assert result.exit_code == 0
+    assert "PC(16:0/18:2)" in result.stdout
+
+
+def test_convert():
+    result = runner.invoke(
+        cli_app,
+        [
+            "convert",
+            r"doc/sample_data/input/LipidLynxX_test.csv",
+            "--output",
+            r"test/test_output/test_convert.xlsx",
+        ],
+    )
+    assert result.exit_code == 0
+    assert "Save output as: test/test_output/test_convert.xlsx" in result.stdout
