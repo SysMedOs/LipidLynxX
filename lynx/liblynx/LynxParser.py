@@ -35,7 +35,7 @@ def parse_lipidlynx(abbr: str) -> dict:
 
     info_dct = {}
 
-    converted_dct = Converter.convert_string(abbr)
+    converted_dct = Converter.convert_str(abbr)
     lynx_id_lst = converted_dct.get("output", [])
     if len(lynx_id_lst) == 1:
         lynx_id = lynx_id_lst[0]

@@ -23,17 +23,17 @@ from jsonschema import Draft7Validator, RefResolver
 from natsort import natsorted
 import regex as re
 
-from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import (
-    api_version,
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
     mod_db_level_lst,
     default_output_rules,
 )
-from lynx.utils.file_handler import get_abs_path
-from lynx.utils.log import logger
+from lynx.utils.basics import get_abs_path
+from lynx.utils.cfg_reader import api_version
+from lynx.utils.log import app_logger
+from lynx.utils.params_loader import load_output_rule
 from lynx.utils.toolbox import check_json
 
 
@@ -45,6 +45,7 @@ class Modifications(object):
         schema: str = "lynx_mod",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
+        logger=app_logger,
     ):
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.mod_rule = self.export_rule.get("MODS", None)
@@ -72,6 +73,7 @@ class Modifications(object):
         self.mod_id = self.sum_mod_info.get("id", "")
         self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
         self.mod_list = self.sum_mod_info.get("info", {})
+        self.logger = logger
 
     def __str__(self):
         return self.to_json()
@@ -366,7 +368,10 @@ class Modifications(object):
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
 
-        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
+        if check_json(
+            validator=self.validator,
+            json_obj=json.loads(mod_json_str, logger=self.logger),
+        ):
             return mod_json_str
         else:
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
@@ -461,12 +466,12 @@ if __name__ == "__main__":
     }
 
     usr_mod_obj = Modifications(usr_mod_info)
-    logger.debug(usr_mod_obj)
+    app_logger.debug(usr_mod_obj)
     mod_json = usr_mod_obj.to_json()
 
     usr_sum_mods_obj = merge_mods([usr_mod_obj, usr_mod_obj])
 
-    logger.debug(usr_sum_mods_obj)
+    app_logger.debug(usr_sum_mods_obj)
     sum_mod_json = usr_sum_mods_obj.to_json()
 
-    logger.info("FINISHED")
+    app_logger.info("FINISHED")

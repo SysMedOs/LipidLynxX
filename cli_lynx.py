@@ -16,13 +16,8 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from lynx.tools import cli_app
 
-class ApiErrors(object):
-    def __init__(self):
-        # error 101x for IO related errors
-        self.input_error = {"code": 1011, "msg": "Input error!", "data": ""}
-        self.output_error = {"code": 1012, "msg": "Output error!", "data": ""}
-        # error 102x for Converter related errors
-        self.converter_error = {"code": 1020, "msg": "Converter error!", "data": ""}
-        # error 103x for Converter related errors
-        self.equalizer_error = {"code": 1030, "msg": "Equalizer error!", "data": ""}
+
+if __name__ == "__main__":
+    cli_app()

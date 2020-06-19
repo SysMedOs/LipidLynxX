@@ -25,7 +25,7 @@ import regex as re
 from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import res_schema, res_schema_path, default_output_rules
 from lynx.models.modification import Modifications, merge_mods
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import check_json
 
 
@@ -36,7 +36,9 @@ class Residue(object):
         schema: str = "lynx_residues",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
+        logger=app_logger,
     ):
+        self.logger = logger
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.res_rule = self.export_rule.get("RESIDUES", None)
         self.res_rule_orders = self.res_rule.get("RESIDUE", {}).get("ORDER", [])
@@ -94,7 +96,28 @@ class Residue(object):
                         res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
                     elif o == "NUM_O":
                         if num_o > 0:
-                            res_str += str(num_o)
+                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            if o_seg_rgx:
+                                if num_o == 1:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, "1"):
+                                        res_str += str("1")
+                                    elif re.match(o_seg_rgx, "O"):
+                                        res_str += str("O")
+                                    else:
+                                        res_str += str(num_o)
+                                else:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, f"{num_o}O"):
+                                        res_str += f"{num_o}O"
+                                    elif re.match(o_seg_rgx, f"O{num_o}"):
+                                        res_str += f"O{num_o}"
+                                    else:
+                                        res_str += str(num_o)
+                            else:
+                                res_str += str(num_o)
                         else:
                             pass
                     elif o.upper().endswith("_SEPARATOR"):
@@ -118,7 +141,7 @@ class Residue(object):
         fa_lite_info_dct = self.fa_info_dct
         fa_lite_info_dct.pop("mod_obj", None)
         fa_json_str = json.dumps(fa_lite_info_dct)
-        if check_json(self.validator, json.loads(fa_json_str)):
+        if check_json(self.validator, json.loads(fa_json_str, logger=self.logger)):
             return fa_json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
@@ -229,6 +252,6 @@ if __name__ == "__main__":
     #     # usr_res_json = res_obj.to_json()
 
     usr_res_obj = merge_residues(usr_res_info)
-    logger.debug(usr_res_obj.linked_ids)
+    app_logger.debug(usr_res_obj.linked_ids)
     # usr_res_json = res_obj.to_json()
-    logger.info("FINISHED")
+    app_logger.info("FINISHED")
