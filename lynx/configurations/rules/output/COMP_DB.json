@@ -4,6 +4,12 @@
     "zhixu.ni@uni-leipzig.de"
   ],
   "NOMENCLATURE": "COMP_DB",
+  "SUPPORTED_LEVELS": [
+    "B0",
+    "B1",
+    "B2",
+    "B3"
+  ],
   "SEPARATORS": {
     "DB_SEPARATOR": ":",
     "O_SEPARATOR": ";",
@@ -41,7 +47,10 @@
         "SITE_BRACKET_LEFT"
       ],
       "REPEAT": {
-        "MOD": [1, 10]
+        "MOD": [
+          1,
+          10
+        ]
       },
       "MOD_COUNT": "\\d?\\d?",
       "MOD_CV": "([a-zA-Z]*[-0-9a-zA-Z]*)",
