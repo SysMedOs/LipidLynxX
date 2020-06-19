@@ -18,7 +18,7 @@ in the epilipidome.
 To preview the latest changes on the converter without dealing with source code.
 
 Just click this button 👉
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/master?filepath=converter_notebook.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=converter_notebook.ipynb)
 
 And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
 
@@ -203,30 +203,22 @@ please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidL
 - **GUI**
     ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
 - **API**
-
-    Examples:
-    ```bash
-    curl http://127.0.0.1:5000/lynx/api/0.1/converter/str/ -d 'data="PLPC"' -X GET
-    curl http://127.0.0.1:5000/lynx/api/0.1/converter/list/ -d 'data=["PAPE", "PE 36:4"]' -X GET
-    curl http://127.0.0.1:5000/lynx/api/0.1/converter/dict/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2"]}' -X GET
-    curl http://127.0.0.1:5000/lynx/api/0.1/equalizer/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)", "DPPE"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2", "PG 18:0_18:3"]}&level=D0' -X GET
-    ```
-     ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
+    - LipidLynxX provides API documentation using both OpenAI (left) and ReDoc (right)
+    ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
     
     
 - **Terminal Tools**
     
-    - LipidLynxX Converter
-    
-    ```bash
-    python LynxConverter.py -i doc/sample_data/input/LipidLynxX_test.xlsx -o doc/sample_data/output/LipidLynxX_test_converter_out.xlsx
-    ```
+    - LipidLynxX provide the same function in command line.
+        ```bash
+            python cli-lynx.py
+        ```
+        ![LipidLynxX_API](doc/images/LipidLynxX_Start_cli.png)
 
-    - LipidLynxX Equalizer
-
-    ```bash
-    python LynxEqualizer.py -l "B0,D0,D1" -i doc/sample_data/input/LipidLynxX_test.csv -o doc/sample_data/output/LipidLynxX_test_equalizer_out.xlsx
-    ```
+- **Use as Python module**
+    - Please check `examples_notebook.ipynb`
+    - You can find online interactive version via Binder 
+    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=examples_notebook.ipynb)
 
 ### License
 

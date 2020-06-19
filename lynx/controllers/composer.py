@@ -30,9 +30,8 @@ from lynx.models.lipid import (
 
 
 def construct_lipid(name):
-    encoder = Encoder()
     decoder = Decoder()
-    extracted_info = decoder.extract(usr_lipid)
+    extracted_info = decoder.extract(name)
     if extracted_info:
         for p in extracted_info:
             p_info = extracted_info[p]
