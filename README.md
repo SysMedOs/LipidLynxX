@@ -90,6 +90,41 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
 
   - Cross link different level of LipidLynxX ID on selected level
 
+## Instructions
+
+### Sample files:
+
+- Test input file: `LipidLynxX/doc/sample_data/input`
+- Test output file: `LipidLynxX/doc/sample_data/output`
+
+### How to install and use LipidLynxX
+
+Please find our user guide in folder `doc`.
+-  [User Guide in PDF format](doc/LipidLynxX_UserGuide.pdf)
+-  [User Guide in Markdown format](doc/LipidLynxX_UserGuide.md)
+
+### Screenshots
+
+- **GUI**
+    ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
+- **API**
+    - LipidLynxX provides API documentation using both OpenAI (left) and ReDoc (right)
+    ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
+    
+    
+- **Terminal Tools**
+    
+    - LipidLynxX provide the same function in command line.
+        ```bash
+            python cli-lynx.py
+        ```
+        ![LipidLynxX_API](doc/images/LipidLynxX_Start_cli.png)
+
+- **Use as Python module**
+    - Please check `examples_notebook.ipynb`
+    - You can find online interactive version via Binder 
+    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=examples_notebook.ipynb)
+
 ### LipidLynxX Nomenclature
 
 - LipidLynxX levels
@@ -164,19 +199,6 @@ We kindly ask, if you have any plans to use LipidLynxX API contact us first, or 
     - PC(16:0/20:4/<2OH,oxo>)
     - PE(16:0/20:4/<{5,9,12,15},2OH{8,11},oxo{14}>)
 
-## Instructions
-
-### Sample files:
-
-- Test input file: `LipidLynxX/doc/sample_data/input`
-- Test output file: `LipidLynxX/doc/sample_data/output`
-
-### How to install and use LipidLynxX
-
-Please find our user guide in folder `doc`.
--  [User Guide in PDF format](doc/LipidLynxX_UserGuide.pdf)
--  [User Guide in Markdown format](doc/LipidLynxX_UserGuide.md)
-
 ### Information for developers
 
 - LipidLynxX is configured to use [travis-ci](https://travis-ci.com) and GitHub Actions with `py.test` to test
@@ -198,27 +220,9 @@ cross-platform compatibility on Linux, macOS and  Windows.
 In case you experienced any problems with running LipidLynxX, 
 please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidLynxX/issues) or contact us.
 
-### Screenshots
+### Report issues
 
-- **GUI**
-    ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
-- **API**
-    - LipidLynxX provides API documentation using both OpenAI (left) and ReDoc (right)
-    ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
-    
-    
-- **Terminal Tools**
-    
-    - LipidLynxX provide the same function in command line.
-        ```bash
-            python cli-lynx.py
-        ```
-        ![LipidLynxX_API](doc/images/LipidLynxX_Start_cli.png)
-
-- **Use as Python module**
-    - Please check `examples_notebook.ipynb`
-    - You can find online interactive version via Binder 
-    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=examples_notebook.ipynb)
+- Report any issues here: <https://github.com/SysMedOs/LipidLynxX/issues>
 
 ### License
 
@@ -245,10 +249,6 @@ please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidL
         "Computational solutions in redox lipidomics–Current strategies and future perspectives."
         Free Radical Biology and Medicine (2019).
       - DOI: [10.1016/j.freeradbiomed.2019.04.027](https://www.sciencedirect.com/science/article/pii/S0891584919303466)
-
-### Report issues
-
-- Report any issues here: <https://github.com/SysMedOs/LipidLynxX/issues>
 
 ### Fundings
 
