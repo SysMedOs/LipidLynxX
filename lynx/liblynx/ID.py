@@ -18,7 +18,7 @@
 
 from typing import Dict
 
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class LynxID:
@@ -30,7 +30,7 @@ class LynxID:
         ref_id_dct = self.lynx_id_info.get("resource_ids", {})
         if db in ref_id_dct:
             if ref_id_dct[db] != ref_id:
-                logger.warning(
+                app_logger.warning(
                     f"update ref_id in db: {db} from {ref_id_dct[db]} to {ref_id}"
                 )
         ref_id_dct[db] = ref_id

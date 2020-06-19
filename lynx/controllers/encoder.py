@@ -28,18 +28,19 @@ from lynx.models.defaults import (
     default_input_rules,
     supported_levels,
 )
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Encoder(object):
     def __init__(
         self,
-        output_rules: dict = default_output_rules,
-        rule: str = "LipidLynxX",
+        style: str = "LipidLynxX",
         input_rules: dict = default_input_rules,
+        output_rules: dict = default_output_rules,
+        logger=app_logger,
     ):
-        self.export_rule = rule
-        self.output_rules = load_output_rule(output_rules, rule)
+        self.export_rule = style
+        self.output_rules = load_output_rule(output_rules, style)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
         self.sum_mod_rules = self.output_rules.get("MODS", {}).get("SUM_MODS", {})
@@ -48,7 +49,8 @@ class Encoder(object):
             "SEPARATOR_LEVELS", {}
         )
         self.separators = self.output_rules.get("SEPARATORS", {})
-        self.extractor = Decoder(rules=input_rules)
+        self.extractor = Decoder(rules=input_rules, logger=logger)
+        self.logger = logger
 
     @staticmethod
     def get_best_id(candidate: Dict[str, str]) -> str:
@@ -80,14 +82,15 @@ class Encoder(object):
                         pass
 
         # add levels for B0, D0, S0 lipids
-        if list(best_id_dct.keys())[-1].endswith("0"):
-            for lv in list(best_id_dct.keys()):
-                for lv_base in ["B", "D", "S"]:
-                    if lv.startswith(lv_base):
-                        lv_id = best_id_dct.get(lv)
-                        for add_lv in supported_levels:
-                            if add_lv.startswith(lv_base) and add_lv != lv:
-                                best_id_dct[add_lv] = lv_id
+        if best_id_dct:
+            if list(best_id_dct.keys())[-1].endswith("0"):
+                for lv in list(best_id_dct.keys()):
+                    for lv_base in ["B", "D", "S"]:
+                        if lv.startswith(lv_base):
+                            lv_id = best_id_dct.get(lv)
+                            for add_lv in supported_levels:
+                                if add_lv.startswith(lv_base) and add_lv != lv:
+                                    best_id_dct[add_lv] = lv_id
 
         if best_id_dct.get("D1") and not best_id_dct.get("B1"):
             best_id_dct["B1"] = best_id_dct["D1"]
@@ -101,7 +104,7 @@ class Encoder(object):
     #     out_seg_lst = []
     #     if segment_text and patterns_dct:
     #         for s_rgx in patterns_dct:
-    #             logger.debug(
+    #             self.logger.debug(
     #                 f"Test {segment_text} on {segment_name} of {lmsd_class} using {s_rgx}"
     #             )
     #             s_matched = s_rgx.match(segment_text)
@@ -168,7 +171,9 @@ class Encoder(object):
         for sep_lv in sum_res_sep_lv_lst:
             if sep_lv == "B":
                 # prepare bulk level
-                merged_res_obj = merge_residues(residues_info, nomenclature=self.export_rule)
+                merged_res_obj = merge_residues(
+                    residues_info, nomenclature=self.export_rule
+                )
                 merged_res_linked_ids = merged_res_obj.linked_ids
                 merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())
                 for merged_res_lv in merged_res_lv_lst:
@@ -235,7 +240,7 @@ class Encoder(object):
                 if c_segments_dct and c_orders:
                     segments_dct[c] = {"ORDER": c_orders, "INFO": c_segments_dct}
         else:
-            logger.warning(f"No Class identified!")
+            self.logger.warning(f"No Class identified!")
 
         return segments_dct
 
@@ -257,7 +262,7 @@ class Encoder(object):
                         lv_seg_lst.append(self.separators[c_seg])
                     else:
                         if c_seg not in c_optional_seg:
-                            logger.debug(
+                            self.logger.debug(
                                 f"Segments not found: {c_seg}, defined orders {c_seg_order}"
                             )
                         else:
@@ -267,23 +272,21 @@ class Encoder(object):
 
         return comp_seg_dct
 
-    def export_all_levels(
-        self, lipid_name: str
-    ) -> dict:
+    def export_all_levels(self, lipid_name: str) -> dict:
 
         extracted_info = self.extractor.extract(lipid_name)
         export_info = []
         if extracted_info:
             for p in extracted_info:
                 p_info = extracted_info[p]
-                logger.info(p_info)
+                self.logger.debug(p_info)
                 for in_r in p_info:
                     r_info = p_info[in_r]  # type: dict
                     checked_seg_info = self.check_segments(r_info)
                     comp_dct = self.compile_segments(checked_seg_info)
                     export_info.append(comp_dct)
             best_export_dct = self.get_best_id_series(export_info)
-            logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
+            self.logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
         else:
             best_export_dct = {}
 
@@ -302,9 +305,7 @@ class Encoder(object):
         return best_id
 
     def export_level(
-        self,
-        lipid_name: str,
-        level: str = "B1",
+        self, lipid_name: str, level: str = "B1",
     ):
 
         lv_id = ""
@@ -313,12 +314,12 @@ class Encoder(object):
             if level in all_lv_id_dct:
                 lv_id = all_lv_id_dct[level]
             else:
-                raise ValueError(
+                self.logger.warning(
                     f"Lipid: {lipid_name} cannot be converted into level: {level}. "
                     f"Can be converted into: {all_lv_id_dct}"
                 )
         else:
-            raise ValueError(
+            self.logger.warning(
                 f"Level: {level} not supported. Supported levels: {supported_levels}"
             )
 
@@ -375,21 +376,21 @@ if __name__ == "__main__":
         # "8-iso PGF2a III",
         # "palmitoleic acid",
     ]
-    lynx_gen = Encoder(rule="BioPAN")
+    lynx_gen = Encoder(style="COMP_DB")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
-        logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
         # t_lv = "B0"
         # t2_out = lynx_gen.export_level(
         #     t_in, level=t_lv, import_rules=default_input_rules
         # )
-        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
+        # self.logger.info(f"Input: {t_in} -> Output @ Lv {t_lv}: {t2_out}")
         # t_lv_lst = ["B0"]
         # t3_out = lynx_gen.export_levels(
         #     t_in, levels=t_lv_lst, import_rules=default_input_rules
         # )
-        # logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
+        # self.logger.info(f"Input: {t_in} -> Output @ Lv {t_lv_lst}: {t3_out}")
         t4_out = lynx_gen.export_all_levels(t_in)
-        logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
+        app_logger.info(f"Input: {t_in} -> Output @ all levels: {t4_out}")
 
-    logger.info("fin")
+    app_logger.info("fin")

@@ -16,7 +16,7 @@
                     <div class="row"><h1>LipidLynxX<br></h1></div>
                     <div class="row">&nbsp;</div>
                     <div class="row"><img alt="image" class="img-fluid"
-                                          src="../static/images/LipidLynxX_Logo.png"></div>
+                                          src="images/LipidLynxX_Logo.png"></div>
                     <div class="row">&nbsp;</div>
                     <div class="row">
                         <ul>
@@ -44,8 +44,8 @@
                             <div class="row"><h2>&nbsp;<br></h2></div>
                             <div class="row">
                                 <div class="col-3">
-                                    <a href="{{ url_for('.converter') }}"><img alt="image" class="img-fluid"
-                                                                               src="../static/images/converter_logo.png"></a>
+                                    <a href="{{ url_for('converter') }}"><img alt="image" class="img-fluid"
+                                                                               src="images/converter_logo.png"></a>
                                 </div>
                                 <div class="col-9">
                                     <div class="row">
@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-4"><a class="btn btn-info mt-4 btn-block"
-                                                              href="{{ url_for('.converter') }}">
+                                                              href="{{ url_for('converter') }}">
                                             Run Converter</a><br></div>
                                     </div>
                                 </div>
@@ -62,9 +62,9 @@
                             <div class="row">&nbsp;</div>
                             <div class="row">
                                 <div class="col-3">
-                                    <a href="{{ url_for('.equalizer') }}">
+                                    <a href="{{ url_for('equalizer') }}">
                                         <img alt="image" class="img-fluid"
-                                             src="../static/images/equalizer_logo.png"></a>
+                                             src="images/equalizer_logo.png"></a>
                                 </div>
                                 <div class="col-9">
                                     <div class="row">
@@ -74,7 +74,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-4">
-                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('.equalizer') }}">Run
+                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('equalizer') }}">Run
                                                 Equalizer</a><br></div>
                                     </div>
                                 </div>
@@ -92,7 +92,7 @@
                                                     href="https://www.jlr.org/content/54/6/1523"
                                                     target="_blank">link to the paper.</a></p>
                                         <a class="btn btn-info mt-4 btn-block"
-                                           href="{{ url_for('.nomenclature') }}">
+                                           href="{{ url_for('nomenclature') }}" target="_blank">
                                             Read more about nomenclature used by LipidLynxX</a><br>
                                     </div>
                                     <div class="row"><p>&nbsp;</p></div>
@@ -102,14 +102,14 @@
                                             of lipids including residues levels, modification levels, and double bond
                                             levels .</p>
                                         <a class="btn btn-info mt-4 btn-block"
-                                           href="{{ url_for('.levels') }}">
+                                           href="{{ url_for('levels') }}" target="_blank">
                                             Read more about lipid level matrix</a><br>
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="row"><p>&nbsp;</p></div>
-                                    <a href="{{ url_for('.nomenclature') }}">
-                                        <img alt="image" class="img-fluid" src="../static/images/nomenclatue_logo.png"></a>
+                                    <a href="{{ url_for('nomenclature') }}" target="_blank">
+                                        <img alt="image" class="img-fluid" src="images/nomenclatue_logo.png"></a>
                                 </div>
                             </div>
                         </div>

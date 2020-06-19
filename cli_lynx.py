@@ -16,6 +16,8 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_restful import Api
+from lynx.tools import cli_app
 
-rest_api = Api()
+
+if __name__ == "__main__":
+    cli_app()

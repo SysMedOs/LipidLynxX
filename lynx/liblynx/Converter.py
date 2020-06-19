@@ -21,7 +21,7 @@ import re
 
 import pandas as pd
 
-from ..models.defaults import cfg_info_dct
+from ..models.defaults import app_cfg_info
 from ..models.defaults import logger
 from ..liblynx.AbbrParser import AbbrParser
 
@@ -32,7 +32,7 @@ class Converter:
         if isinstance(abbr_df, pd.DataFrame):
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         else:
-            abbr_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+            abbr_df = pd.read_excel(app_cfg_info["abbr_cfg"])
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         self.abbr_dct = dict(
             zip(abbr_df["Abbreviation"].tolist(), abbr_df["LipidLynx"].tolist())
