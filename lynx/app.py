@@ -45,7 +45,7 @@ def custom_openapi(openapi_prefix: str):
         routes=app.routes,
         openapi_prefix=openapi_prefix,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "static/images/LipidLynxX_Logo.png"}
+    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_Logo.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
