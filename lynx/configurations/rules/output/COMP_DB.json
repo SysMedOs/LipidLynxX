@@ -13,7 +13,7 @@
   "SEPARATORS": {
     "DB_SEPARATOR": ":",
     "O_SEPARATOR": ";",
-    "RES_SEPARATOR": " ",
+    "RESIDUE_SEPARATOR": " ",
     "RESIDUE_BRACKET_LEFT": "(",
     "RESIDUE_BRACKET_RIGHT": ")",
     "MOD_BRACKET_LEFT": "<",
@@ -139,7 +139,7 @@
     "FA01": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -153,7 +153,7 @@
     "FA02": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -167,7 +167,7 @@
     "FA03": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -181,7 +181,7 @@
     "FA04": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -195,7 +195,7 @@
     "FA0705": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -210,7 +210,7 @@
     "GL01": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -225,7 +225,7 @@
     "GL02": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 2,
@@ -240,7 +240,7 @@
     "GL03": {
       "ORDER": [
         "CLASS",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -261,7 +261,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -288,7 +288,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -315,7 +315,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -342,7 +342,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -369,7 +369,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -398,7 +398,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -425,7 +425,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -452,7 +452,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -479,7 +479,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -506,7 +506,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 2,
@@ -533,7 +533,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -560,7 +560,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -587,7 +587,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -614,7 +614,7 @@
       "ORDER": [
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -630,7 +630,7 @@
       "ORDER": [
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "MAX_RESIDUES": 1,
@@ -646,7 +646,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -679,7 +679,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -706,7 +706,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -736,7 +736,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [
@@ -762,7 +762,7 @@
         "PREFIX",
         "CLASS",
         "SUFFIX",
-        "RES_SEPARATOR",
+        "RESIDUE_SEPARATOR",
         "SUM_RESIDUES"
       ],
       "OPTIONAL": [

@@ -163,7 +163,7 @@ class Modifications(object):
                                 mod_seg_str += f"+{mod_count}"
                         elif mod_count < 0 and mod_lv < 3:
                             mod_seg_str += str(mod_count)
-                        elif mod_count == 1:
+                        elif mod_count == 1 and cv not in ["", "DB"]:
                             if mod_lv < 3:
                                 mod_seg_str += "+"
                             else:

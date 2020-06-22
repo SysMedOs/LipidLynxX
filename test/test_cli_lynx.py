@@ -15,10 +15,14 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-
+import os, sys
 from typer.testing import CliRunner
 
+lynx_path = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, lynx_path + "/../")
+
 from cli_lynx import cli_app
+
 
 runner = CliRunner()
 
@@ -41,3 +45,17 @@ def test_convert():
     )
     assert result.exit_code == 0
     assert "Save output as: test/test_output/test_convert.xlsx" in result.stdout
+
+
+def test_equalize():
+    result = runner.invoke(
+        cli_app,
+        [
+            "equalize",
+            r"doc/sample_data/input/LipidLynxX_test.csv",
+            "--output",
+            r"test/test_output/test_equalize.xlsx",
+        ],
+    )
+    assert result.exit_code == 0
+    assert "Save output as: test/test_output/test_equalize.xlsx" in result.stdout

@@ -55,7 +55,7 @@ class Residue(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        self.mod_obj = Modifications(mod_info)
+        self.mod_obj = Modifications(mod_info, nomenclature=nomenclature)
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level

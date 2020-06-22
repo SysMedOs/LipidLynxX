@@ -1,0 +1,536 @@
+{
+  "_DATE": 20200622,
+  "_AUTHORS": [
+    "zhixu.ni@uni-leipzig.de"
+  ],
+  "SOURCES": [
+    "ShothandNotation"
+  ],
+  "SEPARATORS": {
+    "RESIDUE_SEPARATOR": "_|/",
+    "MOD_SEPARATOR": "-",
+    "SPACE": "\\s",
+    "COLON": ":",
+    "SEMICOLON": ";",
+    "BRACKET_LEFT": "\\(",
+    "BRACKET_RIGHT": "\\)",
+    "SEPARATOR_LEVELS": {
+      "B": "",
+      "D": "_",
+      "S": "/"
+    }
+  },
+  "MODS": {
+    "MOD": {
+      "ORDER": [
+        "MOD_SITE",
+        "MOD_SITE_INFO",
+        "MOD_SEPARATOR",
+        "MOD_TYPE"
+      ],
+      "OPTIONAL": [
+        "MOD_SITE_INFO",
+        "MOD_SEPARATOR",
+        "MOD_TYPE"
+      ],
+      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
+      "MOD_SITE_INFO": "([EZRS])?",
+      "MOD_SEPARATOR": "$.SEPARATORS.MOD_SEPARATOR.0",
+      "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
+      "EXAMPLES": [
+        "9",
+        "9Z",
+        "9OH",
+        "9S-OH"
+      ]
+    },
+    "SUM_MODS": {
+      "ORDER": [
+        "BRACKET_LEFT",
+        "MOD",
+        "BRACKET_RIGHT"
+      ],
+      "REPEAT": {
+        "MOD": [0, 10]
+      },
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "MOD": "$.MODS.MOD.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    }
+  },
+  "RESIDUES": {
+    "RESIDUE": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "NUM_C",
+        "DB_SEPARATOR",
+        "DB",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "DB",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "REPEAT": {
+        "SUM_MODS": [0, 10]
+      },
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "LINK": "[OP]-|C|[mdt]|h",
+      "NUM_C": "[0-9]{1,2}",
+      "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
+      "DB": "[1,2]?[0-9]",
+      "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
+      "NUM_O": "[1-3]?O?",
+      "SUM_MODS": "$.MODS.SUM_MODS.0",
+      "EXAMPLES": [
+        "18:2;3O",
+        "18:2;O",
+        "18:2",
+        "9:0",
+        "26:0;(2OH)",
+        "34:1;2O(FA 16:0)",
+        "18:2(9Z,12Z)",
+        "_18:2(9Z,12Z)",
+        "/18:2(9Z,12Z)"
+      ]
+    },
+    "RESIDUE_ALIAS": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "ALIAS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR"
+      ],
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "ALIAS": "[-,0-9a-zA-Z\\s]{3,}",
+      "EXAMPLES": [
+        "HETE",
+        "/HDoTE"
+      ]
+    },
+    "SUM_RESIDUES": {
+      "ORDER": [
+        "RESIDUE"
+      ],
+      "REPEAT": {
+        "RESIDUE": [1, 4]
+      },
+      "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
+      "EXAMPLES": [
+        "18:2;3O",
+        "18:2;O",
+        "18:2",
+        "9:0",
+        "26:0;(2OH)",
+        "18:2;3O/18:2",
+        "18:2;O_18:2",
+        "18:0/20:4",
+        "18:0_20:4",
+        "18:0_9:0",
+        "18:0_26:0;(2OH)"
+      ]
+    },
+    "SUM_RESIDUES_CL": {
+      "ORDER": [
+        "RESIDUE_CL"
+      ],
+      "REPEAT": {
+        "RESIDUE_CL": [1, 2]
+      },
+      "RESIDUE_CL": "((?P<CL_SUB_POS_LEFT>,?[13]'-\\[)(?P<RESIDUE>$.RESIDUES.RESIDUE.0)(/)(?P<RESIDUE>$.RESIDUES.RESIDUE.0)?(?P<CL_SUB_POS_RIGHT>\\]))",
+      "EXAMPLES": [
+        "1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)]"
+      ]
+    }
+  },
+  "LIPID_CLASSES": {
+    "FA_ALIAS": {
+      "LMSD_CLASSES": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04",
+        "FA07"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "CLASS"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "Acylcarnitine[\\s]?",
+      "CLASS":  "",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "Palmitic acid"
+      ]
+    },
+    "FA": {
+      "LMSD_CLASSES": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04",
+        "FA07"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "BRACKET_LEFT",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_RIGHT"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "Acylcarnitine[\\s]?",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "CLASS": "C|FA",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "Acylcarnitine C14:0",
+        "C18:2",
+        "C9:0"
+      ]
+    },
+    "GL": {
+      "LMSD_CLASSES": [
+        "GL01",
+        "GL02",
+        "GL03"
+      ],
+      "ORDER": [
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT",
+        "TAIL"
+      ],
+      "OPTIONAL": [
+        "LIPID_CLASS_SEPARATOR",
+        "TAIL"
+      ],
+      "MAX_RESIDUES": 3,
+      "CLASS": "TG|DG|MG",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "TAIL": "\\[rac\\]|\\[iso[0-9]{0,2}\\]",
+      "EXAMPLES": [
+        "MG(16:0)",
+        "DG(34:2)",
+        "DG(16:0/18:2(9Z,12Z)/0:0)[iso2]",
+        "DG(O-16:0/18:1(9Z))",
+        "TG(52:2)",
+        "TG(16:0/18:0/18:2(9Z,12Z))[iso6]"
+      ]
+    },
+    "PL": {
+      "LMSD_CLASSES": [
+        "GP01",
+        "GP02",
+        "GP03",
+        "GP04",
+        "GP05",
+        "GP06",
+        "GP07",
+        "GP08",
+        "GP09",
+        "GP10",
+        "GP20"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT",
+        "TAIL"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "SUFFIX",
+        "LIPID_CLASS_SEPARATOR",
+        "TAIL"
+      ],
+      "MAX_RESIDUES": 2,
+      "PREFIX": "L|Lyso",
+      "CLASS": "P[ACEDGSI]|PIP|PIP[2-6]",
+      "SUFFIX": "\\[([,]?[1-6]'){1,5}\\]",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "TAIL": "\\[rac\\]|\\[iso[0-9]{0,2}\\]",
+      "EXAMPLES": [
+        "PE(16:0/0:0)",
+        "LysoPE(16:0/0:0)",
+        "PE(O-18:1(9Z)/0:0)",
+        "LysoPE(O-18:1/0:0)",
+        "PE(P-16:0/0:0)",
+        "LysoPE(P-16:0/0:0)",
+        "PE(16:0/18:2(9Z,12Z))[rac]",
+        "PE(16:0/18:2(9Z,12Z))[iso2]",
+        "PE(O-16:0/18:2(9Z,12Z))",
+        "PE(O-16:0/18:2(9Z,12Z))",
+        "PE(P-16:0/18:2(9Z,12Z))",
+        "PE(P-16:0/18:2(9Z,12Z))",
+        "PIP[3'](16:0/18:1(9Z))",
+        "PIP[3'](16:0/18:1(9Z))",
+        "PIP[3'](16:0/0:0)",
+        "PIP2[3',5'](16:0/18:2(9Z,12Z))",
+        "PIP2[3',5'](16:0/0:0)",
+        "PIP2[3',4',5'](16:0/18:2(9Z,12Z))",
+        "PIP2[3',4',5'](16:0/0:0)"
+      ]
+    },
+    "BMP": {
+      "LMSD_CLASSES": [
+        "GP0410"
+      ],
+      "ORDER": [
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": ["LIPID_CLASS_SEPARATOR"],
+      "MAX_RESIDUES": 4,
+      "PREFIX": "L[B]?|Lyso",
+      "CLASS": "LBPA|BMP",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "LBPA(16:0/18:1(9Z))",
+        "BMP(16:0/0:0/18:1(9Z)/0:0)"
+      ]
+    },
+    "CL": {
+      "LMSD_CLASSES": [
+        "GP12"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 4,
+      "CLASS": "CL",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES_CL.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "CL(72:7)",
+        "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])"
+      ]
+    },
+    "SPB": {
+      "LMSD_CLASSES": [
+        "SP01"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "SUM_RESIDUES",
+        "LIPID_CLASS_SEPARATOR",
+        "CLASS"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "C",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "CLASS": "[Ss]phingosine|[Pp]hytosphingosine|[Dd]ehydrophytosphingosine",
+      "SUFFIX": "-1-(phosphate|phosphocholine)",
+      "EXAMPLES": [
+        "C16 Sphingosine",
+        "C16 Phytosphingosine",
+        "C16 Dehydrophytosphingosine",
+        "C16 Sphingosine-1-phosphate",
+        "C17 sphingosine-1-phosphocholine"
+      ]
+    },
+    "SP": {
+      "LMSD_CLASSES": [
+        "SP02",
+        "SP03",
+        "SP05",
+        "SP06"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 2,
+      "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",
+      "CLASS": "Cer[P]?|SPB|SM|GM[1-3]?",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "Cer(d18:0/26:0)",
+        "Cer(d18:0/26:0(2OH))",
+        "Cer(d18:1/26:0)",
+        "Cer(d18:1/26:0(2OH))",
+        "Cer(t18:0/26:0)",
+        "Cer(t18:0/h26:0)",
+        "Cer(t18:0/26:0(2OH[R]))",
+        "CerP(d18:0/16:0)",
+        "CerP(d18:1/26:0)",
+        "SM(d18:1/16:0)",
+        "LysoSM(d18:1)",
+        "SM(d18:1/0:0)",
+        "PE-Cer(d16:1/16:0)",
+        "PE-Cer(d16:1(4E)/16:0)",
+        "HexCer(d18:1/18:1(9Z))",
+        "GalCer(d18:1/18:1(9Z))",
+        "GlcCer(d18:1/18:1(9Z))",
+        "ManCer(d18:1/18:1(9Z))",
+        "GM3(d18:1/18:0)"
+      ]
+    },
+    "BULK_SP": {
+      "LMSD_CLASSES": [
+        "SP02",
+        "SP03",
+        "SP05"
+      ],
+      "ORDER": [
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT",
+        "LIPID_CLASS_SEPARATOR",
+        "PREFIX",
+        "CLASS"
+      ],
+      "OPTIONAL": [
+        "BRACKET_LEFT",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_RIGHT",
+        "PREFIX"
+      ],
+      "MAX_RESIDUES": 1,
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",
+      "CLASS": "Cer[P]?|Sphingomyelin",
+      "EXAMPLES": [
+        "C26DH Cer",
+        "C26 Cer",
+        "C16 Sphingomyelin",
+        "C16DH CerP",
+        "C26 CerP",
+        "C18:1 GlcCer"
+      ]
+    },
+    "CE": {
+      "LMSD_CLASSES": [
+        "ST01"
+      ],
+      "ORDER": [
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 1,
+      "CLASS": "CE",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "CE(18:1)"
+      ]
+    },
+    "ST": {
+      "LMSD_CLASSES": [
+        "ST01"
+      ],
+      "ORDER": [
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT",
+        "LIPID_CLASS_SEPARATOR",
+        "CLASS"
+      ],
+      "OPTIONAL": [
+        "BRACKET_LEFT",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_RIGHT"
+      ],
+      "MAX_RESIDUES": 1,
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "CLASS": "(Stigmasterol|Sitosterol|Campesterol) ester",
+      "EXAMPLES": [
+        "18:1 Stigmasterol ester",
+        "18:1 Sitosterol ester",
+        "18:1 Campesterol ester",
+        "(18:1)Stigmasterol ester",
+        "(18:1)Sitosterol ester",
+        "(18:1)Campesterol ester"
+      ]
+    }
+  }
+}

@@ -177,8 +177,9 @@ class Formatter(object):
                 existed_mod_site_info_lst = mod_info_dct.get(
                     f"{mod_order}_{mod_type}", {}
                 ).get("MOD_SITE_INFO", [])
-                existed_mod_site_lst.append(mod_tp[1]),
-                existed_mod_site_info_lst.append(mod_tp[2])
+                # e.g. mod_tp: ('', 'DB', '9', 'Z')
+                existed_mod_site_lst.append(mod_tp[2]),
+                existed_mod_site_info_lst.append(mod_tp[3])
                 mod_level = 0
                 db_mod_level = 0
                 mod_count = existed_mod_count + delta_mod_count
