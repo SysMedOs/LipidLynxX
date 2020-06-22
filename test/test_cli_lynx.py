@@ -16,6 +16,28 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-from flask_restful import Api
+from typer.testing import CliRunner
 
-rest_api = Api()
+from cli_lynx import cli_app
+
+runner = CliRunner()
+
+
+def test_convert_lipid():
+    result = runner.invoke(cli_app, ["convert-lipid", "PLPC"])
+    assert result.exit_code == 0
+    assert "PC(16:0/18:2)" in result.stdout
+
+
+def test_convert():
+    result = runner.invoke(
+        cli_app,
+        [
+            "convert",
+            r"doc/sample_data/input/LipidLynxX_test.csv",
+            "--output",
+            r"test/test_output/test_convert.xlsx",
+        ],
+    )
+    assert result.exit_code == 0
+    assert "Save output as: test/test_output/test_convert.xlsx" in result.stdout

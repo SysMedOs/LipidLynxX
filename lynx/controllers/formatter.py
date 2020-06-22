@@ -23,17 +23,18 @@ import regex as re
 
 from lynx.models.cv import CV
 from lynx.models.defaults import default_cv_file, elem_nominal_info
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Formatter(object):
-    def __init__(self, cv_file: str = default_cv_file):
+    def __init__(self, cv_file: str = default_cv_file, logger=app_logger):
         if os.path.isfile(cv_file):
             pass
         else:
             cv_file = default_cv_file
         self.alias2cv = CV(cv_file).info
         self.raw_cv = CV(cv_file).raw_cv
+        self.logger = logger
 
     @staticmethod
     def to_mass_shift(elements: dict) -> int:
@@ -75,7 +76,9 @@ class Formatter(object):
                 if alia_rgx and matched_cv is not None:
                     alia_match = alia_rgx.match(mod_type)
                     if alia_match:
-                        logger.debug(f"mod_type: {mod_type} identified as {matched_cv}")
+                        self.logger.debug(
+                            f"mod_type: {mod_type} identified as {matched_cv}"
+                        )
                         formatted_mod_type_lst.append(matched_cv)
                         if matched_cv == "Delta":
                             mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get(
@@ -125,7 +128,7 @@ class Formatter(object):
             )
         else:
             if 0 < len(mod_site_lst) < mod_type_count:
-                logger.warning(
+                self.logger.warning(
                     f"mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}"
                 )
                 formatted_mod_lst = []
