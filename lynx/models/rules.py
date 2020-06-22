@@ -36,6 +36,7 @@ class InputRules(object):
             rules = get_json(rules)
         else:
             raise TypeError
+        self.logger = logger
         self.raw_rules = rules
         self.sources = self.raw_rules["SOURCES"]
         self.date = self.raw_rules.get("_DATE", 20200214)
@@ -62,7 +63,7 @@ class InputRules(object):
             )
         self.rules = self.build()
         self.is_validated = self.validate()
-        self.logger = logger
+
         # self.logger.info(
         #     f"Load input rule: {self.sources}\n"
         #     f"Last modified: {self.date}\n"
@@ -78,7 +79,7 @@ class InputRules(object):
             ref_lst = re.findall(ref_rgx, pattern)
             ref_replace_dct = {}
             if ref_lst:
-                # self.logger.info(f"Found Refs: {ref_lst}")
+                self.logger.info(f"Found Refs: {ref_lst}")
                 for ref_tpl in ref_lst:
                     ref_seg_dct = {}
                     if len(ref_tpl) >= 2:
@@ -92,7 +93,9 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            # self.logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            self.logger.info(
+                                                f"Found Ref Pattern: {ref_lst}"
+                                            )
                                             ref_patt = (
                                                 r"\$\."
                                                 + "\\.".join(ref_seg_lst)
@@ -108,7 +111,9 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            # self.logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            self.logger.info(
+                                                f"Found Ref Pattern: {ref_lst}"
+                                            )
                                             ref_patt = (
                                                 r"\$\." + "\\.".join(ref_seg_lst) + ".0"
                                             )
@@ -122,7 +127,9 @@ class InputRules(object):
                                                 r"\$" + "".join(ref_pattern_lst) + ".0"
                                             )
                                             ref_replace_dct[ref_pattern] = ref_info
-                                            # self.logger.info(f"Found Ref Pattern: {ref_lst}")
+                                            self.logger.info(
+                                                f"Found Ref Pattern: {ref_lst}"
+                                            )
                                             break
                                         elif isinstance(ref_info, dict):
                                             ref_seg_dct = ref_info
@@ -134,7 +141,7 @@ class InputRules(object):
                             raise ValueError
                     else:
                         raise ValueError
-                # self.logger.info(f"Replace Refs: {ref_replace_dct}")
+                self.logger.info(f"Replace Refs: {ref_replace_dct}")
                 replace_match = False
                 for ref_replace in ref_replace_dct:
                     replaced_pattern = re.sub(
@@ -143,9 +150,9 @@ class InputRules(object):
                         rule_dct["PATTERN"],
                     )
                     rule_dct["PATTERN"] = replaced_pattern
-                    # self.logger.info(
-                    #     f"Replaced pattern to {replaced_pattern} by {ref_replace}"
-                    # )
+                    self.logger.info(
+                        f"Replaced pattern to {replaced_pattern} by {ref_replace}"
+                    )
                     replace_match = True
                 if replace_match:
                     rule_dct["MATCH"] = re.compile(rule_dct["PATTERN"])
@@ -255,6 +262,7 @@ class InputRules(object):
         sum_rules.update(self.__build__(self.supported_residues, "RESIDUES"))
         # sum_rules = self.__replace_refs__(sum_rules)
         sum_rules.update(self.__build__(self.supported_classes, "LIPID_CLASSES"))
+        sum_rules = self.__replace_refs__(sum_rules)
         sum_rules = self.__replace_refs__(sum_rules)
         self.rules = sum_rules
         return sum_rules

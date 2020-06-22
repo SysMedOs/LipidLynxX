@@ -30,7 +30,8 @@ jobs:
       run: |
         pip install codecov pytest pytest-cov
         pytest --cov=./
-#    - name: Pack with pyinstaller
-#      run: |
-#        pip install pyinstaller
-#        pyinstaller --icon=./LipidLynxX_Logo.ico LipidLynxX.py
+    - name: Pack with pyinstaller
+      run: |
+        pip install pyinstaller
+        pyinstaller cli_lynx.spec
+        pyinstaller LipidLynxX.spec

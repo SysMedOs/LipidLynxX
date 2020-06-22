@@ -24,11 +24,9 @@ from lynx.controllers.decoder import Decoder
 from lynx.models.lipid import LipidType
 
 
-def parse_lipid(lipid_name:str):
+def parse_lipid(lipid_name: str):
     lynx_converter = Converter()
-    converted_results = lynx_converter.convert_str(
-        input_str=lipid_name
-    )
+    converted_results = lynx_converter.convert_str(input_str=lipid_name)
     converted_name = converted_results.output
     decoder = Decoder()
     extracted_info = decoder.extract(converted_name)
@@ -48,7 +46,9 @@ def parse_lipid(lipid_name:str):
                     mod_type_lst = [mod for mod in mod_type_lst if mod]
 
                     exact_sn_position = segments.get("RESIDUE_SEPARATOR")
-                    exact_sn_position_level = parsed_info["residues"].get("RESIDUES_SEPARATOR_LEVEL")
+                    exact_sn_position_level = parsed_info["residues"].get(
+                        "RESIDUES_SEPARATOR_LEVEL"
+                    )
                     if exact_sn_position == ["/"] or exact_sn_position_level == "S":
                         parsed_info["exact_sn_position"] = True
                     else:

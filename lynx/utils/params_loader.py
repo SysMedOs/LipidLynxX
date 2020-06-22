@@ -111,7 +111,7 @@ def build_input_rules(folder: str, logger=app_logger) -> dict:
     logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
-        temp_rules = InputRules(f)
+        temp_rules = InputRules(f, logger)
         idx_lst = [os.path.basename(f)] + temp_rules.sources
         idx = "#".join(idx_lst)
         for c in temp_rules.rules:

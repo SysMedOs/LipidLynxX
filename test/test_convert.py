@@ -40,7 +40,9 @@ default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logg
 
 
 def test_convert_lipid(lipid: str, level: str, style: str, converted_lipid: str):
-    print(f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}.")
+    print(
+        f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}."
+    )
     lynx_converter = Converter(
         style=style,
         input_rules=default_input_rules,
