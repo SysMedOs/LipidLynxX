@@ -158,7 +158,7 @@
       "DB_SEPARATOR": ":",
       "NUM_DB": "[1,2]?[0-9]",
       "O_SEPARATOR": ";",
-      "NUM_O": ";[1-3]?",
+      "NUM_O": ";O[2-3]?",
       "MOD_BRACKET_LEFT": "$.SEPARATORS.MOD_BRACKET_LEFT.0",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "MOD_BRACKET_RIGHT": "$.SEPARATORS.MOD_BRACKET_LEFT.0"

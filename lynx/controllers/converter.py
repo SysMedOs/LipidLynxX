@@ -135,17 +135,18 @@ if __name__ == "__main__":
         # "SPBP 18:0;O",
         # "SPBP 18:0;O3",
         # "Cer 18:1;3O/20:4",
-        "CoA(20:3(11Z,14Z,17Z))",
-        "CoA 18:2;O",
-        "FACoA 18:0",
+        # "CoA(20:3(11Z,14Z,17Z))",
+        # "CoA 18:2;O",
+        # "FACoA 18:0",
+        "Cer 24:2",
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"
     test_out_rule = "LipidLynxX"
-    lynx_converter = Converter(style=test_out_rule)
+    lynx_converter = Converter(style=test_out_rule, logger=app_logger)
     for t_in in t_in_lst:
         t1_out = lynx_converter.convert(t_in, level="B1")
-        # logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
+        app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
 
     # t2_out = lynx_converter.convert(t_in_lst)
     # logger.info(f"Input: {t_in_lst} -> Best Output: {t2_out}")

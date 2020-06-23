@@ -64,7 +64,7 @@ class InputRules(object):
         self.rules = self.build()
         self.is_validated = self.validate()
 
-        # self.logger.info(
+        # self.logger.debug(
         #     f"Load input rule: {self.sources}\n"
         #     f"Last modified: {self.date}\n"
         #     f"Authors: {self.authors}"
@@ -79,7 +79,7 @@ class InputRules(object):
             ref_lst = re.findall(ref_rgx, pattern)
             ref_replace_dct = {}
             if ref_lst:
-                self.logger.info(f"Found Refs: {ref_lst}")
+                self.logger.debug(f"Found Refs: {ref_lst}")
                 for ref_tpl in ref_lst:
                     ref_seg_dct = {}
                     if len(ref_tpl) >= 2:
@@ -93,7 +93,7 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            self.logger.info(
+                                            self.logger.debug(
                                                 f"Found Ref Pattern: {ref_lst}"
                                             )
                                             ref_patt = (
@@ -111,7 +111,7 @@ class InputRules(object):
                                     if ref in rules:
                                         ref_info = rules[ref]["PATTERN"]
                                         if ref_info and isinstance(ref_info, str):
-                                            self.logger.info(
+                                            self.logger.debug(
                                                 f"Found Ref Pattern: {ref_lst}"
                                             )
                                             ref_patt = (
@@ -127,7 +127,7 @@ class InputRules(object):
                                                 r"\$" + "".join(ref_pattern_lst) + ".0"
                                             )
                                             ref_replace_dct[ref_pattern] = ref_info
-                                            self.logger.info(
+                                            self.logger.debug(
                                                 f"Found Ref Pattern: {ref_lst}"
                                             )
                                             break
@@ -141,7 +141,7 @@ class InputRules(object):
                             raise ValueError
                     else:
                         raise ValueError
-                self.logger.info(f"Replace Refs: {ref_replace_dct}")
+                self.logger.debug(f"Replace Refs: {ref_replace_dct}")
                 replace_match = False
                 for ref_replace in ref_replace_dct:
                     replaced_pattern = re.sub(
@@ -150,7 +150,7 @@ class InputRules(object):
                         rule_dct["PATTERN"],
                     )
                     rule_dct["PATTERN"] = replaced_pattern
-                    self.logger.info(
+                    self.logger.debug(
                         f"Replaced pattern to {replaced_pattern} by {ref_replace}"
                     )
                     replace_match = True
@@ -387,7 +387,7 @@ class OutputRules(object):
         self.residues = self.raw_rules.get("RESIDUES", {})
         self.rules = self.build()
         self.is_structure_valid = self.__check__()
-        # self.logger.info(
+        # self.logger.debug(
         #     f"Load rules for nomenclature {self.nomenclature}\n"
         #     f"Last modified: {self.date}\n"
         #     f"Authors: {self.authors}"

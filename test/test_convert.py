@@ -39,7 +39,12 @@ default_input_rules = build_input_rules(app_cfg_info["input_rules"], app_logger)
 default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logger)
 
 
-def test_convert_lipid(lipid: str, level: str, style: str, converted_lipid: str):
+def test_convert_lipid(
+    lipid: str = "PLPC",
+    level: str = "B1",
+    style: str = "LipidLynxX",
+    converted_lipid: str = "PC(34:2)",
+):
     print(
         f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}."
     )

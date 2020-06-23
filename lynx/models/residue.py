@@ -102,11 +102,11 @@ class Residue(object):
                                     if re.match(o_seg_rgx, str(num_o)):
                                         res_str += str(num_o)
                                     elif re.match(o_seg_rgx, "1"):
-                                        res_str += str("1")
+                                        res_str += "1"
                                     elif re.match(o_seg_rgx, "O"):
-                                        res_str += str("O")
+                                        res_str += "O"
                                     else:
-                                        res_str += str(num_o)
+                                        res_str += "O"
                                 else:
                                     if re.match(o_seg_rgx, str(num_o)):
                                         res_str += str(num_o)

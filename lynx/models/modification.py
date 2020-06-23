@@ -47,6 +47,8 @@ class Modifications(object):
         nomenclature: str = "LipidLynxX",
         logger=app_logger,
     ):
+        self.logger = logger
+        self.nomenclature = nomenclature
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.mod_rule = self.export_rule.get("MODS", None)
         self.mod_rule_orders = self.mod_rule.get("MOD", {}).get("ORDER", [])
@@ -73,7 +75,6 @@ class Modifications(object):
         self.mod_id = self.sum_mod_info.get("id", "")
         self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
         self.mod_list = self.sum_mod_info.get("info", {})
-        self.logger = logger
 
     def __str__(self):
         return self.to_json()
@@ -127,12 +128,26 @@ class Modifications(object):
 
         for mod_elem in mod_elem_lst:
             if mod_elem in sum_elements:
-                mod_elem_count = f"{sum_elements[mod_elem]:+}"
-                if mod_elem_count == "+1":
-                    mod_elem_count = "+"
-                elif mod_elem_count == "-1":
-                    mod_elem_count = "-"
-                mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+                # temp solution for elem level for Shorthand
+                # TODO(zhixu.ni@uni-leipzig.de): reformat following part into .json cfg
+                if re.match(r'\.*lynx\.*', self.nomenclature, re.IGNORECASE):
+                    mod_elem_count = f"{sum_elements[mod_elem]:+}"
+                    if mod_elem_count == "+1":
+                        mod_elem_count = "+"
+                    elif mod_elem_count == "-1":
+                        mod_elem_count = "-"
+                    mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+
+                else:
+                    mod_elem_count = sum_elements[mod_elem]
+                    if mod_elem_count > 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}")
+                    elif mod_elem_count == 0:
+                        pass
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
 
         return f'{",".join(mod_str_lst)}'
 

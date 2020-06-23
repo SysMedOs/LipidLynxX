@@ -128,7 +128,7 @@
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?",
+      "NUM_O": "O[2-3]?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "EXAMPLES": [
         "18:2;1",

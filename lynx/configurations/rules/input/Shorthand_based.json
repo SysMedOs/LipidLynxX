@@ -414,7 +414,9 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",

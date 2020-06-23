@@ -110,7 +110,7 @@ def convert(
         None,
         "--output",
         "-o",
-        help="Path for the export file. Accept .csv / .xlsx file.",
+        help="Path for the export file. Accept .txt/ .csv / .xlsx file.",
     ),
     style: StyleType = typer.Option(
         "LipidLynxX",
@@ -126,7 +126,7 @@ def convert(
     ),
 ):
     """
-    Convert one .csv / .xlsx FILE containing lipid names into supported levels
+    Convert one .txt/ .csv / .xlsx FILE containing lipid names into supported levels
     and export to supported style as .csv / .xlsx file.
     """
 

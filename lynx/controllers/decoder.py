@@ -289,19 +289,29 @@ class Decoder(object):
         extracted_info_dct = {}
 
         for c in self.rules:
-            matched_info_dct = self.extract_by_class_rule(lipid_name, c)
-            if matched_info_dct:
-                extracted_info_dct[c] = matched_info_dct
+            matched_info_dct = {}
+            alias_matched_info_dct = {}
+            if lipid_name:
+                matched_info_dct = self.extract_by_class_rule(lipid_name, c)
+                def_alias = self.check_alias(lipid_name, "LIPID")
+                if def_alias:
+                    self.logger.debug(
+                        f"Found Alias: {lipid_name} -> change to {def_alias}"
+                    )
+                    alias_matched_info_dct = self.extract_by_class_rule(def_alias, c)
+                if alias_matched_info_dct:
+                    extracted_info_dct[c] = matched_info_dct
             else:
-                if lipid_name:
-                    def_alias = self.check_alias(lipid_name, "LIPID")
-                    if def_alias:
-                        self.logger.debug(
-                            f"Found Alias: {lipid_name} -> change to {def_alias}"
-                        )
-                        matched_info_dct = self.extract_by_class_rule(def_alias, c)
-                        if matched_info_dct:
-                            extracted_info_dct[c] = matched_info_dct
+                self.logger.warning(f"No lipid name is given. Please submit a lipid name.")
+
+            if matched_info_dct and not alias_matched_info_dct:
+                extracted_info_dct[c] = matched_info_dct
+            elif not matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            elif matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            else:
+                pass
 
         if not extracted_info_dct:
             self.logger.error(f"Failed to decode Lipid: {lipid_name}")

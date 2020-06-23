@@ -141,7 +141,7 @@ class Encoder(object):
         residues_sep_level = residues.get("RESIDUES_SEPARATOR_LEVEL", "")
         residues_info = residues.get("RESIDUES_INFO", [])
         res_count = len(residues_order)
-        sum_residues_str = ""
+        # sum_residues_str = ""
         res_lv_id_dct = {}
         res_lv_dct = {}
         sum_lv_lst = []
