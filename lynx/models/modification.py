@@ -130,7 +130,7 @@ class Modifications(object):
             if mod_elem in sum_elements:
                 # temp solution for elem level for Shorthand
                 # TODO(zhixu.ni@uni-leipzig.de): reformat following part into .json cfg
-                if re.match(r'\.*lynx\.*', self.nomenclature, re.IGNORECASE):
+                if re.match(r"\.*lynx\.*", self.nomenclature, re.IGNORECASE):
                     mod_elem_count = f"{sum_elements[mod_elem]:+}"
                     if mod_elem_count == "+1":
                         mod_elem_count = "+"

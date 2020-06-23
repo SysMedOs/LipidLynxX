@@ -51,17 +51,47 @@
         "MODS",
         "BRACKET_RIGHT"
       ],
-      "OPTIONAL": [
-        "SEMICOLON",
-        "BRACKET_LEFT",
-        "BRACKET_RIGHT"
-      ],
       "REPEAT": {
-        "MODS": [0, 10]
+        "MODS": [1, 10]
       },
       "SEMICOLON": ";",
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "MODS": "$.MODS.MOD.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    },
+    "DB_SITE": {
+      "ORDER": [
+        "DB_SITE",
+        "DB_SITE_INFO"
+      ],
+      "OPTIONAL": [
+        "DB_SITE_SEPARATOR"
+      ],
+      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
+      "MOD_SITE_INFO": "([EZRS])?",
+      "EXAMPLES": [
+        "9",
+        "9Z",
+        "9OH",
+        "9S-OH"
+      ]
+    },
+    "SUM_DB_SITES": {
+      "ORDER": [
+        "BRACKET_LEFT",
+        "DB_SITE",
+        "BRACKET_RIGHT"
+      ],
+      "REPEAT": {
+        "DB_SITE": [1, 10]
+      },
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "MODS": "$.MODS.DB_SITE.0",
       "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
       "EXAMPLES": [
         "(9Z)",
@@ -100,7 +130,7 @@
       "NUM_C": "[0-9]{1,2}",
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
-      "SUM_DB": "$.MODS.SUM_MODS.0",
+      "SUM_DB": "$.MODS.SUM_DB_SITES.0",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
       "NUM_O": "[1-3]?O?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",

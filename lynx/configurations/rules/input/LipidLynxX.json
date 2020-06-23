@@ -119,9 +119,6 @@
         "NUM_O",
         "SUM_MODS"
       ],
-      "REPEAT": {
-        "SUM_MODS": [0, 10]
-      },
       "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
       "LINK": "[OP]-",
       "NUM_C": "[0-9]{1,2}",

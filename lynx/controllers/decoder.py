@@ -302,7 +302,9 @@ class Decoder(object):
                 if alias_matched_info_dct:
                     extracted_info_dct[c] = matched_info_dct
             else:
-                self.logger.warning(f"No lipid name is given. Please submit a lipid name.")
+                self.logger.warning(
+                    f"No lipid name is given. Please submit a lipid name."
+                )
 
             if matched_info_dct and not alias_matched_info_dct:
                 extracted_info_dct[c] = matched_info_dct

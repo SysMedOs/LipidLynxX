@@ -54,9 +54,7 @@ class Encoder(object):
 
     def get_best_id(self, candidate: Dict[str, str]) -> str:
         c_lv_lst = natsorted(list(candidate.keys()))
-        self.logger.debug(
-            f"Export MAX level: {c_lv_lst[-1]}. "
-        )
+        self.logger.debug(f"Export MAX level: {c_lv_lst[-1]}. ")
         c_max_str = candidate.get(c_lv_lst[-1], "")
         return c_max_str
 
@@ -89,21 +87,29 @@ class Encoder(object):
                         pass
 
         # add levels for B0, D0, S0 lipids
-        if best_id_dct and all([re.match(r'^[BDS]0(.[12])?$', lv) for lv in best_id_dct]):
+        if best_id_dct and all(
+            [re.match(r"^[BDS]0(.[12])?$", lv) for lv in best_id_dct]
+        ):
             for add_lv in supported_levels:
                 from_lv = f"{add_lv[0]}0{add_lv[2:]}"
                 if from_lv in best_id_dct:
                     best_id_dct[add_lv] = best_id_dct.get(from_lv, "")
         # add levels for lipids with no DB
         updated_best_id_dct = {}
-        if best_id_dct and sum_db == 0 and all([re.match(r'^[BDS][0-5]$', lv) for lv in best_id_dct]):
+        if (
+            best_id_dct
+            and sum_db == 0
+            and all([re.match(r"^[BDS][0-5]$", lv) for lv in best_id_dct])
+        ):
             for from_lv in best_id_dct:
                 updated_best_id_dct[from_lv] = best_id_dct.get(from_lv, "")
                 for db_lv in [".1", ".2"]:
-                    add_lv = f'{from_lv}{db_lv}'
+                    add_lv = f"{from_lv}{db_lv}"
                     if add_lv in supported_levels and add_lv not in best_id_dct:
                         updated_best_id_dct[add_lv] = best_id_dct.get(from_lv, "")
-        if updated_best_id_dct and len(list(updated_best_id_dct.keys())) > len(list(best_id_dct.keys())):
+        if updated_best_id_dct and len(list(updated_best_id_dct.keys())) > len(
+            list(best_id_dct.keys())
+        ):
             best_id_dct = updated_best_id_dct
 
         if best_id_dct.get("D1") and not best_id_dct.get("B1"):
