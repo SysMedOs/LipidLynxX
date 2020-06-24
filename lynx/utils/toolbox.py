@@ -145,6 +145,8 @@ def get_style_level(
     elif export_style == StyleType.comp_db:
         export_style = "COMP_DB"
         to_level = "B1"
+    elif export_style == StyleType.shorthand:
+        export_style = "ShorthandNotation"
     else:
         export_style = "LipidLynxX"
 

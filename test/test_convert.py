@@ -16,9 +16,11 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os, sys
+import os
+import sys
 
 import pandas as pd
+import pytest
 
 lynx_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lynx_path + "/../")
@@ -38,12 +40,26 @@ from lynx.utils.params_loader import (
 default_input_rules = build_input_rules(app_cfg_info["input_rules"], app_logger)
 default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logger)
 
+default_test_lipids = [
+    # ("PLPC", "B1", "LipidLynxX", "PC(34:2)"),
+    # ("Cer 24:2", "S1", "LipidLynxX", "Cer(18:1;2/24:2)"),
+    # ("Cer 24:2", "B1", "COMP_DB", "Cer 42:3;O2"),
+    # ("dhCer 16:0", "B1", "COMP_DB", "Cer 34:0;O2"),
+    # ("DG(O-16:0/18:1)", "B1", "COMP_DB", "DG O-34:1"),
+    # ("PC(O-32:1)", "B1", "COMP_DB", "PC O-32:1"),
+    # ("CerP 24:2", "B1", "COMP_DB", "CerP 42:3;O2"),
+    ("CerP 24:2", "S1", "LipidLynxX", "CerP(18:1;O2/24:2)"),
+]
 
+
+default_test_files = [
+    ("ShorthandNotation", r"test/test_input/Input_ShorthandNotation.csv")
+]
+
+
+@pytest.mark.parametrize("lipid,level,style,converted_lipid", default_test_lipids)
 def test_convert_lipid(
-    lipid: str = "PLPC",
-    level: str = "B1",
-    style: str = "LipidLynxX",
-    converted_lipid: str = "PC(34:2)",
+    lipid: str, level: str, style: str, converted_lipid: str,
 ):
     print(
         f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}."
@@ -58,9 +74,9 @@ def test_convert_lipid(
     assert converted_name == converted_lipid
 
 
+@pytest.mark.parametrize("style,file", default_test_files)
 def test_convert_file(
-    file: str = r"test/test_input/Input_ShorthandNotation.csv",
-    style: str = "ShorthandNotation",
+    style: str, file: str,
 ):
     in_df = pd.read_csv(get_abs_path(file))
     test_df = pd.DataFrame(data=in_df[in_df["CONVERT"] == "T"])  # type: pd.DataFrame
@@ -78,11 +94,3 @@ def test_convert_file(
                     style=style,
                     converted_lipid=test_dct.get(lv, ""),
                 )
-
-
-if __name__ == "__main__":
-    test_files_dct = {
-        "ShorthandNotation": r"test/test_input/Input_ShorthandNotation.csv"
-    }
-    for t in test_files_dct:
-        test_convert_file(file=test_files_dct[t], style=t)

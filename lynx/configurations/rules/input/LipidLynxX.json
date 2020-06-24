@@ -441,6 +441,7 @@
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
         "RESIDUE_BRACKET_LEFT",
         "SUM_RESIDUES",
@@ -448,11 +449,13 @@
       ],
       "OPTIONAL": [
         "PREFIX",
+        "SUFFIX",
         "LIPID_CLASS_SEPARATOR"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?Hex[1-6]?|PE-",
-      "CLASS": "Cer[P]?|SPB|SM|GM[1-3]?",
+      "CLASS": "Cer|SPB|SM|GM[1-3]?",
+      "SUFFIX": "P",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "RESIDUE_BRACKET_LEFT": "$.SEPARATORS.RESIDUE_BRACKET_LEFT.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",

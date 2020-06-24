@@ -36,7 +36,7 @@
       "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
       "MOD_SITE_INFO": "([EZRS])?",
       "MOD_SEPARATOR": "$.SEPARATORS.MOD_SEPARATOR.0",
-      "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_TYPE": "([+-]?[a-zA-Z]+[-0-9a-zA-Z]*)",
       "EXAMPLES": [
         "9",
         "9Z",
@@ -51,7 +51,7 @@
         "BRACKET_RIGHT"
       ],
       "REPEAT": {
-        "MOD": [0, 10]
+        "MOD": [1, 10]
       },
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "MOD": "$.MODS.MOD.0",
@@ -90,7 +90,7 @@
       },
       "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
       "NUM_C": "[0-9]{1,2}",
-      "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
+      "DB_SEPARATOR": ":",
       "DB": "[1,2]?[0-9]",
       "LINK": "[oOpPeEa]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",

@@ -86,6 +86,7 @@ class FileType(str, Enum):
 class StyleType(str, Enum):
     lipidlynxx = "LipidLynxX"
     comp_db = "COMP_DB"
+    shorthand = "ShorthandNotation"
 
 
 class InputStrData(BaseModel):

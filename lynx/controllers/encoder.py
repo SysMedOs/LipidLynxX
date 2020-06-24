@@ -309,7 +309,8 @@ class Encoder(object):
                     for res in res_info:
                         sum_db += res_info[res].get("NUM_DB", 0)
                     export_info.append({"compiled_names": comp_dct, "sum_db": sum_db})
-            best_export_dct = self.get_best_id_series(export_info)
+            pre_best_export_dct = self.get_best_id_series(export_info)
+            best_export_dct = {k: pre_best_export_dct[k] for k in sorted(pre_best_export_dct)}
             self.logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
         else:
             best_export_dct = {}
