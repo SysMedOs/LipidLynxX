@@ -175,7 +175,7 @@ def convert_lipids(
                             fg=typer.colors.CYAN,
                         )
                     )
-                    typer.echo(f"{converted_names}")
+                    typer.echo(json.dumps(converted_names))
                     skipped_names = converted_obj.skipped
                     if skipped_names:
                         typer.secho(
@@ -183,7 +183,7 @@ def convert_lipids(
                             fg=typer.colors.YELLOW,
                         )
                 elif isinstance(js_obj, dict):
-                    converted_obj = lynx_converter.convert_dict(
+                    converted_dct = lynx_converter.convert_dict(
                         input_dct=js_obj, level=level
                     )
                     typer.echo(
@@ -192,7 +192,10 @@ def convert_lipids(
                             fg=typer.colors.CYAN,
                         )
                     )
-                    typer.echo(f"{converted_obj}")
+                    export_dct = {}
+                    for k in converted_dct:
+                        export_dct[k] = converted_dct[k].dict()
+                    typer.echo(json.dumps(export_dct))
                 else:
                     typer.echo(
                         typer.style(
@@ -317,10 +320,11 @@ def convert(
 
     """
     if source:
+
         if isinstance(source, Path):
             convert_file(file=source, output_file=output_file, style=style, level=level)
         elif isinstance(source, str):
-            if re.match(r"\.*(.csv|.txt|.xlsx)$", source, re.IGNORECASE):
+            if re.match(r".+(\.csv|\.txt|\.xlsx)$", source, re.IGNORECASE):
                 if os.path.isfile(source):
                     convert_file(
                         file=Path(source),
