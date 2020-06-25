@@ -19,6 +19,7 @@
 import os
 import sys
 
+from natsort import natsorted
 import pandas as pd
 import pytest
 
@@ -42,18 +43,20 @@ default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logg
 
 default_test_lipids = [
     # ("PLPC", "B1", "LipidLynxX", "PC(34:2)"),
-    # ("Cer 24:2", "S1", "LipidLynxX", "Cer(18:1;2/24:2)"),
-    # ("Cer 24:2", "B1", "COMP_DB", "Cer 42:3;O2"),
-    # ("dhCer 16:0", "B1", "COMP_DB", "Cer 34:0;O2"),
-    # ("DG(O-16:0/18:1)", "B1", "COMP_DB", "DG O-34:1"),
-    # ("PC(O-32:1)", "B1", "COMP_DB", "PC O-32:1"),
-    # ("CerP 24:2", "B1", "COMP_DB", "CerP 42:3;O2"),
-    ("CerP 24:2", "S1", "LipidLynxX", "CerP(18:1;O2/24:2)"),
+    # ("Cer 24:2", "S1", "LipidLynxX", "Cer(18:1;O2/24:2)"),
+    # ("Cer 24:2", "B2", "COMP_DB", "Cer 42:3;O2"),
+    # ("dhCer 16:0", "B2", "COMP_DB", "Cer 34:0;O2"),
+    # ("DG(O-16:0/18:1)", "B2", "COMP_DB", "DG O-34:1"),
+    # ("PC(O-32:1)", "B2", "COMP_DB", "PC O-32:1"),
+    # ("CerP 24:2", "B2", "COMP_DB", "CerP 42:3;O2"),
+    ("FA 18:2(9,11);O", "B2", "COMP_DB", "FA 18:2;O"),
+    # ("CerP 24:2", "S1", "LipidLynxX", "CerP(18:1;O2/24:2)"),
 ]
 
 
 default_test_files = [
-    ("ShorthandNotation", r"test/test_input/Input_ShorthandNotation.csv")
+    ("COMP_DB", r"test/test_input/test_style_compdb.csv"),
+    # ("ShorthandNotation", r"test/test_input/test_style_shorthand.csv"),
 ]
 
 
@@ -79,8 +82,12 @@ def test_convert_file(
     style: str, file: str,
 ):
     in_df = pd.read_csv(get_abs_path(file))
-    test_df = pd.DataFrame(data=in_df[in_df["CONVERT"] == "T"])  # type: pd.DataFrame
-    test_df.loc[:, "MAX"] = test_df["OUTPUT"]
+    in_df.fillna("", inplace=True)
+    test_df = pd.DataFrame(data=in_df[in_df["SUPPORTED"] != ""])  # type: pd.DataFrame
+    levels = test_df.columns.values.tolist()
+    levels = [t_lv for t_lv in levels if t_lv in supported_levels]
+    max_level = natsorted(levels)[-1]
+    test_df.loc[:, "MAX"] = test_df[max_level]
     all_levels = supported_levels.copy()
     all_levels.append("MAX")
     sum_test_dct = test_df.to_dict(orient="index")
@@ -88,9 +95,22 @@ def test_convert_file(
         test_dct = sum_test_dct[idx]
         for lv in all_levels:
             if lv in test_dct:
-                test_convert_lipid(
-                    lipid=test_dct.get("INPUT", ""),
-                    level=lv,
-                    style=style,
-                    converted_lipid=test_dct.get(lv, ""),
-                )
+                compatible_levels = test_dct.get("SUPPORTED", "T")
+                if compatible_levels == "T":
+                    lv_compatible_levels = all_levels[
+                        : max(all_levels.index(lv) + 1, len(all_levels))
+                    ]
+                else:
+                    lv_compatible_levels = compatible_levels.split(",")
+                    lv_compatible_levels = [c_lv.strip() for c_lv in lv_compatible_levels]
+                    lv_compatible_levels = [c_lv for c_lv in lv_compatible_levels if c_lv in all_levels]
+                test_input = test_dct.get(lv, None)
+                for out_lv in lv_compatible_levels:
+                    test_output = test_dct.get(out_lv, None)
+                    if test_output and test_input:
+                        test_convert_lipid(
+                            lipid=test_input,
+                            level=out_lv,
+                            style=style,
+                            converted_lipid=test_output,
+                        )

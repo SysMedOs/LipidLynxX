@@ -359,10 +359,10 @@ def equalize(
         help="Path for the export file. Accept .xlsx file only.",
     ),
     level: List[str] = typer.Option(
-        ["B1"],
+        ["B2"],
         "--level",
         "-l",
-        help="Level of lipid identifier information for the output. Set to B1 by default.",
+        help="Level of lipid identifier information for the output. Set to B2 by default.",
     ),
 ):
     """
