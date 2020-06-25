@@ -61,11 +61,18 @@ class Decoder(object):
             else:
                 raise ValueError(f"Must provide a {rule} in configuration to search.")
 
-        if any([re.search(r'^residue[s]?(_alia[s])?$', c, re.IGNORECASE), re.search(r'mod', c, re.IGNORECASE)]):
+        if any(
+            [
+                re.search(r"^residue[s]?(_alia[s])?$", c, re.IGNORECASE),
+                re.search(r"mod", c, re.IGNORECASE),
+            ]
+        ):
             pass
         else:
             residues_count = len(matched_info_dct.get("RESIDUE", []))
-            residues_separator_count = len(matched_info_dct.get("RESIDUE_SEPARATOR", []))
+            residues_separator_count = len(
+                matched_info_dct.get("RESIDUE_SEPARATOR", [])
+            )
             if residues_count == residues_separator_count + 1 and residues_count > 0:
                 pass
             else:
@@ -328,9 +335,7 @@ class Decoder(object):
             self.logger.error(f"Failed to decode Lipid: {lipid_name}")
         obs_alias_lst = list(set(obs_alias_lst))
         if obs_alias_lst:
-            self.logger.debug(
-                f"Using alias: {lipid_name} -> {obs_alias_lst}"
-            )
+            self.logger.debug(f"Using alias: {lipid_name} -> {obs_alias_lst}")
 
         return extracted_info_dct
 

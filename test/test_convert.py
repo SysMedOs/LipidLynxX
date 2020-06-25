@@ -102,8 +102,12 @@ def test_convert_file(
                     ]
                 else:
                     lv_compatible_levels = compatible_levels.split(",")
-                    lv_compatible_levels = [c_lv.strip() for c_lv in lv_compatible_levels]
-                    lv_compatible_levels = [c_lv for c_lv in lv_compatible_levels if c_lv in all_levels]
+                    lv_compatible_levels = [
+                        c_lv.strip() for c_lv in lv_compatible_levels
+                    ]
+                    lv_compatible_levels = [
+                        c_lv for c_lv in lv_compatible_levels if c_lv in all_levels
+                    ]
                 test_input = test_dct.get(lv, None)
                 for out_lv in lv_compatible_levels:
                     test_output = test_dct.get(out_lv, None)

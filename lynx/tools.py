@@ -106,8 +106,7 @@ def convert_lipid(
         typer.echo(converted_name)
     else:
         typer.secho(
-            'Please input a lipid name. e.g. "PLPC".',
-            fg=typer.colors.YELLOW,
+            'Please input a lipid name. e.g. "PLPC".', fg=typer.colors.YELLOW,
         )
         typer.echo(convert_lipid.__doc__)
 

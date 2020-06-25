@@ -34,12 +34,12 @@
         "MOD_SITE_INFO"
       ],
       "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
-      "MOD_SITE_INFO": "([EZRS])?",
+      "MOD_SITE_INFO": "([RS])?",
       "MOD_SEPARATOR": ",",
       "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
       "EXAMPLES": [
         "9",
-        "9Z",
+        "9S",
         "9OH",
         "9S-OH"
       ]
@@ -66,33 +66,35 @@
     },
     "DB_SITE": {
       "ORDER": [
+        "DB_SITE_SEPARATOR",
         "DB_SITE",
         "DB_SITE_INFO"
       ],
       "OPTIONAL": [
-        "DB_SITE_SEPARATOR"
+        "DB_SITE_SEPARATOR",
+        "DB_SITE_INFO"
       ],
-      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
-      "MOD_SITE_INFO": "([EZRS])?",
+      "DB_SITE_SEPARATOR": "[,]",
+      "DB_SITE": "([0-9]{1,2})",
+      "DB_SITE_INFO": "[EZ]",
       "EXAMPLES": [
         "9",
         "9Z",
-        "9OH",
-        "9S-OH"
+        ",12Z"
       ]
     },
     "SUM_DB_SITES": {
       "ORDER": [
         "BRACKET_LEFT",
-        "DB_SITE",
+        "DB_SITES",
         "BRACKET_RIGHT"
       ],
       "REPEAT": {
-        "DB_SITE": [1, 10]
+        "DB_SITES": [1, 10]
       },
-      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
-      "MODS": "$.MODS.DB_SITE.0",
-      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "BRACKET_LEFT": "\\(",
+      "DB_SITES": "$.MODS.DB_SITE.0",
+      "BRACKET_RIGHT": "\\)",
       "EXAMPLES": [
         "(9Z)",
         "(9Z,12Z)",
@@ -108,7 +110,7 @@
         "NUM_C",
         "DB_SEPARATOR",
         "DB",
-        "SUM_DB",
+        "SUM_DB_SITES",
         "O_SEPARATOR",
         "NUM_O",
         "SUM_MODS"
@@ -117,7 +119,7 @@
         "RESIDUE_SEPARATOR",
         "LINK",
         "DB",
-        "SUM_DB",
+        "SUM_DB_SITES",
         "O_SEPARATOR",
         "NUM_O",
         "SUM_MODS"
@@ -130,9 +132,9 @@
       "NUM_C": "[0-9]{1,2}",
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
-      "SUM_DB": "$.MODS.SUM_DB_SITES.0",
-      "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?O?",
+      "SUM_DB_SITES": "$.MODS.SUM_DB_SITES.0",
+      "O_SEPARATOR": ";",
+      "NUM_O": "O?[2-3]?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "EXAMPLES": [
         "18:2;3O",
@@ -249,7 +251,7 @@
       "MAX_RESIDUES": 1,
       "PREFIX": "Acylcarnitine[\\s]?",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
-      "CLASS": "C|FA",
+      "CLASS": "FA",
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",

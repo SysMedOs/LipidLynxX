@@ -31,20 +31,13 @@
   "MODS": {
     "MOD": {
       "ORDER": [
-        "MOD_COUNT",
+        "SEMICOLON",
         "MOD_CV",
-        "SITE_BRACKET_LEFT",
-        "MOD_SITE",
-        "MOD_SITE_INFO",
-        "SITE_BRACKET_RIGHT"
+        "MOD_COUNT"
       ],
       "OPTIONAL": [
-        "MOD_COUNT",
-        "MOD_CV",
-        "SITE_BRACKET_LEFT",
-        "MOD_SITE",
-        "MOD_SITE_INFO",
-        "SITE_BRACKET_LEFT"
+        "SEMICOLON",
+        "MOD_COUNT"
       ],
       "REPEAT": {
         "MOD": [
@@ -52,12 +45,9 @@
           10
         ]
       },
-      "MOD_COUNT": "\\d?\\d?",
+      "SEMICOLON": ";",
       "MOD_CV": "([a-zA-Z]*[-0-9a-zA-Z]*)",
-      "SITE_BRACKET_LEFT": "$.SEPARATORS.MODS_BRACKET_LEFT.0",
-      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
-      "MOD_SITE_INFO": "([EZRS])?",
-      "SITE_BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",
+      "MOD_COUNT": "\\d?\\d?",
       "EXAMPLES": [
         "{9,12}",
         "{9Z,12Z}",
