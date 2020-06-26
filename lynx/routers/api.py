@@ -38,7 +38,7 @@ from lynx.models.api_models import (
     LevelsData,
     StyleType,
 )
-from    lynx.models.lipid import LipidType
+from lynx.models.lipid import LipidType
 from lynx.utils.toolbox import get_level
 
 router = APIRouter()
@@ -49,7 +49,9 @@ default_levels = LevelsData(levels=["B1", "D1"])
 # Get APIs
 @router.get("/convert/lipid/")
 async def convert_name(
-    lipid_name: str = "PLPC", style: Optional[str] = "LipidLynxX", level: Optional[str] = "MAX"
+    lipid_name: str = "PLPC",
+    style: Optional[str] = "LipidLynxX",
+    level: Optional[str] = "MAX",
 ):
     """
     Convert one lipid name into supported levels and export to supported style

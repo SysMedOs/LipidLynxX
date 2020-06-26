@@ -117,11 +117,11 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         levels = [lv]
     elif isinstance(lv, str):
         if re.match(level_rgx_str, lv):
-            levels = [get_level(lv, default_level="B1")]
+            levels = [get_level(lv, default_level="B2")]
         else:
             levels = re.split(r", |; |\s+|\n", lv)
             levels = [
-                get_level(seg, default_level="B1")
+                get_level(seg, default_level="B2")
                 for seg in levels
                 if re.match(level_rgx_str, seg)
             ]
@@ -144,7 +144,11 @@ def get_style_level(
         export_style = "LipidLynxX"
     elif export_style == StyleType.comp_db:
         export_style = "COMP_DB"
-        to_level = "B1"
+        # COMP_DB only have B2 level e.g. FA 20:3;O3
+        # ref: https://www.lipidmaps.org/resources/tools/bulk_structure_searches_documentation.php
+        to_level = "B2"
+    elif export_style == StyleType.shorthand:
+        export_style = "ShorthandNotation"
     else:
         export_style = "LipidLynxX"
 

@@ -40,6 +40,9 @@ def cli_get_table(file: Union[Path, str]):
             table_dct = pd.read_csv(file).to_dict(orient="list")
         elif in_file_name_low_str.endswith("tsv"):
             table_dct = pd.read_csv(file, sep="\t").to_dict(orient="list")
+        elif in_file_name_low_str.endswith("txt"):
+            with open(file) as f_obj:
+                table_dct = {"input": f_obj.readlines()}
         else:
             typer.echo("File type not supported")
             raise typer.Exit(code=1)

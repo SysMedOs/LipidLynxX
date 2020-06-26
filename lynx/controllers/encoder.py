@@ -15,7 +15,7 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-
+import re
 from typing import Dict, List
 
 from natsort import natsorted
@@ -39,7 +39,7 @@ class Encoder(object):
         output_rules: dict = default_output_rules,
         logger=app_logger,
     ):
-        self.export_rule = style
+        self.export_style = style
         self.output_rules = load_output_rule(output_rules, style)
         self.class_rules = self.output_rules.get("LMSD_CLASSES", {})
         self.mod_rules = self.output_rules.get("MODS", {}).get("MOD", {})
@@ -52,9 +52,9 @@ class Encoder(object):
         self.extractor = Decoder(rules=input_rules, logger=logger)
         self.logger = logger
 
-    @staticmethod
-    def get_best_id(candidate: Dict[str, str]) -> str:
+    def get_best_id(self, candidate: Dict[str, str]) -> str:
         c_lv_lst = natsorted(list(candidate.keys()))
+        self.logger.debug(f"Export MAX level: {c_lv_lst[-1]}. ")
         c_max_str = candidate.get(c_lv_lst[-1], "")
         return c_max_str
 
@@ -63,7 +63,10 @@ class Encoder(object):
         best_id_dct = {}
         num_lv = 0
         max_str = ""
-        for c_info in candidates:
+        sum_db = 0
+        for c_info_set in candidates:
+            c_info = c_info_set.get("compiled_names", {})
+            c_sum_db = c_info_set.get("sum_db", 0)
             for c in c_info:
                 c_lv_lst = natsorted(list(c_info[c].keys()))
                 c_num_lv = len(c_lv_lst)
@@ -72,25 +75,42 @@ class Encoder(object):
                     best_id_dct = c_info[c]
                     max_str = c_max_str
                     num_lv = c_num_lv
+                    sum_db = c_sum_db
                 else:
                     c_max_str = c_info[c].get(c_lv_lst[-1], "")
                     if len(c_max_str) > len(max_str):
                         best_id_dct = c_info[c]
                         max_str = c_max_str
                         num_lv = c_num_lv
+                        sum_db = c_sum_db
                     else:
                         pass
 
         # add levels for B0, D0, S0 lipids
-        if best_id_dct:
-            if list(best_id_dct.keys())[-1].endswith("0"):
-                for lv in list(best_id_dct.keys()):
-                    for lv_base in ["B", "D", "S"]:
-                        if lv.startswith(lv_base):
-                            lv_id = best_id_dct.get(lv)
-                            for add_lv in supported_levels:
-                                if add_lv.startswith(lv_base) and add_lv != lv:
-                                    best_id_dct[add_lv] = lv_id
+        if best_id_dct and all(
+            [re.match(r"^[BDS]0(.[12])?$", lv) for lv in best_id_dct]
+        ):
+            for add_lv in supported_levels:
+                from_lv = f"{add_lv[0]}0{add_lv[2:]}"
+                if from_lv in best_id_dct:
+                    best_id_dct[add_lv] = best_id_dct.get(from_lv, "")
+        # add levels for lipids with no DB
+        updated_best_id_dct = {}
+        if (
+            best_id_dct
+            and sum_db == 0
+            and all([re.match(r"^[BDS][0-5]$", lv) for lv in best_id_dct])
+        ):
+            for from_lv in best_id_dct:
+                updated_best_id_dct[from_lv] = best_id_dct.get(from_lv, "")
+                for db_lv in [".1", ".2"]:
+                    add_lv = f"{from_lv}{db_lv}"
+                    if add_lv in supported_levels and add_lv not in best_id_dct:
+                        updated_best_id_dct[add_lv] = best_id_dct.get(from_lv, "")
+        if updated_best_id_dct and len(list(updated_best_id_dct.keys())) > len(
+            list(best_id_dct.keys())
+        ):
+            best_id_dct = updated_best_id_dct
 
         if best_id_dct.get("D1") and not best_id_dct.get("B1"):
             best_id_dct["B1"] = best_id_dct["D1"]
@@ -127,12 +147,12 @@ class Encoder(object):
         residues_sep_level = residues.get("RESIDUES_SEPARATOR_LEVEL", "")
         residues_info = residues.get("RESIDUES_INFO", [])
         res_count = len(residues_order)
-        sum_residues_str = ""
+        # sum_residues_str = ""
         res_lv_id_dct = {}
         res_lv_dct = {}
         sum_lv_lst = []
         for res_abbr in residues_info:
-            res_obj = Residue(residues_info[res_abbr], nomenclature=self.export_rule)
+            res_obj = Residue(residues_info[res_abbr], nomenclature=self.export_style)
             res_lv_id_dct[res_abbr] = res_obj.linked_ids
             res_lv_dct[res_abbr] = list(res_obj.linked_ids.keys())
             sum_lv_lst.extend(res_lv_dct[res_abbr])
@@ -156,7 +176,7 @@ class Encoder(object):
         sum_res_id_lv_dct = {}
         sum_res_sep_lv_lst = []
 
-        # set FA or class with one Res into level s
+        # set FA or class with one residue into level s
         if len(residues_order) == 1 and len(sum_lv_lst) > 0:
             if "0.1" in sum_lv_lst and residues_sep_level == "B":
                 residues_sep_level = "S"
@@ -171,8 +191,8 @@ class Encoder(object):
         for sep_lv in sum_res_sep_lv_lst:
             if sep_lv == "B":
                 # prepare bulk level
-                merged_res_obj = merge_residues(
-                    residues_info, nomenclature=self.export_rule
+                merged_res_obj = merge_residues(residues_order,
+                    residues_info, nomenclature=self.export_style
                 )
                 merged_res_linked_ids = merged_res_obj.linked_ids
                 merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())
@@ -284,8 +304,15 @@ class Encoder(object):
                     r_info = p_info[in_r]  # type: dict
                     checked_seg_info = self.check_segments(r_info)
                     comp_dct = self.compile_segments(checked_seg_info)
-                    export_info.append(comp_dct)
-            best_export_dct = self.get_best_id_series(export_info)
+                    res_info = r_info.get("RESIDUES", {}).get("RESIDUES_INFO", {})
+                    sum_db = 0
+                    for res in res_info:
+                        sum_db += res_info[res].get("NUM_DB", 0)
+                    export_info.append({"compiled_names": comp_dct, "sum_db": sum_db})
+            pre_best_export_dct = self.get_best_id_series(export_info)
+            best_export_dct = {
+                k: pre_best_export_dct[k] for k in sorted(pre_best_export_dct)
+            }
             self.logger.debug(f"Convert Lipid: {lipid_name} into:\n{best_export_dct}")
         else:
             best_export_dct = {}
@@ -313,6 +340,12 @@ class Encoder(object):
         if level in supported_levels:
             if level in all_lv_id_dct:
                 lv_id = all_lv_id_dct[level]
+            elif level.upper() == "MAX":
+                max_level = natsorted(list(all_lv_id_dct.keys()))[-1]
+                self.logger.info(
+                    f"Lipid: {lipid_name} cannot be converted into max level: {max_level}. "
+                )
+                lv_id = all_lv_id_dct[max_level]
             else:
                 self.logger.warning(
                     f"Lipid: {lipid_name} cannot be converted into level: {level}. "
@@ -340,6 +373,13 @@ class Encoder(object):
             if level in supported_levels:
                 if level in all_lv_id_dct:
                     lv_id_dct[level] = all_lv_id_dct[level]
+                elif level.upper() == "MAX":
+                    max_level = natsorted(list(all_lv_id_dct.keys()))[-1]
+                    self.logger.info(
+                        f"Lipid: {lipid_name} cannot be converted into max level: {max_level}. "
+                    )
+                    lv_id_dct[max_level] = all_lv_id_dct[max_level]
+                    lv_id_dct[level] = all_lv_id_dct[max_level]
                 else:
                     raise ValueError(
                         f"Lipid: {lipid_name} cannot be converted into level: {level}. "
@@ -372,11 +412,12 @@ if __name__ == "__main__":
         # "14,15-HxB3 (13R)",
         # "C22:5 CE",
         # "15-Keto-PGF2α",
-        "PGF2α",
+        # "PGF2α",
         # "8-iso PGF2a III",
         # "palmitoleic acid",
+        "FA 16:1(9Z)"
     ]
-    lynx_gen = Encoder(style="COMP_DB")
+    lynx_gen = Encoder(style="ShorthandNotation")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
         app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")

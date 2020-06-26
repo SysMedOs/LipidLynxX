@@ -86,6 +86,18 @@ class FileType(str, Enum):
 class StyleType(str, Enum):
     lipidlynxx = "LipidLynxX"
     comp_db = "COMP_DB"
+    shorthand = "ShorthandNotation"
+
+    @classmethod
+    def use(cls, style):
+        if re.search(r"lynx", style, re.IGNORECASE):
+            return StyleType.lipidlynxx
+        elif re.search(r"COMP", style, re.IGNORECASE):
+            return StyleType.comp_db
+        elif re.search(r"short\s*hand|short|hand", style, re.IGNORECASE):
+            return StyleType.shorthand
+        else:
+            return StyleType.lipidlynxx
 
 
 class InputStrData(BaseModel):
@@ -228,3 +240,8 @@ class EqualizerExportData(BaseModel):
                 "data": {"equalized": {"B1": None,}, "skipped": ["UNKNOWN_LIPID_1"],},
             }
         }
+
+
+if __name__ == "__main__":
+    a = StyleType.use("ShortHand")
+    print(a)

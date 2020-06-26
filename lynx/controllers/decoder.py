@@ -61,6 +61,24 @@ class Decoder(object):
             else:
                 raise ValueError(f"Must provide a {rule} in configuration to search.")
 
+        if any(
+            [
+                re.search(r"^residue[s]?(_alia[s])?$", c, re.IGNORECASE),
+                re.search(r"mod", c, re.IGNORECASE),
+            ]
+        ):
+            pass
+        else:
+            residues_count = len(matched_info_dct.get("RESIDUE", []))
+            residues_separator_count = len(
+                matched_info_dct.get("RESIDUE_SEPARATOR", [])
+            )
+            if residues_count == residues_separator_count + 1 and residues_count > 0:
+                pass
+            else:
+                # self.logger.debug(f"The numbers of residues and residue_separators do not fit. Skipped...")
+                matched_info_dct = {}
+
         links = matched_info_dct.get("LINK", None)
         if links:
             if isinstance(links, str):
@@ -168,7 +186,7 @@ class Decoder(object):
                 # if isinstance(num_o_chk_lst, list) and re.match(r'\d?O|O\d?|\d', num_o_chk_lst[0]):
                 #     matched_info_dct["MOD_TYPE"] = ["O"] + matched_info_dct.get("MOD_TYPE", [])
                 matched_dct = self.formatter.format_residue(matched_info_dct)
-                self.logger.debug(f"matched_dct: {matched_dct}")
+                # self.logger.debug(f"{res} matched {rule}:\n {matched_dct}")
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 
@@ -287,24 +305,37 @@ class Decoder(object):
         """
 
         extracted_info_dct = {}
-
+        obs_alias_lst = []
         for c in self.rules:
-            matched_info_dct = self.extract_by_class_rule(lipid_name, c)
-            if matched_info_dct:
-                extracted_info_dct[c] = matched_info_dct
+            matched_info_dct = {}
+            alias_matched_info_dct = {}
+            if lipid_name:
+                matched_info_dct = self.extract_by_class_rule(lipid_name, c)
+                def_alias = self.check_alias(lipid_name, "LIPID")
+                if def_alias:
+                    obs_alias_lst.append(def_alias)
+                    alias_matched_info_dct = self.extract_by_class_rule(def_alias, c)
+                if alias_matched_info_dct:
+                    extracted_info_dct[c] = matched_info_dct
             else:
-                if lipid_name:
-                    def_alias = self.check_alias(lipid_name, "LIPID")
-                    if def_alias:
-                        self.logger.debug(
-                            f"Found Alias: {lipid_name} -> change to {def_alias}"
-                        )
-                        matched_info_dct = self.extract_by_class_rule(def_alias, c)
-                        if matched_info_dct:
-                            extracted_info_dct[c] = matched_info_dct
+                self.logger.warning(
+                    f"No lipid name is given. Please submit a lipid name."
+                )
+
+            if matched_info_dct and not alias_matched_info_dct:
+                extracted_info_dct[c] = matched_info_dct
+            elif not matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            elif matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            else:
+                pass
 
         if not extracted_info_dct:
             self.logger.error(f"Failed to decode Lipid: {lipid_name}")
+        obs_alias_lst = list(set(obs_alias_lst))
+        if obs_alias_lst:
+            self.logger.debug(f"Using alias: {lipid_name} -> {obs_alias_lst}")
 
         return extracted_info_dct
 

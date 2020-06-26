@@ -42,11 +42,14 @@ class Modifications(object):
         self,
         mod_info: dict,
         db: int = 0,
+        num_o: int = 0,
         schema: str = "lynx_mod",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
         logger=app_logger,
     ):
+        self.logger = logger
+        self.nomenclature = nomenclature
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.mod_rule = self.export_rule.get("MODS", None)
         self.mod_rule_orders = self.mod_rule.get("MOD", {}).get("ORDER", [])
@@ -59,6 +62,17 @@ class Modifications(object):
         self.schema = schema
         self.type = "Modification"
         self.mod_level = str(mod_info.get("MOD_LEVEL", 0))
+        if num_o > 0:
+            if self.mod_level in ["0", "1"]:
+                self.mod_level = "2"
+            elif self.mod_level in ["0.1", "1.1"]:
+                self.mod_level = "2.1"
+            elif self.mod_level in ["0.2", "1.2"]:
+                self.mod_level = "2.2"
+            else:
+                pass
+        else:
+            pass
         with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
@@ -68,12 +82,12 @@ class Modifications(object):
             )
 
         self.db_count = db
+        self.additional_o_count = num_o
         self.sum_mod_info = self.to_sum_info()
 
         self.mod_id = self.sum_mod_info.get("id", "")
         self.mod_linked_ids = self.sum_mod_info.get("linked_ids", {})
         self.mod_list = self.sum_mod_info.get("info", {})
-        self.logger = logger
 
     def __str__(self):
         return self.to_json()
@@ -108,8 +122,11 @@ class Modifications(object):
         for mod in self.mod_info:
             mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
             mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0) * mod_count
+        mass_shift_str = f"{mass_shift:+}"
 
-        return f"{mass_shift:+}"
+        mass_shift_str = re.sub(r'\<?\+0\>?', "", mass_shift_str)
+        mass_shift_str = re.sub(r'\<\>', "", mass_shift_str)
+        return mass_shift_str
 
     def to_elements(self):
         sum_elements = {}
@@ -124,15 +141,31 @@ class Modifications(object):
                         sum_elements.get(elem, 0)
                         + mod_elements.get(elem, 0) * mod_count
                     )
+        if self.additional_o_count > 0:
+            sum_elements["O"] = sum_elements.get("O", 0) + self.additional_o_count
 
         for mod_elem in mod_elem_lst:
             if mod_elem in sum_elements:
-                mod_elem_count = f"{sum_elements[mod_elem]:+}"
-                if mod_elem_count == "+1":
-                    mod_elem_count = "+"
-                elif mod_elem_count == "-1":
-                    mod_elem_count = "-"
-                mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+                # temp solution for elem level for Shorthand
+                # TODO(zhixu.ni@uni-leipzig.de): reformat following part into .json cfg
+                if re.match(r"\.*lynx\.*", self.nomenclature, re.IGNORECASE):
+                    mod_elem_count = f"{sum_elements[mod_elem]:+}"
+                    if mod_elem_count == "+1":
+                        mod_elem_count = "+"
+                    elif mod_elem_count == "-1":
+                        mod_elem_count = "-"
+                    mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+
+                else:
+                    mod_elem_count = sum_elements[mod_elem]
+                    if mod_elem_count > 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}")
+                    elif mod_elem_count == 0:
+                        pass
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
 
         return f'{",".join(mod_str_lst)}'
 
@@ -163,7 +196,7 @@ class Modifications(object):
                                 mod_seg_str += f"+{mod_count}"
                         elif mod_count < 0 and mod_lv < 3:
                             mod_seg_str += str(mod_count)
-                        elif mod_count == 1:
+                        elif mod_count == 1 and cv not in ["", "DB"]:
                             if mod_lv < 3:
                                 mod_seg_str += "+"
                             else:
@@ -225,17 +258,16 @@ class Modifications(object):
             mod_seg_lst=["MOD_COUNT", "MOD_CV"], get_db_only=get_db_only
         )
 
-    def to_mod_site(self, get_db_only: bool = False):
-        return self.to_mod_base(
-            mod_seg_lst=[
+    def to_mod_site(self, mod_segments: list, get_db_only: bool = False):
+        if not mod_segments:
+            mod_segments = [
                 "MOD_COUNT",
                 "MOD_CV",
                 "SITE_BRACKET_LEFT",
                 "MOD_SITE",
                 "SITE_BRACKET_RIGHT",
-            ],
-            get_db_only=get_db_only,
-        )
+            ]
+        return self.to_mod_base(mod_seg_lst=mod_segments, get_db_only=get_db_only,)
 
     def to_mod_site_info(self, get_db_only: bool = False):
         return self.to_mod_base(
@@ -268,7 +300,7 @@ class Modifications(object):
         elif level.startswith("3"):
             mod_str = self.to_mod_count()
         elif level.startswith("4"):
-            mod_str = self.to_mod_site()
+            mod_str = self.to_mod_site(mod_segments=[])
         elif level.startswith("5"):
             mod_str = self.to_mod_site_info()
         else:
@@ -276,7 +308,15 @@ class Modifications(object):
 
         # add DB part
         if level.endswith(".1"):
-            db_str = self.to_mod_site(get_db_only=True)
+            db_str = self.to_mod_site(
+                mod_segments=[
+                    "SITE_BRACKET_LEFT",
+                    "MOD_SITE",
+                    "MOD_SITE_INFO",
+                    "SITE_BRACKET_RIGHT",
+                ],
+                get_db_only=True,
+            )
             if db_str:
                 mod_str = ",".join([db_str, mod_str]).strip(",")
             else:
@@ -346,6 +386,16 @@ class Modifications(object):
         linked_ids = self.to_all_levels()
         mod_id = linked_ids.get(self.mod_level, "")
         if float(self.mod_level) > 0 and mod_id:
+            sum_mod_info_dct = {
+                "api_version": api_version,
+                "type": self.type,
+                "id": mod_id,
+                "level": self.mod_level,
+                "linked_ids": linked_ids,
+                "linked_levels": natsorted(list(linked_ids.keys())),
+                "info": self.get_mod_info(),
+            }
+        elif float(self.mod_level) > 0 and not mod_id:
             sum_mod_info_dct = {
                 "api_version": api_version,
                 "type": self.type,
