@@ -55,7 +55,7 @@ class Residue(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        self.mod_obj = Modifications(mod_info, nomenclature=nomenclature)
+        self.mod_obj = Modifications(mod_info, num_o=residue_info.get("NUM_O", 0), nomenclature=nomenclature)
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level
@@ -148,29 +148,34 @@ class Residue(object):
 
 
 def merge_residues(
-    all_residues: dict,
+    residues_order: list,
+    residues_info: dict,
     schema: str = "lynx_residues",
     output_rules: dict = default_output_rules,
     nomenclature: str = "LipidLynxX",
 ) -> Residue:
 
     sum_res_dct = {}
-    if isinstance(all_residues, dict):
+    if isinstance(residues_info, dict):
         pass
     else:
         raise TypeError(
             f"Requires multiple Residues in dict, "
-            f"got type: {type(all_residues)} for {all_residues}"
+            f"got type: {type(residues_info)} for {residues_info}"
         )
 
     all_mod_lst = [
-        all_residues[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}})
-        for rm in all_residues
+        residues_info[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}})
+        for rm in residues_info
     ]
     sum_mods_obj = merge_mods(all_mod_lst)
 
-    for res in all_residues:
-        res_info = all_residues[res]
+    for res in residues_order:
+        res_info = residues_info.get(res, {})
+        link = res_info.get("LINK")
+        if res.upper().startswith("P-") and link == "P-":
+            res_info["LINK"] = "O-"
+            res_info["NUM_DB"] = res_info.get("NUM_DB") + 1
         for res_seg in res_info:
             if re.search(r"MOD", res_seg):
                 pass

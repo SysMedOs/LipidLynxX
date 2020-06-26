@@ -94,7 +94,7 @@
       "DB": "[1,2]?[0-9]",
       "LINK": "[oOpPeEa]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?O?",
+      "NUM_O": "[1-9]?O?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "OMEGA": "\\sN\\d",
       "EXAMPLES": [

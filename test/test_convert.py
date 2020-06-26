@@ -42,17 +42,28 @@ default_input_rules = build_input_rules(app_cfg_info["input_rules"], app_logger)
 default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logger)
 
 default_test_lipids = [
-    # ("PLPC", "B1", "LipidLynxX", "PC(34:2)"),
-    # ("Cer 24:2", "S1", "LipidLynxX", "Cer(18:1;O2/24:2)"),
-    # ("Cer 24:2", "B2", "COMP_DB", "Cer 42:3;O2"),
-    # ("dhCer 16:0", "B2", "COMP_DB", "Cer 34:0;O2"),
-    # ("DG(O-16:0/18:1)", "B2", "COMP_DB", "DG O-34:1"),
-    # ("PC(O-32:1)", "B2", "COMP_DB", "PC O-32:1"),
-    # ("CerP 24:2", "B2", "COMP_DB", "CerP 42:3;O2"),
-    ("FA 18:2(9,11);O", "B2", "COMP_DB", "FA 18:2;O"),
-    # ("CerP 24:2", "S1", "LipidLynxX", "CerP(18:1;O2/24:2)"),
+    ("SPB(17:0;O)", "COMP_DB", "B2", "SPB 17:0;O"),
+    # ("Cer 24:2", "COMP_DB", "B2", "Cer 42:3;O2"),
+    # ("dhCer 16:0", "COMP_DB", "B2", "Cer 34:0;O2"),
+    # ("DG(O-16:0/18:1)", "COMP_DB", "B2", "DG O-34:1"),
+    # ("PC(O-32:1)", "COMP_DB", "B2", "PC O-32:1"),
+    # ("CerP 24:2", "COMP_DB", "B2", "CerP 42:3;O2"),
+    # ("FA 18:2(9,11);O", "COMP_DB", "B2", "FA 18:2;O"),
+    # ("TG 16:0_18:1_18:2", "COMP_DB", "B2", "TG 52:3"),
+    # ("TG 16:0_18:1_18:1", "COMP_DB", "B2", "TG 52:2"),
+    # ("PE P-16:0/18:1", "COMP_DB", "B2", "PE O-34:2"),
+    # ("PC 16:0_18:1;O2", "COMP_DB", "B2", "PC 34:1;O2"),
+    # ("PC 16:0_18:1;2O", "COMP_DB", "B2", "PC 34:1;O2"),
+    # ("CerP 34:1;O2", "COMP_DB", "B2", "CerP 34:1;O2"),
+    # ("PLPC", "LipidLynxX", "B1", "PC(34:2)"),
+    # ("Cer 24:2", "LipidLynxX", "S1", "Cer(18:1;O2/24:2)"),
+    # ("CerP 24:2", "LipidLynxX", "S1", "CerP(18:1;O2/24:2)"),
 ]
 
+default_test_names = [
+    ("COMP_DB", ["B2"], r"test/test_input/test_lipid_names_compdb.csv"),
+    # ("ShorthandNotation", r"test/test_input/test_style_shorthand.csv"),
+]
 
 default_test_files = [
     ("COMP_DB", r"test/test_input/test_style_compdb.csv"),
@@ -60,9 +71,9 @@ default_test_files = [
 ]
 
 
-@pytest.mark.parametrize("lipid,level,style,converted_lipid", default_test_lipids)
-def test_convert_lipid(
-    lipid: str, level: str, style: str, converted_lipid: str,
+@pytest.mark.parametrize("lipid,style,level,converted_lipid", default_test_lipids)
+def test_convert_results(
+        lipid: str, style: str, level: str, converted_lipid: str,
 ):
     print(
         f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}."
@@ -77,8 +88,33 @@ def test_convert_lipid(
     assert converted_name == converted_lipid
 
 
+@pytest.mark.parametrize("style,levels,file", default_test_names)
+def test_convert_names(
+    style: str, levels: list, file: str,
+):
+    in_df = pd.read_csv(get_abs_path(file))
+    in_df.fillna("", inplace=True)
+    def_levels = in_df.columns.values.tolist()
+    test_levels_lst = [cfg_lv for cfg_lv in levels if cfg_lv in def_levels]
+    test_df = pd.DataFrame(data=in_df, columns=["INPUT"] + test_levels_lst)
+    sum_test_dct = test_df.to_dict(orient="index")
+    for idx in sum_test_dct:
+        test_dct = sum_test_dct[idx]
+        for lv in test_levels_lst:
+            if lv in test_dct:
+                test_input = test_dct.get("INPUT", "")
+                test_output = test_dct.get(lv, "")
+                if test_input and test_output:
+                    test_convert_results(
+                        lipid=test_input,
+                        level=lv,
+                        style=style,
+                        converted_lipid=test_output,
+                    )
+
+
 @pytest.mark.parametrize("style,file", default_test_files)
-def test_convert_file(
+def test_convert_style_multi_levels(
     style: str, file: str,
 ):
     in_df = pd.read_csv(get_abs_path(file))
@@ -112,7 +148,7 @@ def test_convert_file(
                 for out_lv in lv_compatible_levels:
                     test_output = test_dct.get(out_lv, None)
                     if test_output and test_input:
-                        test_convert_lipid(
+                        test_convert_results(
                             lipid=test_input,
                             level=out_lv,
                             style=style,

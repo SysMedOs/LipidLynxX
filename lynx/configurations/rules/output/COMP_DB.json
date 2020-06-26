@@ -5,21 +5,12 @@
   ],
   "NOMENCLATURE": "COMP_DB",
   "SUPPORTED_LEVELS": [
-    "B0",
-    "B1",
-    "B2",
-    "B3"
+    "B2"
   ],
   "SEPARATORS": {
     "DB_SEPARATOR": ":",
     "O_SEPARATOR": ";",
     "RESIDUE_SEPARATOR": " ",
-    "RESIDUE_BRACKET_LEFT": "(",
-    "RESIDUE_BRACKET_RIGHT": ")",
-    "MOD_BRACKET_LEFT": "<",
-    "MOD_BRACKET_RIGHT": ">",
-    "SITE_BRACKET_LEFT": "{",
-    "SITE_BRACKET_RIGHT": "}",
     "SQUARE_BRACKET_LEFT": "[",
     "SQUARE_BRACKET_RIGHT": "]",
     "SEPARATOR_LEVELS": {
@@ -49,37 +40,23 @@
       "MOD_CV": "([a-zA-Z]*[-0-9a-zA-Z]*)",
       "MOD_COUNT": "\\d?\\d?",
       "EXAMPLES": [
-        "{9,12}",
-        "{9Z,12Z}",
-        "OH",
-        "2OH",
-        "OH{8R}",
-        "2OH{8R,15S}"
+        ";O",
+        ";O2"
       ]
     },
     "SUM_MODS": {
       "ORDER": [
-        "RESIDUE_BRACKET_LEFT",
-        "MOD",
-        "RESIDUE_BRACKET_RIGHT"
+        "MOD"
       ],
       "REPEAT": {
-        "MOD_SITE": [
-          1,
-          10
-        ],
-        "MOD_SITE_INFO": [
+        "MOD": [
           1,
           10
         ]
       },
-      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "MOD": "$.MODS.MOD.0",
-      "RESIDUE_BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
       "EXAMPLES": [
-        "(9Z)",
-        "(9Z,12Z)",
-        "(9OH,12OH)"
+        ";O2;H2"
       ]
     }
   },
@@ -91,19 +68,14 @@
         "DB_SEPARATOR",
         "NUM_DB",
         "O_SEPARATOR",
-        "NUM_O",
-        "MOD_BRACKET_LEFT",
-        "SUM_MODS",
-        "MOD_BRACKET_RIGHT"
+        "NUM_O"
       ],
       "OPTIONAL": [
         "LINK",
         "DB",
         "O_SEPARATOR",
         "NUM_O",
-        "MOD_BRACKET_LEFT",
-        "SUM_MODS",
-        "MOD_BRACKET_RIGHT"
+        "SUM_MODS"
       ],
       "REPEAT": {
         "SUM_MODS": [
@@ -117,9 +89,7 @@
       "NUM_DB": "[1,2]?[0-9]",
       "O_SEPARATOR": ";",
       "NUM_O": "O[2-3]?",
-      "MOD_BRACKET_LEFT": "$.SEPARATORS.MOD_BRACKET_LEFT.0",
-      "SUM_MODS": "$.MODS.SUM_MODS.0",
-      "MOD_BRACKET_RIGHT": "$.SEPARATORS.MOD_BRACKET_LEFT.0"
+      "SUM_MODS": "$.MODS.SUM_MODS.0"
     },
     "EXCEPTIONS": {
       "PREFIX": "TEST"

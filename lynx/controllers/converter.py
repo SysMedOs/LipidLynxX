@@ -16,6 +16,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import re
 from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
@@ -37,6 +38,7 @@ class Converter:
         output_rules: dict = default_output_rules,
         logger=app_logger,
     ):
+        self.style = style
         self.encoder = Encoder(
             style=style,
             input_rules=input_rules,
@@ -47,6 +49,9 @@ class Converter:
 
     def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
         output_dct = {}
+        # Set COMP_DB to max level B2
+        if re.search(r'COMP\\s*[_]?\\s*(DB)?', self.style):
+            level = "B2"
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
             converted_id = self.encoder.convert(input_str, level=level)
             if converted_id:

@@ -134,7 +134,7 @@
       "DB": "[1,2]?[0-9]",
       "SUM_DB_SITES": "$.MODS.SUM_DB_SITES.0",
       "O_SEPARATOR": ";",
-      "NUM_O": "O?[2-3]?",
+      "NUM_O": "O?[2-9]?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "EXAMPLES": [
         "18:2;3O",
@@ -244,8 +244,8 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "BRACKET_LEFT",
         "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
         "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
@@ -277,6 +277,8 @@
       ],
       "OPTIONAL": [
         "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT",
         "TAIL"
       ],
       "MAX_RESIDUES": 3,
@@ -323,6 +325,8 @@
         "PREFIX",
         "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT",
         "TAIL"
       ],
       "MAX_RESIDUES": 2,
@@ -367,7 +371,11 @@
         "SUM_RESIDUES",
         "BRACKET_RIGHT"
       ],
-      "OPTIONAL": ["LIPID_CLASS_SEPARATOR"],
+      "OPTIONAL": [
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
+      ],
       "MAX_RESIDUES": 4,
       "PREFIX": "L[B]?|Lyso",
       "CLASS": "LBPA|BMP",
@@ -394,7 +402,9 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 4,
       "CLASS": "CL",
@@ -419,7 +429,9 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "PREFIX": "C",
@@ -452,7 +464,9 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",
@@ -498,8 +512,8 @@
         "CLASS"
       ],
       "OPTIONAL": [
-        "BRACKET_LEFT",
         "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
         "BRACKET_RIGHT",
         "PREFIX"
       ],
@@ -531,7 +545,9 @@
         "BRACKET_RIGHT"
       ],
       "OPTIONAL": [
-        "LIPID_CLASS_SEPARATOR"
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": "CE",
@@ -555,8 +571,8 @@
         "CLASS"
       ],
       "OPTIONAL": [
-        "BRACKET_LEFT",
         "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
         "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
