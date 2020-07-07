@@ -190,6 +190,22 @@ async def equalize_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
+@router.post("/resources/lipid/", include_in_schema=False)
+async def link_text(
+        request: Request,
+        lipid_name: str = Form(...),
+):
+    converted_lipid_name = await api.convert_name(lipid_name, level="MAX")
+    resource_data = await api.cross_ref(converted_lipid_name, export_url=True)
+    render_data_dct = {
+        "request": request,
+        "lipid_name": lipid_name,
+        "converted_lipid_name": converted_lipid_name,
+        "resource_data": resource_data,
+    }
+    return templates.TemplateResponse("resources.html", render_data_dct)
+
+
 @router.get(
     "/downloads/{data}/{file_type}/{file_name}",
     name="get_download_file",

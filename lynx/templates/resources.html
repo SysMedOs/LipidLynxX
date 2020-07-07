@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Resources @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="False">
+        <p></p>
+        <h3>LipidLynxX Cross reference check result:</h3>
+        <div class="container">
+            <p></p>
+            <div class="alert alert-success" role="alert">
+                <h4>Input Lipid Notation: {{ lipid_name }}</h4>
+                <p></p>
+                <h4>Converted Lipid Notation: {{ converted_lipid_name }}</h4>
+            </div>
+            <div>
+                {% for resource_db, resource_info in resource_data.items() %}
+                    <p>{{ resource_db }}</p>
+                    {% for resource_id, resource_url in resource_info.items() %}
+                        <p>{{ resource_id }} : <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></p>
+                    {% endfor %}
+                    <div class="border-top my-3"></div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
