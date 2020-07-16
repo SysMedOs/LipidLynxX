@@ -34,6 +34,7 @@ default_input_rules = build_input_rules(app_cfg_info["input_rules"])
 default_output_rules = build_output_rules(app_cfg_info["output_rules"])
 default_cv_file = get_abs_path(app_cfg_info["controlled_vocabularies"])
 default_alias_file = get_abs_path(app_cfg_info["defined_alias"])
+default_kegg_file = get_abs_path(app_cfg_info["resource_kegg"])
 
 with open(default_cv_file, "r") as cv_js:
     cv_alias_json = json.load(cv_js)
@@ -47,6 +48,9 @@ for _mod in cv_alias_json:
 
 cv_rgx_dct = build_mod_parser(cv_alias_info)
 # abbr_cfg_df = pd.read_excel(cfg_info_dct["defined_alias"])
+
+with open(default_kegg_file, "r") as kegg_json_obj:
+    kegg_ids = json.load(kegg_json_obj)
 
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "4", "5"]

@@ -18,6 +18,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         "defined_alias",
         "input_rules",
         "output_rules",
+        "resource_kegg",
     ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
@@ -97,7 +98,7 @@ def get_cli_log_settings(log_cfg: Union[str, bool] = "OFF"):
 default_cfg_path = "/lynx/config.ini"
 app_cfg_info = load_cfg_info(cfg_path=default_cfg_path)
 
-lynx_version: str = "0.7.8"
+lynx_version = "0.7.8"
 api_version = app_cfg_info.get("api_version", "1.0")
 app_log_level = get_log_level(app_cfg_info.get("app_log_level", "DEBUG"))
 cli_log_level = get_log_level(app_cfg_info.get("cli_log_level", "ERROR"))

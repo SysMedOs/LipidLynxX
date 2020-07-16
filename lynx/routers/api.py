@@ -26,7 +26,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import parse_obj_as
 import requests
 
-from lynx.controllers.crossref import get_cross_ref
+from lynx.controllers.linker import get_cross_links
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
@@ -87,7 +87,7 @@ async def cross_ref(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool 
     link one lipid name from data
     """
 
-    linked_ids = await get_cross_ref(lipid_name, export_url=export_url)
+    linked_ids = await get_cross_links(lipid_name, export_url=export_url)
     if linked_ids:
         return linked_ids
     else:
