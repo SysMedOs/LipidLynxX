@@ -19,6 +19,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         "input_rules",
         "output_rules",
         "resource_kegg",
+        "resource_lion",
     ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):

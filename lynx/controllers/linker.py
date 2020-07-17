@@ -17,17 +17,17 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import re
-from typing import Union
+from typing import Union, List
 
 import aiohttp
 import requests
 import natsort
 import urllib.parse
 
-from lynx.models.defaults import kegg_ids
+from lynx.models.defaults import kegg_ids, lion_ids
 
 DEFAULT_DB_INFO = {
-    "chbei": "https://www.ebi.ac.uk/chebi",
+    "chebi": "https://www.ebi.ac.uk/chebi",
     "hmdb": "https://hmdb.ca",
     "kegg": "https://www.kegg.jp",
     "lion": "http://www.lipidontology.com",
@@ -41,7 +41,7 @@ DEFAULT_DB_INFO = {
 
 CROSS_LINK_DBS = {
     "swisslipids": {
-        "chbei": "ChEBI",
+        "chebi": "ChEBI",
         "hmdb": "HMDB",
         "lipidmaps": "LipidMaps",
         "swisslipids": "SwissLipids",
@@ -49,7 +49,7 @@ CROSS_LINK_DBS = {
         "uniportkb": "UniProtKB",
     },
     "lipidmaps": {
-        "chbei": "chebi_id",
+        "chebi": "chebi_id",
         "hmdb": "hmdb_id",
         "kegg": "kegg_id",
         "lipidbank": "lipidbank_id",
@@ -70,6 +70,7 @@ CROSS_LINK_APIS = {
         "chebi": r"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:<LIPID_ID>",
         "hmdb": r"https://hmdb.ca/metabolites/<LIPID_ID>",
         "kegg": r"https://www.kegg.jp/dbget-bin/www_bget?cpd:<LIPID_ID>",
+        "lion": r"http://bioportal.bioontology.org/ontologies/LION/?p=classes&conceptid=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FLION_<LIPID_ID>",
         "lipidbank": r"http://lipidbank.jp/cgi-bin/detail.cgi?id=<LIPID_ID>",
         "lipidmaps": r"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=<LIPID_ID>",
         "pubchem": r"https://pubchem.ncbi.nlm.nih.gov/compound/<LIPID_ID>",
@@ -78,26 +79,6 @@ CROSS_LINK_APIS = {
         "uniportkb": r"https://www.uniprot.org/uniprot/?query=<LIPID_ID>",
     },
 }
-
-
-def get_swiss_id(lipid_name: str = "PC(16:0/18:2(9Z,12Z))") -> requests.Response:
-    url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
-    q_swiss_str = CROSS_LINK_APIS.get("name_search", {}).get("swisslipids")
-    q_swiss_str = re.sub(r"<LIPID_ID>", url_safe_lipid_name, q_swiss_str)
-    r_swiss_obj = requests.get(q_swiss_str)
-
-    return r_swiss_obj
-
-
-def get_lmsd_subclass(lmsd_id: str = "LMGP01010594") -> str:
-
-    sub_class = ""
-    if lmsd_id.startswith("LM") and len(lmsd_id) >= 8:
-        raw_subclass_str = lmsd_id[2:8]
-        if re.match(r"\w\w\d\d\d\d", raw_subclass_str):
-            sub_class = raw_subclass_str
-
-    return sub_class
 
 
 def get_kegg_id(lmsd_id: str = "LMGP01010594"):
@@ -114,7 +95,36 @@ def get_kegg_id(lmsd_id: str = "LMGP01010594"):
     return kegg_id
 
 
-async def get_swiss_links(
+def get_lion_id(lipid_name: str = "PC(16:0/20:4)"):
+    lion_id = lion_ids.get(lipid_name)
+    if lion_id:
+        pass
+    else:
+        lion_id = ""
+    return lion_id
+
+
+def get_lmsd_subclass(lmsd_id: str = "LMGP01010594") -> str:
+
+    sub_class = ""
+    if lmsd_id.startswith("LM") and len(lmsd_id) >= 8:
+        raw_subclass_str = lmsd_id[2:8]
+        if re.match(r"\w\w\d\d\d\d", raw_subclass_str):
+            sub_class = raw_subclass_str
+
+    return sub_class
+
+
+def get_swiss_id(lipid_name: str = "PC(16:0/18:2(9Z,12Z))") -> requests.Response:
+    url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
+    q_swiss_str = CROSS_LINK_APIS.get("name_search", {}).get("swisslipids")
+    q_swiss_str = re.sub(r"<LIPID_ID>", url_safe_lipid_name, q_swiss_str)
+    r_swiss_obj = requests.get(q_swiss_str)
+
+    return r_swiss_obj
+
+
+async def get_swiss_linked_id(
     swisslipids_id, ref_db, export_url: bool = False
 ) -> Union[dict, list]:
     ref_dbs = CROSS_LINK_DBS.get("swisslipids", {})
@@ -169,6 +179,27 @@ async def get_swiss_links(
         return list(set(cross_ref_ids))
 
 
+async def get_lmsd_linked_ids(lm_id: str = 'LMGP01010594', ref_dbs: List[str] = None, export_url: bool = False) -> dict:
+    if not ref_dbs:
+        ref_dbs = CROSS_LINK_DBS.get("lipidmaps", {})
+    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/all"
+    ref_url = re.sub(r"<LIPID_ID>", lm_id, lmsd_base_url)
+    print(ref_url)
+    cross_ref_ids = {}
+    async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
+        r_cross_ref_status = r_cross_ref_obj.status
+        if r_cross_ref_status == 200:
+            r_cross_ref_js = await r_cross_ref_obj.json(
+                content_type="application/json"
+            )
+            for ref_db in ref_dbs:
+                cross_ref_ids[ref_db] = r_cross_ref_js.get(ref_dbs.get(ref_db))
+    if cross_ref_ids:
+        pass
+
+    return cross_ref_ids
+
+
 async def get_external_link(ref_id: str, ref_db: str, check_url: bool = False) -> str:
 
     ref_db_urls = CROSS_LINK_APIS.get("link", {})
@@ -202,14 +233,28 @@ async def get_cross_links(
             swisslipids_id = swiss_ref.get("entity_id")
             if swisslipids_name == lipid_name:
                 # linked_ids["swisslipids"] = swisslipids_id
-                for cross_ref_db in CROSS_LINK_DBS:
-                    cross_ref_ids = await get_swiss_links(
+                for cross_ref_db in CROSS_LINK_DBS.get("swisslipids"):
+                    cross_ref_ids = await get_swiss_linked_id(
                         swisslipids_id, cross_ref_db, export_url
                     )
                     if cross_ref_ids:
                         linked_ids[cross_ref_db] = cross_ref_ids
-
+            if 'lipidmaps' in linked_ids:
+                lm_ids = linked_ids.get("lipidmaps", [])
+                for lm_id in lm_ids:
+                    lm_linked_ids = await get_lmsd_linked_ids(lm_id)
+                    for ref_db in lm_linked_ids:
+                        ref_id = lm_linked_ids.get(ref_db)
+                        if ref_db in linked_ids:
+                            linked_ids[ref_db] = linked_ids.get(ref_db).append(ref_id)
+                        else:
+                            linked_ids[ref_db] = [ref_id]
     else:
         pass
 
     return linked_ids
+
+if __name__ == '__main__':
+    import asyncio
+    ids = asyncio.run(get_cross_links("PC(16:0/18:2(9Z,12Z))"))
+    print(ids)
