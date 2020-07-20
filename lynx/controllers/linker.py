@@ -81,6 +81,39 @@ CROSS_LINK_APIS = {
 }
 
 
+async def get_lmsd_name(lm_id: str = 'LMGP01010594') -> str:
+    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/all"
+    ref_url = re.sub(r"<LIPID_ID>", lm_id, lmsd_base_url)
+    lmsd_name = ""
+    async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
+        r_cross_ref_status = r_cross_ref_obj.status
+        if r_cross_ref_status == 200:
+            r_cross_ref_js = await r_cross_ref_obj.json(
+                content_type="application/json"
+            )
+            lmsd_name = r_cross_ref_js.get("name", "")
+
+    return lmsd_name
+
+
+async def get_swiss_name(swiss_id: str = 'SLM:000000792') -> str:
+    swiss_base_url = r"https://www.swisslipids.org/api/entity/<LIPID_ID>"
+    ref_url = re.sub(r"<LIPID_ID>", swiss_id, swiss_base_url)
+    swiss_name = ""
+    async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
+        r_cross_ref_status = r_cross_ref_obj.status
+        if r_cross_ref_status == 200:
+            r_cross_ref_js = await r_cross_ref_obj.json(
+                content_type="text/html;charset=utf-8"
+            )
+            synonyms = r_cross_ref_js.get("synonyms", [])
+            for s in synonyms:
+                if isinstance(s, dict) and s.get("type","").lower() == "abbreviation":
+                    swiss_name = s.get("name", "")
+
+    return swiss_name
+
+
 def get_kegg_id(lmsd_id: str = "LMGP01010594"):
     kegg_id = kegg_ids.get(lmsd_id)
     if kegg_id:
@@ -184,7 +217,6 @@ async def get_lmsd_linked_ids(lm_id: str = 'LMGP01010594', ref_dbs: List[str] = 
         ref_dbs = CROSS_LINK_DBS.get("lipidmaps", {})
     lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/all"
     ref_url = re.sub(r"<LIPID_ID>", lm_id, lmsd_base_url)
-    print(ref_url)
     cross_ref_ids = {}
     async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
         r_cross_ref_status = r_cross_ref_obj.status
@@ -194,6 +226,8 @@ async def get_lmsd_linked_ids(lm_id: str = 'LMGP01010594', ref_dbs: List[str] = 
             )
             for ref_db in ref_dbs:
                 cross_ref_ids[ref_db] = r_cross_ref_js.get(ref_dbs.get(ref_db))
+
+    cross_ref_ids['lion'] = get_lion_id(lm_id)
     if cross_ref_ids:
         pass
 
@@ -204,7 +238,7 @@ async def get_external_link(ref_id: str, ref_db: str, check_url: bool = False) -
 
     ref_db_urls = CROSS_LINK_APIS.get("link", {})
     ref_url = ""
-    if ref_id and ref_db in CROSS_LINK_DBS:
+    if ref_db in DEFAULT_DB_INFO and ref_id:
         ref_base_url = ref_db_urls.get(ref_db)
         if ref_base_url:
             ref_url = re.sub(r"<LIPID_ID>", ref_id, ref_base_url)
@@ -245,16 +279,41 @@ async def get_cross_links(
                     lm_linked_ids = await get_lmsd_linked_ids(lm_id)
                     for ref_db in lm_linked_ids:
                         ref_id = lm_linked_ids.get(ref_db)
-                        if ref_db in linked_ids:
-                            linked_ids[ref_db] = linked_ids.get(ref_db).append(ref_id)
+                        if ref_db == 'kegg' and not ref_id:
+                            ref_id = get_kegg_id(lm_id)
+                        if export_url:
+                            if ref_db in linked_ids:
+                                existed_ids = linked_ids.get(ref_db)
+                                existed_ids[ref_id] = await get_external_link(ref_id, ref_db)
+                                linked_ids[ref_db] = existed_ids
+                            else:
+                                linked_ids[ref_db] = {ref_id: await get_external_link(ref_id, ref_db)}
                         else:
-                            linked_ids[ref_db] = [ref_id]
+                            if ref_db in linked_ids:
+                                existed_ids = linked_ids.get(ref_db)
+                                existed_ids.append(ref_id)
+                                linked_ids[ref_db] = list(set(existed_ids))
+                            else:
+                                linked_ids[ref_db] = [ref_id]
+
     else:
         pass
-
+    if 'hmdb' in linked_ids:
+        if export_url:
+            hmdb_urls = linked_ids['hmdb']
+            new_hmdb_urls = {}
+            for hmdb_id in hmdb_urls:
+                if len(hmdb_id) > 9:
+                    new_hmdb_urls[hmdb_id] = hmdb_urls[hmdb_id]
+            linked_ids['hmdb'] = new_hmdb_urls
+        else:
+            linked_ids['hmdb'] = [h_id for h_id in linked_ids['hmdb'] if len(h_id) > 9]
     return linked_ids
 
 if __name__ == '__main__':
     import asyncio
-    ids = asyncio.run(get_cross_links("PC(16:0/18:2(9Z,12Z))"))
+    # t_id = asyncio.run(get_lmsd_name("LMGP01010594"))
+    t_id = asyncio.run(get_swiss_name('SLM:000000792'))
+    print(t_id)
+    ids = asyncio.run(get_cross_links(t_id, export_url=True))
     print(ids)
