@@ -52,7 +52,7 @@
                          aria-labelledby="tools-tab">
                         <div class="row"><h2>&nbsp;<br></h2></div>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="row">
                                     <div class="col-3">
                                         <a href="{{ url_for('converter') }}"><img alt="image" class="img-fluid"
@@ -63,7 +63,7 @@
                                             <h4>LipidLynxX Converter</h4>
                                         </div>
                                         <div class="row">
-                                            <p>Convert different abbreviations to unified LipidLynxX identifier.</p>
+                                            <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br></p>
                                         </div>
                                         <div class="row">
                                             <div class="col-8">
@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="row">
                                     <div class="col-3">
                                         <a href="{{ url_for('equalizer') }}">
@@ -92,6 +92,28 @@
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block" href="{{ url_for('equalizer') }}">
                                                     Run Equalizer</a><br></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <a href="{{ url_for('equalizer') }}">
+                                            <img alt="image" class="img-fluid"
+                                                 src="images/linker_logo.png"></a>
+                                    </div>
+                                    <div class="col-9">
+                                        <div class="row">
+                                            <h4>Lipid Resource Linker</h4>
+                                        </div>
+                                        <div class="row">
+                                            <p>Collect available resources across databases.<br><br></p>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('equalizer') }}">
+                                                    Run Linker</a><br></div>
                                         </div>
                                     </div>
                                 </div>
