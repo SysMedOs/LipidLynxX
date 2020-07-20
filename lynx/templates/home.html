@@ -12,15 +12,16 @@
             <div class="row d-flex justify-content-center">
                 <img alt="image" class="img-fluid" src="images/LipidLynxX_Logo_128.jpg">
             </div>
-            <div class="row">&nbsp;</div>
-            <form class="d-flex justify-content-center" action="/resources/lipid/" method="post" enctype="multipart/form-data">
-                <div class="form-group w-75 input-group">
+            <div class="row d-flex justify-content-center">&nbsp;</div>
+            <form class="d-flex justify-content-center" action="/linker/lipid/" method="post" enctype="multipart/form-data">
+                <div>
                     <label>
-                        <input type="text" class="form-control" name="lipid_name" id="lipid_name" placeholder="PC(16:0/18:2(9Z,12Z))">
+                        <input type="text" class="form-control" name="lipid_name" id="lipid_name"
+                               placeholder="PC(16:0/18:2(9Z,12Z))" value="PC(16:0/18:2(9Z,12Z))">
                     </label>
-                    <div>&nbsp;&nbsp;</div>
-                    <button type="submit" class="btn btn-info" id="link_lipid">Check linked resources !</button>
                 </div>
+                <div>&nbsp;</div>
+                <div><button type="submit" class="btn btn-info" id="link_lipid">Check resources !</button></div>
             </form>
             <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
                 <strong>LipidLynxX is running...</strong>
@@ -34,7 +35,6 @@
                     });
                 </script>
             </div>
-            <div class="row">&nbsp;</div>
             <div class="row justify-content-center">
                 <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
                     <li class="nav-item">

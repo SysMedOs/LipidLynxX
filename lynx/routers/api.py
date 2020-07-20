@@ -81,8 +81,8 @@ async def parse_name(lipid_name: str = "PLPC"):
     return parse_lipid(lipid_name)
 
 
-@router.get("/cross-ref/lipid/")
-async def cross_ref(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
+@router.get("/link/lipid/")
+async def link_str(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
     """
     link one lipid name from data
     """

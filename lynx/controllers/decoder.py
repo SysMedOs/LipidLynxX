@@ -307,15 +307,17 @@ class Decoder(object):
 
         extracted_info_dct = {}
         obs_alias_lst = []
-        if re.match(r'^LM\w\w\d{8}$', lipid_name, re.IGNORECASE):
-            lipid_name = await get_lmsd_name(lipid_name)
-        # elif re.match(r'^SLM:\d{9}$', lipid_name, re.IGNORECASE):
-        #     loop = asyncio.get_event_loop()
-        #     lipid_name = loop.run_until_complete(get_swiss_name(lipid_name))
-        #     loop.close()
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            loop = asyncio.get_event_loop()
+            lipid_name = loop.run_until_complete(get_lmsd_name(lipid_name))
+            loop.close()
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            loop = asyncio.get_event_loop()
+            lipid_name = loop.run_until_complete(get_swiss_name(lipid_name))
+            loop.close()
         else:
             pass
-        
+
         for c in self.rules:
             matched_info_dct = {}
             alias_matched_info_dct = {}

@@ -190,20 +190,26 @@ async def equalize_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
-@router.post("/resources/lipid/", include_in_schema=False)
+@router.post("/linker/lipid/", include_in_schema=False)
 async def link_text(
-        request: Request,
-        lipid_name: str = Form(...),
+    request: Request, lipid_name: str = Form(...),
 ):
-    converted_lipid_name = await api.convert_name(lipid_name, level="MAX")
-    resource_data = await api.cross_ref(converted_lipid_name, export_url=True)
+    if not lipid_name:
+        lipid_name = "PC(16:0/18:2(9Z,12Z))"
+    search_name = await api.convert_name(
+        lipid_name, level="MAX", style="BracketsShorthand"
+    )
+    converted_lipid_name = await api.convert_name(
+        lipid_name, level="MAX", style="LipidLynxX"
+    )
+    resource_data = await api.link_str(search_name, export_url=True)
     render_data_dct = {
         "request": request,
         "lipid_name": lipid_name,
         "converted_lipid_name": converted_lipid_name,
         "resource_data": resource_data,
     }
-    return templates.TemplateResponse("resources.html", render_data_dct)
+    return templates.TemplateResponse("linker.html", render_data_dct)
 
 
 @router.get(
@@ -216,9 +222,7 @@ async def get_download_file(data: str, file_type: str, file_name: str):
     data = json.loads(decoded_data.decode("utf-8"))
     if isinstance(data, dict):
         if file_name.startswith("LipidLynxX-Convert"):
-            output_io = create_converter_output(
-                data, file_type=file_type
-            )
+            output_io = create_converter_output(data, file_type=file_type)
         elif file_name.startswith("LipidLynxX-Equal"):
             output_io = create_equalizer_output(data)
         else:
@@ -239,7 +243,9 @@ async def get_download_file(data: str, file_type: str, file_name: str):
     else:
         media_type = "text/csv"
     if isinstance(output_io, io.BytesIO):
-        response = StreamingResponse(iter([output_io.getvalue()]), media_type=media_type)
+        response = StreamingResponse(
+            iter([output_io.getvalue()]), media_type=media_type
+        )
         response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
         return response
     else:

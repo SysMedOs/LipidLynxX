@@ -191,8 +191,8 @@ class Encoder(object):
         for sep_lv in sum_res_sep_lv_lst:
             if sep_lv == "B":
                 # prepare bulk level
-                merged_res_obj = merge_residues(residues_order,
-                    residues_info, nomenclature=self.export_style
+                merged_res_obj = merge_residues(
+                    residues_order, residues_info, nomenclature=self.export_style
                 )
                 merged_res_linked_ids = merged_res_obj.linked_ids
                 merged_res_lv_lst = list(merged_res_obj.linked_ids.keys())

@@ -50,7 +50,7 @@ class Converter:
     def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
         output_dct = {}
         # Set COMP_DB to max level B2
-        if re.search(r'COMP\\s*[_]?\\s*(DB)?', self.style):
+        if re.search(r"COMP\\s*[_]?\\s*(DB)?", self.style):
             level = "B2"
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
             converted_id = self.encoder.convert(input_str, level=level)
@@ -143,7 +143,8 @@ if __name__ == "__main__":
         # "CoA(20:3(11Z,14Z,17Z))",
         # "CoA 18:2;O",
         # "FACoA 18:0",
-        "Cer 24:2",
+        # "Cer 24:2",
+        "LMGP01010594",
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"
