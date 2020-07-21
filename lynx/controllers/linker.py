@@ -34,9 +34,12 @@ DEFAULT_DB_INFO = {
     "lipidbank": "http://lipidbank.jp",
     "lipidmaps": "https://www.lipidmaps.org",
     "pubchem": "https://pubchem.ncbi.nlm.nih.gov",
+    "recon2.01": "https://www.vmh.life/#reconmap2",
+    "recon3": "https://www.vmh.life/#reconmap",
     "rhea": "https://www.rhea-db.org",
     "swisslipids": "https://www.swisslipids.org",
     "uniportkb": "https://www.uniprot.org",
+    "vmh_metabolites": "https://www.vmh.life/#metabolite",
 }
 
 CROSS_LINK_DBS = {
@@ -58,41 +61,45 @@ CROSS_LINK_DBS = {
 }
 CROSS_LINK_APIS = {
     "name_search": {
-        "swisslipids": r"https://www.swisslipids.org/api/search?term=<LIPID_ID>"
+        "swisslipids": r"https://www.swisslipids.org/api/search?term=<lipid_id>"
     },
     "subclass_search": {
-        "lipidmaps": r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/sub_class",
+        "lipidmaps": r"https://www.lipidmaps.org/rest/compound/lm_id/<lipid_id>/sub_class",
     },
     "cross_search": {
-        "swisslipids": r"https://www.swisslipids.org/api/mapping?from=swisslipids&to=<DB_NAME>&ids=<LIPID_ID>",
+        "swisslipids": r"https://www.swisslipids.org/api/mapping?from=swisslipids&to=<DB_NAME>&ids=<lipid_id>",
     },
     "link": {
-        "chebi": r"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:<LIPID_ID>",
-        "hmdb": r"https://hmdb.ca/metabolites/<LIPID_ID>",
-        "kegg": r"https://www.kegg.jp/dbget-bin/www_bget?cpd:<LIPID_ID>",
-        "lion": r"http://bioportal.bioontology.org/ontologies/LION/?p=classes&conceptid=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FLION_<LIPID_ID>",
-        "lipidbank": r"http://lipidbank.jp/cgi-bin/detail.cgi?id=<LIPID_ID>",
-        "lipidmaps": r"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=<LIPID_ID>",
-        "pubchem": r"https://pubchem.ncbi.nlm.nih.gov/compound/<LIPID_ID>",
-        "rhea": r"https://www.rhea-db.org/reaction?id=<LIPID_ID>",
-        "swisslipids": r"https://www.swisslipids.org/#/entity/<LIPID_ID>/",
-        "uniportkb": r"https://www.uniprot.org/uniprot/?query=<LIPID_ID>",
+        "chebi": r"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:<lipid_id>",
+        "hmdb": r"https://hmdb.ca/metabolites/<lipid_id>",
+        "kegg": r"https://www.kegg.jp/dbget-bin/www_bget?cpd:<lipid_id>",
+        "lion": r"http://bioportal.bioontology.org/ontologies/LION/?p=classes&conceptid=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FLION_<lipid_id>",
+        "lipidbank": r"http://lipidbank.jp/cgi-bin/detail.cgi?id=<lipid_id>",
+        "lipidmaps": r"https://www.lipidmaps.org/data/LMSDRecord.php?LMID=<lipid_id>",
+        "pubchem": r"https://pubchem.ncbi.nlm.nih.gov/compound/<lipid_id>",
+        "recon2.01": "https://www.vmh.life/minerva/index.xhtml?id=ReconMap-2.01&search=<lipid_id>",
+        "recon3": "https://www.vmh.life/minerva/index.xhtml?id=ReconMap-3&search=<lipid_id>",
+        "rhea": r"https://www.rhea-db.org/reaction?id=<lipid_id>",
+        "swisslipids": r"https://www.swisslipids.org/#/entity/<lipid_id>/",
+        "uniportkb": r"https://www.uniprot.org/uniprot/?query=<lipid_id>",
+        "vmh_metabolites": "https://www.vmh.life/_api/metabolites/?hmdb=<lipid_id>&format=json",
     },
 }
 
 DB_SECTIONS = {
-    "Lipid database": ["hmdb", "lipidmaps", "swisslipids"],
+    "Lipid database": ["lipidmaps", "swisslipids"],
+    "Metabolites database": ["hmdb", "vmh_metabolites"],
     "Lipid ontology": ["lion"],
     "General database": ["chebi", "pubchem"],
-    "Pathways": ["kegg"],
+    "Pathways": ["kegg", "recon2.01", "recon3"],
     "Reactions": ["rhea"],
     "Related database": ["uniportkb"],
 }
 
 
 async def get_lmsd_name(lm_id: str = "LMGP01010594") -> str:
-    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/all"
-    ref_url = re.sub(r"<LIPID_ID>", lm_id, lmsd_base_url)
+    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<lipid_id>/all"
+    ref_url = re.sub(r"<lipid_id>", lm_id, lmsd_base_url)
     lmsd_name = ""
     async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
         r_cross_ref_status = r_cross_ref_obj.status
@@ -104,8 +111,8 @@ async def get_lmsd_name(lm_id: str = "LMGP01010594") -> str:
 
 
 async def get_swiss_name(swiss_id: str = "SLM:000000792") -> str:
-    swiss_base_url = r"https://www.swisslipids.org/api/entity/<LIPID_ID>"
-    ref_url = re.sub(r"<LIPID_ID>", swiss_id, swiss_base_url)
+    swiss_base_url = r"https://www.swisslipids.org/api/entity/<lipid_id>"
+    ref_url = re.sub(r"<lipid_id>", swiss_id, swiss_base_url)
     swiss_name = ""
     async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
         r_cross_ref_status = r_cross_ref_obj.status
@@ -158,7 +165,7 @@ def get_lmsd_subclass(lmsd_id: str = "LMGP01010594") -> str:
 def get_swiss_id(lipid_name: str = "PC(16:0/18:2(9Z,12Z))") -> requests.Response:
     url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
     q_swiss_str = CROSS_LINK_APIS.get("name_search", {}).get("swisslipids")
-    q_swiss_str = re.sub(r"<LIPID_ID>", url_safe_lipid_name, q_swiss_str)
+    q_swiss_str = re.sub(r"<lipid_id>", url_safe_lipid_name, q_swiss_str)
     r_swiss_obj = requests.get(q_swiss_str)
 
     return r_swiss_obj
@@ -168,7 +175,7 @@ async def get_swiss_linked_id(
     swisslipids_id, ref_db, export_url: bool = False
 ) -> Union[dict, list]:
     ref_dbs = CROSS_LINK_DBS.get("swisslipids", {})
-    swiss_base_url = "https://www.swisslipids.org/api/mapping?from=SwissLipids&to=<DB_NAME>&ids=<LIPID_ID>"
+    swiss_base_url = "https://www.swisslipids.org/api/mapping?from=SwissLipids&to=<DB_NAME>&ids=<lipid_id>"
     cross_ref_id_urls = {}
     cross_ref_ids = []
     if swisslipids_id and ref_db in ref_dbs:
@@ -181,7 +188,7 @@ async def get_swiss_linked_id(
                 cross_ref_ids.append(swisslipids_id)
         else:
             pre_ref_url = re.sub(r"<DB_NAME>", ref_dbs.get(ref_db), swiss_base_url)
-            ref_url = re.sub(r"<LIPID_ID>", str(swisslipids_id), pre_ref_url)
+            ref_url = re.sub(r"<lipid_id>", str(swisslipids_id), pre_ref_url)
             async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
                 r_cross_ref_status = r_cross_ref_obj.status
                 if r_cross_ref_status == 200:
@@ -224,8 +231,8 @@ async def get_lmsd_linked_ids(
 ) -> dict:
     if not ref_dbs:
         ref_dbs = CROSS_LINK_DBS.get("lipidmaps", {})
-    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<LIPID_ID>/all"
-    ref_url = re.sub(r"<LIPID_ID>", lm_id, lmsd_base_url)
+    lmsd_base_url = r"https://www.lipidmaps.org/rest/compound/lm_id/<lipid_id>/all"
+    ref_url = re.sub(r"<lipid_id>", lm_id, lmsd_base_url)
     cross_ref_ids = {}
     async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
         r_cross_ref_status = r_cross_ref_obj.status
@@ -257,7 +264,7 @@ async def get_external_link(ref_id: str, ref_db: str, check_url: bool = False) -
     if ref_db in DEFAULT_DB_INFO and ref_id:
         ref_base_url = ref_db_urls.get(ref_db)
         if ref_base_url:
-            ref_url = re.sub(r"<LIPID_ID>", ref_id, ref_base_url)
+            ref_url = re.sub(r"<lipid_id>", ref_id, ref_base_url)
             if check_url:
                 print(ref_url)
                 async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:

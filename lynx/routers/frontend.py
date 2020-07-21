@@ -19,6 +19,7 @@
 import base64
 import io
 import json
+import re
 
 from fastapi import (
     APIRouter,
@@ -30,6 +31,8 @@ from fastapi import (
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+
+from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.api_models import (
     FileType,
     StyleType,
@@ -194,13 +197,20 @@ async def equalize_file(
 async def link_text(
     request: Request, lipid_name: str = Form(...),
 ):
-    if not lipid_name:
-        lipid_name = "PC(16:0/18:2(9Z,12Z))"
+    if lipid_name:
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_lmsd_name(lipid_name)
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_swiss_name(lipid_name)
+        else:
+            safe_lipid_name = lipid_name
+    else:
+        safe_lipid_name = "PC(16:0/18:2(9Z,12Z))"
     search_name = await api.convert_name(
-        lipid_name, level="MAX", style="BracketsShorthand"
+        safe_lipid_name, level="MAX", style="BracketsShorthand"
     )
     converted_lipid_name = await api.convert_name(
-        lipid_name, level="MAX", style="LipidLynxX"
+        safe_lipid_name, level="MAX", style="LipidLynxX"
     )
     resource_data = await api.link_str(search_name, export_url=True)
     render_data_dct = {
