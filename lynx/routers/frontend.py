@@ -209,17 +209,21 @@ async def link_text(
     search_name = await api.convert_name(
         safe_lipid_name, level="MAX", style="BracketsShorthand"
     )
-    converted_lipid_name = await api.convert_name(
+    shorthand_name = await api.convert_name(
+        safe_lipid_name, level="MAX", style="ShorthandNotation"
+    )
+    lynx_name = await api.convert_name(
         safe_lipid_name, level="MAX", style="LipidLynxX"
     )
     resource_data = await api.link_str(search_name, export_url=True)
     render_data_dct = {
         "request": request,
         "lipid_name": lipid_name,
-        "converted_lipid_name": converted_lipid_name,
+        "shorthand_name": shorthand_name,
+        "lynx_name": lynx_name,
         "resource_data": resource_data,
     }
-    return templates.TemplateResponse("linker.html", render_data_dct)
+    return templates.TemplateResponse("resources.html", render_data_dct)
 
 
 @router.get(
@@ -283,6 +287,6 @@ def nomenclature(request: Request):
 @router.get("/user_guide", include_in_schema=False)
 def user_guide(request: Request):
     return templates.TemplateResponse(
-        "user_guide.html",
+        "userguide.html",
         {"request": request, "lynx_version": lynx_version, "api_version": api_version},
     )

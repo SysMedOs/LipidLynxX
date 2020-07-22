@@ -280,7 +280,7 @@ async def get_external_link(ref_id: str, ref_db: str, check_url: bool = False) -
 async def get_cross_links(
     lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
     export_url: bool = False,
-    groupped: bool = True,
+    formatted: bool = True,
 ) -> dict:
     lipid_name = lipid_name.strip('"')
     linked_ids = {}
@@ -335,7 +335,7 @@ async def get_cross_links(
             linked_ids["hmdb"] = new_hmdb_urls
         else:
             linked_ids["hmdb"] = [h_id for h_id in linked_ids["hmdb"] if len(h_id) > 9]
-    if groupped:
+    if formatted:
         output_ids = {}
         for ref_group in DB_SECTIONS:
             grouped_dbs = DB_SECTIONS.get(ref_group)
@@ -355,5 +355,5 @@ if __name__ == "__main__":
     # t_id = asyncio.run(get_lmsd_name("LMGP01010594"))
     t_id = asyncio.run(get_swiss_name("SLM:000000792"))
     print(t_id)
-    ids = asyncio.run(get_cross_links(t_id, export_url=True, groupped=True))
+    ids = asyncio.run(get_cross_links(t_id, export_url=True, formatted=True))
     print(ids)

@@ -16,6 +16,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import asyncio
 import json
 import os
 import re
@@ -29,6 +30,7 @@ from lynx.utils.log import cli_logger
 
 from lynx.controllers.converter import Converter
 from lynx.controllers.equalizer import Equalizer
+from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.models.api_models import StyleType
 from lynx.utils.cli_utils import cli_get_table, cli_save_output
 from lynx.utils.file_handler import (
@@ -38,10 +40,7 @@ from lynx.utils.file_handler import (
 )
 
 from lynx.utils.cfg_reader import app_cfg_info, lynx_version
-from lynx.utils.params_loader import (
-    build_input_rules,
-    build_output_rules,
-)
+from lynx.utils.rules_builder import build_input_rules, build_output_rules
 from lynx.utils.toolbox import get_levels, get_style_level
 
 
@@ -105,10 +104,13 @@ def convert_lipid(
         )
         typer.echo(converted_name)
     else:
+        converted_name = ""
         typer.secho(
             'Please input a lipid name. e.g. "PLPC".', fg=typer.colors.YELLOW,
         )
         typer.echo(convert_lipid.__doc__)
+
+    return converted_name
 
 
 @cli_app.command(name="convert-lipids")
@@ -394,6 +396,43 @@ def equalize(
             equalizer_data.dict().get("data"), output_name=output_file
         )
     cli_save_output(output_info, output_file)
+
+
+@cli_app.command(name="link-lipid")
+def link_lipid(
+        lipid: str = typer.Argument(None),
+        formatted: bool = typer.Option(False, "--formatted", "-f"),
+        url: bool = typer.Option(False, "--url", "-u")
+):
+    """
+    Convert one LIPID name into supported levels and export to supported style
+
+    LIPID: lipid abbreviation
+
+    --style: Export style. LipidLynxX, COMP_DB, or ShorthandNotation. Default value: LipidLynxX
+
+    --level: LipidLynxX lipid information levels. e.g. B0, D1, S4.1 or MAX for Maximum level. Default value: MAX
+
+    e.g. convert "PLPC" --style LipidLynxX --level S1
+
+    """
+    if lipid:
+        if re.match(r"^LM\w\w\d{8}$", lipid, re.IGNORECASE):
+            safe_lipid_name = asyncio.run(get_lmsd_name(lipid))
+        elif re.match(r"^SLM:\d{9}$", lipid, re.IGNORECASE):
+            safe_lipid_name = asyncio.run(get_swiss_name(lipid))
+        else:
+            safe_lipid_name = lipid
+        search_name = convert_lipid(
+            safe_lipid_name, style=StyleType("BracketsShorthand"), level="MAX"
+        )
+        result = asyncio.run(get_cross_links(lipid_name=search_name, export_url=url, formatted=formatted))
+        typer.secho(json.dumps(result))
+    else:
+        typer.secho(
+            'Please input a lipid name. e.g. "PLPC". Type --help to see instructions.',
+            fg=typer.colors.YELLOW,
+        )
 
 
 if __name__ == "__main__":

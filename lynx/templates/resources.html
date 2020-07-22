@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Resources @ LipidLynxX
+    Linked Resources of {{ lipid_name }} @ LipidLynxX
 {% endblock %}
 
 {% block body %}
@@ -12,9 +12,20 @@
         <div class="container">
             <p></p>
             <div class="alert alert-success" role="alert">
-                <h4>Input Lipid Notation: {{ lipid_name }}</h4>
-                <p></p>
-                <h4>LipidLynxX Lipid Notation: {{ converted_lipid_name }}</h4>
+                <table class="table table-hover table-responsive">
+                    <tr>
+                        <td><h5>Input Lipid: </h5></td>
+                        <td><h5>{{ lipid_name }}</h5></td>
+                    </tr>
+                    <tr>
+                        <td><h5>Shorthand Notation: </h5></td>
+                        <td><h5>{{ shorthand_name }}</h5></td>
+                    </tr>
+                    <tr>
+                        <td><h5>LipidLynxX Notation: </h5></td>
+                        <td><h5>{{ lynx_name }}</h5></td>
+                    </tr>
+                </table>
             </div>
             <div>
                 {% for resource_group_db, resource_group_info in resource_data.items() %}

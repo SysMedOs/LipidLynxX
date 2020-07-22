@@ -32,11 +32,7 @@ from lynx.models.defaults import supported_levels
 from lynx.utils.cfg_reader import app_cfg_info
 from lynx.utils.file_handler import get_abs_path
 from lynx.utils.log import app_logger
-from lynx.utils.params_loader import (
-    build_input_rules,
-    build_output_rules,
-)
-
+from lynx.utils.rules_builder import build_input_rules, build_output_rules
 
 default_input_rules = build_input_rules(app_cfg_info["input_rules"], app_logger)
 default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logger)

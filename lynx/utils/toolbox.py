@@ -149,6 +149,8 @@ def get_style_level(
         to_level = "B2"
     elif export_style == StyleType.shorthand:
         export_style = "ShorthandNotation"
+    elif export_style == StyleType.brackets:
+        export_style = "BracketsShorthand"
     else:
         export_style = "LipidLynxX"
 
