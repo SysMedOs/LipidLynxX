@@ -40,7 +40,7 @@ from lynx.utils.file_handler import (
 )
 
 from lynx.utils.cfg_reader import app_cfg_info, lynx_version
-from lynx.utils.rules_builder import build_input_rules, build_output_rules
+from lynx.utils.params_loader import build_input_rules, build_output_rules
 from lynx.utils.toolbox import get_levels, get_style_level
 
 
@@ -400,9 +400,9 @@ def equalize(
 
 @cli_app.command(name="link-lipid")
 def link_lipid(
-        lipid: str = typer.Argument(None),
-        formatted: bool = typer.Option(False, "--formatted", "-f"),
-        url: bool = typer.Option(False, "--url", "-u")
+    lipid: str = typer.Argument(None),
+    formatted: bool = typer.Option(False, "--formatted", "-f"),
+    url: bool = typer.Option(False, "--url", "-u"),
 ):
     """
     Convert one LIPID name into supported levels and export to supported style
@@ -426,7 +426,9 @@ def link_lipid(
         search_name = convert_lipid(
             safe_lipid_name, style=StyleType("BracketsShorthand"), level="MAX"
         )
-        result = asyncio.run(get_cross_links(lipid_name=search_name, export_url=url, formatted=formatted))
+        result = asyncio.run(
+            get_cross_links(lipid_name=search_name, export_url=url, formatted=formatted)
+        )
         typer.secho(json.dumps(result))
     else:
         typer.secho(

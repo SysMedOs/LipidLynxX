@@ -21,7 +21,7 @@ from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
 
-from lynx.models.api_models import ConvertedStrData, ConvertedListData
+from lynx.models.api_models import ConvertedStrData, ConvertedListData, StyleType
 from lynx.utils.log import app_logger
 from lynx.models.defaults import (
     default_output_rules,
@@ -124,6 +124,30 @@ class Converter:
                 f"Type: {type(data)} not supported. Supported types: str, List[str], and Dict[str, List[str]]."
             )
         return output_dct
+
+
+def convert_lipid(
+    lipid: str,
+    style: Union[StyleType, str] = StyleType.lipidlynxx,
+    level: str = "B1",
+    logger=app_logger,
+):
+    converter = Converter(
+        style=style,
+        input_rules=default_input_rules,
+        output_rules=default_output_rules,
+        logger=logger,
+    )
+    if lipid:
+        converted_name = converter.convert_str(input_str=lipid, level=level).output
+        if isinstance(converted_name, str) and len(converted_name) > 0:
+            pass
+        else:
+            converted_name = ""
+    else:
+        converted_name = ""
+
+    return converted_name
 
 
 if __name__ == "__main__":

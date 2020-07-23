@@ -22,7 +22,8 @@ from natsort import natsorted
 import regex as re
 
 from lynx.controllers.formatter import Formatter
-from lynx.controllers.linker import get_lmsd_name, get_swiss_name
+
+# from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.alias import Alias
 from lynx.models.defaults import default_input_rules
 from lynx.utils.log import app_logger

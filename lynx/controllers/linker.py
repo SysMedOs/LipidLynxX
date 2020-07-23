@@ -16,14 +16,18 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import json
 import re
 from typing import Union, List
 
 import aiohttp
 import requests
 import natsort
+import pandas as pd
 import urllib.parse
 
+from lynx.controllers.converter import convert_lipid
+from lynx.models.api_models import StyleType
 from lynx.models.defaults import kegg_ids, lion_ids
 
 DEFAULT_DB_INFO = {
@@ -349,11 +353,79 @@ async def get_cross_links(
         return linked_ids
 
 
+def add_hyperlink(text: str, url: str) -> str:
+    return f'=HYPERLINK("{url}", "{text}")'
+
+
+async def link_lipids(lipid_list: List[str]) -> pd.DataFrame:
+    linked_df = pd.DataFrame()
+    linked_info_dct = {}
+    idx = 1
+    for lipid_name in lipid_list:
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_lmsd_name(lipid_name)
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_swiss_name(lipid_name)
+        else:
+            safe_lipid_name = lipid_name
+        search_name = convert_lipid(
+            safe_lipid_name, style=StyleType("BracketsShorthand"), level="MAX"
+        )
+        shorthand_name = convert_lipid(
+            safe_lipid_name, style=StyleType("ShorthandNotation"), level="MAX"
+        )
+        lynx_name = convert_lipid(
+            safe_lipid_name, style=StyleType("LipidLynxX"), level="MAX"
+        )
+        biopan_name = convert_lipid(safe_lipid_name, style=StyleType("COMP_DB"))
+        resources = {
+            "Input_name": lipid_name,
+            "ShorthandNotation": shorthand_name,
+            "LipidLynxX": lynx_name,
+            "BioPAN": biopan_name,
+        }
+        print(resources)
+        linked_ids = await get_cross_links(
+            lipid_name=search_name, export_url=True, formatted=False
+        )
+        if isinstance(linked_ids, dict):
+            for db in linked_ids:
+                db_resources = linked_ids.get(db)
+                if db_resources and isinstance(db_resources, dict):
+                    if len(list(db_resources.keys())) < 2:
+                        resources[db] = ";".join(list(db_resources.keys()))
+                        resources[f"{db}_Link"] = ";".join(
+                            [db_resources.get(i) for i in db_resources]
+                        )
+                    else:
+                        resources[db] = json.dumps(list(db_resources.keys()))
+                        resources[f"{db}_Link"] = json.dumps(
+                            [db_resources.get(i) for i in db_resources]
+                        )
+                else:
+                    resources[db] = ""
+        linked_info_dct[idx] = resources
+
+        idx += 1
+
+    if linked_info_dct:
+        linked_df = pd.DataFrame(data=linked_info_dct).T
+
+    return linked_df
+
+
 if __name__ == "__main__":
     import asyncio
 
-    # t_id = asyncio.run(get_lmsd_name("LMGP01010594"))
-    t_id = asyncio.run(get_swiss_name("SLM:000000792"))
-    print(t_id)
-    ids = asyncio.run(get_cross_links(t_id, export_url=True, formatted=True))
-    print(ids)
+    # # t_id = asyncio.run(get_lmsd_name("LMGP01010594"))
+    # t_id = asyncio.run(get_swiss_name("SLM:000000792"))
+    # print(t_id)
+    # ids = asyncio.run(get_cross_links(t_id, export_url=True, formatted=True))
+    # print(ids)
+
+    df = pd.read_excel(r"D:\SysMedOs\LipidLynxX\temp\test_list_lite.xlsx")
+    lipid_id_lst = df["ID"].tolist()
+    # lipid_id_lst = ["PLPC", "TG(18:0/20:4/22:6)"]
+    results_df = asyncio.run(link_lipids(lipid_id_lst))
+    results_df.to_excel(r"D:\SysMedOs\LipidLynxX\temp\test_list_lite_linked.xlsx")
+    print("FIN")
