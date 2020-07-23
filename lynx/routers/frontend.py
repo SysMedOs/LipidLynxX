@@ -193,8 +193,15 @@ async def equalize_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
+@router.get("/linker/", include_in_schema=False)
+async def linker(request: Request,):
+    return templates.TemplateResponse(
+        "linker.html", {"request": request, "out_dct": {}}
+    )
+
+
 @router.post("/linker/lipid/", include_in_schema=False)
-async def link_text(
+async def linker_resources(
     request: Request, lipid_name: str = Form(...),
 ):
     if lipid_name:
@@ -212,9 +219,7 @@ async def link_text(
     shorthand_name = await api.convert_name(
         safe_lipid_name, level="MAX", style="ShorthandNotation"
     )
-    lynx_name = await api.convert_name(
-        safe_lipid_name, level="MAX", style="LipidLynxX"
-    )
+    lynx_name = await api.convert_name(safe_lipid_name, level="MAX", style="LipidLynxX")
     resource_data = await api.link_str(search_name, export_url=True)
     render_data_dct = {
         "request": request,
