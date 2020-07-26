@@ -166,6 +166,47 @@ def get_lmsd_subclass(lmsd_id: str = "LMGP01010594") -> str:
     return sub_class
 
 
+async def get_lmsd_id(
+    lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False
+) -> Union[dict, list]:
+    lmsd_ids_lst = []
+    lmsd_ids_dct = {}
+    lmsd_bulk_base_url = "https://www.lipidmaps.org/rest/compound/abbrev/<lipid_id>/all"
+    lmsd_chain_base_url = (
+        "https://www.lipidmaps.org/rest/compound/abbrev_chains/<lipid_id>/all"
+    )
+    lipid_name = re.sub(r"/", "_", lipid_name)
+    if "_" in lipid_name:
+        url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
+        ref_url = re.sub(r"<lipid_id>", url_safe_lipid_name, lmsd_chain_base_url)
+    else:
+        url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
+        ref_url = re.sub(r"<lipid_id>", url_safe_lipid_name, lmsd_bulk_base_url)
+    print(ref_url)
+    async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
+        r_cross_ref_status = r_cross_ref_obj.status
+        if r_cross_ref_status == 200:
+            r_cross_ref_js = await r_cross_ref_obj.json(content_type="application/json")
+            if isinstance(r_cross_ref_js, dict):
+                for lmsd_row in r_cross_ref_js:
+                    lmsd_info = r_cross_ref_js.get(lmsd_row)
+                    if isinstance(lmsd_info, dict):
+                        lmsd_id = lmsd_info.get("lm_id")
+                        if lmsd_id:
+                            # print(lmsd_id)
+                            if export_url:
+                                lmsd_ids_dct[lmsd_id] = await get_external_link(
+                                    lmsd_id, "lipidmaps"
+                                )
+                            else:
+                                lmsd_ids_lst.append(lmsd_id)
+    if export_url:
+        lmsd_ids = lmsd_ids_dct
+    else:
+        lmsd_ids = lmsd_ids_lst
+    return lmsd_ids
+
+
 def get_swiss_id(lipid_name: str = "PC(16:0/18:2(9Z,12Z))") -> requests.Response:
     url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
     q_swiss_str = CROSS_LINK_APIS.get("name_search", {}).get("swisslipids")
@@ -175,6 +216,22 @@ def get_swiss_id(lipid_name: str = "PC(16:0/18:2(9Z,12Z))") -> requests.Response
     return r_swiss_obj
 
 
+async def get_swiss_child(swisslipids_id: str) -> list:
+    swiss_children = []
+    swiss_base_url = r"https://www.swisslipids.org/api/children?entity_id=<lipid_id>"
+    ref_url = re.sub(r"<lipid_id>", str(swisslipids_id), swiss_base_url)
+    async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
+        r_cross_ref_status = r_cross_ref_obj.status
+        if r_cross_ref_status == 200:
+            r_cross_ref_js = await r_cross_ref_obj.json(content_type="text/html")
+            if isinstance(r_cross_ref_js, list):
+                for swiss_children_info in r_cross_ref_js:
+                    if isinstance(swiss_children_info, dict):
+                        swiss_children = list(swiss_children_info.keys())
+
+    return swiss_children
+
+
 async def get_swiss_linked_id(
     swisslipids_id, ref_db, export_url: bool = False
 ) -> Union[dict, list]:
@@ -182,6 +239,7 @@ async def get_swiss_linked_id(
     swiss_base_url = "https://www.swisslipids.org/api/mapping?from=SwissLipids&to=<DB_NAME>&ids=<lipid_id>"
     cross_ref_id_urls = {}
     cross_ref_ids = []
+
     if swisslipids_id and ref_db in ref_dbs:
         if ref_db.lower() == "swisslipids":
             if export_url and swisslipids_id not in cross_ref_id_urls:
@@ -294,39 +352,80 @@ async def get_cross_links(
         for swiss_ref in r_swiss_js:
             swisslipids_name = swiss_ref.get("entity_name")
             swisslipids_id = swiss_ref.get("entity_id")
-            if swisslipids_name == lipid_name:
+            if swisslipids_name.startswith("DG"):
+                siwss_lv_s_str = re.sub(r"/0:0", "", swisslipids_name)
+                siwss_lv_s_str = re.sub(r"\(0:0/", r"(", siwss_lv_s_str)
+                siwss_lv_s_str = re.sub(r"/0:0/", r"/", siwss_lv_s_str)
+            else:
+                siwss_lv_s_str = swisslipids_name
+            siwss_lv_s_str = re.sub(
+                r"\((\d{1,2}[EZ]?)(,\d{1,2}[EZ]?)+\)", "", siwss_lv_s_str
+            )
+            siwss_lv_m_str = re.sub(r"/", "_", siwss_lv_s_str)
+            print("SWISS_NAMES: ", swisslipids_name, siwss_lv_s_str, siwss_lv_m_str)
+            if (
+                lipid_name == swisslipids_name
+                or lipid_name == siwss_lv_s_str
+                or lipid_name == siwss_lv_m_str
+            ):
                 # linked_ids["swisslipids"] = swisslipids_id
-                for cross_ref_db in CROSS_LINK_DBS.get("swisslipids"):
-                    cross_ref_ids = await get_swiss_linked_id(
-                        swisslipids_id, cross_ref_db, export_url
-                    )
-                    if cross_ref_ids:
-                        linked_ids[cross_ref_db] = cross_ref_ids
-            if "lipidmaps" in linked_ids:
-                lm_ids = linked_ids.get("lipidmaps", [])
-                for lm_id in lm_ids:
-                    lm_linked_ids = await get_lmsd_linked_ids(lm_id)
-                    for ref_db in lm_linked_ids:
-                        ref_id = lm_linked_ids.get(ref_db)
-                        if export_url:
-                            if ref_db in linked_ids:
-                                existed_ids = linked_ids.get(ref_db)
-                                existed_ids[ref_id] = await get_external_link(
-                                    ref_id, ref_db
-                                )
-                                linked_ids[ref_db] = existed_ids
+                swiss_ids = [swisslipids_id] + await get_swiss_child(swisslipids_id)
+                # print("swiss_ids", swiss_ids)
+                for swiss_id in swiss_ids:
+                    for cross_ref_db in CROSS_LINK_DBS.get("swisslipids"):
+                        cross_ref_ids = await get_swiss_linked_id(
+                            swiss_id, cross_ref_db, export_url
+                        )
+                        if cross_ref_ids:
+                            if export_url:
+                                existed_links = linked_ids.get(cross_ref_db)
+                                if existed_links:
+                                    for ref_id in cross_ref_ids:
+                                        if ref_id not in existed_links:
+                                            existed_links[ref_id] = cross_ref_ids.get(
+                                                ref_id
+                                            )
+                                    linked_ids[cross_ref_db] = existed_links
+                                else:
+                                    linked_ids[cross_ref_db] = cross_ref_ids
                             else:
-                                linked_ids[ref_db] = {
-                                    ref_id: await get_external_link(ref_id, ref_db)
-                                }
-                        else:
-                            if ref_db in linked_ids:
-                                existed_ids = linked_ids.get(ref_db)
-                                existed_ids.append(ref_id)
-                                linked_ids[ref_db] = list(set(existed_ids))
+                                existed_links = linked_ids.get(cross_ref_db)
+                                if existed_links:
+                                    existed_links = list(
+                                        set(existed_links + cross_ref_ids)
+                                    )
+                                    linked_ids[cross_ref_db] = existed_links
+                                else:
+                                    linked_ids[cross_ref_db] = cross_ref_ids
+            if linked_ids:
+                if "lipidmaps" in linked_ids:
+                    lm_ids = linked_ids.get("lipidmaps", [])
+                else:
+                    lm_ids = await get_lmsd_id(lipid_name, export_url)
+                    linked_ids["lipidmaps"] = lm_ids
+                if lm_ids:
+                    for lm_id in lm_ids:
+                        lm_linked_ids = await get_lmsd_linked_ids(lm_id)
+                        for ref_db in lm_linked_ids:
+                            ref_id = lm_linked_ids.get(ref_db)
+                            if export_url:
+                                if ref_db in linked_ids:
+                                    existed_ids = linked_ids.get(ref_db)
+                                    existed_ids[ref_id] = await get_external_link(
+                                        ref_id, ref_db
+                                    )
+                                    linked_ids[ref_db] = existed_ids
+                                else:
+                                    linked_ids[ref_db] = {
+                                        ref_id: await get_external_link(ref_id, ref_db)
+                                    }
                             else:
-                                linked_ids[ref_db] = [ref_id]
-
+                                if ref_db in linked_ids:
+                                    existed_ids = linked_ids.get(ref_db)
+                                    existed_ids.append(ref_id)
+                                    linked_ids[ref_db] = list(set(existed_ids))
+                                else:
+                                    linked_ids[ref_db] = [ref_id]
     else:
         pass
     if "hmdb" in linked_ids:
@@ -374,6 +473,30 @@ async def link_lipids(lipid_list: List[str]) -> pd.DataFrame:
         shorthand_name = convert_lipid(
             safe_lipid_name, style=StyleType("ShorthandNotation"), level="MAX"
         )
+        if (
+            search_name.startswith("SM(")
+            and not search_name.startswith("SM(d")
+            and not search_name.startswith("SM(m")
+        ):
+            search_name = re.sub(r"SM\(", "SM(d", search_name)
+        elif (
+            search_name.startswith("Cer(")
+            and not search_name.startswith("Cer(d")
+            and not search_name.startswith("Cer(m")
+        ):
+            search_name = re.sub(r"Cer\(", "Cer(d", search_name)
+        elif (
+            search_name.startswith("HexCer(")
+            and not search_name.startswith("HexCer(d")
+            and not search_name.startswith("HexCer(m")
+        ):
+            search_name = re.sub(r"HexCer\(", "HexCer(d", search_name)
+        elif (
+            search_name.startswith("Hex2Cer(")
+            and not search_name.startswith("Hex2Cer(d")
+            and not search_name.startswith("Hex2Cer(m")
+        ):
+            search_name = re.sub(r"Hex2Cer\(", "Hex2Cer(d", search_name)
         lynx_name = convert_lipid(
             safe_lipid_name, style=StyleType("LipidLynxX"), level="MAX"
         )
@@ -384,7 +507,6 @@ async def link_lipids(lipid_list: List[str]) -> pd.DataFrame:
             "LipidLynxX": lynx_name,
             "BioPAN": biopan_name,
         }
-        print(resources)
         linked_ids = await get_cross_links(
             lipid_name=search_name, export_url=True, formatted=False
         )
@@ -394,22 +516,37 @@ async def link_lipids(lipid_list: List[str]) -> pd.DataFrame:
                 if db_resources and isinstance(db_resources, dict):
                     if len(list(db_resources.keys())) < 2:
                         resources[db] = ";".join(list(db_resources.keys()))
-                        resources[f"{db}_Link"] = ";".join(
+                        resources[f"Link_{db}"] = ";".join(
                             [db_resources.get(i) for i in db_resources]
                         )
                     else:
                         resources[db] = json.dumps(list(db_resources.keys()))
-                        resources[f"{db}_Link"] = json.dumps(
+                        resources[f"Link_{db}"] = json.dumps(
                             [db_resources.get(i) for i in db_resources]
                         )
                 else:
                     resources[db] = ""
         linked_info_dct[idx] = resources
+        print(resources)
 
         idx += 1
-
+    default_col = ["Input_name", "ShorthandNotation", "LipidLynxX", "BioPAN"]
     if linked_info_dct:
-        linked_df = pd.DataFrame(data=linked_info_dct).T
+        sum_df = pd.DataFrame(data=linked_info_dct).T
+        sum_df_columns = sum_df.columns.tolist()
+        link_cols = []
+        for col in sum_df_columns:
+            if col.startswith("Link_"):
+                sum_df_columns.remove(col)
+                link_cols.append(col)
+            elif col in default_col:
+                sum_df_columns.remove(col)
+        sum_df_columns = (
+            default_col
+            + natsort.natsorted(sum_df_columns)
+            + natsort.natsorted(link_cols)
+        )
+        linked_df = pd.DataFrame(sum_df, columns=sum_df_columns)
 
     return linked_df
 
@@ -422,10 +559,10 @@ if __name__ == "__main__":
     # print(t_id)
     # ids = asyncio.run(get_cross_links(t_id, export_url=True, formatted=True))
     # print(ids)
-
-    df = pd.read_excel(r"D:\SysMedOs\LipidLynxX\temp\test_list_lite.xlsx")
+    part = 11
+    df = pd.read_excel(f"D:/SysMedOs/LipidLynxX/temp/test_list{part}.xlsx")
     lipid_id_lst = df["ID"].tolist()
-    # lipid_id_lst = ["PLPC", "TG(18:0/20:4/22:6)"]
+    # lipid_id_lst = ["LPC(16:0)", "DG(18:2/20:5)"]
     results_df = asyncio.run(link_lipids(lipid_id_lst))
-    results_df.to_excel(r"D:\SysMedOs\LipidLynxX\temp\test_list_lite_linked.xlsx")
+    results_df.to_excel(f"D:/SysMedOs/LipidLynxX/temp/test_list_part{part}.xlsx")
     print("FIN")
