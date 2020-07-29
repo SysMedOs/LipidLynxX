@@ -124,8 +124,8 @@ class Modifications(object):
             mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0) * mod_count
         mass_shift_str = f"{mass_shift:+}"
 
-        mass_shift_str = re.sub(r'\<?\+0\>?', "", mass_shift_str)
-        mass_shift_str = re.sub(r'\<\>', "", mass_shift_str)
+        mass_shift_str = re.sub(r"\<?\+0\>?", "", mass_shift_str)
+        mass_shift_str = re.sub(r"\<\>", "", mass_shift_str)
         return mass_shift_str
 
     def to_elements(self):

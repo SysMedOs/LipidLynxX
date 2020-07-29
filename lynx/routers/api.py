@@ -16,13 +16,17 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import asyncio
 import json
 import re
 from typing import List, Optional, Union
+import urllib.parse
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import parse_obj_as
+import requests
 
+from lynx.controllers.linker import get_cross_links
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
@@ -75,6 +79,19 @@ async def parse_name(lipid_name: str = "PLPC"):
     Parse one lipid name from path parameter
     """
     return parse_lipid(lipid_name)
+
+
+@router.get("/link/lipid/")
+async def link_str(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
+    """
+    link one lipid name from data
+    """
+
+    linked_ids = await get_cross_links(lipid_name, export_url=export_url)
+    if linked_ids:
+        return linked_ids
+    else:
+        raise HTTPException(status_code=500)
 
 
 # Post APIs

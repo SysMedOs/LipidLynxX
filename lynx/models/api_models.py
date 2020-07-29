@@ -87,6 +87,7 @@ class StyleType(str, Enum):
     lipidlynxx = "LipidLynxX"
     comp_db = "COMP_DB"
     shorthand = "ShorthandNotation"
+    brackets = "BracketsShorthand"
 
     @classmethod
     def use(cls, style):
@@ -94,8 +95,10 @@ class StyleType(str, Enum):
             return StyleType.lipidlynxx
         elif re.search(r"COMP", style, re.IGNORECASE):
             return StyleType.comp_db
-        elif re.search(r"short\s*hand|short|hand", style, re.IGNORECASE):
+        elif re.search(r"^\s*[^bB]*\s*(short\s*hand|short|hand)", style, re.IGNORECASE):
             return StyleType.shorthand
+        elif re.search(r"^\s*brackets", style, re.IGNORECASE):
+            return StyleType.brackets
         else:
             return StyleType.lipidlynxx
 

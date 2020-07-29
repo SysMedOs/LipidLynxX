@@ -17,7 +17,9 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import base64
+import io
 import json
+import re
 
 from fastapi import (
     APIRouter,
@@ -29,6 +31,8 @@ from fastapi import (
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
+
+from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.api_models import (
     FileType,
     StyleType,
@@ -189,31 +193,82 @@ async def equalize_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
+@router.get("/linker/", include_in_schema=False)
+async def linker(request: Request,):
+    return templates.TemplateResponse(
+        "linker.html", {"request": request, "out_dct": {}}
+    )
+
+
+@router.post("/linker/lipid/", include_in_schema=False)
+async def linker_resources(
+    request: Request, lipid_name: str = Form(...),
+):
+    if lipid_name:
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_lmsd_name(lipid_name)
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_swiss_name(lipid_name)
+        else:
+            safe_lipid_name = lipid_name
+    else:
+        safe_lipid_name = "PC(16:0/18:2(9Z,12Z))"
+    search_name = await api.convert_name(
+        safe_lipid_name, level="MAX", style="BracketsShorthand"
+    )
+    shorthand_name = await api.convert_name(
+        safe_lipid_name, level="MAX", style="ShorthandNotation"
+    )
+    lynx_name = await api.convert_name(safe_lipid_name, level="MAX", style="LipidLynxX")
+    resource_data = await api.link_str(search_name, export_url=True)
+    render_data_dct = {
+        "request": request,
+        "lipid_name": lipid_name,
+        "shorthand_name": shorthand_name,
+        "lynx_name": lynx_name,
+        "resource_data": resource_data,
+    }
+    return templates.TemplateResponse("resources.html", render_data_dct)
+
+
 @router.get(
     "/downloads/{data}/{file_type}/{file_name}",
     name="get_download_file",
     include_in_schema=False,
 )
-def get_download_file(data: str, file_type: str, file_name: str):
+async def get_download_file(data: str, file_type: str, file_name: str):
     decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
     data = json.loads(decoded_data.decode("utf-8"))
     if isinstance(data, dict):
         if file_name.startswith("LipidLynxX-Convert"):
-            excel_io = create_converter_output(data, file_type=file_type)
+            output_io = create_converter_output(data, file_type=file_type)
         elif file_name.startswith("LipidLynxX-Equal"):
-            excel_io = create_equalizer_output(data)
+            output_io = create_equalizer_output(data)
         else:
             try:
-                excel_io = create_converter_output(data)
+                output_io = create_converter_output(data)
             except Exception as e:
                 try:
-                    excel_io = create_converter_output(data)
+                    output_io = create_converter_output(data)
                 except Exception as e:
                     raise ValueError()
     else:
-        excel_io = None
-    if file_name and excel_io:
-        return StreamingResponse(excel_io, media_type="application/vnd.ms-excel")
+        output_io = None
+    if file_name and output_io:
+        if file_name.lower().endswith(".xlsx"):
+            media_type = "application/vnd.ms-excel"
+        else:
+            media_type = "text/csv"
+    else:
+        media_type = "text/csv"
+    if isinstance(output_io, io.BytesIO):
+        response = StreamingResponse(
+            iter([output_io.getvalue()]), media_type=media_type
+        )
+        response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
+        return response
+    else:
+        return f"Failed to generate output file: {file_name}"
 
 
 @router.get(f"/", include_in_schema=False)
@@ -237,6 +292,6 @@ def nomenclature(request: Request):
 @router.get("/user_guide", include_in_schema=False)
 def user_guide(request: Request):
     return templates.TemplateResponse(
-        "user_guide.html",
+        "userguide.html",
         {"request": request, "lynx_version": lynx_version, "api_version": api_version},
     )

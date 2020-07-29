@@ -15,13 +15,15 @@
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
-
+import asyncio
 from typing import Dict, Union, List, Any
 
 from natsort import natsorted
 import regex as re
 
 from lynx.controllers.formatter import Formatter
+
+# from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.alias import Alias
 from lynx.models.defaults import default_input_rules
 from lynx.utils.log import app_logger
@@ -306,6 +308,7 @@ class Decoder(object):
 
         extracted_info_dct = {}
         obs_alias_lst = []
+
         for c in self.rules:
             matched_info_dct = {}
             alias_matched_info_dct = {}
