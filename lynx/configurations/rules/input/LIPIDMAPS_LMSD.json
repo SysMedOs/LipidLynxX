@@ -96,7 +96,7 @@
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?O?",
+      "NUM_O": "[1-9]?O?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "EXAMPLES": [
         "18:2;3O",
@@ -167,7 +167,8 @@
         "FA02",
         "FA03",
         "FA04",
-        "FA07"
+        "FA07",
+        "FA0705"
       ],
       "ORDER": [
         "PREFIX",
@@ -213,6 +214,35 @@
         "Acylcarnitine C14:0",
         "C18:2",
         "C9:0"
+      ]
+    },
+    "FaCoA": {
+      "LMSD_CLASSES": [
+        "FA0705"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "F\\w{6}\\s*[aA]\\w{8}\\s*",
+      "CLASS": "CoA",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "FaCoA 16:0"
       ]
     },
     "GL": {

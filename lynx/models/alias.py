@@ -1,37 +1,34 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import json
-
 import regex as re
 
-from lynx.models.defaults import logger, default_alias_file
+from lynx.models.defaults import default_alias_file
 from lynx.utils.file_handler import get_json
+from lynx.utils.log import app_logger
 
 
 class Alias(object):
-    def __init__(self, alias_file: str = default_alias_file):
+    def __init__(self, alias_file: str = default_alias_file, logger=app_logger):
         self.alias_file = alias_file
         self._raw_cv = {}
         self._raw_cv = self.__load_raw__()
         self._info = self.__load__()
         self._residue_alias = self._info.get("RESIDUE_ALIAS")
         self._lipid_alias = self._info.get("LIPID_ALIAS")
+        self.logger = logger
 
     @staticmethod
     def __get_alias_info__(raw_alias_cat_info: dict) -> dict:
@@ -41,6 +38,11 @@ class Alias(object):
             for abbr in raw_alias_class_info:
                 alias_lst = raw_alias_class_info[abbr]
                 for alias in alias_lst:
+                    # force add end fit to alias
+                    if alias.endswith("$"):
+                        pass
+                    else:
+                        alias += "\\s*$"
                     if re.match(r"[-_\dA-Z]{2,}", alias):  # if alias all uppercase
                         alias_abbr_info[re.compile(alias)] = abbr
                     else:

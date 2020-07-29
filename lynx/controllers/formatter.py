@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -23,17 +20,18 @@ import regex as re
 
 from lynx.models.cv import CV
 from lynx.models.defaults import default_cv_file, elem_nominal_info
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Formatter(object):
-    def __init__(self, cv_file: str = default_cv_file):
+    def __init__(self, cv_file: str = default_cv_file, logger=app_logger):
         if os.path.isfile(cv_file):
             pass
         else:
             cv_file = default_cv_file
         self.alias2cv = CV(cv_file).info
         self.raw_cv = CV(cv_file).raw_cv
+        self.logger = logger
 
     @staticmethod
     def to_mass_shift(elements: dict) -> int:
@@ -75,7 +73,9 @@ class Formatter(object):
                 if alia_rgx and matched_cv is not None:
                     alia_match = alia_rgx.match(mod_type)
                     if alia_match:
-                        logger.debug(f"mod_type: {mod_type} identified as {matched_cv}")
+                        self.logger.debug(
+                            f"mod_type: {mod_type} identified as {matched_cv}"
+                        )
                         formatted_mod_type_lst.append(matched_cv)
                         if matched_cv == "Delta":
                             mod_lv_dct[matched_cv] = self.raw_cv["Delta"].get(
@@ -125,7 +125,7 @@ class Formatter(object):
             )
         else:
             if 0 < len(mod_site_lst) < mod_type_count:
-                logger.warning(
+                self.logger.warning(
                     f"mod_site_lst: {mod_site_lst} | formatted_mod_type_lst: {formatted_mod_type_lst}"
                 )
                 formatted_mod_lst = []
@@ -174,8 +174,9 @@ class Formatter(object):
                 existed_mod_site_info_lst = mod_info_dct.get(
                     f"{mod_order}_{mod_type}", {}
                 ).get("MOD_SITE_INFO", [])
-                existed_mod_site_lst.append(mod_tp[1]),
-                existed_mod_site_info_lst.append(mod_tp[2])
+                # e.g. mod_tp: ('', 'DB', '9', 'Z')
+                existed_mod_site_lst.append(mod_tp[2]),
+                existed_mod_site_info_lst.append(mod_tp[3])
                 mod_level = 0
                 db_mod_level = 0
                 mod_count = existed_mod_count + delta_mod_count
@@ -275,11 +276,15 @@ class Formatter(object):
         num_o = 0
         if num_o_lst:
             if num_o_lst[0] not in ["", " "]:
-                num_o_str = str(num_o_lst[0]).strip("O")
-                try:
-                    num_o = int(num_o_str)
-                except ValueError:
-                    pass
+                if num_o_lst[0] in ["O", "o"]:
+                    num_o = 1
+                else:
+                    num_o_str = str(num_o_lst[0]).strip("O")
+                    num_o_str = num_o_str.strip("o")
+                    try:
+                        num_o = int(num_o_str)
+                    except ValueError:
+                        pass
             else:
                 pass
         else:

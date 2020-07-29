@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -22,13 +19,15 @@ import regex as re
 
 from lynx.models.defaults import default_cv_file
 from lynx.utils.file_handler import get_json
+from lynx.utils.log import app_logger
 
 
 class CV(object):
-    def __init__(self, cv_file: str = default_cv_file):
+    def __init__(self, cv_file: str = default_cv_file, logger=app_logger):
         self.cv_file = cv_file
         self._info = self.__load__()
         self._raw_cv = self.__load_raw__()
+        self.logger = logger
 
     def __load__(self) -> dict:
         cv_info = {}

@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -22,16 +19,19 @@ from natsort import natsorted
 import regex as re
 
 from lynx.controllers.formatter import Formatter
+
+# from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.alias import Alias
 from lynx.models.defaults import default_input_rules
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 
 
 class Decoder(object):
-    def __init__(self, rules: dict = default_input_rules):
+    def __init__(self, rules: dict = default_input_rules, logger=app_logger):
         self.rules = rules
         self.formatter = Formatter()
-        self.alias = Alias()
+        self.alias = Alias(logger=logger)
+        self.logger = logger
 
     def check_segments(self, lipid_name: str, rule_class: str, rule: str):
         c = rule_class
@@ -59,6 +59,24 @@ class Decoder(object):
                     raise ValueError(f"Can not find rule: {rule} in configuration.")
             else:
                 raise ValueError(f"Must provide a {rule} in configuration to search.")
+
+        if any(
+            [
+                re.search(r"^residue[s]?(_alia[s])?$", c, re.IGNORECASE),
+                re.search(r"mod", c, re.IGNORECASE),
+            ]
+        ):
+            pass
+        else:
+            residues_count = len(matched_info_dct.get("RESIDUE", []))
+            residues_separator_count = len(
+                matched_info_dct.get("RESIDUE_SEPARATOR", [])
+            )
+            if residues_count == residues_separator_count + 1 and residues_count > 0:
+                pass
+            else:
+                # self.logger.debug(f"The numbers of residues and residue_separators do not fit. Skipped...")
+                matched_info_dct = {}
 
         links = matched_info_dct.get("LINK", None)
         if links:
@@ -101,7 +119,7 @@ class Decoder(object):
                 pass
 
         # if not defined_id:
-        #     logger.debug(
+        #     self.logger.debug(
         #         f"Cannot decode alias: {alias} using alias_type: {alias_type}."
         #     )
 
@@ -163,8 +181,11 @@ class Decoder(object):
                     )
                 else:
                     matched_info_dct = self.check_segments(res, "RESIDUE", rule=rule)
+                # num_o_chk_lst = matched_info_dct.get("NUM_O", [""])
+                # if isinstance(num_o_chk_lst, list) and re.match(r'\d?O|O\d?|\d', num_o_chk_lst[0]):
+                #     matched_info_dct["MOD_TYPE"] = ["O"] + matched_info_dct.get("MOD_TYPE", [])
                 matched_dct = self.formatter.format_residue(matched_info_dct)
-                logger.debug(matched_dct)
+                # self.logger.debug(f"{res} matched {rule}:\n {matched_dct}")
                 out_res_lst.append(res)
                 out_res_dct[res] = matched_dct
 
@@ -263,7 +284,7 @@ class Decoder(object):
                     # "SEPARATOR_LEVELS": sep_levels,
                 }
             elif sum_residues_lst and len(sum_residues_lst) > 1:
-                logger.error(
+                self.logger.error(
                     f"More than two parts of SUM residues matched: {sum_residues_lst}"
                 )
             else:
@@ -283,24 +304,38 @@ class Decoder(object):
         """
 
         extracted_info_dct = {}
+        obs_alias_lst = []
 
         for c in self.rules:
-            matched_info_dct = self.extract_by_class_rule(lipid_name, c)
-            if matched_info_dct:
-                extracted_info_dct[c] = matched_info_dct
+            matched_info_dct = {}
+            alias_matched_info_dct = {}
+            if lipid_name:
+                matched_info_dct = self.extract_by_class_rule(lipid_name, c)
+                def_alias = self.check_alias(lipid_name, "LIPID")
+                if def_alias:
+                    obs_alias_lst.append(def_alias)
+                    alias_matched_info_dct = self.extract_by_class_rule(def_alias, c)
+                if alias_matched_info_dct:
+                    extracted_info_dct[c] = matched_info_dct
             else:
-                if lipid_name:
-                    def_alias = self.check_alias(lipid_name, "LIPID")
-                    if def_alias:
-                        logger.info(
-                            f"Found Alias: {lipid_name} -> change to {def_alias}"
-                        )
-                        matched_info_dct = self.extract_by_class_rule(def_alias, c)
-                        if matched_info_dct:
-                            extracted_info_dct[c] = matched_info_dct
+                self.logger.warning(
+                    f"No lipid name is given. Please submit a lipid name."
+                )
+
+            if matched_info_dct and not alias_matched_info_dct:
+                extracted_info_dct[c] = matched_info_dct
+            elif not matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            elif matched_info_dct and alias_matched_info_dct:
+                extracted_info_dct[c] = alias_matched_info_dct
+            else:
+                pass
 
         if not extracted_info_dct:
-            logger.error(f"Failed to decode Lipid: {lipid_name}")
+            self.logger.error(f"Failed to decode Lipid: {lipid_name}")
+        obs_alias_lst = list(set(obs_alias_lst))
+        if obs_alias_lst:
+            self.logger.debug(f"Using alias: {lipid_name} -> {obs_alias_lst}")
 
         return extracted_info_dct
 
@@ -323,5 +358,5 @@ if __name__ == "__main__":
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)
 
-    logger.info(t_out)
-    logger.info("FIN")
+    app_logger.info(t_out)
+    app_logger.info("FIN")

@@ -1,42 +1,89 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from enum import Enum
 import itertools
 import json
 from operator import itemgetter
 import re
+from typing import Dict, List, Optional
 
 from jsonschema import Draft7Validator
 from natsort import natsorted
+from pydantic import BaseModel, constr, conint
 
-from lynx.utils.file_handler import get_abs_path
-from lynx.utils.toolbox import check_json
-from ..models.defaults import (
-    api_version,
+from lynx.models.api_models import LvType
+from lynx.models.defaults import (
     lynx_schema_cfg,
     lipid_level_lst,
     mod_db_level_lst,
 )
-from lynx.utils.log import logger
+from lynx.utils.basics import get_abs_path
+from lynx.utils.cfg_reader import api_version
+from lynx.utils.log import app_logger
+from lynx.utils.toolbox import check_json
 
 
-class Lipid(object):
-    def __init__(self, lipid_code: str):
+class LipidClassType(BaseModel):
+    main_class: constr(min_length=1, max_length=8)
+    sub_class: Optional[str]
+    lmsd_main_class: Optional[str]
+    lmsd_sub_class: Optional[str]
+
+
+class SiteType(BaseModel):
+    site: conint(ge=0, le=64)
+    info: Optional[str]
+
+
+class ModType(BaseModel):
+    cv: str
+    count: conint(ge=1, le=16) = 1
+    sites: Optional[List[SiteType]]
+    elements: Optional[Dict[str, int]]
+    shift: Optional[int]
+
+
+class DBType(BaseModel):
+    count: conint(ge=0, le=16) = 0
+    site: Optional[List[SiteType]]
+    elements: Optional[Dict[str, int]]
+    shift: Optional[int]
+
+
+class ResidueType(BaseModel):
+    id: str
+    c: conint(ge=0, le=256)
+    db: conint(ge=0, le=32)
+    o: conint(ge=0, le=32)
+    mods: List[ModType]
+    elements: Dict[str, int]
+    formula: str
+    is_modified: bool
+
+
+class LipidType(BaseModel):
+    id: str
+    lipid_class: str
+    residues: dict
+    exact_sn_position: bool
+    is_modified: bool
+
+
+class LipidLegacy(object):
+    def __init__(self, lipid_code: str, logger=app_logger):
 
         self.lipid_code = lipid_code
         self.lynx_class_lv0 = ""
@@ -53,7 +100,10 @@ class Lipid(object):
         self.residues = self.sum_info.get("residues", [])
         self.level = self.sum_info.get("level", "")
         self.linked_ids = self.sum_info.get("linked_ids", {})
-        logger.info(f"Level {self.level:4s} FattyAcid created from: {self.lipid_code}")
+        self.logger = logger
+        self.logger.info(
+            f"Level {self.level:4s} FattyAcid created from: {self.lipid_code}"
+        )
 
     def __identify_class__(self):
         lipid_class = ""
@@ -157,7 +207,7 @@ class Lipid(object):
                     res_obj = LipidClass(res["id"])
                     res_type = "HG"
                 except Exception as err:
-                    logger.error(err)
+                    self.logger.error(err)
                     raise ValueError(f'Cannot parse string as HeadGroup: {res["id"]}')
             res["info"] = json.loads(res_obj.to_json())
             res["info"]["type"] = res_type
@@ -181,7 +231,7 @@ class Lipid(object):
         fa_info_lst = []
         for mod_lv in lv_lst["mod_lv_lst"]:
             fa_res_dct[mod_lv] = []
-        logger.info(res_lst)
+        self.logger.info(res_lst)
         for res in res_lst:
             res_info = res["info"]
             if res_info.get("type", None) == "FA":
@@ -309,8 +359,8 @@ class Lipid(object):
                 "is_modified": self.is_modified,
                 "info": {"main_class": self.lynx_class_lv0, "residues": res_info_lst},
             }
-            logger.info(f"modification level: {self._max_mod_level}")
-            logger.info(f"\n{lipid_info_dct}")
+            self.logger.info(f"modification level: {self._max_mod_level}")
+            self.logger.info(f"\n{lipid_info_dct}")
 
             return lipid_info_dct
         else:
@@ -320,7 +370,9 @@ class Lipid(object):
         sum_info = self.sum_info
         sum_info.pop("mod_obj", None)
         json_str = json.dumps(sum_info)
-        if check_json(validator=self.validator, json_obj=json.loads(json_str)):
+        if check_json(
+            validator=self.validator, json_obj=json.loads(json_str, logger=self.logger)
+        ):
             return json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
@@ -434,11 +486,11 @@ if __name__ == "__main__":
     counter = 0
     for pl in lipid_lst:
         counter += 1
-        logger.info(f"Test Lipid #{counter} : {pl}")
+        app_logger.info(f"Test Lipid #{counter} : {pl}")
         pl_obj = Lipid(lipid_code=pl)
-        logger.info(f"Export JSON \n {pl_obj.to_json()}")
-        logger.info(
+        app_logger.info(f"Export JSON \n {pl_obj.to_json()}")
+        app_logger.info(
             "".join([f"\n {s}: {pl_obj.linked_ids[s]}" for s in pl_obj.linked_ids])
         )
 
-    logger.info("FINISHED")
+    app_logger.info("FINISHED")
