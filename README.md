@@ -66,7 +66,10 @@ If you really want to have an early access to the exe version, please contact us
 ### Additional notice to developers
 
 Since the code is still changing rapidly, the definitions of API and documentations in the source code may not be updated accordingly.
-We kindly ask, if you have any plans to use LipidLynxX API contact us first, or follow this repository to get timely notifications when new changes are introduced.
+We kindly ask if you have any plans to use LipidLynxX API contact us first, or follow this repository to get timely notifications when new changes are introduced.
+
+New features of LipidLynxX is generally developed using repository [https://github.com/ZhixuNi/LipidLynxX](https://github.com/ZhixuNi/LipidLynxX).
+
 
 ### Key Features
 
