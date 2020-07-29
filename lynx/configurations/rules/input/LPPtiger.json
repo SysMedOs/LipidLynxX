@@ -4,7 +4,7 @@
     "zhixu.ni@uni-leipzig.de"
   ],
   "SOURCES": [
-    "LipidLynxX"
+    "LPPtiger"
   ],
   "SEPARATORS": {
     "RESIDUE_SEPARATOR": "_|/",
@@ -47,32 +47,25 @@
       "MOD_COUNT":  "(\\s?,)?([0-9]{1,2})",
       "MOD_COUNT_SEPARATOR": "X|x",
       "SITE_BRACKET_LEFT": "$.SEPARATORS.SITE_BRACKET_LEFT.0",
-      "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_TYPE": "([a-zA-Z][-0-9a-zA-Z]*)",
       "MOD_SITES_SKIPPED": "@C",
       "MOD_SITES": "[0-9]{1,2}",
       "SITE_BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",
       "EXAMPLES": [
         "+O",
-        "OH{9}",
-        ",2OH{9R,12S}",
-        "{9E,12Z}"
+        "[4xDB,2xOH]",
+        "<COOH@C9>"
       ]
     },
     "SUM_MODS": {
       "ORDER": [
-        "BRACKET_MODS_LEFT",
-        "MOD",
-        "BRACKET_MODS_RIGHT"
+        "MOD"
       ],
-      "REPEAT": {
-        "MOD": [1, 10]
-      },
-      "MOD": "$.MODS.MOD.0",
+      "MOD": "(\\[($.MODS.MOD.0){0,10}\\])?($.MODS.MOD.0)?",
       "EXAMPLES": [
-        "<{9E,12Z}>",
-        "<2OH{9,12}>",
-        "<2OH{9R,12S}>",
-        "<{9E,12Z},2OH{9R,12S}>"
+        "[4xDB,2xOH]",
+        "[1xDB,1xOH]<CHO@C9>",
+        "<COOH@C9>"
       ]
     }
   },
@@ -109,7 +102,7 @@
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?",
+      "NUM_O": "[1-9]?",
       "MOD_BRACKET_LEFT": "$.SEPARATORS.MOD_BRACKET_LEFT.0",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "MOD_BRACKET_RIGHT": "$.SEPARATORS.MOD_BRACKET_RIGHT.0",

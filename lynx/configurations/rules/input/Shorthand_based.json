@@ -42,7 +42,7 @@
       "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
       "MOD_SITE_INFO": "([EZRS])?",
       "MOD_SEPARATOR": "$.SEPARATORS.MOD_SEPARATOR.0",
-      "MOD_TYPE": "([+-]?[a-zA-Z]*[-0-9a-zA-Z]*)",
+      "MOD_TYPE": "([+-]?[a-zA-Z]+[-0-9a-zA-Z]*)",
       "EXAMPLES": [
         "9",
         "9Z",
@@ -57,7 +57,7 @@
         "BRACKET_RIGHT"
       ],
       "REPEAT": {
-        "MOD": [0, 10]
+        "MOD": [1, 10]
       },
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "MOD": "$.MODS.MOD.0",
@@ -98,7 +98,7 @@
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "[1-3]?O?",
+      "NUM_O": "[2-9]?O[2-9]?",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "EXAMPLES": [
         "18:2;3O",
@@ -136,8 +136,8 @@
       },
       "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
       "EXAMPLES": [
-        "18:2;3O",
         "18:2;O",
+        "18:2;O2",
         "18:2",
         "9:0",
         "26:0;(2OH)",
@@ -200,17 +200,23 @@
         "PREFIX",
         "CLASS",
         "LIPID_CLASS_SEPARATOR",
-        "SUM_RESIDUES"
+        "BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "BRACKET_RIGHT"
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "BRACKET_LEFT",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "PREFIX": "Acylcarnitine[\\s]?",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
-      "CLASS": "C",
+      "CLASS": "C|FA",
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
       "EXAMPLES": [
         "Acylcarnitine C14:0",
         "C18:2",
@@ -381,7 +387,7 @@
       "PREFIX": "C",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
-      "CLASS": "[Ss]phingosine|[Pp]hytosphingosine|[Dd]ehydrophytosphingosine",
+      "CLASS": "[Ss]phingosine|[Pp]hytosphingosine|[Dd]ehydrophytosphingosine|SPB",
       "SUFFIX": "-1-(phosphate|phosphocholine)",
       "EXAMPLES": [
         "C16 Sphingosine",
@@ -393,6 +399,7 @@
     },
     "SP": {
       "LMSD_CLASSES": [
+        "SP01",
         "SP02",
         "SP03",
         "SP05",
@@ -401,6 +408,7 @@
       "ORDER": [
         "PREFIX",
         "CLASS",
+        "SUFFIX",
         "LIPID_CLASS_SEPARATOR",
         "BRACKET_LEFT",
         "SUM_RESIDUES",
@@ -408,11 +416,15 @@
       ],
       "OPTIONAL": [
         "PREFIX",
-        "LIPID_CLASS_SEPARATOR"
+        "SUFFIX",
+        "LIPID_CLASS_SEPARATOR",
+        "BRACKET_LEFT",
+        "BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 2,
       "PREFIX": "[AS]?(Hex|Gal|Glc|Man){1,6}|PE-|Lyso",
-      "CLASS": "Cer[P]?|SPB|SM|GM[1-3]?",
+      "CLASS": "Cer|SPB|SM|GM[1-3]?",
+      "SUFFIX": "P",
       "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
       "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
       "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
