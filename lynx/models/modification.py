@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -23,17 +20,17 @@ from jsonschema import Draft7Validator, RefResolver
 from natsort import natsorted
 import regex as re
 
-from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import (
-    api_version,
     lynx_schema_cfg,
     core_schema,
     core_schema_path,
     mod_db_level_lst,
     default_output_rules,
 )
-from lynx.utils.file_handler import get_abs_path
-from lynx.utils.log import logger
+from lynx.utils.basics import get_abs_path
+from lynx.utils.cfg_reader import api_version
+from lynx.utils.log import app_logger
+from lynx.utils.params_loader import load_output_rule
 from lynx.utils.toolbox import check_json
 
 
@@ -42,10 +39,14 @@ class Modifications(object):
         self,
         mod_info: dict,
         db: int = 0,
+        num_o: int = 0,
         schema: str = "lynx_mod",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
+        logger=app_logger,
     ):
+        self.logger = logger
+        self.nomenclature = nomenclature
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.mod_rule = self.export_rule.get("MODS", None)
         self.mod_rule_orders = self.mod_rule.get("MOD", {}).get("ORDER", [])
@@ -58,6 +59,17 @@ class Modifications(object):
         self.schema = schema
         self.type = "Modification"
         self.mod_level = str(mod_info.get("MOD_LEVEL", 0))
+        if num_o > 0:
+            if self.mod_level in ["0", "1"]:
+                self.mod_level = "2"
+            elif self.mod_level in ["0.1", "1.1"]:
+                self.mod_level = "2.1"
+            elif self.mod_level in ["0.2", "1.2"]:
+                self.mod_level = "2.2"
+            else:
+                pass
+        else:
+            pass
         with open(get_abs_path(lynx_schema_cfg[self.schema]), "r") as s_obj:
             self.validator = Draft7Validator(
                 json.load(s_obj),
@@ -67,6 +79,7 @@ class Modifications(object):
             )
 
         self.db_count = db
+        self.additional_o_count = num_o
         self.sum_mod_info = self.to_sum_info()
 
         self.mod_id = self.sum_mod_info.get("id", "")
@@ -106,8 +119,11 @@ class Modifications(object):
         for mod in self.mod_info:
             mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
             mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0) * mod_count
+        mass_shift_str = f"{mass_shift:+}"
 
-        return f"{mass_shift:+}"
+        mass_shift_str = re.sub(r"\<?\+0\>?", "", mass_shift_str)
+        mass_shift_str = re.sub(r"\<\>", "", mass_shift_str)
+        return mass_shift_str
 
     def to_elements(self):
         sum_elements = {}
@@ -122,15 +138,31 @@ class Modifications(object):
                         sum_elements.get(elem, 0)
                         + mod_elements.get(elem, 0) * mod_count
                     )
+        if self.additional_o_count > 0:
+            sum_elements["O"] = sum_elements.get("O", 0) + self.additional_o_count
 
         for mod_elem in mod_elem_lst:
             if mod_elem in sum_elements:
-                mod_elem_count = f"{sum_elements[mod_elem]:+}"
-                if mod_elem_count == "+1":
-                    mod_elem_count = "+"
-                elif mod_elem_count == "-1":
-                    mod_elem_count = "-"
-                mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+                # temp solution for elem level for Shorthand
+                # TODO(zhixu.ni@uni-leipzig.de): reformat following part into .json cfg
+                if re.match(r"\.*lynx\.*", self.nomenclature, re.IGNORECASE):
+                    mod_elem_count = f"{sum_elements[mod_elem]:+}"
+                    if mod_elem_count == "+1":
+                        mod_elem_count = "+"
+                    elif mod_elem_count == "-1":
+                        mod_elem_count = "-"
+                    mod_str_lst.append(f"{mod_elem_count}{mod_elem}")
+
+                else:
+                    mod_elem_count = sum_elements[mod_elem]
+                    if mod_elem_count > 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}")
+                    elif mod_elem_count == 0:
+                        pass
+                    elif mod_elem_count == 1:
+                        mod_str_lst.append(f"{mod_elem}{mod_elem_count}")
 
         return f'{",".join(mod_str_lst)}'
 
@@ -161,7 +193,7 @@ class Modifications(object):
                                 mod_seg_str += f"+{mod_count}"
                         elif mod_count < 0 and mod_lv < 3:
                             mod_seg_str += str(mod_count)
-                        elif mod_count == 1:
+                        elif mod_count == 1 and cv not in ["", "DB"]:
                             if mod_lv < 3:
                                 mod_seg_str += "+"
                             else:
@@ -223,17 +255,16 @@ class Modifications(object):
             mod_seg_lst=["MOD_COUNT", "MOD_CV"], get_db_only=get_db_only
         )
 
-    def to_mod_site(self, get_db_only: bool = False):
-        return self.to_mod_base(
-            mod_seg_lst=[
+    def to_mod_site(self, mod_segments: list, get_db_only: bool = False):
+        if not mod_segments:
+            mod_segments = [
                 "MOD_COUNT",
                 "MOD_CV",
                 "SITE_BRACKET_LEFT",
                 "MOD_SITE",
                 "SITE_BRACKET_RIGHT",
-            ],
-            get_db_only=get_db_only,
-        )
+            ]
+        return self.to_mod_base(mod_seg_lst=mod_segments, get_db_only=get_db_only,)
 
     def to_mod_site_info(self, get_db_only: bool = False):
         return self.to_mod_base(
@@ -266,7 +297,7 @@ class Modifications(object):
         elif level.startswith("3"):
             mod_str = self.to_mod_count()
         elif level.startswith("4"):
-            mod_str = self.to_mod_site()
+            mod_str = self.to_mod_site(mod_segments=[])
         elif level.startswith("5"):
             mod_str = self.to_mod_site_info()
         else:
@@ -274,7 +305,15 @@ class Modifications(object):
 
         # add DB part
         if level.endswith(".1"):
-            db_str = self.to_mod_site(get_db_only=True)
+            db_str = self.to_mod_site(
+                mod_segments=[
+                    "SITE_BRACKET_LEFT",
+                    "MOD_SITE",
+                    "MOD_SITE_INFO",
+                    "SITE_BRACKET_RIGHT",
+                ],
+                get_db_only=True,
+            )
             if db_str:
                 mod_str = ",".join([db_str, mod_str]).strip(",")
             else:
@@ -353,6 +392,16 @@ class Modifications(object):
                 "linked_levels": natsorted(list(linked_ids.keys())),
                 "info": self.get_mod_info(),
             }
+        elif float(self.mod_level) > 0 and not mod_id:
+            sum_mod_info_dct = {
+                "api_version": api_version,
+                "type": self.type,
+                "id": mod_id,
+                "level": self.mod_level,
+                "linked_ids": linked_ids,
+                "linked_levels": natsorted(list(linked_ids.keys())),
+                "info": self.get_mod_info(),
+            }
         elif float(self.mod_level) == 0:
             sum_mod_info_dct = {}
         else:
@@ -366,7 +415,10 @@ class Modifications(object):
     def to_json(self):
         mod_json_str = json.dumps(self.sum_mod_info)
 
-        if check_json(validator=self.validator, json_obj=json.loads(mod_json_str)):
+        if check_json(
+            validator=self.validator,
+            json_obj=json.loads(mod_json_str, logger=self.logger),
+        ):
             return mod_json_str
         else:
             raise Exception(f"Schema test FAILED. Schema {self.schema}")
@@ -461,12 +513,12 @@ if __name__ == "__main__":
     }
 
     usr_mod_obj = Modifications(usr_mod_info)
-    logger.debug(usr_mod_obj)
+    app_logger.debug(usr_mod_obj)
     mod_json = usr_mod_obj.to_json()
 
     usr_sum_mods_obj = merge_mods([usr_mod_obj, usr_mod_obj])
 
-    logger.debug(usr_sum_mods_obj)
+    app_logger.debug(usr_sum_mods_obj)
     sum_mod_json = usr_sum_mods_obj.to_json()
 
-    logger.info("FINISHED")
+    app_logger.info("FINISHED")

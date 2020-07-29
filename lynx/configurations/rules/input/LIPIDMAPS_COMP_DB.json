@@ -44,7 +44,7 @@
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
       "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
-      "NUM_O": "O[1-3]?",
+      "NUM_O": "O[1-9]?",
       "EXAMPLES": [
         "18:2;3O",
         "18:2;O",
@@ -109,6 +109,29 @@
         "FA 18:2",
         "FA 9:0",
         "SPB 18:2;O"
+      ]
+    },
+    "CoA": {
+      "LMSD_CLASSES": [
+        "FA0705"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "LIPID_CLASS_SEPARATOR",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX",
+        "LIPID_CLASS_SEPARATOR"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "F[aA]\\s*",
+      "CLASS": "CoA",
+      "LIPID_CLASS_SEPARATOR": "$.SEPARATORS.SPACE.0",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "FaCoA 16:0"
       ]
     },
     "GL": {
