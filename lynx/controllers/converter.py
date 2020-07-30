@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -21,7 +18,7 @@ from typing import List, Dict, Union, Tuple
 
 from lynx.controllers.encoder import Encoder
 
-from lynx.models.api_models import ConvertedStrData, ConvertedListData
+from lynx.models.api_models import ConvertedStrData, ConvertedListData, StyleType
 from lynx.utils.log import app_logger
 from lynx.models.defaults import (
     default_output_rules,
@@ -50,7 +47,7 @@ class Converter:
     def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
         output_dct = {}
         # Set COMP_DB to max level B2
-        if re.search(r'COMP\\s*[_]?\\s*(DB)?', self.style):
+        if re.search(r"COMP\\s*[_]?\\s*(DB)?", self.style):
             level = "B2"
         if input_str and isinstance(input_str, str) and len(input_str) < 512:
             converted_id = self.encoder.convert(input_str, level=level)
@@ -126,6 +123,30 @@ class Converter:
         return output_dct
 
 
+def convert_lipid(
+    lipid: str,
+    style: Union[StyleType, str] = StyleType.lipidlynxx,
+    level: str = "B1",
+    logger=app_logger,
+):
+    converter = Converter(
+        style=style,
+        input_rules=default_input_rules,
+        output_rules=default_output_rules,
+        logger=logger,
+    )
+    if lipid:
+        converted_name = converter.convert_str(input_str=lipid, level=level).output
+        if isinstance(converted_name, str) and len(converted_name) > 0:
+            pass
+        else:
+            converted_name = ""
+    else:
+        converted_name = ""
+
+    return converted_name
+
+
 if __name__ == "__main__":
     # from lynx.utils.log import logger
 
@@ -143,7 +164,8 @@ if __name__ == "__main__":
         # "CoA(20:3(11Z,14Z,17Z))",
         # "CoA 18:2;O",
         # "FACoA 18:0",
-        "Cer 24:2",
+        # "Cer 24:2",
+        "LMGP01010594",
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"

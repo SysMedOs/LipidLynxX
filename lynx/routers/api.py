@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+import asyncio
 import json
 import re
 from typing import List, Optional, Union
+import urllib.parse
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import parse_obj_as
+import requests
 
+from lynx.controllers.linker import get_cross_links
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
@@ -75,6 +76,19 @@ async def parse_name(lipid_name: str = "PLPC"):
     Parse one lipid name from path parameter
     """
     return parse_lipid(lipid_name)
+
+
+@router.get("/link/lipid/")
+async def link_str(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
+    """
+    link one lipid name from data
+    """
+
+    linked_ids = await get_cross_links(lipid_name, export_url=export_url)
+    if linked_ids:
+        return linked_ids
+    else:
+        raise HTTPException(status_code=500)
 
 
 # Post APIs

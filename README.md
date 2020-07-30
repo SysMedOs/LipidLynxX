@@ -2,9 +2,9 @@
 
 ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
 
-![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg)
+![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg?color=orange)
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
-![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=orange)
+![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=success)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -40,7 +40,9 @@ for major lipid classes from following databases and programs:
 
   - `ALEX123 lipid calculator`, `Greazy`, `LDA 2`, `LipidBlast`, `LipidCreator`, `LipiDex`, `LipidFrag`, `LipidHunter`,
       `LipidMatch`, `LipidPro`, `LipidSearch`, `Lipostar`, `LIQUID`, `LPPtiger`, `MetFrag`, `MS-DIAL`, `MZmine2`
-
+- Shorthand Notations
+  - Shorthand notation using space: e.g. PC 16:0_18:2
+  - Shorthand notation derivatives using brackets: e.g. PC(16:0_18:2)
 - Common abbreviations (customizable):
   -  Abbreviations such as DHA, PAPE, PLPC, PONPC .etc are also included as `defined alias`.
   detailed settings can be found in `lynx/configurations/defined_alias.json`
@@ -64,7 +66,10 @@ If you really want to have an early access to the exe version, please contact us
 ### Additional notice to developers
 
 Since the code is still changing rapidly, the definitions of API and documentations in the source code may not be updated accordingly.
-We kindly ask, if you have any plans to use LipidLynxX API contact us first, or follow this repository to get timely notifications when new changes are introduced.
+We kindly ask if you have any plans to use LipidLynxX API contact us first, or follow this repository to get timely notifications when new changes are introduced.
+
+New features of LipidLynxX is generally developed using repository [https://github.com/ZhixuNi/LipidLynxX](https://github.com/ZhixuNi/LipidLynxX).
+
 
 ### Key Features
 
@@ -131,8 +136,9 @@ Please find our user guide in folder `doc`.
 
   - Lipid level:
     - **B**: Bulk
-    - **D**: Discrete
+    - **M**: Molecular species
     - **S**: sn Specific
+    
   - Modification levels:
 
     - 0 : no modification
@@ -153,26 +159,26 @@ Please find our user guide in folder `doc`.
   - The combinations of 3 sub-levels result in a matrix of LipidLynxX levels
     - e.g. B2 , D4, and S4.2
 
-    | Mod  | DB   |      | Bulk   | Discrete |          |          | sn Specific |          |          |
+    | Mod  | DB   |      | Bulk   | Molecular species |          |          | sn Specific |          |          |
     | ---- | ---- | ---- | ------ | -------- | -------- | -------- | ----------- | -------- | -------- |
-    | 0    |      |      | **B**  | **D**    |          |          | **S**       |          |          |
-    |      | .1   |      |        |          | **D0.1** |          |             | **S0.1** |          |
-    |      |      | .2   |        |          |          | **D0.2** |             |          | **S0.2** |
-    | 1.   |      |      | **B1** | **D1**   |          |          | **S1**      |          |          |
-    |      | .1   |      |        |          | **D1.1** |          |             | **S1.1** |          |
-    |      |      | .2   |        |          |          | **D1.2** |             |          | **S1.2** |
-    | 2.   |      |      | **B2** | **D2**   |          |          | **S2**      |          |          |
-    |      | .1   |      |        |          | **D2.1** |          |             | **S2.1** |          |
-    |      |      | .2   |        |          |          | **D2.2** |             |          | **S2.2** |
-    | 3.   |      |      | **B3** | **D3**   |          |          | **S3**      |          |          |
-    |      | .1   |      |        |          | **D3.1** |          |             | **S3.1** |          |
-    |      |      | .2   |        |          |          | **D3.2** |             |          | **S3.2** |
-    | 4.   |      |      |        | **D4**   |          |          | **S4**      |          |          |
-    |      | .1   |      |        |          | **D4.1** |          |             | **S4.1** |          |
-    |      |      | .2   |        |          |          | **D4.2** |             |          | **S4.2** |
-    | 5.   |      |      |        | **D5**   |          |          | **S5**      |          |          |
-    |      | .1   |      |        |          | **D5.1** |          |             | **S5.1** |          |
-    |      |      | .2   |        |          |          | **D5.2** |             |          | **S5.2** |
+    | 0    |      |      | **B**  | **M**    |          |          | **S**       |          |          |
+    |      | .1   |      |        |          | **M0.1** |          |             | **S0.1** |          |
+    |      |      | .2   |        |          |          | **M0.2** |             |          | **S0.2** |
+    | 1.   |      |      | **B1** | **M1**   |          |          | **S1**      |          |          |
+    |      | .1   |      |        |          | **M1.1** |          |             | **S1.1** |          |
+    |      |      | .2   |        |          |          | **M1.2** |             |          | **S1.2** |
+    | 2.   |      |      | **B2** | **M2**   |          |          | **S2**      |          |          |
+    |      | .1   |      |        |          | **M2.1** |          |             | **S2.1** |          |
+    |      |      | .2   |        |          |          | **M2.2** |             |          | **S2.2** |
+    | 3.   |      |      | **B3** | **M3**   |          |          | **S3**      |          |          |
+    |      | .1   |      |        |          | **M3.1** |          |             | **S3.1** |          |
+    |      |      | .2   |        |          |          | **M3.2** |             |          | **S3.2** |
+    | 4.   |      |      |        | **M4**   |          |          | **S4**      |          |          |
+    |      | .1   |      |        |          | **M4.1** |          |             | **S4.1** |          |
+    |      |      | .2   |        |          |          | **M4.2** |             |          | **S4.2** |
+    | 5.   |      |      |        | **M5**   |          |          | **S5**      |          |          |
+    |      | .1   |      |        |          | **M5.1** |          |             | **S5.1** |          |
+    |      |      | .2   |        |          |          | **M5.2** |             |          | **S5.2** |
 
   - Example
 
@@ -188,16 +194,16 @@ Please find our user guide in folder `doc`.
     - FA18:0
     - O-16:0
     - P-18:0
-    - 20:4/<2OH,oxo>
-    - 20:4/<{5Z,9E,11Z,14Z},OH{8S}>
-    - 20:4/<{5Z,9E,12E,15E},2OH{8S,11R},oxo{14}>
+    - 20:4<2OH,oxo>
+    - 20:4{5Z,9E,11Z,14Z}<OH{8S}>
+    - 20:4{5Z,9E,12E,15E}<2OH{8S,11R},oxo{14}>
 
   - Phospholipids
   
     - PC(O-16:0/18:1)
     - PE(P-16:0_18:1)
-    - PC(16:0/20:4/<2OH,oxo>)
-    - PE(16:0/20:4/<{5,9,12,15},2OH{8,11},oxo{14}>)
+    - PC(16:0/20:4<2OH,oxo>)
+    - PE(16:0/20:4{5,9,12,15}<2OH{8,11},oxo{14}>)
 
 ### Information for developers
 
@@ -226,24 +232,27 @@ please report an issue in the [issue tracker](https://github.com/SysMedOs/LipidL
 
 ### License
 
-- LipidLynxX is Dual-licensed
-
-  - For academic and non-commercial use: `GPLv2 License`:
-
-    - [The GNU General Public License version 2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-
-  - For commercial use: please contact the develop team by email.
+- LipidLynxX is using GPL V3 License
+ 
+  - [![license: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 - Please cite our publication in an appropriate form.
 
   - LipidLynxX preprint on `bioRxiv.org`
 
     - Zhixu Ni, Maria Fedorova.
-        "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+        "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 
       - DOI: [10.1101/2020.04.09.033894](https://www.biorxiv.org/content/10.1101/2020.04.09.033894v1)
 
-  - LipidLynx is based on the previous project [epiLION](https://github.com/SysMedOs/epiLION)
+### Dependencies
+- LipidLynxX is powered by open-source projects, main dependencies are:
+
+    - `FastAPI`, `starlette`, `Typer`, and `uvicorn`
+    
+    - `jsonschema`, `pandas`, and `regex`
+    
+- LipidLynxX is based on the previous project [epiLION](https://github.com/SysMedOs/epiLION)
 
     - Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
         "Computational solutions in redox lipidomics–Current strategies and future perspectives."

@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
 #
-# LipidLynxX is Dual-licensed
-#   For academic and non-commercial use: GPLv2 License:
-#   For commercial use: please contact the SysMedOs team by email.
+# LipidLynxX is using GPL V3 License
 #
 # Please cite our publication in an appropriate form.
 #   LipidLynxX preprint on bioRxiv.org
 #   Zhixu Ni, Maria Fedorova.
-#   "LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets"
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
 #   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
@@ -32,11 +29,7 @@ from lynx.models.defaults import supported_levels
 from lynx.utils.cfg_reader import app_cfg_info
 from lynx.utils.file_handler import get_abs_path
 from lynx.utils.log import app_logger
-from lynx.utils.params_loader import (
-    build_input_rules,
-    build_output_rules,
-)
-
+from lynx.utils.rules_builder import build_input_rules, build_output_rules
 
 default_input_rules = build_input_rules(app_cfg_info["input_rules"], app_logger)
 default_output_rules = build_output_rules(app_cfg_info["output_rules"], app_logger)
@@ -73,7 +66,7 @@ default_test_files = [
 
 @pytest.mark.parametrize("lipid,style,level,converted_lipid", default_test_lipids)
 def test_convert_results(
-        lipid: str, style: str, level: str, converted_lipid: str,
+    lipid: str, style: str, level: str, converted_lipid: str,
 ):
     print(
         f"Convert {lipid} into {level} Level using {style} Style as {converted_lipid}."
