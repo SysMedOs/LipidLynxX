@@ -214,6 +214,12 @@ def convert_lipids(
 @cli_app.command(name="convert-file")
 def convert_file(
     file: Path = typer.Argument(None),
+    column: str = typer.Option(
+        None,
+        "--column",
+        "-c",
+        help="name of the column that contains lipid notations",
+    ),
     output_file: Path = typer.Option(
         None,
         "--output",
@@ -237,8 +243,29 @@ def convert_file(
     Convert one .txt/ .csv / .xlsx FILE containing lipid names into supported levels
     and export to supported style as .csv / .xlsx file.
     """
+    if column:
+        lipid_col_name = column
+        use_one_col = True
+        converted_only = True
+    else:
+        lipid_col_name = None
+        use_one_col = False
+        converted_only = False
 
-    table_dct = cli_get_table(file)
+    raw_table_dct = cli_get_table(file)
+    if lipid_col_name:
+        table_dct = {lipid_col_name: raw_table_dct.get(lipid_col_name)}
+        if table_dct.get(lipid_col_name):
+            pass
+        else:
+            typer.echo(
+                typer.style(
+                    f"Can NOT find column '{lipid_col_name}' in file: {file}",
+                    fg=typer.colors.YELLOW,
+                )
+            )
+    else:
+        table_dct = raw_table_dct
     style, level = get_style_level(style, level)
     lynx_converter = Converter(
         style=style,
@@ -253,22 +280,41 @@ def convert_file(
         )
     )
     typer.echo(f"Processing file: {file.name} ...")
+
     with click_spinner.spinner():
-        converted_dct = lynx_converter.convert_dict(table_dct, level=level)
+        if use_one_col:
+            lipid_list = table_dct.get(lipid_col_name)
+            converted_obj = lynx_converter.convert_list(
+                input_list=lipid_list, level=level
+            )
+            converted_names = converted_obj.output
+            converted_dct = {f"Converted_{lipid_col_name}": converted_names}
+            converted_dct.update(raw_table_dct)
+        else:
+            converted_dct = lynx_converter.convert_dict(table_dct, level=level)
     if output_file:
-        pass
+        if isinstance(output_file, Path):
+            pass
+        else:
+            output_file = Path(output_file)
     else:
         input_folder = file.parent
         output_file = Path.joinpath(input_folder, get_output_name("Converter", "xlsx"))
     typer.echo(f"Generating output file...")
     with click_spinner.spinner():
-        output_info = create_converter_output(converted_dct, output_name=output_file)
+        output_info = create_converter_output(converted_dct, output_name=output_file, converted_only=converted_only)
     cli_save_output(output_info, output_file)
 
 
 @cli_app.command(name="convert")
 def convert(
     source: str = typer.Argument(None),
+    column: str = typer.Option(
+        None,
+        "--column",
+        "-c",
+        help="name of the column that contains lipid notations",
+    ),
     style: StyleType = typer.Option(
         "LipidLynxX",
         "--style",
@@ -326,6 +372,7 @@ def convert(
                 if os.path.isfile(source):
                     convert_file(
                         file=Path(source),
+                        column=column,
                         output_file=output_file,
                         style=style,
                         level=level,
