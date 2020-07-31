@@ -26,7 +26,7 @@ runner = CliRunner()
 
 
 def test_convert_lipid():
-    result = runner.invoke(cli_app, ["convert-lipid", "PLPC"])
+    result = runner.invoke(cli_app, ["convert-lipid", "PC 16:0/18:2"])
     assert result.exit_code == 0
     assert "PC(16:0/18:2)" in result.stdout
 

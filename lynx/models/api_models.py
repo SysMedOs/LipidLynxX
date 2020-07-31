@@ -81,10 +81,12 @@ class FileType(str, Enum):
 
 
 class StyleType(str, Enum):
-    lipidlynxx = "LipidLynxX"
-    comp_db = "COMP_DB"
-    shorthand = "ShorthandNotation"
+
+    biopan = "BioPAN"
     brackets = "BracketsShorthand"
+    comp_db = "COMP_DB"
+    lipidlynxx = "LipidLynxX"
+    shorthand = "ShorthandNotation"
 
     @classmethod
     def use(cls, style):
@@ -96,6 +98,8 @@ class StyleType(str, Enum):
             return StyleType.shorthand
         elif re.search(r"^\s*brackets", style, re.IGNORECASE):
             return StyleType.brackets
+        elif re.search(r"^\s*biopan", style, re.IGNORECASE):
+            return StyleType.biopan
         else:
             return StyleType.lipidlynxx
 
