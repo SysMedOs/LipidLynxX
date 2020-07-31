@@ -148,6 +148,11 @@ def get_style_level(
         export_style = "ShorthandNotation"
     elif export_style == StyleType.brackets:
         export_style = "BracketsShorthand"
+    elif export_style == StyleType.biopan:
+        export_style = "BioPAN"
+        # BioPAN only have B2 level e.g. TG 48:3
+        # ref: https://www.lipidmaps.org/resources/tools/biopan/doc/readthedocs/_build/html/step1.html
+        to_level = "B2"
     else:
         export_style = "LipidLynxX"
 
