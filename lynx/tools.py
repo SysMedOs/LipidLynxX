@@ -309,6 +309,12 @@ def convert_file(
 @cli_app.command(name="convert")
 def convert(
     source: str = typer.Argument(None),
+    column: str = typer.Option(
+        None,
+        "--column",
+        "-c",
+        help="name of the column that contains lipid notations",
+    ),
     style: StyleType = typer.Option(
         "LipidLynxX",
         "--style",
@@ -366,6 +372,7 @@ def convert(
                 if os.path.isfile(source):
                     convert_file(
                         file=Path(source),
+                        column=column,
                         output_file=output_file,
                         style=style,
                         level=level,
