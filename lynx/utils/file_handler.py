@@ -67,12 +67,12 @@ def load_folder(folder: str, file_type: str = "", logger=app_logger) -> List[str
 
 
 def create_converter_output(
-    data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx"
+    data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx", converted_only: bool =False
 ) -> Union[BytesIO, str]:
     file_info = None
     converted_df = pd.DataFrame()
     not_converted_df = pd.DataFrame()
-    if data:
+    if data and not converted_only:
         not_converted_dct = {}
         df_lst = []
         for k in data:
@@ -109,50 +109,55 @@ def create_converter_output(
             not_converted_df = pd.DataFrame.from_dict(
                 not_converted_dct, orient="index"
             ).T
-        if not converted_df.empty:
-            if output_name:
-                try:
-                    err_msg = None
-                    if isinstance(output_name, Path):
-                        output_name = output_name.as_posix()
-                    elif isinstance(output_name, str):
-                        pass
-                    else:
-                        err_msg = (
-                            f"[Type error] Cannot create file: {output_name} as output."
-                        )
-                    if output_name.lower().endswith("csv"):
-                        converted_df.to_csv(output_name)
-                    else:
-                        converted_df.to_excel(
-                            output_name, sheet_name="converted", index=False
-                        )
-                    if err_msg:
-                        file_info = err_msg
-                    else:
-                        file_info = get_abs_path(output_name)
-                except IOError:
-                    file_info = (
-                        f"[IO error] Cannot create file: {output_name} as output."
-                    )
-            else:
-                file_info = BytesIO()
-                if file_type.lower().endswith("csv"):
-                    file_info.write(converted_df.to_csv().encode("utf-8"))
+    elif data and converted_only:
+        converted_df = pd.DataFrame(data)
+    else:
+        pass
 
+    if not converted_df.empty:
+        if output_name:
+            try:
+                err_msg = None
+                if isinstance(output_name, Path):
+                    output_name = output_name.as_posix()
+                elif isinstance(output_name, str):
+                    pass
                 else:
-                    output_writer = pd.ExcelWriter(
-                        file_info, engine="openpyxl"
-                    )  # write to BytesIO instead of file path
-                    converted_df.to_excel(
-                        output_writer, sheet_name="converted", index=False
+                    err_msg = (
+                        f"[Type error] Cannot create file: {output_name} as output."
                     )
-                    if not not_converted_df.empty:
-                        not_converted_df.to_excel(
-                            output_writer, sheet_name="skipped", index=False
-                        )
-                    output_writer.save()
-                file_info.seek(0)
+                if output_name.lower().endswith("csv"):
+                    converted_df.to_csv(output_name)
+                else:
+                    converted_df.to_excel(
+                        output_name, sheet_name="converted", index=False
+                    )
+                if err_msg:
+                    file_info = err_msg
+                else:
+                    file_info = get_abs_path(output_name)
+            except IOError:
+                file_info = (
+                    f"[IO error] Cannot create file: {output_name} as output."
+                )
+        else:
+            file_info = BytesIO()
+            if file_type.lower().endswith("csv"):
+                file_info.write(converted_df.to_csv().encode("utf-8"))
+
+            else:
+                output_writer = pd.ExcelWriter(
+                    file_info, engine="openpyxl"
+                )  # write to BytesIO instead of file path
+                converted_df.to_excel(
+                    output_writer, sheet_name="converted", index=False
+                )
+                if not not_converted_df.empty:
+                    not_converted_df.to_excel(
+                        output_writer, sheet_name="skipped", index=False
+                    )
+                output_writer.save()
+            file_info.seek(0)
 
     return file_info
 
