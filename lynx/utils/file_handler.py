@@ -246,6 +246,100 @@ def create_equalizer_output(
     return file_info
 
 
+# def create_linker_output(
+#         data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx", export_url: bool = True
+# ) -> Union[BytesIO, str]:
+#     file_info = None
+#     linked_df = pd.DataFrame()
+#     if data:
+#         for lipid_name in data:
+#             if isinstance(data[lipid_name], dict):
+#                 input_name = data[lipid_name].get("lipid_name", "")
+#                 lynx_name = data[lipid_name].get("lynx_name", "")
+#                 biopan_name = data[lipid_name].get("biopan_name", "")
+#                 resource_data = data[lipid_name].get("resource_data", {})
+#                 if k_pairs and isinstance(lipid_name, str):
+#                     df_lst.append(pd.DataFrame(k_pairs, columns=[lipid_name, f"{lipid_name}_linked"]))
+#
+#                 if k_not_linked:
+#                     not_linked_dct[f"{lipid_name}_skipped"] = k_not_linked
+#             elif isinstance(data[lipid_name], linkedListData):
+#                 k_pairs = data[lipid_name].linked
+#                 if k_pairs and isinstance(lipid_name, str):
+#                     df_lst.append(pd.DataFrame(k_pairs, columns=[lipid_name, f"{lipid_name}_linked"]))
+#                 k_not_linked = data[lipid_name].skipped
+#                 if k_not_linked:
+#                     not_linked_dct[f"{lipid_name}_skipped"] = k_not_linked
+#             elif isinstance(data[lipid_name], list) and lipid_name == "linked":
+#                 k_pairs = data.get("linked", [])
+#                 if k_pairs:
+#                     df_lst.append(
+#                         pd.DataFrame(k_pairs, columns=["input", f"linked"])
+#                     )
+#             elif isinstance(data[lipid_name], list) and lipid_name == "skipped":
+#                 k_not_linked = data.get("skipped", [])
+#                 if k_not_linked:
+#                     not_linked_dct[f"skipped"] = k_not_linked
+#
+#         if df_lst:
+#             linked_df = pd.concat(df_lst, axis=1)
+#
+#         if not_linked_dct:
+#             not_linked_df = pd.DataFrame.from_dict(
+#                 not_linked_dct, orient="index"
+#             ).T
+#     elif data and linked_only:
+#         linked_df = pd.DataFrame(data)
+#     else:
+#         pass
+#
+#     if not linked_df.empty:
+#         if output_name:
+#             try:
+#                 err_msg = None
+#                 if isinstance(output_name, Path):
+#                     output_name = output_name.as_posix()
+#                 elif isinstance(output_name, str):
+#                     pass
+#                 else:
+#                     err_msg = (
+#                         f"[Type error] Cannot create file: {output_name} as output."
+#                     )
+#                 if output_name.lower().endswith("csv"):
+#                     linked_df.to_csv(output_name)
+#                 else:
+#                     linked_df.to_excel(
+#                         output_name, sheet_name="linked", index=False
+#                     )
+#                 if err_msg:
+#                     file_info = err_msg
+#                 else:
+#                     file_info = get_abs_path(output_name)
+#             except IOError:
+#                 file_info = (
+#                     f"[IO error] Cannot create file: {output_name} as output."
+#                 )
+#         else:
+#             file_info = BytesIO()
+#             if file_type.lower().endswith("csv"):
+#                 file_info.write(linked_df.to_csv().encode("utf-8"))
+#
+#             else:
+#                 output_writer = pd.ExcelWriter(
+#                     file_info, engine="openpyxl"
+#                 )  # write to BytesIO instead of file path
+#                 linked_df.to_excel(
+#                     output_writer, sheet_name="linked", index=False
+#                 )
+#                 if not not_linked_df.empty:
+#                     not_linked_df.to_excel(
+#                         output_writer, sheet_name="skipped", index=False
+#                     )
+#                 output_writer.save()
+#             file_info.seek(0)
+#
+#     return file_info
+
 def get_table(uploaded_file: File, err_lst: list, logger=app_logger) -> (dict, list):
     usr_file_name = uploaded_file.filename
     if usr_file_name.lower().endswith("xlsx"):

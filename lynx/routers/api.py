@@ -104,6 +104,7 @@ async def link_str(
         safe_lipid_name, level="MAX", style="ShorthandNotation"
     )
     lynx_name = await convert_name(safe_lipid_name, level="MAX", style="LipidLynxX")
+    biopan_name = await convert_name(safe_lipid_name, level="B2", style="BioPAN")
 
     resource_data = await get_cross_links(search_name, export_url=export_url)
     if resource_data:
@@ -112,6 +113,7 @@ async def link_str(
                 "lipid_name": lipid_name,
                 "shorthand_name": shorthand_name,
                 "lynx_name": lynx_name,
+                "biopan_name": biopan_name,
                 "resource_data": resource_data,
             }
             return render_data_dct

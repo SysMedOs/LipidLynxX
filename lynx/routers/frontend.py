@@ -197,8 +197,10 @@ async def linker_list(
     lynx_names = {}
     for lipid_name in names:
         resource_info = await api.link_str(lipid_name, export_url=True)
-        all_resources[lipid_name] = base64.urlsafe_b64encode(json.dumps(resource_info).encode("utf-8")).decode("utf-8")
+        all_resources[lipid_name] = get_url_safe_str(resource_info.dict().get("data"))
         lynx_names[lipid_name] = resource_info.get('lynx_name', "")
+
+    output_data = {}
 
     output_name = get_output_name("Linker", file_type)
     render_data_dct = {
