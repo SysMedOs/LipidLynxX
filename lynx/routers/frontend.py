@@ -16,20 +16,11 @@
 import base64
 import io
 import json
-import re
 
-from fastapi import (
-    APIRouter,
-    File,
-    Form,
-    Request,
-    UploadFile,
-)
+from fastapi import APIRouter, File, Form, Request, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 
-
-from lynx.controllers.linker import get_lmsd_name, get_swiss_name
 from lynx.models.api_models import (
     FileType,
     StyleType,
@@ -134,10 +125,7 @@ async def converter_file(
             "not_converted_html": not_converted_html,
         }
     else:
-        render_data_dct = {
-            "request": request,
-            "err_msgs": err_lst,
-        }
+        render_data_dct = {"request": request, "err_msgs": err_lst}
 
     return templates.TemplateResponse("converter.html", render_data_dct)
 
@@ -150,7 +138,7 @@ async def equalizer(request: Request):
 
 
 @router.post("/equalizer/file/", include_in_schema=False)
-async def equalize_file(
+async def equalizer_file(
     request: Request, file_obj: UploadFile = File(...), match_levels: str = Form(...)
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
@@ -177,15 +165,9 @@ async def equalize_file(
                 "output_file_data": data_encoded,
             }
         else:
-            render_data_dct = {
-                "request": request,
-                "err_msgs": err_lst,
-            }
+            render_data_dct = {"request": request, "err_msgs": err_lst}
     else:
-        render_data_dct = {
-            "request": request,
-            "err_msgs": err_lst,
-        }
+        render_data_dct = {"request": request, "err_msgs": err_lst}
 
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
@@ -193,39 +175,67 @@ async def equalize_file(
 @router.get("/linker/", include_in_schema=False)
 async def linker(request: Request,):
     return templates.TemplateResponse(
+        "linker.html", {"request": request, "all_resources": {}}
+    )
+
+
+@router.post("/linker/list", include_in_schema=False)
+async def linker_list(
+    request: Request,
+    lipid_names: str = Form(...),
+    export_url: str = Form(...),
+    file_type: FileType = Form(...),
+):
+    if not lipid_names:
+        raise HTTPException(status_code=404)
+    if export_url == "include":
+        export_url = True
+    else:
+        export_url = False
+    names = lipid_names.splitlines()
+    all_resources = {}
+    lynx_names = {}
+    for lipid_name in names:
+        resource_info = await api.link_str(lipid_name, export_url=True)
+        all_resources[lipid_name] = base64.urlsafe_b64encode(json.dumps(resource_info).encode("utf-8")).decode("utf-8")
+        lynx_names[lipid_name] = resource_info.get('lynx_name', "")
+
+    output_name = get_output_name("Linker", file_type)
+    render_data_dct = {
+        "request": request,
+        "export_url": export_url,
+        "all_resources": all_resources,
+        "lynx_names": lynx_names,
+        "output_file_name": output_name,
+        "output_file_type": file_type,
+        "output_file_data": {}
+    }
+
+    return templates.TemplateResponse(
+        "linker.html", render_data_dct
+    )
+
+
+@router.post("/linker/file", include_in_schema=False)
+async def linker_file(request: Request,):
+    return templates.TemplateResponse(
         "linker.html", {"request": request, "out_dct": {}}
     )
 
 
 @router.post("/linker/lipid/", include_in_schema=False)
-async def linker_resources(
-    request: Request, lipid_name: str = Form(...),
-):
-    if lipid_name:
-        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
-            safe_lipid_name = await get_lmsd_name(lipid_name)
-        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
-            safe_lipid_name = await get_swiss_name(lipid_name)
-        else:
-            safe_lipid_name = lipid_name
-    else:
-        safe_lipid_name = "PC(16:0/18:2(9Z,12Z))"
-    search_name = await api.convert_name(
-        safe_lipid_name, level="MAX", style="BracketsShorthand"
-    )
-    shorthand_name = await api.convert_name(
-        safe_lipid_name, level="MAX", style="ShorthandNotation"
-    )
-    lynx_name = await api.convert_name(safe_lipid_name, level="MAX", style="LipidLynxX")
-    resource_data = await api.link_str(search_name, export_url=True)
-    render_data_dct = {
-        "request": request,
-        "lipid_name": lipid_name,
-        "shorthand_name": shorthand_name,
-        "lynx_name": lynx_name,
-        "resource_data": resource_data,
-    }
-    return templates.TemplateResponse("resources.html", render_data_dct)
+async def linker_lipid(request: Request, lipid_name: str = Form(...)):
+    resource_info = await api.link_str(lipid_name, export_url=True)
+    resource_info["request"] = request
+    return templates.TemplateResponse("resources.html", resource_info)
+
+
+@router.get("/linker/resources/{data}", include_in_schema=False)
+async def view_lipid_resources(request: Request, data: str):
+    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
+    resource_info = json.loads(decoded_data.decode("utf-8"))
+    resource_info["request"] = request
+    return templates.TemplateResponse("resources.html", resource_info)
 
 
 @router.get(
@@ -244,10 +254,10 @@ async def get_download_file(data: str, file_type: str, file_name: str):
         else:
             try:
                 output_io = create_converter_output(data)
-            except Exception as e:
+            except Exception as e1:
                 try:
                     output_io = create_converter_output(data)
-                except Exception as e:
+                except Exception as e2:
                     raise ValueError()
     else:
         output_io = None
@@ -289,6 +299,6 @@ def nomenclature(request: Request):
 @router.get("/user_guide", include_in_schema=False)
 def user_guide(request: Request):
     return templates.TemplateResponse(
-        "userguide.html",
+        "guide.html",
         {"request": request, "lynx_version": lynx_version, "api_version": api_version},
     )

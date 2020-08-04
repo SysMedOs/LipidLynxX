@@ -23,7 +23,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import parse_obj_as
 import requests
 
-from lynx.controllers.linker import get_cross_links
+from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.controllers.converter import Converter
 from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
@@ -79,14 +79,44 @@ async def parse_name(lipid_name: str = "PLPC"):
 
 
 @router.get("/link/lipid/")
-async def link_str(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
+async def link_str(
+    lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
+    export_url: bool = False,
+    export_names: bool = True,
+):
     """
     link one lipid name from data
     """
 
-    linked_ids = await get_cross_links(lipid_name, export_url=export_url)
-    if linked_ids:
-        return linked_ids
+    if lipid_name:
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_lmsd_name(lipid_name)
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_swiss_name(lipid_name)
+        else:
+            safe_lipid_name = lipid_name
+    else:
+        raise HTTPException(status_code=404)
+    search_name = await convert_name(
+        safe_lipid_name, level="MAX", style="BracketsShorthand"
+    )
+    shorthand_name = await convert_name(
+        safe_lipid_name, level="MAX", style="ShorthandNotation"
+    )
+    lynx_name = await convert_name(safe_lipid_name, level="MAX", style="LipidLynxX")
+
+    resource_data = await get_cross_links(search_name, export_url=export_url)
+    if resource_data:
+        if export_names:
+            render_data_dct = {
+                "lipid_name": lipid_name,
+                "shorthand_name": shorthand_name,
+                "lynx_name": lynx_name,
+                "resource_data": resource_data,
+            }
+            return render_data_dct
+        else:
+            return resource_data
     else:
         raise HTTPException(status_code=500)
 
@@ -155,7 +185,7 @@ async def equalize_multiple_levels(
     """
     Equalize a dict of lipid names into supported levels and export to supported style
     """
-    print(levels.levels)
+    # print(levels.levels)
     equalizer = Equalizer(data.data, level=levels.levels)
     equalizer_data = equalizer.cross_match()
     return equalizer_data

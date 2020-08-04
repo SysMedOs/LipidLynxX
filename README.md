@@ -3,8 +3,9 @@
 ![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg?color=orange)
+![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=green)
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
-![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=success)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg?color=green)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
@@ -128,7 +129,7 @@ Please find our user guide in folder `doc`.
 - **Use as Python module**
     - Please check `examples_notebook.ipynb`
     - You can find online interactive version via Binder 
-    [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=examples_notebook.ipynb)
+   [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=converter_notebook.ipynb)
 
 ### LipidLynxX Nomenclature
 
