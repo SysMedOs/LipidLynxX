@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# LipidLynxX is using GPL V3 License
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
@@ -13,13 +20,9 @@ from jsonschema import Draft7Validator, RefResolver
 import regex as re
 
 from lynx.utils.params_loader import load_output_rule
-from lynx.models.defaults import (
-    res_schema,
-    res_schema_path,
-    default_output_rules,
-)
+from lynx.models.defaults import res_schema, res_schema_path, default_output_rules
 from lynx.models.modification import Modifications, merge_mods
-from lynx.utils.log import logger
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import check_json
 
 
@@ -30,7 +33,9 @@ class Residue(object):
         schema: str = "lynx_residues",
         output_rules: dict = default_output_rules,
         nomenclature: str = "LipidLynxX",
+        logger=app_logger,
     ):
+        self.logger = logger
         self.export_rule = load_output_rule(output_rules, nomenclature)
         self.res_rule = self.export_rule.get("RESIDUES", None)
         self.res_rule_orders = self.res_rule.get("RESIDUE", {}).get("ORDER", [])
@@ -47,7 +52,9 @@ class Residue(object):
 
         mod_info = residue_info.get("MOD", {})
 
-        self.mod_obj = Modifications(mod_info)
+        self.mod_obj = Modifications(
+            mod_info, num_o=residue_info.get("NUM_O", 0), nomenclature=nomenclature
+        )
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
         self.res_level = self.mod_level
@@ -88,7 +95,28 @@ class Residue(object):
                         res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
                     elif o == "NUM_O":
                         if num_o > 0:
-                            res_str += str(num_o)
+                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            if o_seg_rgx:
+                                if num_o == 1:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, "1"):
+                                        res_str += "1"
+                                    elif re.match(o_seg_rgx, "O"):
+                                        res_str += "O"
+                                    else:
+                                        res_str += "O"
+                                else:
+                                    if re.match(o_seg_rgx, str(num_o)):
+                                        res_str += str(num_o)
+                                    elif re.match(o_seg_rgx, f"{num_o}O"):
+                                        res_str += f"{num_o}O"
+                                    elif re.match(o_seg_rgx, f"O{num_o}"):
+                                        res_str += f"O{num_o}"
+                                    else:
+                                        res_str += str(num_o)
+                            else:
+                                res_str += str(num_o)
                         else:
                             pass
                     elif o.upper().endswith("_SEPARATOR"):
@@ -112,35 +140,41 @@ class Residue(object):
         fa_lite_info_dct = self.fa_info_dct
         fa_lite_info_dct.pop("mod_obj", None)
         fa_json_str = json.dumps(fa_lite_info_dct)
-        if check_json(self.validator, json.loads(fa_json_str)):
+        if check_json(self.validator, json.loads(fa_json_str, logger=self.logger)):
             return fa_json_str
         else:
             raise Exception(f"JSON Schema check FAILED. Schema {self.schema}")
 
 
 def merge_residues(
-    all_residues: dict,
+    residues_order: list,
+    residues_info: dict,
     schema: str = "lynx_residues",
     output_rules: dict = default_output_rules,
     nomenclature: str = "LipidLynxX",
 ) -> Residue:
 
     sum_res_dct = {}
-    if isinstance(all_residues, dict):
+    if isinstance(residues_info, dict):
         pass
     else:
         raise TypeError(
             f"Requires multiple Residues in dict, "
-            f"got type: {type(all_residues)} for {all_residues}"
+            f"got type: {type(residues_info)} for {residues_info}"
         )
 
     all_mod_lst = [
-        all_residues[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}}) for rm in all_residues
+        residues_info[rm].get("MOD", {"MOD_LEVEL": 0, "MOD_INFO": {}})
+        for rm in residues_info
     ]
     sum_mods_obj = merge_mods(all_mod_lst)
 
-    for res in all_residues:
-        res_info = all_residues[res]
+    for res in residues_order:
+        res_info = residues_info.get(res, {})
+        link = res_info.get("LINK")
+        if res.upper().startswith("P-") and link == "P-":
+            res_info["LINK"] = "O-"
+            res_info["NUM_DB"] = res_info.get("NUM_DB") + 1
         for res_seg in res_info:
             if re.search(r"MOD", res_seg):
                 pass
@@ -164,7 +198,10 @@ def merge_residues(
                     else:
                         pass
 
-    sum_res_dct["MOD"] = {"MOD_LEVEL": sum_mods_obj.mod_level, "MOD_INFO": sum_mods_obj.mod_info}
+    sum_res_dct["MOD"] = {
+        "MOD_LEVEL": sum_mods_obj.mod_level,
+        "MOD_INFO": sum_mods_obj.mod_info,
+    }
 
     sum_res_obj = Residue(sum_res_dct, schema, output_rules, nomenclature)
 
@@ -219,6 +256,6 @@ if __name__ == "__main__":
     #     # usr_res_json = res_obj.to_json()
 
     usr_res_obj = merge_residues(usr_res_info)
-    logger.debug(usr_res_obj.linked_ids)
+    app_logger.debug(usr_res_obj.linked_ids)
     # usr_res_json = res_obj.to_json()
-    logger.info("FINISHED")
+    app_logger.info("FINISHED")

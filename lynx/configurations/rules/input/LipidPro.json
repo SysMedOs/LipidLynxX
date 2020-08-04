@@ -1,0 +1,245 @@
+{
+  "_DATE": 20200403,
+  "_AUTHORS": [
+    "zhixu.ni@uni-leipzig.de"
+  ],
+  "SOURCES": [
+    "LipidPro"
+  ],
+  "SEPARATORS": {
+    "RESIDUE_SEPARATOR": "-|/",
+    "SPACE": "\\s",
+    "COLON": ":",
+    "SEMICOLON": ";",
+    "BRACKET_LEFT": "\\(",
+    "BRACKET_RIGHT": "\\)",
+    "SEPARATOR_LEVELS": {
+      "B": "",
+      "D": "-",
+      "S": "/"
+    }
+  },
+  "MODS": {
+    "MOD": {
+      "ORDER": [
+        "MOD_SITE",
+        "MOD_SITE_INFO",
+        "MOD_TYPE"
+      ],
+      "OPTIONAL": [
+        "MOD_SITE_INFO",
+        "MOD_TYPE"
+      ],
+      "MOD_SITE": "(\\s?,)?([0-9]{1,2})",
+      "MOD_SITE_INFO": "([EZRS])?",
+      "MOD_TYPE": "([a-zA-Z]*[-0-9a-zA-Z]*)",
+      "EXAMPLES": [
+        "9",
+        "9Z",
+        "9OH",
+        "9S-OH"
+      ]
+    },
+    "SUM_MODS": {
+      "ORDER": [
+        "BRACKET_LEFT",
+        "MOD",
+        "BRACKET_RIGHT"
+      ],
+      "REPEAT": {
+        "MOD": [
+          1,
+          10
+        ]
+      },
+      "BRACKET_LEFT": "$.SEPARATORS.BRACKET_LEFT.0",
+      "MOD": "$.MODS.MOD.0",
+      "BRACKET_RIGHT": "$.SEPARATORS.BRACKET_RIGHT.0",
+      "EXAMPLES": [
+        "(9Z)",
+        "(9Z,12Z)",
+        "(9OH,12OH)"
+      ]
+    }
+  },
+  "RESIDUES": {
+    "RESIDUE": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "PREFIX_C",
+        "NUM_C",
+        "DB_SEPARATOR",
+        "DB",
+        "LINK_SUFFIX",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR",
+        "LINK",
+        "DB",
+        "LINK_SUFFIX",
+        "O_SEPARATOR",
+        "NUM_O",
+        "SUM_MODS"
+      ],
+      "REPEAT": {
+        "SUM_MODS": [
+          0,
+          10
+        ]
+      },
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "LINK": "[OP]-[ap]?|C|[mdt]|h",
+      "PREFIX_C": "C",
+      "NUM_C": "[0-9]{1,2}",
+      "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
+      "DB": "[1,2]?[0-9]",
+      "LINK_SUFFIX":"[ap]?\\s?",
+      "O_SEPARATOR": "$.SEPARATORS.SEMICOLON.0",
+      "NUM_O": "[1-9]?O?",
+      "SUM_MODS": "$.MODS.SUM_MODS.0",
+      "EXAMPLES": [
+        "C16:0",
+        "C18:2"
+      ]
+    },
+    "RESIDUE_ALIAS": {
+      "ORDER": [
+        "RESIDUE_SEPARATOR",
+        "ALIAS"
+      ],
+      "OPTIONAL": [
+        "RESIDUE_SEPARATOR"
+      ],
+      "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
+      "ALIAS": "[-,0-9a-zA-Z\\s]{3,}",
+      "EXAMPLES": [
+        "HETE",
+        "/HDoTE"
+      ]
+    },
+    "SUM_RESIDUES": {
+      "ORDER": [
+        "RESIDUE"
+      ],
+      "REPEAT": {
+        "RESIDUE": [
+          1,
+          4
+        ]
+      },
+      "RESIDUE": "($.RESIDUES.RESIDUE.0)|($.SEPARATORS.RESIDUE_ALIAS.0)",
+      "EXAMPLES": [
+        "C18:2"
+      ]
+    }
+  },
+  "LIPID_CLASSES": {
+    "FA": {
+      "LMSD_CLASSES": [
+        "FA01",
+        "FA02",
+        "FA03",
+        "FA04",
+        "FA07"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX_SKIPPED",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX"
+      ],
+      "MAX_RESIDUES": 1,
+      "PREFIX": "Acylcarnitine[\\s]?",
+      "CLASS": "FA",
+      "SUFFIX_SKIPPED": "-",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "C18:0",
+        "C18:2"
+      ]
+    },
+    "GL": {
+      "LMSD_CLASSES": [
+        "GL01",
+        "GL02",
+        "GL03"
+      ],
+      "ORDER": [
+        "CLASS",
+        "SUFFIX_SKIPPED",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [],
+      "MAX_RESIDUES": 3,
+      "CLASS": "TG|DG|MG",
+      "SUFFIX_SKIPPED": "-",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "MG-C16:0",
+        "DG-C16:0-C18:2",
+        "TG-C16:0-C18:2-C18:0"
+      ]
+    },
+    "PL": {
+      "LMSD_CLASSES": [
+        "GP01",
+        "GP02",
+        "GP03",
+        "GP04",
+        "GP05",
+        "GP06",
+        "GP07",
+        "GP08",
+        "GP09",
+        "GP10",
+        "GP20"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX"
+      ],
+      "MAX_RESIDUES": 2,
+      "PREFIX": "L",
+      "CLASS": "P[ACEDGSI]|PIP|PIP[2-6]",
+      "SUFFIX_SKIPPED": "-",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "PE-C16:0-C18:2"
+      ]
+    },
+    "CL": {
+      "LMSD_CLASSES": [
+        "GP12"
+      ],
+      "ORDER": [
+        "PREFIX",
+        "CLASS",
+        "SUFFIX_SKIPPED",
+        "SUM_RESIDUES"
+      ],
+      "OPTIONAL": [
+        "PREFIX"
+      ],
+      "MAX_RESIDUES": 4,
+      "PREFIX": "ML|DL",
+      "CLASS": "CL",
+      "SUFFIX_SKIPPED": "-",
+      "SUM_RESIDUES": "$.RESIDUES.SUM_RESIDUES.0",
+      "EXAMPLES": [
+        "CL-C18:1-C18:2-C18:2-C18:2"
+      ]
+    }
+  }
+}

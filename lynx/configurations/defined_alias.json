@@ -21,77 +21,1732 @@
   "LIPID_CLASSES": {
     "FA01": {
       "FA2:0": [
-        "ethanoic\\s*acid",
-        "acetic\\s*acid"
+        "^ethanoic\\s*acid",
+        "^acetic\\s*acid"
       ],
       "FA3:0": [
-        "propanoic\\s*acid"
+        "^propanoic\\s*acid"
       ],
       "FA4:0": [
-        "butanoic\\s*acid",
-        "butyric\\s*acid"
+        "^butanoic\\s*acid",
+        "^butyric\\s*acid"
       ],
       "FA5:0": [
-        "pentanoic\\s*acid",
-        "valeric\\s*acid"
+        "^pentanoic\\s*acid",
+        "^valeric\\s*acid"
+      ],
+      "FA9:0<{2E},OH{4},oxo{@1}>": [
+        "^4-[Hh]ydroxy\\s*nonenal",
+        "^(4-)?hne",
+        "^(4-)?HNE"
       ],
       "FA16:0": [
-        "PA",
+        "^PA\\s*$",
         "hexadecanoic\\s*acid",
         "palmitic\\s*acid"
       ],
+      "FA16:1": [
+        "^[Pp]almitoleic\\s*acid"
+      ],
       "FA18:0": [
-        "SA",
-        "bassinic\\s*acid",
-        "cetylacetic\\s*acid",
-        "lactaric\\s*acid",
-        "octadecanoic\\s*acid",
-        "stearic\\s*acid",
-        "stearophanic\\s*acid",
-        "talgic\\s*acid"
+        "^SA\\s*$",
+        "^bassinic\\s*acid",
+        "^cetylacetic\\s*acid",
+        "^lactaric\\s*acid",
+        "^octadecanoic\\s*acid",
+        "^stearic\\s*acid",
+        "^stearophanic\\s*acid",
+        "^talgic\\s*acid"
       ],
       "FA18:1<{9Z}>": [
-        "OA",
-        "elaic\\s*acid",
-        "elaidoic\\s*acid",
-        "octadecenoic\\s*acid",
-        "oleic\\s*acid",
-        "octadecylenic\\s*acid",
-        "rapinic\\s*acid"
+        "^OA\\s*$",
+        "^elaic\\s*acid",
+        "^elaidoic\\s*acid",
+        "^octadecenoic\\s*acid",
+        "^oleic\\s*acid",
+        "^octadecylenic\\s*acid",
+        "^rapinic\\s*acid"
       ],
       "FA18:2<{9Z,12Z}>": [
-        "LA",
-        "octadecadienoic\\s*acid",
-        "linoleic\\s*acid",
-        "telfairic\\s*acid"
+        "^LA\\s*$",
+        "^octadecadienoic\\s*acid",
+        "^linoleic\\s*acid",
+        "^telfairic\\s*acid"
       ],
       "FA20:4<{5Z,8Z,11Z,14Z}>": [
-        "AA",
-        "ARA",
-        "Arachidonate",
-        "eicosatetraenoic\\s*acid",
-        "icosatetraenoic\\s*acid",
-        "Eicosatetraenoic acid"
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*AA",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*ARA",
+        "^Arachidonate",
+        "^eicosatetraenoic\\s*acid",
+        "^icosatetraenoic\\s*acid",
+        "^Eicosatetraenoic acid"
       ],
       "FA22:6<{4Z,7Z,10Z,13Z,16Z,19Z}>": [
-        "DHA",
-        "Cervonic\\s*acid",
-        "Docosahexaenoic\\s*acid"
+        "^DHA\\s*$",
+        "^Cervonic\\s*acid",
+        "^Docosahexaenoic\\s*acid"
       ],
-      "FA22:6<OH>": [
-        "HDoHE"
+      "FA17:3<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,1}\\s*-?\\s*HH(T[rR])?E"
       ],
-      "FA22:5<OH>": [
-        "HDoPE"
+      "FA18:1<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*HOME"
       ],
-      "FA22:4<OH>": [
-        "HDoTE"
+      "FA18:1<OOH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*HpOME"
       ],
-      "FA20:5<OH>": [
-        "HEPE"
+      "FA18:1<2OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*[Dd]i(\\s*-)?\\s*HOME"
+      ],
+      "FA18:1<ep>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,2}\\s*-?\\s*EpOME"
+      ],
+      "FA18:2<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,1}\\s*-?\\s*HODE"
+      ],
+      "FA18:2<oxo>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,1}\\s*-?\\s*([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*ODE"
+      ],
+      "FA18:3<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,1}\\s*-?\\s*HOT[rR]E"
+      ],
+      "FA20:2<+3O>": [
+        "Prostaglandin\\s*F1\\s*alpha",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)F\\s*1\\s*a",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)F\\s*1"
+      ],
+      "FA20:3<+3O>": [
+        "[Ee]nzaprost",
+        "[Dd]inoprost",
+        "[Aa]moglandin",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Dd]i(hydro)?|[Dd][Hh])(\\s*-\\s*)?([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*Prostaglandin\\s*F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Dd]i(hydro)?|[Dd][Hh])(\\s*-\\s*)?([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*(PG|pg|Pg)F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?"
+      ],
+      "FA20:3<+4O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Thromboxane\\s*B2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*T[xX]B\\s*2"
+      ],
+      "FA20:3<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*HETrE"
+      ],
+      "FA20:3<2OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*[Dd]i(\\s*-)?\\s*HETrE"
+      ],
+      "FA20:3<OH,ep>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*H[xX]B3",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\s*-?\\s*[Hh]epoxilin\\s*B3(\\s*\\((\\d\\d?([eEzZrRsS]|[iI]so),?){0,3}\\))?"
+      ],
+      "FA20:4<+O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*EET"
+      ],
+      "FA20:4<+2O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*A1",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)A\\s*1",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*J1",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)J\\s*1"
+      ],
+      "FA20:4<+3O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Thromboxane\\s*A2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*T[xX]A\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*E2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Dinoprostone",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)E\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*D\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)D\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*Prostaglandin\\s*F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*(PG|pg|Pg)F\\s*2(\\s*-?\\s*[Aaα](lpha)?)?"
+      ],
+      "FA20:4<+4O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*Prostaglandin\\s*E1",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*([Kk](eto)?|KETO|[Oo]xo)\\s*-?\\s*(PG|pg|Pg)E\\s*1"
       ],
       "FA20:4<OH>": [
-        "HETE"
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HETE"
+      ],
+      "FA20:4<oxo>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*[Oo]xo(\\s*-)?\\s*ETE"
+      ],
+      "FA20:4<OOH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HpETE"
+      ],
+      "FA20:5<+2O>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*A\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)A\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*Prostaglandin\\s*J\\s*2",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*(PG|pg|Pg)J\\s*2"
+      ],
+      "FA20:5<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HEPE"
+      ],
+      "FA20:5<OOH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,5}\\s*-?\\s*HpEPE"
+      ],
+      "FA22:4<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HDoTE"
+      ],
+      "FA22:5<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HDoPE",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HDPA"
+      ],
+      "FA22:5<2OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*[Dd]i(\\s*-)?\\s*HDoPE",
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*[Dd]i(\\s*-)?\\s*HDPA"
+      ],
+      "FA22:6<OH>": [
+        "(\\d\\d?([eEzZrRsS]|[iI]so),?){0,4}\\s*-?\\s*HDoHE"
+      ]
+    },
+    "GP01": {
+      "PC(16:0/16:0)": [
+        "DPPC"
+      ],
+      "PC(16:0/18:0)": [
+        "PSPC"
+      ],
+      "PC(16:0/18:1)": [
+        "POPC"
+      ],
+      "PC(16:0/18:2<{9Z,12Z}>)": [
+        "PLPC"
+      ],
+      "PC(16:0/20:4)": [
+        "PAPC"
+      ],
+      "PC(16:0/22:6)": [
+        "PDPC"
+      ],
+      "PC(18:0/16:0)": [
+        "DSPC"
+      ],
+      "PC(18:0/18:0)": [
+        "DSPC"
+      ],
+      "PC(18:0/18:1)": [
+        "SOPC"
+      ],
+      "PC(18:0/18:2)": [
+        "SLPC"
+      ],
+      "PC(18:0/20:4)": [
+        "SAPC"
+      ],
+      "PC(18:0/22:6)": [
+        "SDPC"
+      ],
+      "PC(16:0/5:0<oxo{5}>)": [
+        "POVPC"
+      ],
+      "PC(16:0/5:0<COOH{@5}>)": [
+        "PGPC"
+      ],
+      "PC(16:0/9:0<oxo{9}>)": [
+        "PNPC",
+        "PONPC",
+        "16:0-09:0 (ALDO) PC"
+      ],
+      "PC(18:0/5:0<oxo{5}>)": [
+        "SOVPC"
+      ],
+      "PC(18:0/5:0<COOH{@5}>)": [
+        "SGPC"
+      ],
+      "PC(18:0/9:0<oxo{9}>)": [
+        "SNPC",
+        "SONPC",
+        "18:0-09:0 (ALDO) PC"
+      ]
+    },
+    "GP02": {
+      "PE(16:0/16:0)": [
+        "DPPE"
+      ],
+      "PE(16:0/18:0)": [
+        "PSPE"
+      ],
+      "PE(16:0/18:1)": [
+        "POPE"
+      ],
+      "PE(16:0/18:2)": [
+        "PLPE"
+      ],
+      "PE(16:0/20:4)": [
+        "PAPE"
+      ],
+      "PE(16:0/22:6)": [
+        "PDPE"
+      ],
+      "PE(18:0/16:0)": [
+        "DSPE"
+      ],
+      "PE(18:0/18:0)": [
+        "DSPE"
+      ],
+      "PE(18:0/18:1)": [
+        "SOPE"
+      ],
+      "PE(18:0/18:2)": [
+        "SLPE"
+      ],
+      "PE(18:0/20:4)": [
+        "SAPE"
+      ],
+      "PE(18:0/22:6)": [
+        "SDPE"
+      ],
+      "PE(16:0/5:0<oxo{5}>)": [
+        "POVPE"
+      ],
+      "PE(16:0/5:0<COOH{@5}>)": [
+        "PGPE"
+      ],
+      "PE(16:0/9:0<oxo{9}>)": [
+        "PNPE",
+        "PONPE",
+        "16:0-09:0 (ALDO) PE"
+      ],
+      "PE(18:0/5:0<oxo{5}>)": [
+        "SOVPE"
+      ],
+      "PE(18:0/5:0<COOH{@5}>)": [
+        "SGPE"
+      ],
+      "PE(18:0/9:0<oxo{9}>)": [
+        "SNPE",
+        "SONPE",
+        "18:0-09:0 (ALDO) PE"
+      ]
+    },
+    "SP00": {
+      "Cer(18:1;O/12:0)": [
+        "C?12(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "Cer(18:1;O/14:0)": [
+        "C?14(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "Cer(18:1;O/16:0)": [
+        "C?16(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "Cer(18:1;O/16:1)": [
+        "C?16:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?16:1"
+      ],
+      "Cer(18:1;O/18:0)": [
+        "C?18(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "Cer(18:1;O/18:1)": [
+        "C?18:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18:1"
+      ],
+      "Cer(18:1;O/18:2)": [
+        "C?18:2\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18:2"
+      ],
+      "Cer(18:1;O/20:0)": [
+        "C?20(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "Cer(18:1;O/20:1)": [
+        "C?20:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:1"
+      ],
+      "Cer(18:1;O/20:2)": [
+        "C?20:2\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:2"
+      ],
+      "Cer(18:1;O/20:3)": [
+        "C?20:3\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:3"
+      ],
+      "Cer(18:1;O/20:4)": [
+        "C?20:4\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:4"
+      ],
+      "Cer(18:1;O/20:5)": [
+        "C?20:5\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:5"
+      ],
+      "Cer(18:1;O/20:6)": [
+        "C?20:6\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:6"
+      ],
+      "Cer(18:1;O/22:0)": [
+        "C?22(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "Cer(18:1;O/22:1)": [
+        "C?22:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:1"
+      ],
+      "Cer(18:1;O/22:2)": [
+        "C?22:2\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:2"
+      ],
+      "Cer(18:1;O/22:3)": [
+        "C?22:3\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:3"
+      ],
+      "Cer(18:1;O/22:4)": [
+        "C?22:4\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:4"
+      ],
+      "Cer(18:1;O/22:5)": [
+        "C?22:5\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:5"
+      ],
+      "Cer(18:1;O/22:6)": [
+        "C?22:6\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:6"
+      ],
+      "Cer(18:1;O/24:0)": [
+        "C?24(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "Cer(18:1;O/24:1)": [
+        "C?24:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:1"
+      ],
+      "Cer(18:1;O/24:2)": [
+        "C?24:2\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:2"
+      ],
+      "Cer(18:1;O/24:3)": [
+        "C?24:3\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:3"
+      ],
+      "Cer(18:1;O/24:4)": [
+        "C?24:4\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:4"
+      ],
+      "Cer(18:1;O/24:5)": [
+        "C?24:5\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:5"
+      ],
+      "Cer(18:1;O/24:6)": [
+        "C?24:6\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:6"
+      ],
+      "Cer(18:1;O/26:0)": [
+        "C?26(:0)?\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "Cer(18:1;O/26:1)": [
+        "C?26:1\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:1"
+      ],
+      "Cer(18:1;O/26:2)": [
+        "C?26:2\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:2"
+      ],
+      "Cer(18:1;O/26:3)": [
+        "C?26:3\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:3"
+      ],
+      "Cer(18:1;O/26:4)": [
+        "C?26:4\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:4"
+      ],
+      "Cer(18:1;O/26:5)": [
+        "C?26:5\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:5"
+      ],
+      "Cer(18:1;O/26:6)": [
+        "C?26:6\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:6"
+      ],
+      "Cer(18:0;O/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "Cer(18:0;O/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "Cer(18:0;O/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "Cer(18:0;O/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?16:1"
+      ],
+      "Cer(18:0;O/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "Cer(18:0;O/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18:1"
+      ],
+      "Cer(18:0;O/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?18:2"
+      ],
+      "Cer(18:0;O/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "Cer(18:0;O/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:1"
+      ],
+      "Cer(18:0;O/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:2"
+      ],
+      "Cer(18:0;O/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:3"
+      ],
+      "Cer(18:0;O/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:4"
+      ],
+      "Cer(18:0;O/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:5"
+      ],
+      "Cer(18:0;O/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?20:6"
+      ],
+      "Cer(18:0;O/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "Cer(18:0;O/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:1"
+      ],
+      "Cer(18:0;O/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:2"
+      ],
+      "Cer(18:0;O/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:3"
+      ],
+      "Cer(18:0;O/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:4"
+      ],
+      "Cer(18:0;O/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:5"
+      ],
+      "Cer(18:0;O/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?22:6"
+      ],
+      "Cer(18:0;O/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "Cer(18:0;O/24:1)": [
+        "C?24:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:1"
+      ],
+      "Cer(18:0;O/24:2)": [
+        "C?24:2\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:2"
+      ],
+      "Cer(18:0;O/24:3)": [
+        "C?24:3\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:3"
+      ],
+      "Cer(18:0;O/24:4)": [
+        "C?24:4\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:4"
+      ],
+      "Cer(18:0;O/24:5)": [
+        "C?24:5\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:5"
+      ],
+      "Cer(18:0;O/24:6)": [
+        "C?24:6\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?24:6"
+      ],
+      "Cer(18:0;O/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "Cer(18:0;O/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:1"
+      ],
+      "Cer(18:0;O/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:2"
+      ],
+      "Cer(18:0;O/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:3"
+      ],
+      "Cer(18:0;O/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:4"
+      ],
+      "Cer(18:0;O/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:5"
+      ],
+      "Cer(18:0;O/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]",
+        "\\s*[dD][hH]\\s*(1?\\s*-\\s*)?[dD][eE][oO][xX][yY][cC][eE][rR]\\s*C?26:6"
+      ]
+    },
+    "SP01": {
+      "SPB18:0;O2": [
+        "[Ss]phinganine",
+        "[Dd]ihydro\\s*[Ss]phingosine",
+        "[Oo]ctadeca\\s*[Ss]phinganine"
+      ],
+      "SPB18:1;O2": [
+        "[Ss]phingosine",
+        "(4\\s*-\\s*trans\\s*-\\s*)?Sphingenine",
+        "[Oo]ctadeca\\s*[Ss]phingenine"
+      ],
+      "SPBP18:0;O2": [
+        "[Ss]phinganine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?",
+        "[Dd]ihydro\\s*[Ss]phingosine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?",
+        "[Oo]ctadeca\\s*[Ss]phinganine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?"
+      ],
+      "SPBP18:1;O2": [
+        "[Ss]phingosine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?",
+        "(4\\s*-\\s*trans\\s*-\\s*)?Sphingenine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?",
+        "[Oo]ctadeca\\s*[Ss]phingenine(\\s*-\\s*1)?\\s*-\\s*[pP](hosphate)?"
+      ]
+    },
+    "SP02": {
+      "Cer(18:1;O2/12:0)": [
+        "C?12(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "Cer(18:1;O2/14:0)": [
+        "C?14(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "Cer(18:1;O2/16:0)": [
+        "C?16(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "Cer(18:1;O2/16:1)": [
+        "C?16:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?16:1"
+      ],
+      "Cer(18:1;O2/18:0)": [
+        "C?18(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "Cer(18:1;O2/18:1)": [
+        "C?18:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?18:1"
+      ],
+      "Cer(18:1;O2/18:2)": [
+        "C?18:2\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?18:2"
+      ],
+      "Cer(18:1;O2/20:0)": [
+        "C?20(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "Cer(18:1;O2/20:1)": [
+        "C?20:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:1"
+      ],
+      "Cer(18:1;O2/20:2)": [
+        "C?20:2\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:2"
+      ],
+      "Cer(18:1;O2/20:3)": [
+        "C?20:3\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:3"
+      ],
+      "Cer(18:1;O2/20:4)": [
+        "C?20:4\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:4"
+      ],
+      "Cer(18:1;O2/20:5)": [
+        "C?20:5\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:5"
+      ],
+      "Cer(18:1;O2/20:6)": [
+        "C?20:6\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?20:6"
+      ],
+      "Cer(18:1;O2/22:0)": [
+        "C?22(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "Cer(18:1;O2/22:1)": [
+        "C?22:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:1"
+      ],
+      "Cer(18:1;O2/22:2)": [
+        "C?22:2\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:2"
+      ],
+      "Cer(18:1;O2/22:3)": [
+        "C?22:3\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:3"
+      ],
+      "Cer(18:1;O2/22:4)": [
+        "C?22:4\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:4"
+      ],
+      "Cer(18:1;O2/22:5)": [
+        "C?22:5\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:5"
+      ],
+      "Cer(18:1;O2/22:6)": [
+        "C?22:6\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?22:6"
+      ],
+      "Cer(18:1;O2/24:0)": [
+        "C?24(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "Cer(18:1;O2/24:1)": [
+        "C?24:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:1"
+      ],
+      "Cer(18:1;O2/24:2)": [
+        "C?24:2\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:2"
+      ],
+      "Cer(18:1;O2/24:3)": [
+        "C?24:3\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:3"
+      ],
+      "Cer(18:1;O2/24:4)": [
+        "C?24:4\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:4"
+      ],
+      "Cer(18:1;O2/24:5)": [
+        "C?24:5\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:5"
+      ],
+      "Cer(18:1;O2/24:6)": [
+        "C?24:6\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?24:6"
+      ],
+      "Cer(18:1;O2/26:0)": [
+        "C?26(:0)?\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "Cer(18:1;O2/26:1)": [
+        "C?26:1\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:1"
+      ],
+      "Cer(18:1;O2/26:2)": [
+        "C?26:2\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:2"
+      ],
+      "Cer(18:1;O2/26:3)": [
+        "C?26:3\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:3"
+      ],
+      "Cer(18:1;O2/26:4)": [
+        "C?26:4\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:4"
+      ],
+      "Cer(18:1;O2/26:5)": [
+        "C?26:5\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:5"
+      ],
+      "Cer(18:1;O2/26:6)": [
+        "C?26:6\\s*[cC][eE][rR]",
+        "[cC][eE][rR]\\s*C?26:6"
+      ],
+      "Cer(18:0;O2/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "Cer(18:0;O2/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "Cer(18:0;O2/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "Cer(18:0;O2/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?16:1"
+      ],
+      "Cer(18:0;O2/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "Cer(18:0;O2/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?18:1"
+      ],
+      "Cer(18:0;O2/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?18:2"
+      ],
+      "Cer(18:0;O2/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "Cer(18:0;O2/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:1"
+      ],
+      "Cer(18:0;O2/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:2"
+      ],
+      "Cer(18:0;O2/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:3"
+      ],
+      "Cer(18:0;O2/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:4"
+      ],
+      "Cer(18:0;O2/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:5"
+      ],
+      "Cer(18:0;O2/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?20:6"
+      ],
+      "Cer(18:0;O2/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "Cer(18:0;O2/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:1"
+      ],
+      "Cer(18:0;O2/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:2"
+      ],
+      "Cer(18:0;O2/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:3"
+      ],
+      "Cer(18:0;O2/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:4"
+      ],
+      "Cer(18:0;O2/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:5"
+      ],
+      "Cer(18:0;O2/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?22:6"
+      ],
+      "Cer(18:0;O2/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "Cer(18:0;O2/24:1)": [
+        "C?24:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:1"
+      ],
+      "Cer(18:0;O2/24:2)": [
+        "C?24:2\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:2"
+      ],
+      "Cer(18:0;O2/24:3)": [
+        "C?24:3\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:3"
+      ],
+      "Cer(18:0;O2/24:4)": [
+        "C?24:4\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:4"
+      ],
+      "Cer(18:0;O2/24:5)": [
+        "C?24:5\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:5"
+      ],
+      "Cer(18:0;O2/24:6)": [
+        "C?24:6\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?24:6"
+      ],
+      "Cer(18:0;O2/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "Cer(18:0;O2/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:1"
+      ],
+      "Cer(18:0;O2/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:2"
+      ],
+      "Cer(18:0;O2/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:3"
+      ],
+      "Cer(18:0;O2/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:4"
+      ],
+      "Cer(18:0;O2/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:5"
+      ],
+      "Cer(18:0;O2/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR]\\s*C?26:6"
+      ],
+
+      "CerP(18:1;O2/12:0)": [
+        "C?12(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?12(:0)?"
+      ],
+      "CerP(18:1;O2/14:0)": [
+        "C?14(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?14(:0)?"
+      ],
+      "CerP(18:1;O2/16:0)": [
+        "C?16(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?16(:0)?"
+      ],
+      "CerP(18:1;O2/16:1)": [
+        "C?16:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?16:1"
+      ],
+      "CerP(18:1;O2/18:0)": [
+        "C?18(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18(:0)?"
+      ],
+      "CerP(18:1;O2/18:1)": [
+        "C?18:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18:1"
+      ],
+      "CerP(18:1;O2/18:2)": [
+        "C?18:2\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18:2"
+      ],
+      "CerP(18:1;O2/20:0)": [
+        "C?20(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20(:0)?"
+      ],
+      "CerP(18:1;O2/20:1)": [
+        "C?20:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:1"
+      ],
+      "CerP(18:1;O2/20:2)": [
+        "C?20:2\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:2"
+      ],
+      "CerP(18:1;O2/20:3)": [
+        "C?20:3\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:3"
+      ],
+      "CerP(18:1;O2/20:4)": [
+        "C?20:4\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:4"
+      ],
+      "CerP(18:1;O2/20:5)": [
+        "C?20:5\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:5"
+      ],
+      "CerP(18:1;O2/20:6)": [
+        "C?20:6\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:6"
+      ],
+      "CerP(18:1;O2/22:0)": [
+        "C?22(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22(:0)?"
+      ],
+      "CerP(18:1;O2/22:1)": [
+        "C?22:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:1"
+      ],
+      "CerP(18:1;O2/22:2)": [
+        "C?22:2\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:2"
+      ],
+      "CerP(18:1;O2/22:3)": [
+        "C?22:3\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:3"
+      ],
+      "CerP(18:1;O2/22:4)": [
+        "C?22:4\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:4"
+      ],
+      "CerP(18:1;O2/22:5)": [
+        "C?22:5\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:5"
+      ],
+      "CerP(18:1;O2/22:6)": [
+        "C?22:6\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:6"
+      ],
+      "CerP(18:1;O2/24:0)": [
+        "C?24(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24(:0)?"
+      ],
+      "CerP(18:1;O2/24:1)": [
+        "C?24:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:1"
+      ],
+      "CerP(18:1;O2/24:2)": [
+        "C?24:2\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:2"
+      ],
+      "CerP(18:1;O2/24:3)": [
+        "C?24:3\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:3"
+      ],
+      "CerP(18:1;O2/24:4)": [
+        "C?24:4\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:4"
+      ],
+      "CerP(18:1;O2/24:5)": [
+        "C?24:5\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:5"
+      ],
+      "CerP(18:1;O2/24:6)": [
+        "C?24:6\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:6"
+      ],
+      "CerP(18:1;O2/26:0)": [
+        "C?26(:0)?\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26(:0)?"
+      ],
+      "CerP(18:1;O2/26:1)": [
+        "C?26:1\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:1"
+      ],
+      "CerP(18:1;O2/26:2)": [
+        "C?26:2\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:2"
+      ],
+      "CerP(18:1;O2/26:3)": [
+        "C?26:3\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:3"
+      ],
+      "CerP(18:1;O2/26:4)": [
+        "C?26:4\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:4"
+      ],
+      "CerP(18:1;O2/26:5)": [
+        "C?26:5\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:5"
+      ],
+      "CerP(18:1;O2/26:6)": [
+        "C?26:6\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:6"
+      ],
+      "CerP(18:0;O2/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?12(:0)?"
+      ],
+      "CerP(18:0;O2/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?14(:0)?"
+      ],
+      "CerP(18:0;O2/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?16(:0)?"
+      ],
+      "CerP(18:0;O2/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?16:1"
+      ],
+      "CerP(18:0;O2/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18(:0)?"
+      ],
+      "CerP(18:0;O2/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18:1"
+      ],
+      "CerP(18:0;O2/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?18:2"
+      ],
+      "CerP(18:0;O2/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20(:0)?"
+      ],
+      "CerP(18:0;O2/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:1"
+      ],
+      "CerP(18:0;O2/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:2"
+      ],
+      "CerP(18:0;O2/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:3"
+      ],
+      "CerP(18:0;O2/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:4"
+      ],
+      "CerP(18:0;O2/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:5"
+      ],
+      "CerP(18:0;O2/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?20:6"
+      ],
+      "CerP(18:0;O2/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22(:0)?"
+      ],
+      "CerP(18:0;O2/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:1"
+      ],
+      "CerP(18:0;O2/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:2"
+      ],
+      "CerP(18:0;O2/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:3"
+      ],
+      "CerP(18:0;O2/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:4"
+      ],
+      "CerP(18:0;O2/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:5"
+      ],
+      "CerP(18:0;O2/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?22:6"
+      ],
+      "CerP(18:0;O2/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24(:0)?"
+      ],
+      "CerP(18:0;O2/24:1)": [
+        "C?24:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:1"
+      ],
+      "CerP(18:0;O2/24:2)": [
+        "C?24:2\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:2"
+      ],
+      "CerP(18:0;O2/24:3)": [
+        "C?24:3\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:3"
+      ],
+      "CerP(18:0;O2/24:4)": [
+        "C?24:4\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:4"
+      ],
+      "CerP(18:0;O2/24:5)": [
+        "C?24:5\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:5"
+      ],
+      "CerP(18:0;O2/24:6)": [
+        "C?24:6\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?24:6"
+      ],
+      "CerP(18:0;O2/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26(:0)?"
+      ],
+      "CerP(18:0;O2/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:1"
+      ],
+      "CerP(18:0;O2/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:2"
+      ],
+      "CerP(18:0;O2/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:3"
+      ],
+      "CerP(18:0;O2/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:4"
+      ],
+      "CerP(18:0;O2/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:5"
+      ],
+      "CerP(18:0;O2/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]",
+        "\\s*[dD][hH]\\s*[cC][eE][rR](\\s*-\\s*)?[pP]\\s*C?26:6"
+      ]
+    },
+    "SP03": {
+      "SM(18:1;O2/12:0)": [
+        "C?12(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?12(:0)?"
+      ],
+      "SM(18:1;O2/14:0)": [
+        "C?14(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?14(:0)?"
+      ],
+      "SM(18:1;O2/16:0)": [
+        "C?16(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?16(:0)?"
+      ],
+      "SM(18:1;O2/16:1)": [
+        "C?16:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?16:1"
+      ],
+      "SM(18:1;O2/18:0)": [
+        "C?18(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18(:0)?"
+      ],
+      "SM(18:1;O2/18:1)": [
+        "C?18:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18:1"
+      ],
+      "SM(18:1;O2/18:2)": [
+        "C?18:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?18:2"
+      ],
+      "SM(18:1;O2/20:0)": [
+        "C?20(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20(:0)?"
+      ],
+      "SM(18:1;O2/20:1)": [
+        "C?20:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:1"
+      ],
+      "SM(18:1;O2/20:2)": [
+        "C?20:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:2"
+      ],
+      "SM(18:1;O2/20:3)": [
+        "C?20:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:3"
+      ],
+      "SM(18:1;O2/20:4)": [
+        "C?20:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:4"
+      ],
+      "SM(18:1;O2/20:5)": [
+        "C?20:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:5"
+      ],
+      "SM(18:1;O2/20:6)": [
+        "C?20:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?20:6"
+      ],
+      "SM(18:1;O2/22:0)": [
+        "C?22(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22(:0)?"
+      ],
+      "SM(18:1;O2/22:1)": [
+        "C?22:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:1"
+      ],
+      "SM(18:1;O2/22:2)": [
+        "C?22:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:2"
+      ],
+      "SM(18:1;O2/22:3)": [
+        "C?22:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:3"
+      ],
+      "SM(18:1;O2/22:4)": [
+        "C?22:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:4"
+      ],
+      "SM(18:1;O2/22:5)": [
+        "C?22:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:5"
+      ],
+      "SM(18:1;O2/22:6)": [
+        "C?22:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?22:6"
+      ],
+      "SM(18:1;O2/24:0)": [
+        "C?24(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24(:0)?"
+      ],
+      "SM(18:1;O2/24:1)": [
+        "C?24:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:1"
+      ],
+      "SM(18:1;O2/24:2)": [
+        "C?24:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:2"
+      ],
+      "SM(18:1;O2/24:3)": [
+        "C?24:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:3"
+      ],
+      "SM(18:1;O2/24:4)": [
+        "C?24:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:4"
+      ],
+      "SM(18:1;O2/24:5)": [
+        "C?24:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:5"
+      ],
+      "SM(18:1;O2/24:6)": [
+        "C?24:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?24:6"
+      ],
+      "SM(18:1;O2/26:0)": [
+        "C?26(:0)?\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26(:0)?"
+      ],
+      "SM(18:1;O2/26:1)": [
+        "C?26:1\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:1"
+      ],
+      "SM(18:1;O2/26:2)": [
+        "C?26:2\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:2"
+      ],
+      "SM(18:1;O2/26:3)": [
+        "C?26:3\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:3"
+      ],
+      "SM(18:1;O2/26:4)": [
+        "C?26:4\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:4"
+      ],
+      "SM(18:1;O2/26:5)": [
+        "C?26:5\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:5"
+      ],
+      "SM(18:1;O2/26:6)": [
+        "C?26:6\\s*[Ss]phingomyelin",
+        "[Ss]phingomyelin\\s*C?26:6"
+      ],
+      "SM(18:0;O2/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?12(:0)?"
+      ],
+      "SM(18:0;O2/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?14(:0)?"
+      ],
+      "SM(18:0;O2/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?16(:0)?"
+      ],
+      "SM(18:0;O2/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?16:1"
+      ],
+      "SM(18:0;O2/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?18(:0)?"
+      ],
+      "SM(18:0;O2/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?18:1"
+      ],
+      "SM(18:0;O2/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?18:2"
+      ],
+      "SM(18:0;O2/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20(:0)?"
+      ],
+      "SM(18:0;O2/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:1"
+      ],
+      "SM(18:0;O2/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:2"
+      ],
+      "SM(18:0;O2/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:3"
+      ],
+      "SM(18:0;O2/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:4"
+      ],
+      "SM(18:0;O2/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:5"
+      ],
+      "SM(18:0;O2/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?20:6"
+      ],
+      "SM(18:0;O2/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22(:0)?"
+      ],
+      "SM(18:0;O2/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:1"
+      ],
+      "SM(18:0;O2/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:2"
+      ],
+      "SM(18:0;O2/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:3"
+      ],
+      "SM(18:0;O2/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:4"
+      ],
+      "SM(18:0;O2/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:5"
+      ],
+      "SM(18:0;O2/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?22:6"
+      ],
+      "SM(18:0;O2/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24(:0)?"
+      ],
+      "SM(18:0;O2/24:1)": [
+        "C?24:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:1"
+      ],
+      "SM(18:0;O2/24:2)": [
+        "C?24:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:2"
+      ],
+      "SM(18:0;O2/24:3)": [
+        "C?24:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:3"
+      ],
+      "SM(18:0;O2/24:4)": [
+        "C?24:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:4"
+      ],
+      "SM(18:0;O2/24:5)": [
+        "C?24:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:5"
+      ],
+      "SM(18:0;O2/24:6)": [
+        "C?24:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?24:6"
+      ],
+      "SM(18:0;O2/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26(:0)?"
+      ],
+      "SM(18:0;O2/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:1"
+      ],
+      "SM(18:0;O2/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:2"
+      ],
+      "SM(18:0;O2/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:3"
+      ],
+      "SM(18:0;O2/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:4"
+      ],
+      "SM(18:0;O2/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:5"
+      ],
+      "SM(18:0;O2/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*[Ss]phingomyelin",
+        "\\s*[dD][hH]\\s*[Ss]phingomyelin\\s*C?26:6"
+      ]
+    },
+    "SP05": {
+      "HexCer(18:1;O2/12:0)": [
+        "C?12(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "HexCer(18:1;O2/14:0)": [
+        "C?14(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "HexCer(18:1;O2/16:0)": [
+        "C?16(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "HexCer(18:1;O2/16:1)": [
+        "C?16:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?16:1"
+      ],
+      "HexCer(18:1;O2/18:0)": [
+        "C?18(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "HexCer(18:1;O2/18:1)": [
+        "C?18:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18:1"
+      ],
+      "HexCer(18:1;O2/18:2)": [
+        "C?18:2\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18:2"
+      ],
+      "HexCer(18:1;O2/20:0)": [
+        "C?20(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "HexCer(18:1;O2/20:1)": [
+        "C?20:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:1"
+      ],
+      "HexCer(18:1;O2/20:2)": [
+        "C?20:2\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:2"
+      ],
+      "HexCer(18:1;O2/20:3)": [
+        "C?20:3\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:3"
+      ],
+      "HexCer(18:1;O2/20:4)": [
+        "C?20:4\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:4"
+      ],
+      "HexCer(18:1;O2/20:5)": [
+        "C?20:5\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:5"
+      ],
+      "HexCer(18:1;O2/20:6)": [
+        "C?20:6\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:6"
+      ],
+      "HexCer(18:1;O2/22:0)": [
+        "C?22(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "HexCer(18:1;O2/22:1)": [
+        "C?22:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:1"
+      ],
+      "HexCer(18:1;O2/22:2)": [
+        "C?22:2\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:2"
+      ],
+      "HexCer(18:1;O2/22:3)": [
+        "C?22:3\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:3"
+      ],
+      "HexCer(18:1;O2/22:4)": [
+        "C?22:4\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:4"
+      ],
+      "HexCer(18:1;O2/22:5)": [
+        "C?22:5\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:5"
+      ],
+      "HexCer(18:1;O2/22:6)": [
+        "C?22:6\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:6"
+      ],
+      "HexCer(18:1;O2/24:0)": [
+        "C?24(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "HexCer(18:1;O2/24:1)": [
+        "C?24:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:1"
+      ],
+      "HexCer(18:1;O2/24:2)": [
+        "C?24:2\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:2"
+      ],
+      "HexCer(18:1;O2/24:3)": [
+        "C?24:3\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:3"
+      ],
+      "HexCer(18:1;O2/24:4)": [
+        "C?24:4\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:4"
+      ],
+      "HexCer(18:1;O2/24:5)": [
+        "C?24:5\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:5"
+      ],
+      "HexCer(18:1;O2/24:6)": [
+        "C?24:6\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:6"
+      ],
+      "HexCer(18:1;O2/26:0)": [
+        "C?26(:0)?\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "HexCer(18:1;O2/26:1)": [
+        "C?26:1\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:1"
+      ],
+      "HexCer(18:1;O2/26:2)": [
+        "C?26:2\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:2"
+      ],
+      "HexCer(18:1;O2/26:3)": [
+        "C?26:3\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:3"
+      ],
+      "HexCer(18:1;O2/26:4)": [
+        "C?26:4\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:4"
+      ],
+      "HexCer(18:1;O2/26:5)": [
+        "C?26:5\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:5"
+      ],
+      "HexCer(18:1;O2/26:6)": [
+        "C?26:6\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:6"
+      ],
+      "HexCer(18:0;O2/12:0)": [
+        "C?12(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?12(:0)?"
+      ],
+      "HexCer(18:0;O2/14:0)": [
+        "C?14(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?14(:0)?"
+      ],
+      "HexCer(18:0;O2/16:0)": [
+        "C?16(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?16(:0)?"
+      ],
+      "HexCer(18:0;O2/16:1)": [
+        "C?16:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?16:1"
+      ],
+      "HexCer(18:0;O2/18:0)": [
+        "C?18(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18(:0)?"
+      ],
+      "HexCer(18:0;O2/18:1)": [
+        "C?18:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18:1"
+      ],
+      "HexCer(18:0;O2/18:2)": [
+        "C?18:2\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?18:2"
+      ],
+      "HexCer(18:0;O2/20:0)": [
+        "C?20(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20(:0)?"
+      ],
+      "HexCer(18:0;O2/20:1)": [
+        "C?20:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:1"
+      ],
+      "HexCer(18:0;O2/20:2)": [
+        "C?20:2\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:2"
+      ],
+      "HexCer(18:0;O2/20:3)": [
+        "C?20:3\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:3"
+      ],
+      "HexCer(18:0;O2/20:4)": [
+        "C?20:4\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:4"
+      ],
+      "HexCer(18:0;O2/20:5)": [
+        "C?20:5\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:5"
+      ],
+      "HexCer(18:0;O2/20:6)": [
+        "C?20:6\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?20:6"
+      ],
+      "HexCer(18:0;O2/22:0)": [
+        "C?22(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22(:0)?"
+      ],
+      "HexCer(18:0;O2/22:1)": [
+        "C?22:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:1"
+      ],
+      "HexCer(18:0;O2/22:2)": [
+        "C?22:2\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:2"
+      ],
+      "HexCer(18:0;O2/22:3)": [
+        "C?22:3\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:3"
+      ],
+      "HexCer(18:0;O2/22:4)": [
+        "C?22:4\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:4"
+      ],
+      "HexCer(18:0;O2/22:5)": [
+        "C?22:5\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:5"
+      ],
+      "HexCer(18:0;O2/22:6)": [
+        "C?22:6\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?22:6"
+      ],
+      "HexCer(18:0;O2/24:0)": [
+        "C?24(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24(:0)?"
+      ],
+      "HexCer(18:0;O2/24:1)": [
+        "C?24:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:1"
+      ],
+      "HexCer(18:0;O2/24:2)": [
+        "C?24:2\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:2"
+      ],
+      "HexCer(18:0;O2/24:3)": [
+        "C?24:3\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:3"
+      ],
+      "HexCer(18:0;O2/24:4)": [
+        "C?24:4\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:4"
+      ],
+      "HexCer(18:0;O2/24:5)": [
+        "C?24:5\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:5"
+      ],
+      "HexCer(18:0;O2/24:6)": [
+        "C?24:6\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?24:6"
+      ],
+      "HexCer(18:0;O2/26:0)": [
+        "C?26(:0)?\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26(:0)?"
+      ],
+      "HexCer(18:0;O2/26:1)": [
+        "C?26:1\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:1"
+      ],
+      "HexCer(18:0;O2/26:2)": [
+        "C?26:2\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:2"
+      ],
+      "HexCer(18:0;O2/26:3)": [
+        "C?26:3\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:3"
+      ],
+      "HexCer(18:0;O2/26:4)": [
+        "C?26:4\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:4"
+      ],
+      "HexCer(18:0;O2/26:5)": [
+        "C?26:5\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:5"
+      ],
+      "HexCer(18:0;O2/26:6)": [
+        "C?26:6\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]",
+        "\\s*[dD][hH]\\s*([hH][eE][xX]|[gG][aA][lL]|[gG][lL][cC])\\s*[cC][eE][rR]\\s*C?26:6"
       ]
     }
   }

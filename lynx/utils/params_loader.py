@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+#
+# LipidLynxX is using GPL V3 License
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import configparser
 import os
 from typing import Dict, List, Tuple
 
@@ -14,64 +20,18 @@ from natsort import natsorted
 import pandas as pd
 import regex as re
 
-from lynx.utils.file_readers import get_abs_path, load_folder
 from lynx.models.rules import InputRules, OutputRules
-from lynx.utils.log import logger
+from lynx.utils.file_handler import load_folder
+from lynx.utils.log import app_logger
 
 
-def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
-    cfg_path_dct = {}
-    default_fields = [
-        "api_version",
-        "base_url",
-        "controlled_vocabularies",
-        "defined_alias",
-        "input_rules",
-        "output_rules",
-    ]
-    config = configparser.ConfigParser()
-    if cfg_path and isinstance(cfg_path, str):
-        config_path = get_abs_path(cfg_path)
-    else:
-        try:
-            config_path = get_abs_path("config.ini")
-        except FileNotFoundError:
-            config_path = get_abs_path("configure.ini")
-
-    config.read(config_path)
-    if config.has_section("settings"):
-        user_cfg = "settings"
-    elif config.has_section("default"):
-        user_cfg = "default"
-    else:
-        user_cfg = ""
-        raise ValueError(f"Cannot __load__ settings from file {config_path}")
-
-    if len(user_cfg) > 2:
-        options = config.options(user_cfg)
-        for field in default_fields:
-            if field in options and field in [
-                "controlled_vocabularies",
-                "defined_alias",
-                "input_rules",
-                "output_rules",
-            ]:
-                cfg_path_dct[field] = get_abs_path(config.get(user_cfg, field))
-            else:
-                pass
-
-    if "base_url" not in cfg_path_dct:
-        cfg_path_dct["base_url"] = r"http://127.0.0.1:5000"
-
-    return cfg_path_dct
-
-
-def build_parser(rules_file: str) -> Tuple[dict, dict]:
+def build_parser(rules_file: str, logger=app_logger) -> Tuple[dict, dict]:
     """
     Read predefined rules from configurations folder and export as a dictionary
 
     Args:
         rules_file: the path for the rules file
+        logger: for log output
 
     Returns:
         dict contains the regular expressions as a dict
@@ -141,15 +101,15 @@ def build_mod_parser(cv_alias_info: Dict[str, List[str]]) -> dict:
     return cv_patterns_dct
 
 
-def build_input_rules(folder: str) -> dict:
+def build_input_rules(folder: str, logger=app_logger) -> dict:
 
     input_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    # logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
-        temp_rules = InputRules(f)
-        idx_lst = [os.path.basename(f)] + temp_rules.source
+        temp_rules = InputRules(f, logger)
+        idx_lst = [os.path.basename(f)] + temp_rules.sources
         idx = "#".join(idx_lst)
         for c in temp_rules.rules:
             c_class_str = temp_rules.rules[c].get("CLASS", "")
@@ -175,16 +135,16 @@ def build_input_rules(folder: str) -> dict:
                 "MAX_RESIDUES": temp_rules.rules[c].get("MAX_RESIDUES", 1),
             }
 
-    logger.debug(input_rules)
+    # logger.debug(input_rules)
 
     return input_rules
 
 
-def build_output_rules(folder: str) -> dict:
+def build_output_rules(folder: str, logger=app_logger) -> dict:
 
     output_rules = {}
     file_path_lst = load_folder(folder, file_type=".json")
-    logger.debug(f"Fund JSON config files: \n {file_path_lst}")
+    # logger.debug(f"Fund JSON config files: \n {file_path_lst}")
 
     for f in file_path_lst:
         temp_rules = OutputRules(f)
@@ -207,10 +167,6 @@ def load_output_rule(output_rules: dict, rule: str = "LipidLynxX"):
                 version = int(o_rule_lst[1])
                 if rule.lower().startswith(nomenclature.lower()) and version > rule_ver:
                     output_rule_info = output_rules.get(o_rule, None)
-                else:
-                    raise ValueError(f"Cannot load output rule: {rule}")
-            else:
-                raise ValueError(f"Cannot load output rule: {rule}")
     else:
         raise ValueError(f"Cannot load output rule: {rule}")
     if output_rule_info:

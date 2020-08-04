@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Converter @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="False">
+        <p></p>
+        <h1>LipidLynxX Converter</h1>
+        <div class="container">
+            <div class="row align-items-center align-items-md-start">
+                <div class="col-12 col-md-6 mb-4 mb-md-0" style="z-index: 10000;">
+                    <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
+                               aria-controls="tools" aria-selected="true">Convert list</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
+                               aria-controls="namesys" aria-selected="false">Convert file</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="levelsTabContent">
+                        <div class="tab-pane fade show active" id="tools" role="tabpanel"
+                             aria-labelledby="tools-tab">
+                            <h2>Input lipid abbreviations</h2>
+                            <form action="/converter/text/" method="post">
+                                <p><label>
+                                    lipid_names <br>
+                                    <textarea type="text" name="lipid_names" class="form-control"  style="width:100%;" rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
+                                </label></p>
+                                <p><label for="export_style">Choose the export style:
+                                    <select id="export_style" name="export_style">
+                                        <option value="LipidLynxX">LipidLynxX</option>
+                                        <option value="ShortHandNotation">ShortHand Notation</option>
+                                        <option value="COMP_DB">COMP_DB</option>
+                                        <option value="LipidCreator">LipidCreator</option>
+                                        <option value="LPPtiger">LPPtiger</option>
+                                    </select></label></p>
+                                <p><label for="export_level">Choose the export Level:
+                                    <select id="export_level" name="export_level">
+                                        <option value="B1">Bulk</option>
+                                        <option value="D1">Discrete</option>
+                                        <option value="MAX">Max level</option>
+                                    </select></label></p>
+                                <div class="alert alert-warning" role="alert">
+                                    <ul>
+                                        <li><small>COMP_DB export in <strong>Bulk</strong> level only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and <strong>sn specific species</strong>.</small></li>
+                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
+                                    </ul>
+                                </div>
+                                <p><label for="file_type">Choose the export style:
+                                    <select id="file_type" name="file_type">
+                                        <option value="xlsx">.xlsx</option>
+                                        <option value="csv">.csv</option>
+                                    </select></label></p>
+                                <div class="alert alert-warning" role="alert">
+                                    <ul>
+                                        <li><small>LipidCreator export supports <strong>.csv</strong> format only.</small></li>
+                                        <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
+                                    </ul>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="run_text_converter">Convert</button></form>
+                        </div>
+                        <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
+                            <form action="/converter/file/" method="post" enctype="multipart/form-data">
+                                <p><label>
+                                    Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
+                                    <input type="file" name="file_obj">
+                                </label></p>
+                                <p><label for="export_style">Choose the export style:
+                                    <select id="export_style" name="export_style">
+                                        <option value="LipidLynxX">LipidLynxX</option>
+                                        <option value="ShortHandNotation">ShortHand Notation</option>
+                                        <option value="COMP_DB">COMP_DB</option>
+                                        <option value="LipidCreator">LipidCreator</option>
+                                        <option value="LPPtiger">LPPtiger</option>
+                                    </select></label></p>
+                                <p><label for="export_level">Choose the export Level:
+                                    <select id="export_level" name="export_level">
+                                        <option value="B1">Bulk</option>
+                                        <option value="D1">Discrete</option>
+                                        <option value="MAX">Max level</option>
+                                    </select></label></p>
+                                <div class="alert alert-warning" role="alert">
+                                    <ul>
+                                        <li><small>COMP_DB export in <strong>Bulk</strong> level only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and <strong>sn specific species</strong>.</small></li>
+                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
+                                    </ul>
+                                </div>
+                                <p><label for="file_type">Choose the export style:
+                                    <select id="file_type" name="file_type">
+                                        <option value="xlsx">.xlsx</option>
+                                        <option value="csv">.csv</option>
+                                    </select></label></p>
+                                <div class="alert alert-warning" role="alert">
+                                    <ul>
+                                        <li><small>LipidCreator export supports <strong>.csv</strong> format only.</small></li>
+                                        <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
+                                    </ul>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="run_file_converter">Convert file</button></form>
+                        </div>
+                    </div>
+                    <div><p>&nbsp;</p></div>
+                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
+                        <strong>LipidLynxX is running...</strong>
+                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                        <script type="application/javascript">
+                            $(document).ready(function(){
+                                $("#run_file_converter").click(function(){
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'visible';
+                                    let results_info = document.getElementById("results_info");
+                                    results_info.style.visibility = 'hidden';
+                                });
+                                $("#run_text_converter").click(function(){
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'visible';
+                                    let results_info = document.getElementById("results_info");
+                                    results_info.style.visibility = 'hidden';
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" id="results_info">
+                    {% if err_msgs %}
+                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
+                        {% for err_msg in err_msgs %}
+                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if converted_html %}
+                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
+                        <div class="alert alert-info" role="alert">
+                            Converted to level: <strong>{{ export_level }}</strong>
+                            using style:<strong>{{ export_style }}</strong>
+                        </div>
+                        <div>
+                            <a class="btn btn-block btn-success"
+                               href="{{ url_for('get_download_file', data=output_file_data,
+                           file_type=output_file_type, file_name=output_file_name) }}">
+                                Save output as:<br>{{ output_file_name }}
+                            </a>
+                        </div>
+                        <p>&nbsp;</p>
+                        <div class="alert alert-success" role="alert">
+                            <h4>Converted abbreviations</h4>
+                            <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
+                                {{ converted_html|safe }}
+                            </div>
+                        </div>
+                        {% if not_converted_html %}
+                            <div class="alert alert-warning" role="alert">
+                                <h4>NOT Converted abbreviations</h4>
+                                <div class="table-responsive">
+                                    {{ not_converted_html|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
