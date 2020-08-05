@@ -60,13 +60,12 @@
                                     <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
                                 {% endfor %}
                             {% endif %}
-                            {% if output_file_data %}
+                            {% if output_generated %}
                                 <h2>LipidLynxX Equalizer output</h2>
                                 <h4>&nbsp;</h4>
                                 <div>
                                     <a class="btn btn-block btn-success"
-                                       href="{{ url_for('get_download_file', data=output_file_data,
-                           file_type=output_file_type, file_name=output_file_name) }}">
+                                       href="{{ url_for('get_download_file', file_name=output_file_name) }}">
                                         Save output as:<br>{{ output_file_name }}
                                     </a>
                                 </div>

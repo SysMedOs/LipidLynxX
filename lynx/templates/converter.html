@@ -145,24 +145,23 @@
                         </div>
                         <div>
                             <a class="btn btn-block btn-success"
-                               href="{{ url_for('get_download_file', data=output_file_data,
-                           file_type=output_file_type, file_name=output_file_name) }}">
+                               href="{{ url_for('get_download_file', file_name=output_file_name) }}">
                                 Save output as:<br>{{ output_file_name }}
                             </a>
                         </div>
                         <p>&nbsp;</p>
                         <div class="alert alert-success" role="alert">
                             <h4>Converted abbreviations</h4>
-                            <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
-                                {{ converted_html|safe }}
-                            </div>
+                        </div>
+                        <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
+                            {{ converted_html|safe }}
                         </div>
                         {% if not_converted_html %}
                             <div class="alert alert-warning" role="alert">
                                 <h4>NOT Converted abbreviations</h4>
-                                <div class="table-responsive">
-                                    {{ not_converted_html|safe }}
-                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                {{ not_converted_html|safe }}
                             </div>
                         {% endif %}
                     {% endif %}

@@ -87,13 +87,24 @@
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" id="results_info">
                     {% if all_resources %}
                     <div><h2>LipidLynxX Linker output</h2><h4>&nbsp;</h4></div>
-                    {#                    <div>#}
-                    {#                        <a class="btn btn-block btn-success"#}
-                    {#                           href="{{ url_for('get_download_file', data=output_file_data,#}
-                    {#                       file_type=output_file_type, file_name=output_file_name) }}">#}
-                    {#                            Save output as:<br>{{ output_file_name }}#}
-                    {#                        </a>#}
-                    {#                    </div>#}
+                    {% if err_msgs %}
+                        {% for err_msg in err_msgs %}
+                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    {% if output_generated %}
+                        <div>
+                            <a class="btn btn-block btn-success"
+                               href="{{ url_for('get_download_file', file_name=output_file_name) }}">
+                                {% if export_url %}
+                                    Save output include resource URL as:<br>{{ output_file_name }}
+                                {% endif %}
+                                {% if not export_url %}
+                                    Save output without resource URL as:<br>{{ output_file_name }}
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% endif %}
                     <p>&nbsp;</p>
                     <div class="alert alert-success" role="alert">
                         <h4>Linked abbreviations:</h4>
@@ -105,7 +116,7 @@
                             {% for lipid_name, resource_info in all_resources.items() %}
                                 <tr>
                                     <th scope="row">{{ lipid_name }}</th>
-                                    <td>{{ lynx_names[lipid_name] }}</td>
+                                    <td class="monospace">{{ lynx_names[lipid_name] }}</td>
                                     <td><a href="{{ url_for('view_lipid_resources', data=resource_info) }}" target="_blank">View Resources</a></td>
                                 </tr>
                             {% endfor %}

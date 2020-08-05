@@ -39,12 +39,21 @@ from lynx.models.api_models import (
     LevelsData,
     StyleType,
 )
+from lynx.models.defaults import default_temp_folder, default_temp_max_days
 from lynx.models.lipid import LipidType
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
+from lynx.utils.file_handler import clean_temp_folder
 
 router = APIRouter()
 
 default_levels = LevelsData(levels=["B1", "D1"])
+
+removed_files = clean_temp_folder(default_temp_folder, default_temp_max_days)
+if removed_files:
+    app_logger.info(f'Remove temporary output files older than {default_temp_max_days} days...')
+    for removed_file in removed_files:
+        app_logger.info(f'File removed: {removed_file}')
 
 
 # Get APIs

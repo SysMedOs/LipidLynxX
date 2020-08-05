@@ -14,11 +14,11 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import base64
-import io
 import json
+import os
 
 from fastapi import APIRouter, File, Form, Request, UploadFile, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 
 from lynx.models.api_models import (
@@ -29,16 +29,19 @@ from lynx.models.api_models import (
     EqualizerExportData,
     LevelsData,
 )
+from lynx.models.defaults import default_temp_folder
 import lynx.routers.api as api
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
     create_converter_output,
     create_equalizer_output,
+    create_linker_output,
     get_table,
     get_file_type,
     get_output_name,
     table2html,
 )
+from lynx.utils.frontend_tools import get_converter_response_data, get_linker_response_data
 from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
 
 
@@ -80,20 +83,18 @@ async def converter_text(
     export_style, export_level = get_style_level(export_style, export_level)
     converted_data = await api.convert_list(export_style, input_data, export_level)
     converted_html, not_converted_html = table2html(converted_data)
-    data_encoded = get_url_safe_str(converted_data.dict().get("data"))
-    file_type = get_file_type(file_type)
-    output_name = get_output_name("Converter", file_type)
-    render_data_dct = {
+    response_data = {
         "request": request,
+        "err_msgs": [],
         "export_level": export_level,
         "export_style": export_style,
-        "output_file_name": output_name,
-        "output_file_type": file_type,
-        "output_file_data": data_encoded,
         "converted_html": converted_html,
         "not_converted_html": not_converted_html,
+
     }
-    return templates.TemplateResponse("converter.html", render_data_dct)
+    response_data = get_converter_response_data(converted_data.dict(), file_type, response_data)
+
+    return templates.TemplateResponse("converter.html", response_data)
 
 
 @router.post("/converter/file/", include_in_schema=False)
@@ -110,24 +111,25 @@ async def converter_file(
         input_data = InputDictData(data=table_info)
         converted_data = await api.convert_dict(export_style, input_data, export_level)
         converted_html, not_converted_html = table2html(converted_data)
-        data_encoded = get_url_safe_str(converted_data.dict().get("data"))
-        file_type = get_file_type(file_type)
-        output_name = get_output_name("Converter", file_type)
-        render_data_dct = {
+        response_data = {
             "request": request,
-            "err_msgs": err_lst,
+            "err_msgs": [],
             "export_level": export_level,
             "export_style": export_style,
-            "output_file_name": output_name,
-            "output_file_type": file_type,
-            "output_file_data": data_encoded,
             "converted_html": converted_html,
             "not_converted_html": not_converted_html,
-        }
-    else:
-        render_data_dct = {"request": request, "err_msgs": err_lst}
 
-    return templates.TemplateResponse("converter.html", render_data_dct)
+        }
+        response_data = get_converter_response_data(converted_data.dict(), file_type, response_data)
+
+    else:
+        response_data = {
+            "request": request,
+            "err_msgs": err_lst,
+            "output_generated": False,
+        }
+
+    return templates.TemplateResponse("converter.html", response_data)
 
 
 @router.get("/equalizer/", include_in_schema=False)
@@ -154,20 +156,42 @@ async def equalizer_file(
             export_data = None
             err_lst.append(f"Invalid levels: {match_levels}")
         if isinstance(export_data, EqualizerExportData):
-            data_encoded = get_url_safe_str(export_data.dict().get("data"))
+            # data_encoded = get_url_safe_str(export_data.dict().get("data"))
             file_type = "xlsx"
             output_name = get_output_name("Equalizer", file_type)
+            output_path = os.path.join(default_temp_folder, output_name)
+            output_info = create_equalizer_output(
+                export_data.dict().get("data"), output_name=output_path
+            )
+            if (
+                isinstance(output_info, str)
+                and output_info == output_path
+                and os.path.isfile(output_path)
+            ):
+                render_data_dct = {
+                    "request": request,
+                    "err_msgs": err_lst,
+                    "output_file_name": output_name,
+                    "output_generated": True,
+                }
+            else:
+                render_data_dct = {
+                    "request": request,
+                    "err_msgs": err_lst,
+                    "output_generated": False,
+                }
+        else:
             render_data_dct = {
                 "request": request,
                 "err_msgs": err_lst,
-                "output_file_name": output_name,
-                "output_file_type": file_type,
-                "output_file_data": data_encoded,
+                "output_generated": False,
             }
-        else:
-            render_data_dct = {"request": request, "err_msgs": err_lst}
     else:
-        render_data_dct = {"request": request, "err_msgs": err_lst}
+        render_data_dct = {
+            "request": request,
+            "err_msgs": err_lst,
+            "output_generated": False,
+        }
 
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
@@ -194,28 +218,23 @@ async def linker_list(
         export_url = False
     names = lipid_names.splitlines()
     all_resources = {}
+    export_file_data = {}
     lynx_names = {}
     for lipid_name in names:
         resource_info = await api.link_str(lipid_name, export_url=True)
-        all_resources[lipid_name] = get_url_safe_str(resource_info.dict().get("data"))
-        lynx_names[lipid_name] = resource_info.get('lynx_name', "")
+        all_resources[lipid_name] = get_url_safe_str(resource_info.get("resource_data"))
+        export_file_data[lipid_name] = resource_info
+        lynx_names[lipid_name] = resource_info.get("lynx_name", "")
 
-    output_data = {}
-
-    output_name = get_output_name("Linker", file_type)
-    render_data_dct = {
+    response_data = {
         "request": request,
         "export_url": export_url,
         "all_resources": all_resources,
         "lynx_names": lynx_names,
-        "output_file_name": output_name,
-        "output_file_type": file_type,
-        "output_file_data": {}
     }
+    response_data = get_linker_response_data(export_file_data, file_type, response_data)
 
-    return templates.TemplateResponse(
-        "linker.html", render_data_dct
-    )
+    return templates.TemplateResponse("linker.html", response_data)
 
 
 @router.post("/linker/file", include_in_schema=False)
@@ -240,40 +259,11 @@ async def view_lipid_resources(request: Request, data: str):
     return templates.TemplateResponse("resources.html", resource_info)
 
 
-@router.get(
-    "/downloads/{data}/{file_type}/{file_name}",
-    name="get_download_file",
-    include_in_schema=False,
-)
-async def get_download_file(data: str, file_type: str, file_name: str):
-    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
-    data = json.loads(decoded_data.decode("utf-8"))
-    if isinstance(data, dict):
-        if file_name.startswith("LipidLynxX-Convert"):
-            output_io = create_converter_output(data, file_type=file_type)
-        elif file_name.startswith("LipidLynxX-Equal"):
-            output_io = create_equalizer_output(data)
-        else:
-            try:
-                output_io = create_converter_output(data)
-            except Exception as e1:
-                try:
-                    output_io = create_converter_output(data)
-                except Exception as e2:
-                    raise ValueError()
-    else:
-        output_io = None
-    if file_name and output_io:
-        if file_name.lower().endswith(".xlsx"):
-            media_type = "application/vnd.ms-excel"
-        else:
-            media_type = "text/csv"
-    else:
-        media_type = "text/csv"
-    if isinstance(output_io, io.BytesIO):
-        response = StreamingResponse(
-            iter([output_io.getvalue()]), media_type=media_type
-        )
+@router.get("/downloads/{file_name}", name="get_download_file", include_in_schema=False)
+async def get_download_file(file_name: str):
+    file_path = os.path.join(default_temp_folder, file_name)
+    if os.path.isfile(file_path):
+        response = FileResponse(file_path)
         response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
         return response
     else:
