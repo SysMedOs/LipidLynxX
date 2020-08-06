@@ -159,8 +159,11 @@ def get_style_level(
     return export_style, to_level
 
 
-def get_url_safe_str(data: dict) -> str:
-    data_json: str = json.dumps(data)
+def get_url_safe_str(data: Union[str, list, dict]) -> str:
+    if isinstance(data, str):
+        data_json: str = data
+    else:
+        data_json: str = json.dumps(data)
     data_bytes: bytes = base64.urlsafe_b64encode(data_json.encode("utf-8"))
     data_str: str = data_bytes.decode("utf-8")
 

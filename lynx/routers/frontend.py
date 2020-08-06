@@ -41,7 +41,10 @@ from lynx.utils.file_handler import (
     get_output_name,
     table2html,
 )
-from lynx.utils.frontend_tools import get_converter_response_data, get_linker_response_data
+from lynx.utils.frontend_tools import (
+    get_converter_response_data,
+    get_linker_response_data,
+)
 from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
 
 
@@ -90,9 +93,10 @@ async def converter_text(
         "export_style": export_style,
         "converted_html": converted_html,
         "not_converted_html": not_converted_html,
-
     }
-    response_data = get_converter_response_data(converted_data.dict(), file_type, response_data)
+    response_data = get_converter_response_data(
+        converted_data.dict(), file_type, response_data
+    )
 
     return templates.TemplateResponse("converter.html", response_data)
 
@@ -118,9 +122,10 @@ async def converter_file(
             "export_style": export_style,
             "converted_html": converted_html,
             "not_converted_html": not_converted_html,
-
         }
-        response_data = get_converter_response_data(converted_data.dict(), file_type, response_data)
+        response_data = get_converter_response_data(
+            converted_data.dict(), file_type, response_data
+        )
 
     else:
         response_data = {
@@ -203,8 +208,8 @@ async def linker(request: Request,):
     )
 
 
-@router.post("/linker/list", include_in_schema=False)
-async def linker_list(
+@router.post("/linker/text", include_in_schema=False)
+async def linker_text(
     request: Request,
     lipid_names: str = Form(...),
     export_url: str = Form(...),
@@ -221,8 +226,8 @@ async def linker_list(
     export_file_data = {}
     lynx_names = {}
     for lipid_name in names:
-        resource_info = await api.link_str(lipid_name, export_url=True)
-        all_resources[lipid_name] = get_url_safe_str(resource_info.get("resource_data"))
+        resource_info = await api.link_lipid(lipid_name, export_url=True)
+        all_resources[lipid_name] = get_url_safe_str(resource_info)
         export_file_data[lipid_name] = resource_info
         lynx_names[lipid_name] = resource_info.get("lynx_name", "")
 
@@ -237,16 +242,45 @@ async def linker_list(
     return templates.TemplateResponse("linker.html", response_data)
 
 
-@router.post("/linker/file", include_in_schema=False)
-async def linker_file(request: Request,):
-    return templates.TemplateResponse(
-        "linker.html", {"request": request, "out_dct": {}}
-    )
+# @router.post("/linker/file", include_in_schema=False)
+# async def linker_file(
+#     request: Request,
+#     file_obj: UploadFile = File(...),
+#     export_url: str = Form(...),
+#     file_type: FileType = Form(...),
+# ):
+#     table_info, err_lst = get_table(file_obj, err_lst=[])
+#     if table_info:
+#         if not lipid_names:
+#             raise HTTPException(status_code=404)
+#         if export_url == "include":
+#             export_url = True
+#         else:
+#             export_url = False
+#         names = lipid_names.splitlines()
+#         all_resources = {}
+#         export_file_data = {}
+#         lynx_names = {}
+#         for lipid_name in names:
+#             resource_info = await api.link_lipid(lipid_name, export_url=True)
+#             all_resources[lipid_name] = get_url_safe_str(resource_info)
+#             export_file_data[lipid_name] = resource_info
+#             lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+#
+#         response_data = {
+#             "request": request,
+#             "export_url": export_url,
+#             "all_resources": all_resources,
+#             "lynx_names": lynx_names,
+#         }
+#         response_data = get_linker_response_data(export_file_data, file_type, response_data)
+#
+#     return templates.TemplateResponse("linker.html", response_data)
 
 
 @router.post("/linker/lipid/", include_in_schema=False)
 async def linker_lipid(request: Request, lipid_name: str = Form(...)):
-    resource_info = await api.link_str(lipid_name, export_url=True)
+    resource_info = await api.link_lipid(lipid_name, export_url=True)
     resource_info["request"] = request
     return templates.TemplateResponse("resources.html", resource_info)
 
