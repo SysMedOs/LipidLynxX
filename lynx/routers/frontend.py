@@ -58,6 +58,9 @@ templates = Jinja2Templates(directory="lynx/templates")
 
 
 # TemplateResponse from jinja2, ignored in API docs page
+
+# get methods
+# top-level pages
 @router.get("/about", include_in_schema=False)
 def about(request: Request):
     return templates.TemplateResponse(
@@ -73,6 +76,67 @@ async def converter(request: Request):
     )
 
 
+@router.get("/equalizer/", include_in_schema=False)
+async def equalizer(request: Request):
+    return templates.TemplateResponse(
+        "equalizer.html", {"request": request, "out_dct": {}}
+    )
+
+
+@router.get(f"/", include_in_schema=False)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "home.html",
+        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
+    )
+
+
+@router.get("/levels", include_in_schema=False)
+def levels(request: Request):
+    return templates.TemplateResponse("levels.html", {"request": request})
+
+
+@router.get("/linker/", include_in_schema=False)
+async def linker(request: Request,):
+    return templates.TemplateResponse(
+        "linker.html", {"request": request, "all_resources": {}}
+    )
+
+
+@router.get("/nomenclature", include_in_schema=False)
+def nomenclature(request: Request):
+    return templates.TemplateResponse("nomenclature.html", {"request": request})
+
+
+@router.get("/user-guide", include_in_schema=False)
+def user_guide(request: Request):
+    return templates.TemplateResponse(
+        "guide.html",
+        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
+    )
+
+
+# other functions
+@router.get("/downloads/{file_name}", name="get_download_file", include_in_schema=False)
+async def get_download_file(file_name: str):
+    file_path = os.path.join(default_temp_folder, file_name)
+    if os.path.isfile(file_path):
+        response = FileResponse(file_path)
+        response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
+        return response
+    else:
+        return f"Failed to generate output file: {file_name}"
+
+
+@router.get("/linker/results/details/{data}", include_in_schema=False)
+async def view_resource_details(request: Request, data: str):
+    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
+    resource_info = json.loads(decoded_data.decode("utf-8"))
+    resource_info["request"] = request
+    return templates.TemplateResponse("linker_results_details.html", resource_info)
+
+
+# post methods
 @router.post("/converter/text/", include_in_schema=False)
 async def converter_text(
     request: Request,
@@ -137,13 +201,6 @@ async def converter_file(
     return templates.TemplateResponse("converter.html", response_data)
 
 
-@router.get("/equalizer/", include_in_schema=False)
-async def equalizer(request: Request):
-    return templates.TemplateResponse(
-        "equalizer.html", {"request": request, "out_dct": {}}
-    )
-
-
 @router.post("/equalizer/file/", include_in_schema=False)
 async def equalizer_file(
     request: Request, file_obj: UploadFile = File(...), match_levels: str = Form(...)
@@ -201,13 +258,6 @@ async def equalizer_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
-@router.get("/linker/", include_in_schema=False)
-async def linker(request: Request,):
-    return templates.TemplateResponse(
-        "linker.html", {"request": request, "all_resources": {}}
-    )
-
-
 @router.post("/linker/text", include_in_schema=False)
 async def linker_text(
     request: Request,
@@ -234,97 +284,65 @@ async def linker_text(
     response_data = {
         "request": request,
         "export_url": export_url,
-        "all_resources": all_resources,
-        "lynx_names": lynx_names,
+        "display_data": get_url_safe_str(all_resources),
+        "lynx_names": get_url_safe_str(lynx_names),
     }
     response_data = get_linker_response_data(export_file_data, file_type, response_data)
 
     return templates.TemplateResponse("linker.html", response_data)
 
 
-# @router.post("/linker/file", include_in_schema=False)
-# async def linker_file(
-#     request: Request,
-#     file_obj: UploadFile = File(...),
-#     export_url: str = Form(...),
-#     file_type: FileType = Form(...),
-# ):
-#     table_info, err_lst = get_table(file_obj, err_lst=[])
-#     if table_info:
-#         if not lipid_names:
-#             raise HTTPException(status_code=404)
-#         if export_url == "include":
-#             export_url = True
-#         else:
-#             export_url = False
-#         names = lipid_names.splitlines()
-#         all_resources = {}
-#         export_file_data = {}
-#         lynx_names = {}
-#         for lipid_name in names:
-#             resource_info = await api.link_lipid(lipid_name, export_url=True)
-#             all_resources[lipid_name] = get_url_safe_str(resource_info)
-#             export_file_data[lipid_name] = resource_info
-#             lynx_names[lipid_name] = resource_info.get("lynx_name", "")
-#
-#         response_data = {
-#             "request": request,
-#             "export_url": export_url,
-#             "all_resources": all_resources,
-#             "lynx_names": lynx_names,
-#         }
-#         response_data = get_linker_response_data(export_file_data, file_type, response_data)
-#
-#     return templates.TemplateResponse("linker.html", response_data)
+@router.post("/linker/file", include_in_schema=False)
+async def linker_file(
+    request: Request,
+    file_obj: UploadFile = File(...),
+    export_url: str = Form(...),
+    file_type: FileType = Form(...),
+):
+    table_info, err_lst = get_table(file_obj, err_lst=[])
+    if table_info:
+        resource_info = await api.link_dict(table_info, export_url=True)
+        # for k in resource_info:
+        #     all_resources[lipid_name] = get_url_safe_str(resource_info)
+        #     export_file_data[lipid_name] = resource_info
+        #     lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+        #
+        # response_data = {
+        #     "request": request,
+        #     "export_url": export_url,
+        #     "all_resources": all_resources,
+        #     "lynx_names": lynx_names,
+        # }
+        # response_data = get_linker_response_data(
+        #     export_file_data, file_type, response_data
+        # )
+
+    # return templates.TemplateResponse("linker.html", response_data)
 
 
-@router.post("/linker/lipid/", include_in_schema=False)
+# direct fast link of one lipid on the home page
+@router.post("/linker/results/details", include_in_schema=False)
 async def linker_lipid(request: Request, lipid_name: str = Form(...)):
     resource_info = await api.link_lipid(lipid_name, export_url=True)
     resource_info["request"] = request
-    return templates.TemplateResponse("resources.html", resource_info)
+    return templates.TemplateResponse("linker_results_details.html", resource_info)
 
 
-@router.get("/linker/resources/{data}", include_in_schema=False)
-async def view_lipid_resources(request: Request, data: str):
-    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
-    resource_info = json.loads(decoded_data.decode("utf-8"))
-    resource_info["request"] = request
-    return templates.TemplateResponse("resources.html", resource_info)
-
-
-@router.get("/downloads/{file_name}", name="get_download_file", include_in_schema=False)
-async def get_download_file(file_name: str):
-    file_path = os.path.join(default_temp_folder, file_name)
-    if os.path.isfile(file_path):
-        response = FileResponse(file_path)
-        response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
-        return response
-    else:
-        return f"Failed to generate output file: {file_name}"
-
-
-@router.get(f"/", include_in_schema=False)
-async def home(request: Request):
-    return templates.TemplateResponse(
-        "home.html",
-        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
-    )
-
-
-@router.get("/levels", include_in_schema=False)
-def levels(request: Request):
-    return templates.TemplateResponse("levels.html", {"request": request})
-
-
-@router.get("/nomenclature", include_in_schema=False)
-def nomenclature(request: Request):
-    return templates.TemplateResponse("nomenclature.html", {"request": request})
-
-
-@router.get("/user_guide", include_in_schema=False)
-def user_guide(request: Request):
-    return templates.TemplateResponse(
-        "guide.html",
-        {"request": request, "lynx_version": lynx_version, "api_version": api_version},
-    )
+@router.post("/linker/results/summary", include_in_schema=False)
+async def view_resource_summary(
+    request: Request,
+    display_data: str = Form(...),
+    lynx_names: str = Form(...),
+    file_name: str = Form(...),
+    export_url: bool = Form(...),
+):
+    decoded_data = base64.urlsafe_b64decode(display_data.encode("utf-8"))
+    decoded_lynx_names = base64.urlsafe_b64decode(lynx_names.encode("utf-8"))
+    resource_info = {
+        "data": json.loads(decoded_data.decode("utf-8")),
+        "lynx_names": json.loads(decoded_lynx_names.decode("utf-8")),
+        "file_name": file_name,
+        "export_url": export_url,
+        "request": request,
+    }
+    return templates.TemplateResponse("linker_results_summary.html", resource_info)

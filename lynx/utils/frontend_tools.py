@@ -59,9 +59,7 @@ def get_converter_response_data(data: dict, file_type: FileType, response_data: 
     return response_data
 
 
-def get_linker_response_data(
-    data: dict, file_type: FileType, response_data: dict
-):
+def get_linker_response_data(data: dict, file_type: FileType, response_data: dict):
     file_type = get_file_type(file_type)
     output_name = get_output_name("Linker", file_type)
     output_path = os.path.join(default_temp_folder, output_name)

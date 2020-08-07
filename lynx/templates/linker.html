@@ -11,7 +11,7 @@
         <h1>LipidLynxX Linker</h1>
         <div class="container">
             <div class="row align-items-center align-items-md-start">
-                <div class="col-5 col-md-5 mb-5 mb-md-0" style="z-index: 10000;">
+                <div class="col-6 col-md-6 mb-6 mb-md-0" style="z-index: 10000;">
                     <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
@@ -84,8 +84,8 @@
                         </script>
                     </div>
                 </div>
-                <div class="col-7 col-md-7 col-lg-7 ml-md-auto text-left" id="results_info">
-                    {% if all_resources %}
+                <div class="col-6 col-md-6 col-lg-6 ml-md-auto text-left" id="results_info">
+                    {% if display_data %}
                     <div><h2>LipidLynxX Linker output</h2><h4>&nbsp;</h4></div>
                     {% if err_msgs %}
                         {% for err_msg in err_msgs %}
@@ -104,24 +104,18 @@
                                 {% endif %}
                             </a>
                         </div>
+                        <p>&nbsp;</p>
+                        <p>&nbsp;</p>
+                        <div>
+                            <form action="/linker/results/summary" method="post" enctype="multipart/form-data">
+                                <input type="hidden" value={{ display_data }} name="display_data" />
+                                <input type="hidden" value={{ lynx_names }} name="lynx_names" />
+                                <input type="hidden" value={{ output_file_name }} name="file_name" />
+                                <input type="hidden" value={{ export_url }} name="export_url" />
+                                <button type="submit" class="btn btn-info" id="view_resource_summary">View results summary.</button>
+                            </form>
+                        </div>
                     {% endif %}
-                    <p>&nbsp;</p>
-                    <div class="alert alert-success" role="alert">
-                        <h4>Linked abbreviations:</h4>
-                    </div>
-                        <p><small>*. refresh this page will reset the output table.</small></p>
-                    <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
-                        <table class="table table-hover table-bordered">
-                            <tr><th scope="col">Input Lipid</th><th scope="col">Converted Notation</th><th scope="col">Resources</th></tr>
-                            {% for lipid_name, resource_info in all_resources.items() %}
-                                <tr>
-                                    <th scope="row">{{ lipid_name }}</th>
-                                    <td class="monospace">{{ lynx_names[lipid_name] }}</td>
-                                    <td><a href="{{ url_for('view_lipid_resources', data=resource_info) }}" target="_blank">View Resources</a></td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    </div>
                     {% endif %}
                 </div>
             </div>

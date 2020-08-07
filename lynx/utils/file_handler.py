@@ -15,8 +15,9 @@
 
 from datetime import datetime
 import json
-import os
 from io import BytesIO
+import os
+import re
 from pathlib import Path
 import time
 from typing import List, Union
@@ -69,7 +70,10 @@ def load_folder(folder: str, file_type: str = "", logger=app_logger) -> List[str
 
 
 def create_converter_output(
-    data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx", converted_only: bool =False
+    data: dict,
+    output_name: Union[str, Path] = None,
+    file_type: str = ".xlsx",
+    converted_only: bool = False,
 ) -> Union[BytesIO, str]:
     file_info = None
     converted_df = pd.DataFrame()
@@ -139,9 +143,7 @@ def create_converter_output(
                 else:
                     file_info = get_abs_path(output_name)
             except IOError:
-                file_info = (
-                    f"[IO error] Cannot create file: {output_name} as output."
-                )
+                file_info = f"[IO error] Cannot create file: {output_name} as output."
         else:
             file_info = BytesIO()
             if file_type.lower().endswith("csv"):
@@ -249,7 +251,10 @@ def create_equalizer_output(
 
 
 def create_linker_output(
-        data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx", export_url: bool = True
+    data: dict,
+    output_name: Union[str, Path] = None,
+    file_type: str = ".xlsx",
+    export_url: bool = True,
 ) -> Union[BytesIO, str]:
     file_info = None
     linked_df = pd.DataFrame()
@@ -260,7 +265,9 @@ def create_linker_output(
             lipid_resources = {}
             if isinstance(data[lipid_name], dict):
                 lipid_resources["Input_Name"] = data[lipid_name].get("lipid_name", "")
-                lipid_resources["Shorthand_Notation"] = data[lipid_name].get("shorthand_name", "")
+                lipid_resources["Shorthand_Notation"] = data[lipid_name].get(
+                    "shorthand_name", ""
+                )
                 lipid_resources["LipidLynxX"] = data[lipid_name].get("lynx_name", "")
                 lipid_resources["BioPAN"] = data[lipid_name].get("biopan_name", "")
                 resource_data = data[lipid_name].get("resource_data", {})
@@ -270,12 +277,16 @@ def create_linker_output(
                         db_resources = db_group_resources.get(db)
                         if db_resources and isinstance(db_resources, dict):
                             if len(list(db_resources.keys())) < 2:
-                                lipid_resources[db] = ";".join(list(db_resources.keys()))
+                                lipid_resources[db] = ";".join(
+                                    list(db_resources.keys())
+                                )
                                 lipid_resources[f"Link_{db}"] = ";".join(
                                     [db_resources.get(i) for i in db_resources]
                                 )
                             else:
-                                lipid_resources[db] = json.dumps(list(db_resources.keys()))
+                                lipid_resources[db] = json.dumps(
+                                    list(db_resources.keys())
+                                )
                                 lipid_resources[f"Link_{db}"] = json.dumps(
                                     [db_resources.get(i) for i in db_resources]
                                 )
@@ -296,11 +307,7 @@ def create_linker_output(
                     link_cols.append(col)
             elif col in default_col:
                 sum_df_columns.remove(col)
-        sum_df_columns = (
-                default_col
-                + natsorted(sum_df_columns)
-                + natsorted(link_cols)
-        )
+        sum_df_columns = default_col + natsorted(sum_df_columns) + natsorted(link_cols)
         linked_df = pd.DataFrame(sum_df, columns=sum_df_columns)
 
     if not linked_df.empty:
@@ -326,9 +333,7 @@ def create_linker_output(
                 else:
                     file_info = get_abs_path(output_name)
             except IOError:
-                file_info = (
-                    f"[IO error] Cannot create file: {output_name} as output."
-                )
+                file_info = f"[IO error] Cannot create file: {output_name} as output."
         else:
             file_info = BytesIO()
             if file_type.lower().endswith("csv"):
@@ -435,16 +440,27 @@ def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
     return is_output, abs_output_path
 
 
-def clean_temp_folder(temp_dir: str = r'lynx/temp', expire_days: float = 7.0):
+def clean_temp_folder(
+    temp_dir: str = r"lynx/temp", max_days: float = 7.0, max_files: int = 99
+) -> list:
     current_time = time.time()
-    life_time_threshold = current_time - expire_days * 86400  # 24 * 60 * 60 == 86400
+    earliest_unix_time = current_time - max_days * 86400  # 24 * 60 * 60 == 86400
     removed_files = []
-    for temp_file_name in os.listdir(temp_dir):
-        temp_file_path = os.path.join(temp_dir, temp_file_name)
-        if os.path.isfile(temp_file_path):
-            stat = os.stat(temp_file_path)
-            if stat.st_ctime < life_time_threshold:
-                removed_files.append(temp_file_path)
-                os.remove(temp_file_path)
+    temp_files_lst = os.listdir(temp_dir)
+    file_suffix_rgx = re.compile(r"^(.*)(\.)(csv|xlsx?)$", re.IGNORECASE)
+    temp_file_path_lst = [
+        os.path.join(temp_dir, f) for f in temp_files_lst if file_suffix_rgx.match(f)
+    ]
+    temp_file_ctime_lst = [os.path.getctime(p) for p in temp_file_path_lst]
+    temp_file_info_lst = list(zip(temp_file_ctime_lst, temp_file_path_lst))
+    if len(temp_file_info_lst) > max_files:
+        temp_file_info_lst.sort(key=lambda tup: tup[0], reverse=True)
+        removed_files = temp_file_info_lst[max_files:]
+    for temp_file_info in temp_file_info_lst:
+        if temp_file_info[0] < earliest_unix_time:
+            removed_files.append(temp_file_info)
+    for temp in removed_files:
+        if os.path.isfile(temp[1]):
+            os.remove(temp[1])
 
     return removed_files

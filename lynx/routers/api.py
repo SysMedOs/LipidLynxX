@@ -32,7 +32,11 @@ from lynx.models.api_models import (
     LevelsData,
     StyleType,
 )
-from lynx.models.defaults import default_temp_folder, default_temp_max_days
+from lynx.models.defaults import (
+    default_temp_folder,
+    default_temp_max_days,
+    default_temp_max_files,
+)
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
@@ -41,7 +45,9 @@ router = APIRouter()
 
 default_levels = LevelsData(levels=["B1", "D1"])
 
-removed_files = clean_temp_folder(default_temp_folder, default_temp_max_days)
+removed_files = clean_temp_folder(
+    default_temp_folder, default_temp_max_days, default_temp_max_files
+)
 if removed_files:
     app_logger.info(
         f"Remove temporary output files older than {default_temp_max_days} days..."
@@ -218,24 +224,22 @@ async def link_str(
 
 @router.post("/link/list/")
 async def link_list(
-    lipid_names: list,
-    export_url: bool = False,
-    export_names: bool = True,
+    lipid_names: list, export_url: bool = False, export_names: bool = True,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
     """
     linked_info = {}
     for lipid_name in lipid_names:
-        linked_info[lipid_name] = await link_one_lipid(lipid_name, export_url, export_names)
+        linked_info[lipid_name] = await link_one_lipid(
+            lipid_name, export_url, export_names
+        )
     return linked_info
 
 
 @router.post("/link/dict/")
 async def link_dict(
-    lipid_names: dict,
-    export_url: bool = False,
-    export_names: bool = True,
+    lipid_names: dict, export_url: bool = False, export_names: bool = True,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -245,7 +249,9 @@ async def link_dict(
         lipid_col = lipid_names[col]
         linked_col_info = {}
         for lipid_name in lipid_col:
-            linked_col_info[lipid_name] = await link_one_lipid(lipid_name, export_url, export_names)
+            linked_col_info[lipid_name] = await link_one_lipid(
+                lipid_name, export_url, export_names
+            )
         linked_info[col] = linked_col_info
     return linked_info
 

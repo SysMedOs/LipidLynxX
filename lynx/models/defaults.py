@@ -34,13 +34,15 @@ default_cv_file = get_abs_path(app_cfg_info["controlled_vocabularies"])
 default_alias_file = get_abs_path(app_cfg_info["defined_alias"])
 default_kegg_file = get_abs_path(app_cfg_info["resource_kegg"])
 default_lion_file = get_abs_path(app_cfg_info["resource_lion"])
-default_temp_folder = get_abs_path(app_cfg_info.get("temp_folder", r"lynx/temp"))
-default_temp_max_days = int(app_cfg_info.get("temp_max_days", "7"))
+default_temp_folder = app_cfg_info.get("temp_folder", r"lynx/temp")
+default_temp_max_days = int(app_cfg_info.get("temp_max_days", "3"))
+default_temp_max_files = int(app_cfg_info.get("temp_max_files", "99"))
 
 if os.path.isdir(default_temp_folder):
     pass
 else:
     os.mkdir(default_temp_folder)
+default_temp_folder = get_abs_path(default_temp_folder)
 
 with open(default_cv_file, "r") as cv_js:
     cv_alias_json = json.load(cv_js)

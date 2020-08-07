@@ -13,6 +13,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+
 class LynxObject(object):
     def __init__(self, lynx_id: str):
 

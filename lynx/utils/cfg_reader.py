@@ -38,6 +38,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         "resource_lion",
         "temp_folder",
         "temp_max_days",
+        "temp_max_files",
     ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
