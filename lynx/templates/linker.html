@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-6 ml-md-auto text-left" id="results_info">
-                    {% if display_data %}
+                    {% if data %}
                     <div><h2>LipidLynxX Linker output</h2><h4>&nbsp;</h4></div>
                     {% if err_msgs %}
                         {% for err_msg in err_msgs %}
@@ -106,14 +106,23 @@
                         </div>
                         <p>&nbsp;</p>
                         <p>&nbsp;</p>
-                        <div>
-                            <form action="/linker/results/summary" method="post" enctype="multipart/form-data">
-                                <input type="hidden" value={{ display_data }} name="display_data" />
-                                <input type="hidden" value={{ lynx_names }} name="lynx_names" />
-                                <input type="hidden" value={{ output_file_name }} name="file_name" />
-                                <input type="hidden" value={{ export_url }} name="export_url" />
-                                <button type="submit" class="btn btn-info" id="view_resource_summary">View results summary.</button>
-                            </form>
+                        <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
+                            <table class="table table-hover table-bordered">
+                                {% for col_name, col_data in data.items() %}
+                                    <tr>
+                                        <th scope="row">{{ col_name }}</th>
+                                        <td>
+                                            <form action="/linker/results/summary" method="post" enctype="multipart/form-data" target="_blank">
+                                                <input type="hidden" value={{ col_data.display_data }} name="display_data" />
+                                                <input type="hidden" value={{ col_data.lynx_names }} name="lynx_names" />
+                                                <input type="hidden" value={{ output_file_name }} name="file_name" />
+                                                <input type="hidden" value={{ export_url }} name="export_url" />
+                                                <button type="submit" class="btn btn-info" id="view_resource_summary">View results</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
                         </div>
                     {% endif %}
                     {% endif %}

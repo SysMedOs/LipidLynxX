@@ -257,97 +257,124 @@ def create_linker_output(
     export_url: bool = True,
 ) -> Union[BytesIO, str]:
     file_info = None
-    linked_df = pd.DataFrame()
-    sum_linked_resources = {}
+    file_linked_resources = {}
     if data:
-        idx = 1
-        for lipid_name in data:
-            lipid_resources = {}
-            if isinstance(data[lipid_name], dict):
-                lipid_resources["Input_Name"] = data[lipid_name].get("lipid_name", "")
-                lipid_resources["Shorthand_Notation"] = data[lipid_name].get(
-                    "shorthand_name", ""
-                )
-                lipid_resources["LipidLynxX"] = data[lipid_name].get("lynx_name", "")
-                lipid_resources["BioPAN"] = data[lipid_name].get("biopan_name", "")
-                resource_data = data[lipid_name].get("resource_data", {})
-                for db_group in resource_data:
-                    db_group_resources = resource_data[db_group]
-                    for db in db_group_resources:
-                        db_resources = db_group_resources.get(db)
-                        if db_resources and isinstance(db_resources, dict):
-                            if len(list(db_resources.keys())) < 2:
-                                lipid_resources[db] = ";".join(
-                                    list(db_resources.keys())
-                                )
-                                lipid_resources[f"Link_{db}"] = ";".join(
-                                    [db_resources.get(i) for i in db_resources]
-                                )
+        for sheet in data:
+            sheet_linked_resources = {}
+            sheet_data = data.get(sheet, {})
+            sheet_export_data = sheet_data.get("export_file_data", {})
+            idx = 1
+            for lipid_name in sheet_export_data:
+                lipid_resources = {}
+                if isinstance(sheet_export_data[lipid_name], dict):
+                    lipid_resources["Input_Name"] = sheet_export_data[lipid_name].get(
+                        "lipid_name", ""
+                    )
+                    lipid_resources["Shorthand_Notation"] = sheet_export_data[
+                        lipid_name
+                    ].get("shorthand_name", "")
+                    lipid_resources["LipidLynxX"] = sheet_export_data[lipid_name].get(
+                        "lynx_name", ""
+                    )
+                    lipid_resources["BioPAN"] = sheet_export_data[lipid_name].get(
+                        "biopan_name", ""
+                    )
+                    resource_data = sheet_export_data[lipid_name].get(
+                        "resource_data", {}
+                    )
+                    for db_group in resource_data:
+                        db_group_resources = resource_data[db_group]
+                        for db in db_group_resources:
+                            db_resources = db_group_resources.get(db)
+                            if db_resources and isinstance(db_resources, dict):
+                                if len(list(db_resources.keys())) < 2:
+                                    lipid_resources[db] = ";".join(
+                                        list(db_resources.keys())
+                                    )
+                                    lipid_resources[f"Link_{db}"] = ";".join(
+                                        [db_resources.get(i) for i in db_resources]
+                                    )
+                                else:
+                                    lipid_resources[db] = json.dumps(
+                                        list(db_resources.keys())
+                                    )
+                                    lipid_resources[f"Link_{db}"] = json.dumps(
+                                        [db_resources.get(i) for i in db_resources]
+                                    )
                             else:
-                                lipid_resources[db] = json.dumps(
-                                    list(db_resources.keys())
-                                )
-                                lipid_resources[f"Link_{db}"] = json.dumps(
-                                    [db_resources.get(i) for i in db_resources]
-                                )
-                        else:
-                            lipid_resources[db] = ""
-            sum_linked_resources[idx] = lipid_resources
-            idx += 1
+                                lipid_resources[db] = ""
+                sheet_linked_resources[idx] = lipid_resources
+                idx += 1
+            file_linked_resources[sheet] = sheet_linked_resources
 
     default_col = ["Input_Name", "Shorthand_Notation", "LipidLynxX", "BioPAN"]
-    if sum_linked_resources:
-        sum_df = pd.DataFrame(data=sum_linked_resources).T
-        sum_df_columns = sum_df.columns.tolist()
-        link_cols = []
-        for col in sum_df_columns:
-            if col.startswith("Link_"):
-                sum_df_columns.remove(col)
-                if export_url:
-                    link_cols.append(col)
-            elif col in default_col:
-                sum_df_columns.remove(col)
-        sum_df_columns = default_col + natsorted(sum_df_columns) + natsorted(link_cols)
-        linked_df = pd.DataFrame(sum_df, columns=sum_df_columns)
+    file_linked_df_dct = {}
+    if file_linked_resources:
+        for sheet in file_linked_resources:
+            sum_df = pd.DataFrame(data=file_linked_resources.get(sheet)).T
+            sum_df_columns = sum_df.columns.tolist()
+            link_cols = []
+            for col in sum_df_columns:
+                if col.startswith("Link_"):
+                    sum_df_columns.remove(col)
+                    if export_url:
+                        link_cols.append(col)
+                elif col in default_col:
+                    sum_df_columns.remove(col)
+            sum_df_columns = (
+                default_col + natsorted(sum_df_columns) + natsorted(link_cols)
+            )
+            linked_df = pd.DataFrame(sum_df, columns=sum_df_columns)
+            file_linked_df_dct[sheet] = linked_df
 
-    if not linked_df.empty:
-        if output_name:
-            try:
-                err_msg = None
-                if isinstance(output_name, Path):
-                    output_name = output_name.as_posix()
-                elif isinstance(output_name, str):
-                    pass
-                else:
-                    err_msg = (
-                        f"[Type error] Cannot create file: {output_name} as output."
-                    )
-                if output_name.lower().endswith("csv"):
-                    linked_df.to_csv(output_name)
-                else:
-                    linked_df.to_excel(
-                        output_name, sheet_name="LinkerResult", index=False
-                    )
-                if err_msg:
-                    file_info = err_msg
-                else:
-                    file_info = get_abs_path(output_name)
-            except IOError:
-                file_info = f"[IO error] Cannot create file: {output_name} as output."
-        else:
-            file_info = BytesIO()
-            if file_type.lower().endswith("csv"):
-                file_info.write(linked_df.to_csv().encode("utf-8"))
-
+    if output_name:
+        try:
+            err_msg = None
+            if isinstance(output_name, Path):
+                output_name = output_name.as_posix()
+            elif isinstance(output_name, str):
+                pass
             else:
-                output_writer = pd.ExcelWriter(
-                    file_info, engine="openpyxl"
-                )  # write to BytesIO instead of file path
-                linked_df.to_excel(
-                    output_writer, sheet_name="LinkerResult", index=False
-                )
+                err_msg = f"[Type error] Cannot create file: {output_name} as output."
+            if output_name.lower().endswith("csv"):
+                for s in file_linked_df_dct:
+                    s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                    s_df.to_csv(output_name)
+                    break
+            else:
+                output_writer = pd.ExcelWriter(output_name, engine="openpyxl")
+                for s in file_linked_df_dct:
+                    s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                    if not s_df.empty:
+                        s_df.to_excel(output_writer, sheet_name=s)
+                    else:
+                        pass
                 output_writer.save()
-            file_info.seek(0)
+            if err_msg:
+                file_info = err_msg
+            else:
+                file_info = get_abs_path(output_name)
+        except IOError:
+            file_info = f"[IO error] Cannot create file: {output_name} as output."
+    else:
+        file_info = BytesIO()
+        if file_type.lower().endswith("csv"):
+            for s in file_linked_df_dct:
+                s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                file_info.write(s_df.to_csv().encode("utf-8"))
+                break
+        else:
+            output_writer = pd.ExcelWriter(
+                file_info, engine="openpyxl"
+            )  # write to BytesIO instead of file path
+            for s in file_linked_df_dct:
+                s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                if not s_df.empty:
+                    s_df.to_excel(output_writer, sheet_name=s)
+                else:
+                    pass
+            output_writer.save()
+        file_info.seek(0)
 
     return file_info
 

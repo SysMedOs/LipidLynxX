@@ -284,10 +284,15 @@ async def linker_text(
     response_data = {
         "request": request,
         "export_url": export_url,
-        "display_data": get_url_safe_str(all_resources),
-        "lynx_names": get_url_safe_str(lynx_names),
+        "data": {
+            "List input": {
+                "all_resources": all_resources,
+                "export_file_data": export_file_data,
+                "lynx_names": lynx_names,
+            }
+        },
     }
-    response_data = get_linker_response_data(export_file_data, file_type, response_data)
+    response_data = get_linker_response_data(response_data, file_type)
 
     return templates.TemplateResponse("linker.html", response_data)
 
@@ -301,12 +306,25 @@ async def linker_file(
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
     if table_info:
+        sum_all_resources = {}
         resource_info = await api.link_dict(table_info, export_url=True)
-        # for k in resource_info:
-        #     all_resources[lipid_name] = get_url_safe_str(resource_info)
-        #     export_file_data[lipid_name] = resource_info
-        #     lynx_names[lipid_name] = resource_info.get("lynx_name", "")
-        #
+        for k in resource_info:
+            if len(k) > 16:
+                display_k = f"{k[:15]}~{k[-1]}"
+            else:
+                display_k = k
+            all_resources = {}
+            export_file_data = {}
+            lynx_names = {}
+            for lipid_name in resource_info.get(k, []):
+                all_resources[lipid_name] = get_url_safe_str(resource_info)
+                export_file_data[lipid_name] = resource_info
+                lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+            sum_all_resources[display_k] = {
+                "all_resources": all_resources,
+                "export_file_data": export_file_data,
+                "lynx_names": lynx_names,
+            }
         # response_data = {
         #     "request": request,
         #     "export_url": export_url,
