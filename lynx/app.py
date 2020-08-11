@@ -41,7 +41,7 @@ def custom_openapi():
         description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
         routes=app.routes,
     )
-    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_Logo.png"}
+    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 

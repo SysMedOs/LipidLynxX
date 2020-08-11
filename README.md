@@ -1,6 +1,7 @@
 # LipidLynxX 
 
-![LipidLynx_Logo](doc/images/LipidLynxX_Logo_128.jpg)
+![LipidLynx_icon_Logo](doc/images/LipidLynxX_icon_128.jpg) 
+![LipidLynx_text_Logo](lynx/static/images/LipidLynxX_logo_color.png)
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg?color=orange)
 ![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=green)
@@ -13,23 +14,34 @@ in the epilipidome.
 
 ![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Chromium.png)
 
-## Try LipidLynxX simple converter demo on [`mybinder.org`](https://mybinder.org)  🆕 
+## Main Modules
 
-**This demo is always updated automatically to the latest source code on the master branch.**
-To preview the latest changes on the converter without dealing with source code.
+- **LipidLynxX Converter**
 
-Just click this button 👉
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=converter_notebook.ipynb)
+  - Convert different abbreviations to uniformed LipidLynxX ID
 
-And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
+- **LipidLynxX Equalizer**
 
-- You can paste a list of lipid abbreviations, select export style, and download the output table as `.csv` or `.xlsx`.
+  - Cross compare different level of LipidLynxX ID on selected level
 
-- If you observed some IDs not converted in the Windows .exe version, try this demo to see if it got fixed.
+- **LipidLynxX Linker**
 
-- You can run the notebook named `converter_notebook.ipynb` in this repository as well.
+  - Link lipid abbreviations to available resources
 
-## Important Notice
+## Key Features
+
+- Optimized for manual interpretation and computer processing
+- Suitable for both unmodified lipids and modified lipids
+- Unified modification controlled vocabularies
+- Unified position specific annotations
+- Cross level match based on shared levels
+- Extract key information from LipidLynxX ID
+- Strictly controlled format using JSON schema
+- Easy to use Graphic User Interface
+- API access for professional users
+- Command line tools for professional users
+
+### Supported lipid notation styles
 
 The current LipidLynxX source code was tested using our collection of lipid abbreviations
 for major lipid classes from following databases and programs:
@@ -47,6 +59,8 @@ for major lipid classes from following databases and programs:
 - Common abbreviations (customizable):
   -  Abbreviations such as DHA, PAPE, PLPC, PONPC .etc are also included as `defined alias`.
   detailed settings can be found in `lynx/configurations/defined_alias.json`
+
+## Important Notice
 
 **If your database / program is not included in the list above**, you can test if any of the configuration files located in `lynx/configurations/rules/input` would fit to your database / program.
 If conversion is not possible, please contact us so that we can help you to generate suitable configuration file.
@@ -72,30 +86,6 @@ We kindly ask if you have any plans to use LipidLynxX API contact us first, or f
 New features of LipidLynxX is generally developed using repository [https://github.com/ZhixuNi/LipidLynxX](https://github.com/ZhixuNi/LipidLynxX).
 
 
-### Key Features
-
-- Optimized for manual interpretation and computer processing
-- Suitable for both unmodified lipids and modified lipids
-- Unified modification controlled vocabularies
-- Unified position specific annotations
-- Cross level match based on shared levels
-- Extract key information from LipidLynxX ID
-- Strictly controlled format using JSON schema
-- Easy to use Graphic User Interface
-- API access for professional users
-- Command line tools for professional users
-
-
-### Main Modules
-
-- **LipidLynxX Converter**
-
-  - Convert different abbreviations to uniformed LipidLynxX ID
-
-- **LipidLynxX Equalizer**
-
-  - Cross link different level of LipidLynxX ID on selected level
-
 ## Instructions
 
 ### Sample files:
@@ -108,6 +98,23 @@ New features of LipidLynxX is generally developed using repository [https://gith
 Please find our user guide in folder `doc`.
 -  [User Guide in PDF format](doc/LipidLynxX_UserGuide.pdf)
 -  [User Guide in Markdown format](doc/LipidLynxX_UserGuide.md)
+
+## Try LipidLynxX simple converter demo on [`mybinder.org`](https://mybinder.org)
+
+**This demo is always updated automatically to the latest source code on the master branch.**
+To preview the latest changes on the converter without dealing with source code.
+
+Just click this button 👉
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ZhixuNi/LipidLynxX/develop?filepath=converter_notebook.ipynb)
+
+And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for you.
+
+- You can paste a list of lipid abbreviations, select export style, and download the output table as `.csv` or `.xlsx`.
+
+- If you observed some IDs not converted in the Windows .exe version, try this demo to see if it got fixed.
+
+- You can run the notebook named `converter_notebook.ipynb` in this repository as well.
+
 
 ### Screenshots
 

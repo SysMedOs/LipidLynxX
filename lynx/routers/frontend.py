@@ -291,6 +291,7 @@ async def linker_text(
                 "lynx_names": lynx_names,
             }
         },
+        "submitted": True,
     }
     response_data = get_linker_response_data(response_data, file_type)
 
@@ -305,37 +306,38 @@ async def linker_file(
     file_type: FileType = Form(...),
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
+    if export_url == "include":
+        export_url = True
+    else:
+        export_url = False
+    sum_all_resources = {}
     if table_info:
-        sum_all_resources = {}
         resource_info = await api.link_dict(table_info, export_url=True)
         for k in resource_info:
             if len(k) > 16:
                 display_k = f"{k[:15]}~{k[-1]}"
             else:
                 display_k = k
-            all_resources = {}
-            export_file_data = {}
+            col_resource_info = resource_info.get(k, [])
             lynx_names = {}
-            for lipid_name in resource_info.get(k, []):
-                all_resources[lipid_name] = get_url_safe_str(resource_info)
-                export_file_data[lipid_name] = resource_info
-                lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+            for lipid_name in col_resource_info:
+                lipid_name_info = col_resource_info.get(lipid_name, {})
+                lynx_names[lipid_name] = lipid_name_info.get("lynx_name")
             sum_all_resources[display_k] = {
-                "all_resources": all_resources,
-                "export_file_data": export_file_data,
+                "all_resources": get_url_safe_str(col_resource_info),
+                "export_file_data": col_resource_info,
                 "lynx_names": lynx_names,
             }
-        # response_data = {
-        #     "request": request,
-        #     "export_url": export_url,
-        #     "all_resources": all_resources,
-        #     "lynx_names": lynx_names,
-        # }
-        # response_data = get_linker_response_data(
-        #     export_file_data, file_type, response_data
-        # )
 
-    # return templates.TemplateResponse("linker.html", response_data)
+    response_data = {
+        "request": request,
+        "export_url": export_url,
+        "data": sum_all_resources,
+        "submitted": True,
+    }
+    response_data = get_linker_response_data(response_data, file_type)
+
+    return templates.TemplateResponse("linker.html", response_data)
 
 
 # direct fast link of one lipid on the home page
