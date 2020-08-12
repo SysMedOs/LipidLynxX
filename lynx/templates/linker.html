@@ -79,7 +79,14 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <p>&nbsp;</p>
+                                    <div class="alert alert-warning" role="alert">
+                                        <p><img src="{{ url_for('home') }}images/icons/exclamation-diamond.svg"
+                                                alt="attention">&nbsp;Please check input file has header.<br>
+                                            You can use <code>-</code> and <code>_</code> in the headers.<br>
+                                            Please do not use special character such as <code>\</code>,
+                                            <code>/</code>,<code>@</code>,<code>#</code>,<code>$</code>...
+                                        </p>
+                                    </div>
                                 </div>
                                 <p><label for="export_url">Include resource URL in export:
                                     <select id="export_url" name="export_url">
