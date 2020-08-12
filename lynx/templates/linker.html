@@ -25,41 +25,75 @@
                     <div class="tab-content" id="levelsTabContent">
                         <div class="tab-pane fade show active" id="tools" role="tabpanel"
                              aria-labelledby="tools-tab">
-                            <h2>Input lipid abbreviations</h2>
-                            <form action="/linker/text/" method="post">
-                                <p><label>
-                                    lipid_names <br>
-                                    <textarea type="text" name="lipid_names" class="form-control"  style="width:100%;" rows="8">palmitic acid&#10;PLPC&#10;PLPE&#10;</textarea>
-                                </label></p>
-                                <p><label for="file_type">Choose the export format:
-                                    <select id="file_type" name="file_type">
-                                        <option value="xlsx">.xlsx</option>
-                                        <option value="csv">.csv</option>
-                                    </select></label></p>
-                                <p><label for="export_url">Include resource URL in export:
-                                    <select id="export_url" name="export_url">
-                                        <option value="include">Export resource URL with ID</option>
-                                        <option value="exclude">Export resource ID only</option>
-                                    </select></label></p>
-                                <button type="submit" class="btn btn-primary" id="run_text_Linker">Submit</button></form>
+                            <p></p>
+                            <h4>Input lipid abbreviations:</h4>
+                            <p></p>
+                            <div>
+                                <form action="/linker/text/" method="post">
+                                    <p><label>
+                                        lipid names (max 100 rows) <br>
+                                        <textarea type="text" name="lipid_names" class="form-control"
+                                                  style="width:100%;"
+                                                  rows="8">palmitic acid&#10;PLPC&#10;PLPE&#10;</textarea>
+                                    </label></p>
+                                    <p><label for="export_url">Include resource URL in export:
+                                        <select id="export_url" name="export_url">
+                                            <option value="include">Export resource URL with ID</option>
+                                            <option value="exclude">Export resource ID only</option>
+                                        </select></label></p>
+                                    <p><label for="file_type">Choose the export format:
+                                        <select id="file_type" name="file_type">
+                                            <option value="xlsx">.xlsx</option>
+                                            <option value="csv">.csv</option>
+                                        </select></label></p>
+                                    <button type="submit" class="btn btn-primary" id="run_text_Linker">Submit</button>
+                                </form>
+                            </div>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
                             <form action="/linker/file/" method="post" enctype="multipart/form-data">
-                                <img src="{{ url_for('home') }}images/icons/file-earmark-spreadsheet.svg" alt="upload_table" height="96">
-                                <p><label>
-                                    Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
-                                    <input type="file" name="file_obj">
-                                </label></p>
-                                <div class="alert alert-warning" role="alert">
-                                    <p><img src="{{ url_for('home') }}images/icons/exclamation-diamond.svg" alt="attention">&nbsp; LipidLynxX Linker generates xlsx format output from file input only.</p>
+                                <p></p>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <img src="{{ url_for('home') }}images/icons/file-earmark-spreadsheet.svg"
+                                             alt="upload_table" height="96">
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p><label>
+                                            Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
+                                            <input type="file" name="file_obj">
+                                        </label></p>
+                                    </div>
                                 </div>
-                                <input type="hidden" value="xlsx" name="file_type" />
+                                <div class="row">
+                                    <div class="col-md-3">
+
+                                    </div>
+                                    <div class="col-md-9">
+                                        {# get default templates file from default_template_files #}
+                                        <a href="{{ url_for('get_download_file', file_name='LipidLynxX_Linker_Template.csv') }}">
+                                            <img src="{{ url_for('home') }}images/icons/file-earmark-arrow-down.svg"
+                                                 alt="download_template">
+                                            Download example template.
+                                        </a>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p>&nbsp;</p>
+                                </div>
                                 <p><label for="export_url">Include resource URL in export:
                                     <select id="export_url" name="export_url">
                                         <option value="include">Export resource URL with ID</option>
                                         <option value="exclude">Export resource ID only</option>
                                     </select></label></p>
-                                <button type="submit" class="btn btn-primary" id="run_file_Linker">Submit file</button></form>
+                                <div class="alert alert-warning" role="alert">
+                                    <p><img src="{{ url_for('home') }}images/icons/exclamation-diamond.svg"
+                                            alt="attention">&nbsp; LipidLynxX Linker generates xlsx format output from
+                                        file input only.</p>
+                                </div>
+                                <input type="hidden" value="xlsx" name="file_type"/>
+                                <button type="submit" class="btn btn-primary" id="run_file_Linker">Submit file</button>
+                            </form>
                         </div>
                     </div>
                     <div><p>&nbsp;</p></div>
@@ -67,14 +101,14 @@
                         <strong>LipidLynxX Linker is running...</strong>
                         <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
                         <script type="application/javascript">
-                            $(document).ready(function(){
-                                $("#run_file_Linker").click(function(){
+                            $(document).ready(function () {
+                                $("#run_file_Linker").click(function () {
                                     let spinner = document.getElementById("spinner");
                                     spinner.style.visibility = 'visible';
                                     let results_info = document.getElementById("results_info");
                                     results_info.style.visibility = 'hidden';
                                 });
-                                $("#run_text_Linker").click(function(){
+                                $("#run_text_Linker").click(function () {
                                     let spinner = document.getElementById("spinner");
                                     spinner.style.visibility = 'visible';
                                     let results_info = document.getElementById("results_info");
@@ -85,8 +119,8 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-6 col-lg-6 ml-md-auto text-left" id="results_info">
-                    {% if  submitted%}
-                        {%  if data %}
+                    {% if  submitted %}
+                        {% if data %}
                             <div><h2>LipidLynxX Linker output</h2><h4>&nbsp;</h4></div>
                         {% else %}
                             <div><h2>Failed to generate LipidLynxX Linker output</h2><h4>&nbsp;</h4></div>
@@ -116,12 +150,17 @@
                                         <tr>
                                             <th scope="row">{{ col_name }}</th>
                                             <td>
-                                                <form action="/linker/results/summary" method="post" enctype="multipart/form-data" target="_blank">
-                                                    <input type="hidden" value={{ col_data.display_data }} name="display_data" />
-                                                    <input type="hidden" value={{ col_data.lynx_names }} name="lynx_names" />
-                                                    <input type="hidden" value={{ output_file_name }} name="file_name" />
-                                                    <input type="hidden" value={{ export_url }} name="export_url" />
-                                                    <button type="submit" class="btn btn-info" id="view_resource_summary">View results</button>
+                                                <form action="/linker/results/summary" method="post"
+                                                      enctype="multipart/form-data" target="_blank">
+                                                    <input type="hidden"
+                                                           value={{ col_data.display_data }} name="display_data"/>
+                                                    <input type="hidden"
+                                                           value={{ col_data.lynx_names }} name="lynx_names"/>
+                                                    <input type="hidden" value={{ output_file_name }} name="file_name"/>
+                                                    <input type="hidden" value={{ export_url }} name="export_url"/>
+                                                    <button type="submit" class="btn btn-info"
+                                                            id="view_resource_summary">View results summary
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -130,7 +169,6 @@
                             </div>
                         {% endif %}
                     {% endif %}
-
                 </div>
             </div>
         </div>

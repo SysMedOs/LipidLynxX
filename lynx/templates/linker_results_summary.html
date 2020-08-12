@@ -32,7 +32,16 @@
                         <tr>
                             <th scope="row">{{ lipid_name }}</th>
                             <td class="monospace">{{ lynx_names[lipid_name] }}</td>
-                            <td><a href="{{ url_for('view_resource_details', data=resource_info) }}" target="_blank">View Resources</a></td>
+                            <td>
+                                <form action="/linker/results/details" method="post"
+                                      enctype="multipart/form-data" target="_blank">
+                                    <input type="hidden" value={{ lipid_name }} name="lipid_name"/>
+                                    <input type="hidden" value={{ resource_info }} name="resource_data"/>
+                                    <button type="submit" class="btn btn-info"
+                                            id="view_resource_details">View resource details
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>

@@ -16,6 +16,7 @@
 import base64
 import json
 import os
+from pathlib import Path
 
 from fastapi import APIRouter, File, Form, Request, UploadFile, HTTPException
 from fastapi.responses import FileResponse
@@ -29,7 +30,7 @@ from lynx.models.api_models import (
     EqualizerExportData,
     LevelsData,
 )
-from lynx.models.defaults import default_temp_folder
+from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.routers.api as api
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
@@ -119,21 +120,18 @@ def user_guide(request: Request):
 # other functions
 @router.get("/downloads/{file_name}", name="get_download_file", include_in_schema=False)
 async def get_download_file(file_name: str):
-    file_path = os.path.join(default_temp_folder, file_name)
+    if file_name in default_template_files:
+        file_path = default_template_files.get(file_name)
+        path_head, file_name = os.path.split(file_path)
+    else:
+        file_path = os.path.join(default_temp_folder, file_name)
+    print(file_path, file_name)
     if os.path.isfile(file_path):
-        response = FileResponse(file_path)
-        response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
+        response = FileResponse(file_path, filename=file_name)
+        # response.headers["Content-Disposition"] = f"attachment; filename={file_name}"
         return response
     else:
         return f"Failed to generate output file: {file_name}"
-
-
-@router.get("/linker/results/details/{data}", include_in_schema=False)
-async def view_resource_details(request: Request, data: str):
-    decoded_data = base64.urlsafe_b64decode(data.encode("utf-8"))
-    resource_info = json.loads(decoded_data.decode("utf-8"))
-    resource_info["request"] = request
-    return templates.TemplateResponse("linker_results_details.html", resource_info)
 
 
 # post methods
@@ -320,11 +318,13 @@ async def linker_file(
                 display_k = k
             col_resource_info = resource_info.get(k, [])
             lynx_names = {}
+            all_resources = {}
             for lipid_name in col_resource_info:
                 lipid_name_info = col_resource_info.get(lipid_name, {})
+                all_resources[lipid_name] = get_url_safe_str(lipid_name_info)
                 lynx_names[lipid_name] = lipid_name_info.get("lynx_name")
             sum_all_resources[display_k] = {
-                "all_resources": get_url_safe_str(col_resource_info),
+                "all_resources": all_resources,
                 "export_file_data": col_resource_info,
                 "lynx_names": lynx_names,
             }
@@ -342,8 +342,14 @@ async def linker_file(
 
 # direct fast link of one lipid on the home page
 @router.post("/linker/results/details", include_in_schema=False)
-async def linker_lipid(request: Request, lipid_name: str = Form(...)):
-    resource_info = await api.link_lipid(lipid_name, export_url=True)
+async def linker_lipid(
+    request: Request, lipid_name: str = Form(...), resource_data: str = Form(...)
+):
+    if resource_data == "NO_RESOURCE_DATA":
+        resource_info = await api.link_lipid(lipid_name, export_url=True)
+    else:
+        decoded_data = base64.urlsafe_b64decode(resource_data.encode("utf-8"))
+        resource_info = json.loads(decoded_data.decode("utf-8"))
     resource_info["request"] = request
     return templates.TemplateResponse("linker_results_details.html", resource_info)
 

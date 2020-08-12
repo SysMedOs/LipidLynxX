@@ -1,5 +1,3 @@
-# LipidLynxX 
-
 ![LipidLynx_icon_Logo](doc/images/LipidLynxX_icon_128.jpg) 
 ![LipidLynx_text_Logo](lynx/static/images/LipidLynxX_logo_color.png)
 
