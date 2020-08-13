@@ -32,4 +32,4 @@ jobs:
       - name: GitHub Action for pytest
         uses: cclauss/GitHub-Action-for-pytest@master
         with:
-          args: pytest --cov=./
+          args: pytest ./
