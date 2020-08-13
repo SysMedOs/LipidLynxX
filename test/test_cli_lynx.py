@@ -44,21 +44,16 @@ def test_convert():
             test_output = os.path.abspath(test_output)
         else:
             test_output = r"test/test_output/test_convert.xlsx"
+    test_input_file = get_abs_path(r"doc/sample_data/input/LipidLynxX_test.csv")
     if os.path.isfile(test_output):
         os.remove(test_output)
     result = runner.invoke(
-        cli_app,
-        [
-            "convert",
-            r"doc/sample_data/input/LipidLynxX_test.csv",
-            "--output",
-            test_output,
-        ],
+        cli_app, ["convert", test_input_file, "--output", test_output],
     )
-    print(result.stdout)
+    cli_output_lst = result.stdout.strip("\n").split("\n")
+    print(cli_output_lst)
     # assert result.exit_code == 0
-    # assert "Save output as: test/test_output/test_convert_cli.xlsx" in result.stdout
-    assert os.path.isfile(test_output)
+    assert f"Save output as: {test_output}" in result.stdout
 
 
 def test_equalize():
@@ -70,18 +65,13 @@ def test_equalize():
             test_output = os.path.abspath(test_output)
         else:
             test_output = r"test/test_output/test_equalize.xlsx"
+    test_input_file = get_abs_path(r"doc/sample_data/input/LipidLynxX_test.csv")
     if os.path.isfile(test_output):
         os.remove(test_output)
     result = runner.invoke(
-        cli_app,
-        [
-            "equalize",
-            r"doc/sample_data/input/LipidLynxX_test.csv",
-            "--output",
-            test_output,
-        ],
+        cli_app, ["equalize", test_input_file, "--output", test_output],
     )
-    print(result.stdout)
+    cli_output_lst = result.stdout.strip("\n").split("\n")
+    print(cli_output_lst)
     # assert result.exit_code == 0
-    # assert "Save output as: test/test_output/test_equalize_cli.xlsx" in result.stdout
-    assert os.path.isfile(test_output)
+    assert f"Save output as: {test_output}" in result.stdout
