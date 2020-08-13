@@ -29,6 +29,8 @@ jobs:
           pip install codecov pytest pytest-cov
       - name: Black Code Formatter
         uses: lgeiger/black-action@v1.0.1
+        with:
+          args: black . --check
       - name: GitHub Action for pytest
         uses: cclauss/GitHub-Action-for-pytest@master
         with:
