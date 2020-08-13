@@ -22,6 +22,7 @@ lynx_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lynx_path + "/../")
 
 from cli_lynx import cli_app
+from lynx.utils.file_handler import get_abs_path
 
 
 runner = CliRunner()
@@ -30,32 +31,43 @@ runner = CliRunner()
 def test_convert_lipid():
     result = runner.invoke(cli_app, ["convert-lipid", "PC 16:0/18:2"])
     # assert result.exit_code == 0
+    print(result.stdout)
     assert "PC(16:0/18:2)" in result.stdout
 
 
 def test_convert():
+    test_output = get_abs_path(r"test/test_output/test_convert_cli.xlsx")
+    if os.path.isfile(test_output):
+        os.remove(test_output)
     result = runner.invoke(
         cli_app,
         [
             "convert",
             r"doc/sample_data/input/LipidLynxX_test.csv",
             "--output",
-            r"test/test_output/test_convert_cli.xlsx",
+            test_output,
         ],
     )
+    print(result.stdout)
     # assert result.exit_code == 0
-    assert "Save output as: test/test_output/test_convert_cli.xlsx" in result.stdout
+    # assert "Save output as: test/test_output/test_convert_cli.xlsx" in result.stdout
+    assert os.path.isfile(test_output)
 
 
 def test_equalize():
+    test_output = get_abs_path(r"test/test_output/test_equalize_cli.xlsx")
+    if os.path.isfile(test_output):
+        os.remove(test_output)
     result = runner.invoke(
         cli_app,
         [
             "equalize",
             r"doc/sample_data/input/LipidLynxX_test.csv",
             "--output",
-            r"test/test_output/test_equalize_cli.xlsx",
+            test_output,
         ],
     )
+    print(result.stdout)
     # assert result.exit_code == 0
-    assert "Save output as: test/test_output/test_equalize_cli.xlsx" in result.stdout
+    # assert "Save output as: test/test_output/test_equalize_cli.xlsx" in result.stdout
+    assert os.path.isfile(test_output)
