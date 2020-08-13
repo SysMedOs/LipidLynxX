@@ -13,7 +13,9 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import os, sys
+import os
+import sys
+
 from typer.testing import CliRunner
 
 lynx_path = os.path.dirname(os.path.abspath(__file__))
@@ -38,11 +40,11 @@ def test_convert():
             "convert",
             r"doc/sample_data/input/LipidLynxX_test.csv",
             "--output",
-            r"test/test_output/test_convert.xlsx",
+            r"test/test_output/test_convert_cli.xlsx",
         ],
     )
     # assert result.exit_code == 0
-    assert "Save output as: test/test_output/test_convert.xlsx" in result.stdout
+    assert "Save output as: test/test_output/test_convert_cli.xlsx" in result.stdout
 
 
 def test_equalize():
@@ -52,8 +54,8 @@ def test_equalize():
             "equalize",
             r"doc/sample_data/input/LipidLynxX_test.csv",
             "--output",
-            r"test/test_output/test_equalize.xlsx",
+            r"test/test_output/test_equalize_cli.xlsx",
         ],
     )
     # assert result.exit_code == 0
-    assert "Save output as: test/test_output/test_equalize.xlsx" in result.stdout
+    assert "Save output as: test/test_output/test_equalize_cli.xlsx" in result.stdout
