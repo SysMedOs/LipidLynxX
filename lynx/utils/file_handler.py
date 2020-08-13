@@ -116,7 +116,9 @@ def create_converter_output(
                 not_converted_dct, orient="index"
             ).T
     elif data and converted_only:
-        converted_df = pd.DataFrame(data)
+        converted_df = pd.DataFrame(
+            {key: pd.Series(value) for key, value in data.items()}
+        )
     else:
         pass
 
