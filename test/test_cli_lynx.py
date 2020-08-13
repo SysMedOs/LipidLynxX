@@ -48,6 +48,7 @@ def test_convert():
             test_output = r"test/test_output/test_convert_cli.xlsx"
     test_input_file = get_abs_path(r"doc/sample_data/input/LipidLynxX_test.csv")
     if os.path.isfile(test_input_file):
+        print(test_input_file)
         import pandas as pd
 
         df = pd.read_csv(test_input_file)
@@ -57,7 +58,7 @@ def test_convert():
     if os.path.isfile(test_output):
         os.remove(test_output)
     result = runner.invoke(
-        cli_app, ["convert", test_input_file, "--output", test_output],
+        cli_app, ["convert_file", test_input_file, "--output", test_output],
     )
     cli_output_lst = result.stdout.strip("\n").split("\n")
     print(cli_output_lst)
@@ -69,7 +70,6 @@ def test_convert():
         df = pd.read_excel(test_output)
         print(df.head())
     assert os.path.isfile(test_output) is True
-    assert f"Save output as: {os.path.abspath(test_output)}" in cli_output_lst
 
 
 def test_equalize():
@@ -93,4 +93,3 @@ def test_equalize():
     print(cli_output_lst)
     print(os.path.abspath(test_output))
     assert os.path.isfile(test_output) is True
-    assert f"Save output as: {os.path.abspath(test_output)}" in cli_output_lst
