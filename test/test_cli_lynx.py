@@ -37,13 +37,13 @@ def test_convert_lipid():
 
 def test_convert():
     try:
-        test_output = get_abs_path(r"test/test_output/test_convert.xlsx")
+        test_output = get_abs_path(r"test/test_output/test_convert_cli.xlsx")
     except FileNotFoundError:
         if os.path.isdir(r"test/test_output"):
-            test_output = os.path.join(r"test/test_output", "test_convert.xlsx")
+            test_output = os.path.join(r"test/test_output", "test_convert_cli.xlsx")
             test_output = os.path.abspath(test_output)
         else:
-            test_output = r"test/test_output/test_convert.xlsx"
+            test_output = r"test/test_output/test_convert_cli.xlsx"
     test_input_file = get_abs_path(r"doc/sample_data/input/LipidLynxX_test.csv")
     if os.path.isfile(test_output):
         os.remove(test_output)
@@ -52,8 +52,15 @@ def test_convert():
     )
     cli_output_lst = result.stdout.strip("\n").split("\n")
     print(cli_output_lst)
+    print(test_output)
+    if os.path.isfile(test_output):
+        print("output created")
+        import pandas as pd
+
+        df = pd.read_excel(test_output)
+        print(df.head())
     # assert result.exit_code == 0
-    assert f"Save output as: {test_output}" in result.stdout
+    assert f"Save output as: {test_output}" in cli_output_lst
 
 
 def test_equalize():
@@ -74,4 +81,4 @@ def test_equalize():
     cli_output_lst = result.stdout.strip("\n").split("\n")
     print(cli_output_lst)
     # assert result.exit_code == 0
-    assert f"Save output as: {test_output}" in result.stdout
+    assert f"Save output as: {test_output}" in cli_output_lst
