@@ -1,0 +1,20 @@
+palmitic acid
+DHA
+HETE
+DPPE
+Plasmanyl-PC O-16:0_18:2
+GPEtn(18:0/22:6(4Z,7Z,10Z,13Z,16Z,19Z))
+Cer 24:2
+dhCer 16:0
+Cer(t18:0/26:0)
+Cer[NS](d18:0/26:0)
+DG(O-16:0/18:1)
+PC(O-32:1)
+FaCoA 18:2;O
+C18 Sphingomyelin
+SM(d18:1/26:0)
+MG(16:0)
+DG(16:0/18:2(9Z,12Z)/0:0)[iso2]
+TG(16:0/18:0/18:2(9Z,12Z))[iso6]
+TG(16:0/18:2/HETE)
+UNKOWN_LIPID_TEST
