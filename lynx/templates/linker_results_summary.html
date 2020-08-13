@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Linker Results @ LipidLynxX
+{% endblock %}
+
+{% block body %}
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="False">
+        <p></p>
+        <h1>LipidLynxX Linker Results: </h1>
+        <div class="container">
+            <div>
+                <a class="btn btn-lg btn-block btn-success"
+                   href="{{ url_for('get_download_file', file_name=file_name) }}">
+                    {% if export_url %}
+                        Save output include resource URL as:<br>{{ file_name }}
+                    {% endif %}
+                    {% if not export_url %}
+                        Save output without resource URL as:<br>{{ file_name }}
+                    {% endif %}
+                </a>
+            </div>
+            <div><p>&nbsp;</p></div>
+            <div class="alert alert-info" role="alert">
+                <h4>Linked abbreviations:</h4>
+            </div>
+            <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
+                <table class="table table-hover table-bordered">
+                    <tr><th scope="col">Input Lipid</th><th scope="col">Converted Notation</th><th scope="col">Resources</th></tr>
+                    {% for lipid_name, resource_info in data.items() %}
+                        <tr>
+                            <th scope="row">{{ lipid_name }}</th>
+                            <td class="monospace">{{ lynx_names[lipid_name] }}</td>
+                            <td>
+                                <form action="/linker/results/details" method="post"
+                                      enctype="multipart/form-data" target="_blank">
+                                    <input type="hidden" value={{ lipid_name }} name="lipid_name"/>
+                                    <input type="hidden" value={{ resource_info }} name="resource_data"/>
+                                    <button type="submit" class="btn btn-info"
+                                            id="view_resource_details">View resource details
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

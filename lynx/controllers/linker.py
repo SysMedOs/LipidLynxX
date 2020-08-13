@@ -179,7 +179,7 @@ async def get_lmsd_id(
     else:
         url_safe_lipid_name = urllib.parse.quote(lipid_name, safe="")
         ref_url = re.sub(r"<lipid_id>", url_safe_lipid_name, lmsd_bulk_base_url)
-    print(ref_url)
+    # print(ref_url)
     async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
         r_cross_ref_status = r_cross_ref_obj.status
         if r_cross_ref_status == 200:
@@ -325,7 +325,7 @@ async def get_external_link(ref_id: str, ref_db: str, check_url: bool = False) -
         if ref_base_url:
             ref_url = re.sub(r"<lipid_id>", ref_id, ref_base_url)
             if check_url:
-                print(ref_url)
+                # print(ref_url)
                 async with aiohttp.request("GET", ref_url) as r_cross_ref_obj:
                     r_cross_ref_status = r_cross_ref_obj.status
                     if r_cross_ref_status == 200:
@@ -359,7 +359,7 @@ async def get_cross_links(
                 r"\((\d{1,2}[EZ]?)(,\d{1,2}[EZ]?)+\)", "", siwss_lv_s_str
             )
             siwss_lv_m_str = re.sub(r"/", "_", siwss_lv_s_str)
-            print("SWISS_NAMES: ", swisslipids_name, siwss_lv_s_str, siwss_lv_m_str)
+            # print("SWISS_NAMES: ", swisslipids_name, siwss_lv_s_str, siwss_lv_m_str)
             if (
                 lipid_name == swisslipids_name
                 or lipid_name == siwss_lv_s_str
@@ -524,7 +524,7 @@ async def link_lipids(lipid_list: List[str]) -> pd.DataFrame:
                 else:
                     resources[db] = ""
         linked_info_dct[idx] = resources
-        print(resources)
+        # print(resources)
 
         idx += 1
     default_col = ["Input_name", "ShorthandNotation", "LipidLynxX", "BioPAN"]

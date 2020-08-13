@@ -10,25 +10,34 @@
         <div class="container">
             <div class="row">&nbsp;</div>
             <div class="row d-flex justify-content-center">
-                <img alt="image" class="img-fluid" src="images/LipidLynxX_Logo_128.jpg">
+                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96">
             </div>
             <div class="row d-flex justify-content-center">&nbsp;</div>
-            <form class="d-flex justify-content-center" action="/linker/lipid/" method="post" enctype="multipart/form-data">
+            <form class="d-flex justify-content-center" action="/linker/results/details" method="post"
+                  enctype="multipart/form-data">
                 <div>
                     <label>
                         <input type="text" class="form-control" name="lipid_name" id="lipid_name"
                                placeholder="PLPC" value="PLPC">
                     </label>
                 </div>
-                <div>&nbsp;</div>
-                <div><button type="submit" class="btn btn-info" id="link_lipid">Check resources !</button></div>
+                <div>
+                    <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data"/>&nbsp;</p>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-info" id="link_lipid">
+                       Check resources &nbsp;&#128269;
+                    </button>
+                </div>
             </form>
             <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
                 <strong>LipidLynxX is running...</strong>
                 <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
                 <script type="application/javascript">
-                    $(document).ready(function(){
-                        $("#link_lipid").click(function(){
+                    $(document).ready(function () {
+                        $("#link_lipid").click(function () {
                             let spinner = document.getElementById("spinner");
                             spinner.style.visibility = 'visible';
                         });
@@ -63,12 +72,14 @@
                                             <h4>LipidLynxX Converter</h4>
                                         </div>
                                         <div class="row">
-                                            <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br></p>
+                                            <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
+                                            </p>
                                         </div>
                                         <div class="row">
                                             <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('converter') }}">
-                                                Run Converter</a><br></div>
+                                                <a class="btn btn-info mt-4 btn-block"
+                                                   href="{{ url_for('converter') }}">
+                                                    Run Converter</a><br></div>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +101,8 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('equalizer') }}">
+                                                <a class="btn btn-info mt-4 btn-block"
+                                                   href="{{ url_for('equalizer') }}">
                                                     Run Equalizer</a><br></div>
                                         </div>
                                     </div>

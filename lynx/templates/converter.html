@@ -25,7 +25,8 @@
                     <div class="tab-content" id="levelsTabContent">
                         <div class="tab-pane fade show active" id="tools" role="tabpanel"
                              aria-labelledby="tools-tab">
-                            <h2>Input lipid abbreviations</h2>
+                            <p></p>
+                            <h4>Input lipid abbreviations</h4>
                             <form action="/converter/text/" method="post">
                                 <p><label>
                                     lipid_names <br>
@@ -34,7 +35,7 @@
                                 <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
                                         <option value="LipidLynxX">LipidLynxX</option>
-                                        <option value="ShortHandNotation">ShortHand Notation</option>
+                                        <option value="ShorthandNotation">ShortHand Notation</option>
                                         <option value="COMP_DB">COMP_DB</option>
                                         <option value="BioPAN">BioPAN</option>
                                         <option value="LipidCreator">LipidCreator</option>
@@ -43,7 +44,7 @@
                                 <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
-                                        <option value="D1">Discrete</option>
+                                        <option value="D1">Molecular species level</option>
                                         <option value="MAX">Max level</option>
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
@@ -53,7 +54,7 @@
                                         <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
                                     </ul>
                                 </div>
-                                <p><label for="file_type">Choose the export style:
+                                <p><label for="file_type">Choose the export format:
                                     <select id="file_type" name="file_type">
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
@@ -67,6 +68,8 @@
                                 <button type="submit" class="btn btn-primary" id="run_text_converter">Convert</button></form>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
+                            <p></p>
+                            <h4>Upload file with lipid abbreviations</h4>
                             <form action="/converter/file/" method="post" enctype="multipart/form-data">
                                 <p><label>
                                     Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
@@ -75,7 +78,7 @@
                                 <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
                                         <option value="LipidLynxX">LipidLynxX</option>
-                                        <option value="ShortHandNotation">ShortHand Notation</option>
+                                        <option value="ShorthandNotation">ShortHand Notation</option>
                                         <option value="COMP_DB">COMP_DB</option>
                                         <option value="BioPAN">BioPAN</option>
                                         <option value="LipidCreator">LipidCreator</option>
@@ -84,7 +87,7 @@
                                 <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
-                                        <option value="D1">Discrete</option>
+                                        <option value="D1">Molecular species level</option>
                                         <option value="MAX">Max level</option>
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
@@ -94,7 +97,7 @@
                                         <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
                                     </ul>
                                 </div>
-                                <p><label for="file_type">Choose the export style:
+                                <p><label for="file_type">Choose the export format:
                                     <select id="file_type" name="file_type">
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
@@ -145,24 +148,23 @@
                         </div>
                         <div>
                             <a class="btn btn-block btn-success"
-                               href="{{ url_for('get_download_file', data=output_file_data,
-                           file_type=output_file_type, file_name=output_file_name) }}">
+                               href="{{ url_for('get_download_file', file_name=output_file_name) }}">
                                 Save output as:<br>{{ output_file_name }}
                             </a>
                         </div>
                         <p>&nbsp;</p>
                         <div class="alert alert-success" role="alert">
                             <h4>Converted abbreviations</h4>
-                            <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
-                                {{ converted_html|safe }}
-                            </div>
+                        </div>
+                        <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
+                            {{ converted_html|safe }}
                         </div>
                         {% if not_converted_html %}
                             <div class="alert alert-warning" role="alert">
                                 <h4>NOT Converted abbreviations</h4>
-                                <div class="table-responsive">
-                                    {{ not_converted_html|safe }}
-                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                {{ not_converted_html|safe }}
                             </div>
                         {% endif %}
                     {% endif %}
