@@ -50,7 +50,7 @@ def test_convert():
     if os.path.isfile(test_input_file):
         import pandas as pd
 
-        df = pd.read_excel(test_input_file)
+        df = pd.read_csv(test_input_file)
         print(df.head())
     else:
         print("can not load input file")
