@@ -36,7 +36,14 @@ def test_convert_lipid():
 
 
 def test_convert():
-    test_output = get_abs_path(r"test/test_output/test_convert_cli.xlsx")
+    try:
+        test_output = get_abs_path(r"test/test_output/test_convert.xlsx")
+    except FileNotFoundError:
+        if os.path.isdir(r"test/test_output"):
+            test_output = os.path.join(r"test/test_output", "test_convert.xlsx")
+            test_output = os.path.abspath(test_output)
+        else:
+            test_output = r"test/test_output/test_convert.xlsx"
     if os.path.isfile(test_output):
         os.remove(test_output)
     result = runner.invoke(
@@ -55,7 +62,14 @@ def test_convert():
 
 
 def test_equalize():
-    test_output = get_abs_path(r"test/test_output/test_equalize_cli.xlsx")
+    try:
+        test_output = get_abs_path(r"test/test_output/test_equalize.xlsx")
+    except FileNotFoundError:
+        if os.path.isdir(r"test/test_output"):
+            test_output = os.path.join(r"test/test_output", "test_equalize.xlsx")
+            test_output = os.path.abspath(test_output)
+        else:
+            test_output = r"test/test_output/test_equalize.xlsx"
     if os.path.isfile(test_output):
         os.remove(test_output)
     result = runner.invoke(
