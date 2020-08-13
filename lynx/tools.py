@@ -302,6 +302,7 @@ def convert_file(
         output_info = create_converter_output(
             converted_dct, output_name=output_file, converted_only=converted_only
         )
+
     cli_save_output(output_info, output_file)
 
 
