@@ -215,10 +215,7 @@ def convert_lipids(
 def convert_file(
     file: Path = typer.Argument(None),
     column: str = typer.Option(
-        None,
-        "--column",
-        "-c",
-        help="name of the column that contains lipid notations",
+        None, "--column", "-c", help="name of the column that contains lipid notations",
     ),
     output_file: Path = typer.Option(
         None,
@@ -302,7 +299,10 @@ def convert_file(
         output_file = Path.joinpath(input_folder, get_output_name("Converter", "xlsx"))
     typer.echo(f"Generating output file...")
     with click_spinner.spinner():
-        output_info = create_converter_output(converted_dct, output_name=output_file, converted_only=converted_only)
+        output_info = create_converter_output(
+            converted_dct, output_name=output_file, converted_only=converted_only
+        )
+
     cli_save_output(output_info, output_file)
 
 
@@ -310,10 +310,7 @@ def convert_file(
 def convert(
     source: str = typer.Argument(None),
     column: str = typer.Option(
-        None,
-        "--column",
-        "-c",
-        help="name of the column that contains lipid notations",
+        None, "--column", "-c", help="name of the column that contains lipid notations",
     ),
     style: StyleType = typer.Option(
         "LipidLynxX",

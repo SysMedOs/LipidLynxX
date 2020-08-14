@@ -182,8 +182,8 @@ class ParserFA:
                         c_shift = 3
                         if c_shift * _mod_count > int(fa_info_dct["NUM_C"]) - 2:
                             c_shift = (
-                                2
-                            )  # if more C=C in chain and no bis-allylic position
+                                2  # if more C=C in chain and no bis-allylic position
+                            )
                             logger.info(
                                 "Too many C=C, try to remove bis-allylic positions"
                             )
