@@ -79,10 +79,10 @@ class Converter:
                 output_dct[k].append(abbr_result.get(k, ""))
         # for k in output_dct:
         #     output_dct[k] = [v for v in output_dct[k] if v]  # remove "" or None
-        if 'skipped' in output_dct:
-            output_dct['skipped'] = [v for v in output_dct['skipped'] if v]
-        if 'converted' in output_dct:
-            output_dct['converted'] = [v for v in output_dct['converted'] if v]
+        if "skipped" in output_dct:
+            output_dct["skipped"] = [v for v in output_dct["skipped"] if v]
+        if "converted" in output_dct:
+            output_dct["converted"] = [v for v in output_dct["converted"] if v]
         converted_lst_obj = ConvertedListData(
             input=output_dct.get("input"),
             output=output_dct.get("output"),
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         "FACoA 18:0",
         "Cer 24:2",
         "LMGP01010594",
-        "lid"
+        "lid",
     ]
     lv = "B1"
     # test_out_rule = "COMP_DB"

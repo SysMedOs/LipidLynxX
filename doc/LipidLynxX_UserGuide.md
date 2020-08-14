@@ -1,3 +1,6 @@
+
+![LipidLynx_icon_Logo](images/LipidLynxX_icon_128.jpg) 
+![LipidLynx_text_Logo](images/LipidLynxX_logo_color.png)
 # LipidLynxX User Guide
 
 ![LipidLynxX_Start_Chromium](images/LipidLynxX_Start_Chromium.png)

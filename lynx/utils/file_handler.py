@@ -15,12 +15,15 @@
 
 from datetime import datetime
 import json
-import os
 from io import BytesIO
+import os
+import re
 from pathlib import Path
+import time
 from typing import List, Union
 
 from fastapi import File
+from natsort import natsorted
 import pandas as pd
 
 from lynx.models.api_models import ConverterExportData, ConvertedListData, FileType
@@ -67,7 +70,10 @@ def load_folder(folder: str, file_type: str = "", logger=app_logger) -> List[str
 
 
 def create_converter_output(
-    data: dict, output_name: Union[str, Path] = None, file_type: str = ".xlsx", converted_only: bool =False
+    data: dict,
+    output_name: Union[str, Path] = None,
+    file_type: str = ".xlsx",
+    converted_only: bool = False,
 ) -> Union[BytesIO, str]:
     file_info = None
     converted_df = pd.DataFrame()
@@ -110,7 +116,9 @@ def create_converter_output(
                 not_converted_dct, orient="index"
             ).T
     elif data and converted_only:
-        converted_df = pd.DataFrame(data)
+        converted_df = pd.DataFrame(
+            {key: pd.Series(value) for key, value in data.items()}
+        )
     else:
         pass
 
@@ -137,9 +145,7 @@ def create_converter_output(
                 else:
                     file_info = get_abs_path(output_name)
             except IOError:
-                file_info = (
-                    f"[IO error] Cannot create file: {output_name} as output."
-                )
+                file_info = f"[IO error] Cannot create file: {output_name} as output."
         else:
             file_info = BytesIO()
             if file_type.lower().endswith("csv"):
@@ -246,6 +252,135 @@ def create_equalizer_output(
     return file_info
 
 
+def create_linker_output(
+    data: dict,
+    output_name: Union[str, Path] = None,
+    file_type: str = ".xlsx",
+    export_url: bool = True,
+) -> Union[BytesIO, str]:
+    file_info = None
+    file_linked_resources = {}
+    if data:
+        for sheet in data:
+            sheet_linked_resources = {}
+            sheet_data = data.get(sheet, {})
+            sheet_export_data = sheet_data.get("export_file_data", {})
+            idx = 1
+            for lipid_name in sheet_export_data:
+                lipid_resources = {}
+                if isinstance(sheet_export_data[lipid_name], dict):
+                    lipid_resources["Input_Name"] = sheet_export_data[lipid_name].get(
+                        "lipid_name", ""
+                    )
+                    lipid_resources["Shorthand_Notation"] = sheet_export_data[
+                        lipid_name
+                    ].get("shorthand_name", "")
+                    lipid_resources["LipidLynxX"] = sheet_export_data[lipid_name].get(
+                        "lynx_name", ""
+                    )
+                    lipid_resources["BioPAN"] = sheet_export_data[lipid_name].get(
+                        "biopan_name", ""
+                    )
+                    resource_data = sheet_export_data[lipid_name].get(
+                        "resource_data", {}
+                    )
+                    for db_group in resource_data:
+                        db_group_resources = resource_data[db_group]
+                        for db in db_group_resources:
+                            db_resources = db_group_resources.get(db)
+                            if db_resources and isinstance(db_resources, dict):
+                                if len(list(db_resources.keys())) < 2:
+                                    lipid_resources[db] = ";".join(
+                                        list(db_resources.keys())
+                                    )
+                                    lipid_resources[f"Link_{db}"] = ";".join(
+                                        [db_resources.get(i) for i in db_resources]
+                                    )
+                                else:
+                                    lipid_resources[db] = json.dumps(
+                                        list(db_resources.keys())
+                                    )
+                                    lipid_resources[f"Link_{db}"] = json.dumps(
+                                        [db_resources.get(i) for i in db_resources]
+                                    )
+                            else:
+                                lipid_resources[db] = ""
+                sheet_linked_resources[idx] = lipid_resources
+                idx += 1
+            file_linked_resources[sheet] = sheet_linked_resources
+
+    default_col = ["Input_Name", "Shorthand_Notation", "LipidLynxX", "BioPAN"]
+    file_linked_df_dct = {}
+    if file_linked_resources:
+        for sheet in file_linked_resources:
+            sum_df = pd.DataFrame(data=file_linked_resources.get(sheet)).T
+            sum_df_columns = sum_df.columns.tolist()
+            link_cols = []
+            for col in sum_df_columns:
+                if col.startswith("Link_"):
+                    sum_df_columns.remove(col)
+                    if export_url:
+                        link_cols.append(col)
+                elif col in default_col:
+                    sum_df_columns.remove(col)
+            sum_df_columns = (
+                default_col + natsorted(sum_df_columns) + natsorted(link_cols)
+            )
+            linked_df = pd.DataFrame(sum_df, columns=sum_df_columns)
+            file_linked_df_dct[sheet] = linked_df
+
+    if output_name:
+        try:
+            err_msg = None
+            if isinstance(output_name, Path):
+                output_name = output_name.as_posix()
+            elif isinstance(output_name, str):
+                pass
+            else:
+                err_msg = f"[Type error] Cannot create file: {output_name} as output."
+            if output_name.lower().endswith("csv"):
+                for s in file_linked_df_dct:
+                    s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                    s_df.to_csv(output_name)
+                    break
+            else:
+                output_writer = pd.ExcelWriter(output_name, engine="openpyxl")
+                for s in file_linked_df_dct:
+                    s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                    if not s_df.empty:
+                        s_df.to_excel(output_writer, sheet_name=s)
+                    else:
+                        pass
+                output_writer.save()
+            if err_msg:
+                file_info = err_msg
+            else:
+                file_info = get_abs_path(output_name)
+        except IOError:
+            file_info = f"[IO error] Cannot create file: {output_name} as output."
+    else:
+        file_info = BytesIO()
+        if file_type.lower().endswith("csv"):
+            for s in file_linked_df_dct:
+                s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                file_info.write(s_df.to_csv().encode("utf-8"))
+                break
+        else:
+            output_writer = pd.ExcelWriter(
+                file_info, engine="openpyxl"
+            )  # write to BytesIO instead of file path
+            for s in file_linked_df_dct:
+                s_df = file_linked_df_dct.get(s, pd.DataFrame())
+                if not s_df.empty:
+                    s_df.to_excel(output_writer, sheet_name=s)
+                else:
+                    pass
+            output_writer.save()
+        file_info.seek(0)
+
+    return file_info
+
+
 def get_table(uploaded_file: File, err_lst: list, logger=app_logger) -> (dict, list):
     usr_file_name = uploaded_file.filename
     if usr_file_name.lower().endswith("xlsx"):
@@ -332,3 +467,29 @@ def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
         abs_output_path = get_abs_path(file_name)
 
     return is_output, abs_output_path
+
+
+def clean_temp_folder(
+    temp_dir: str = r"lynx/temp", max_days: float = 7.0, max_files: int = 99
+) -> list:
+    current_time = time.time()
+    earliest_unix_time = current_time - max_days * 86400  # 24 * 60 * 60 == 86400
+    removed_files = []
+    temp_files_lst = os.listdir(temp_dir)
+    file_suffix_rgx = re.compile(r"^(.*)(\.)(csv|xlsx?)$", re.IGNORECASE)
+    temp_file_path_lst = [
+        os.path.join(temp_dir, f) for f in temp_files_lst if file_suffix_rgx.match(f)
+    ]
+    temp_file_ctime_lst = [os.path.getctime(p) for p in temp_file_path_lst]
+    temp_file_info_lst = list(zip(temp_file_ctime_lst, temp_file_path_lst))
+    if len(temp_file_info_lst) > max_files:
+        temp_file_info_lst.sort(key=lambda tup: tup[0], reverse=True)
+        removed_files = temp_file_info_lst[max_files:]
+    for temp_file_info in temp_file_info_lst:
+        if temp_file_info[0] < earliest_unix_time:
+            removed_files.append(temp_file_info)
+    for temp in removed_files:
+        if os.path.isfile(temp[1]):
+            os.remove(temp[1])
+
+    return removed_files
