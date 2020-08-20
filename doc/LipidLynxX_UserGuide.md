@@ -1,3 +1,6 @@
+
+![LipidLynx_icon_Logo](images/LipidLynxX_icon_128.jpg) 
+![LipidLynx_text_Logo](images/LipidLynxX_logo_color.png)
 # LipidLynxX User Guide
 
 ![LipidLynxX_Start_Chromium](images/LipidLynxX_Start_Chromium.png)
@@ -213,6 +216,23 @@ python LynxConverter.py -i doc/sample_data/input/LipidLynxX_test.xlsx -o doc/sam
 python LynxEqualizer.py -l "B0,D0,D1" -i doc/sample_data/input/LipidLynxX_test.csv -o doc/sample_data/output/LipidLynxX_test_equalizer_out.xlsx
 ```
 
+### How run LipidLynxX using API
+
+- **LipidLynxX Converter API Examples**
+
+```bash
+curl http://127.0.0.1:5000/lynx/api/0.1/converter/str/ -d 'data="PLPC"' -X GET
+curl http://127.0.0.1:5000/lynx/api/0.1/converter/list/ -d 'data=["PAPE", "PE 36:4"]' -X GET
+curl http://127.0.0.1:5000/lynx/api/0.1/converter/dict/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2"]}' -X GET
+```
+
+- **LipidLynxX Equalizer API Examples**
+
+```bash
+curl http://127.0.0.1:5000/lynx/api/0.1/equalizer/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)", "DPPE"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2", "PG 18:0_18:3"]}&level=D0' -X GET
+```
+- **Screenshot**
+![LipidLynxX_API](images/LipidLynxX_API.png)
 
 ## Errors/bugs
 

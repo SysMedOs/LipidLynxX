@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2016-2019  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
-# SysMedOs_team: Zhixu Ni, Georgia Angelidou, Mike Lange, Maria Fedorova
+# Copyright (C) 2016-2020  SysMedOs_team @ AG Bioanalytik, University of Leipzig:
+#
+# LipidLynxX is using GPL V3 License
+#
+# Please cite our publication in an appropriate form.
+#   LipidLynxX preprint on bioRxiv.org
+#   Zhixu Ni, Maria Fedorova.
+#   "LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets"
+#   DOI: 10.1101/2020.04.09.033894
 #
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
@@ -11,7 +18,7 @@ import re
 
 import pandas as pd
 
-from ..models.defaults import cfg_info_dct
+from ..models.defaults import app_cfg_info
 from ..models.defaults import logger
 from ..liblynx.AbbrParser import AbbrParser
 
@@ -22,7 +29,7 @@ class Converter:
         if isinstance(abbr_df, pd.DataFrame):
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         else:
-            abbr_df = pd.read_excel(cfg_info_dct["abbr_cfg"])
+            abbr_df = pd.read_excel(app_cfg_info["abbr_cfg"])
             self.abbr_parser = AbbrParser(abbr_df=abbr_df)
         self.abbr_dct = dict(
             zip(abbr_df["Abbreviation"].tolist(), abbr_df["LipidLynx"].tolist())
@@ -149,9 +156,8 @@ if __name__ == "__main__":
 
     test_in_file = r"../test/test_input/test_crosscheck.xlsx"
     test_out_file = r"../test/test_output/test_crosscheck_output.xlsx"
-    cfg_file = r"../configurations/defined_alias.xlsx"
 
-    converter = Converter(cfg_file)
+    converter = Converter()
 
     converter.convert_table(test_in_file, test_out_file)
 
