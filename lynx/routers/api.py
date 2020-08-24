@@ -13,19 +13,13 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import asyncio
-import json
 import re
-from typing import List, Optional, Union
-import urllib.parse
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from pydantic import parse_obj_as
-import requests
 
-from lynx.controllers.linker import get_cross_links
+from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.controllers.converter import Converter
-from lynx.controllers.encoder import Encoder
 from lynx.controllers.equalizer import Equalizer
 from lynx.controllers.parser import parse_lipid
 from lynx.models.api_models import (
@@ -34,22 +28,78 @@ from lynx.models.api_models import (
     InputDictData,
     InputListData,
     InputStrData,
-    LipidNameType,
     LvType,
     LevelsData,
     StyleType,
 )
-from lynx.models.lipid import LipidType
+from lynx.models.defaults import (
+    default_temp_folder,
+    default_temp_max_days,
+    default_temp_max_files,
+)
+from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
+from lynx.utils.file_handler import clean_temp_folder
 
 router = APIRouter()
 
 default_levels = LevelsData(levels=["B1", "D1"])
 
+removed_files = clean_temp_folder(
+    default_temp_folder, default_temp_max_days, default_temp_max_files
+)
+if removed_files:
+    app_logger.info(
+        f"Remove temporary output files older than {default_temp_max_days} days..."
+    )
+    for removed_file in removed_files:
+        app_logger.info(f"File removed: {removed_file}")
+
+
+# Reusable functions
+async def link_one_lipid(
+    lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
+    export_url: bool = False,
+    export_names: bool = True,
+):
+    if lipid_name:
+        if re.match(r"^LM\w\w\d{8}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_lmsd_name(lipid_name)
+        elif re.match(r"^SLM:\d{9}$", lipid_name, re.IGNORECASE):
+            safe_lipid_name = await get_swiss_name(lipid_name)
+        else:
+            safe_lipid_name = lipid_name
+    else:
+        raise HTTPException(status_code=404)
+    search_name = await convert_lipid(
+        safe_lipid_name, level="MAX", style="BracketsShorthand"
+    )
+    resource_data = await get_cross_links(search_name, export_url=export_url)
+    if resource_data:
+        if export_names:
+            render_data_dct = {
+                "lipid_name": lipid_name,
+                "shorthand_name": await convert_lipid(
+                    safe_lipid_name, level="MAX", style="ShorthandNotation"
+                ),
+                "lynx_name": await convert_lipid(
+                    safe_lipid_name, level="MAX", style="LipidLynxX"
+                ),
+                "biopan_name": await convert_lipid(
+                    safe_lipid_name, level="B2", style="BioPAN"
+                ),
+                "resource_data": resource_data,
+            }
+            return render_data_dct
+        else:
+            return resource_data
+    else:
+        raise HTTPException(status_code=500)
+
 
 # Get APIs
 @router.get("/convert/lipid/")
-async def convert_name(
+async def convert_lipid(
     lipid_name: str = "PLPC",
     style: Optional[str] = "LipidLynxX",
     level: Optional[str] = "MAX",
@@ -70,25 +120,24 @@ async def convert_name(
     return converted_name
 
 
+@router.get("/link/lipid/")
+async def link_lipid(
+    lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
+    export_url: bool = False,
+    export_names: bool = True,
+) -> dict:
+    """
+    link one lipid  to related resources from given lipid name
+    """
+    return await link_one_lipid(lipid_name, export_url, export_names)
+
+
 @router.get("/parse/lipid/")
-async def parse_name(lipid_name: str = "PLPC"):
+async def parse_lipid(lipid_name: str = "PLPC"):
     """
     Parse one lipid name from path parameter
     """
     return parse_lipid(lipid_name)
-
-
-@router.get("/link/lipid/")
-async def link_str(lipid_name: str = "PC(16:0/18:2(9Z,12Z))", export_url: bool = False):
-    """
-    link one lipid name from data
-    """
-
-    linked_ids = await get_cross_links(lipid_name, export_url=export_url)
-    if linked_ids:
-        return linked_ids
-    else:
-        raise HTTPException(status_code=500)
 
 
 # Post APIs
@@ -155,10 +204,56 @@ async def equalize_multiple_levels(
     """
     Equalize a dict of lipid names into supported levels and export to supported style
     """
-    print(levels.levels)
+    # print(levels.levels)
     equalizer = Equalizer(data.data, level=levels.levels)
     equalizer_data = equalizer.cross_match()
     return equalizer_data
+
+
+@router.post("/link/str/")
+async def link_str(
+    lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
+    export_url: bool = False,
+    export_names: bool = True,
+) -> dict:
+    """
+    link one lipid to related resources from posted lipid name
+    """
+    return await link_one_lipid(lipid_name, export_url, export_names)
+
+
+@router.post("/link/list/")
+async def link_list(
+    lipid_names: list, export_url: bool = False, export_names: bool = True,
+) -> dict:
+    """
+    link a list of lipids to related resources from posted lipid name list
+    """
+    linked_info = {}
+    for lipid_name in lipid_names:
+        linked_info[lipid_name] = await link_one_lipid(
+            lipid_name, export_url, export_names
+        )
+    return linked_info
+
+
+@router.post("/link/dict/")
+async def link_dict(
+    lipid_names: dict, export_url: bool = False, export_names: bool = True,
+) -> dict:
+    """
+    link a list of lipids to related resources from posted lipid name list
+    """
+    linked_info = {}
+    for col in lipid_names:
+        lipid_col = lipid_names[col]
+        linked_col_info = {}
+        for lipid_name in lipid_col:
+            linked_col_info[lipid_name] = await link_one_lipid(
+                lipid_name, export_url, export_names
+            )
+        linked_info[col] = linked_col_info
+    return linked_info
 
 
 @router.post("/parse/str/")

@@ -4,14 +4,27 @@
     <meta charset="UTF-8">
     <title>{% block title %}LipidLynxX{% endblock %}</title>
     {# use bootstrap v4 from cdn #}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    {#    use Google font fira code#}
+    <link href='https://fonts.googleapis.com/css?family=Fira+Code' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet'>
+{#    <link href='https://fonts.googleapis.com/css?family=Vollkorn' rel='stylesheet'>#}
     <style type="text/css">
         .chart {
             margin-top: 30px;
             text-align: center;
+        }
+        body {
+            font-family: 'Fira Sans', sans-serif;
+        }
+        .monospace {
+            font-family: 'Fira Code', monospace;
         }
     </style>
     {% block js_code %}{% endblock %}
@@ -21,8 +34,7 @@
 <header data-block-type="headers" data-id="1" data-vivaldi-spatnav-clickable="1">
     <nav class="navbar navbar-expand-lg" style="background-color: #e97C31;">
         <a class="navbar-brand text-light" href="{{ url_for('home') }}">
-            <img src="{{ url_for('home') }}images/LipidLynxX_Logo_banner.jpg" alt="logo">
-            LipidLynxX
+            <img src="{{ url_for('home') }}images/LipidLynxX_logo_banner.png" alt="logo" height="32">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav1"
                 aria-controls="navbarNav1" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,11 +105,19 @@
         <div class="row align-items-top text-center text-md-left">
             <div class="col">
                 <h5><strong>LipidLynxX</strong></h5>
-                <p class="text-dark">Link lipid identifiers into an unified nomenclature</p>
+                <p class="text-dark">
+                    <a href="{{ url_for('about') }}" class="text-dark" target="_blank">
+                    Link lipid identifiers across diverse nomenclatures
+                        <img src="{{ url_for('home') }}images/icons/lightning.svg" alt="info_circle"></a></p>
                 <p class="text-dark"></p>
                 <p class="text-dark">
                     <a href="https://github.com/SysMedOs/LipidLynxX" class="text-dark" target="_blank">
-                        Check latest version of LipidLynxX on GitHub &#128279;
+                        Check latest version of LipidLynxX on GitHub <img src="{{ url_for('home') }}images/icons/cloud-download.svg" alt="external_link">
+                    </a>
+                </p>
+                <p class="text-dark">
+                    <a href="https://github.com/SysMedOs/LipidLynxX/issues" class="text-dark" target="_blank">
+                        Report issues to improve LipidLynxX <img src="{{ url_for('home') }}images/icons/chat-square-text.svg" alt="bug">
                     </a>
                 </p>
             </div>
@@ -105,16 +125,20 @@
                 <h5><strong>About Us</strong></h5>
                 <p class="text-dark">
                     <a href="https://home.uni-leipzig.de/fedorova/sysmedos/" class="text-dark">Team SysMedOs
-                        &#128279;</a><br>
+                        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
                     <a href="https://home.uni-leipzig.de/fedorova/" class="text-dark">Fedorova Research Group
-                        &#128279;</a><br>
-                    AG Bioanalytik<br>University of Leipzig
+                        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+                    <a href="https://research.uni-leipzig.de/bioanalytik/index_en.html" class="text-dark">AG Bioanalytik
+                        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+                    <a href="https://www.uni-leipzig.de" class="text-dark">University of Leipzig
+                        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
                 </p>
             </div>
         </div>
         <div class="row">
             <div class="col text-center">
-                <h6 class="text-dark">Developed by team SysMedOs</h6>
+                <h6 class="text-dark">Developed by Team SysMedOs
+                </h6>
             </div>
         </div>
     </div>

@@ -1,10 +1,13 @@
+
+![LipidLynx_icon_Logo](images/LipidLynxX_icon_128.jpg) 
+![LipidLynx_text_Logo](images/LipidLynxX_logo_color.png)
 # LipidLynxX User Guide
 
 ![LipidLynxX_Start_Chromium](images/LipidLynxX_Start_Chromium.png)
 ## This user guide is designed for:
 
--   LipidLynxX version: v0.4.12
--   API version: v0.1
+-   LipidLynxX version: v0.8.24
+-   API version: 1.0
 
 ## Table of Contents
 1. [How to install](#How_to_install_LipidLynxX)
@@ -29,29 +32,42 @@ In each release, there is always an `Assets` section. Please download the Window
 
 When the file is successfully downloaded, you can unzip it to any folder .e.g `D:/Apps/LipidLynxX`.
 Open the folder of LipidLynxX and you can find the `LipidLynxX.exe` by using `right click -> Group by -> Type`
+
 ![Guide_install_02](images/Guide_install_exe_02.png)
+
 You can double click on `LipidLynxX.exe` to start LipidLynxX
+
 ![Guide_install_03](images/Guide_install_exe_03.png)
+
 Your antivirus may block it first and shows a blue frame. 
 After virus checking finished, it may have some error message. Close all warnings and this command prompt window.
+
 ![Guide_install_03](images/Guide_install_exe_04.png)
+
 Now click on `LipidLynxX.exe` again and the following command prompt window will show up without any error message.
+
 ![Guide_install_03](images/Guide_install_exe_04.png)
+
 A web browser window will start automatically and load the LipidLynxX local web service at:
-[http://127.0.0.1:5000/lynx/](http://127.0.0.1:5000/lynx/)
+
+[http://127.0.0.1:1399](http://127.0.0.1:1399)
+
 Please make sure you have Chrome or Firefox installed.
-![LipidLynxX_Start_fox](images/LipidLynxX_Start_fox.png)
+
+![LipidLynxX_Start_fox](images/LipidLynxX_Start_Firefox.png)
+
 If windows internet explorer or Microsoft Edge browser started by default, 
-please start Chrome or Firefox manually and visit [http://127.0.0.1:5000/lynx/](http://127.0.0.1:5000/lynx/)
+please start Chrome or Firefox manually and visit [http://127.0.0.1:1399](http://127.0.0.1:1399)
+
 
 Now you have LipidLynxX installed successfully.
 
 Please leave the LipidLynxX command prompt window on during the run. 
 If you accidentally close the web page of LipidLynxX, you can always visit 
-[http://127.0.0.1:5000/lynx/](http://127.0.0.1:5000/lynx/) to get back to LipidLynxX.
+[http://127.0.0.1:1399](http://127.0.0.1:1399) to get back to LipidLynxX.
 
 If you want to quit LipidLynxX, just close the LipidLynxX command prompt window, 
-and then the LipidLynxX at [http://127.0.0.1:5000/lynx/](http://127.0.0.1:5000/lynx/) will be switched off.
+and then the LipidLynxX at [http://127.0.0.1:1399](http://127.0.0.1:1399) will be switched off.
 Please make sure you saved all your output files before closing the LipidLynxX command prompt window.
 
 ### Install from source code
@@ -125,7 +141,7 @@ After some debug information, you will see following information:
 
 And a browser window will pop up with LipidLynxX interface using link:
 
-[http://127.0.0.1:5000/lynx/](http://127.0.0.1:5000/lynx/)
+[http://127.0.0.1:1399](http://127.0.0.1:1399)
 
 ![Guide_install_source_08](images/LipidLynxX_Start_Chromium.png)
 
@@ -218,15 +234,15 @@ python LynxEqualizer.py -l "B0,D0,D1" -i doc/sample_data/input/LipidLynxX_test.c
 - **LipidLynxX Converter API Examples**
 
 ```bash
-curl http://127.0.0.1:5000/lynx/api/0.1/converter/str/ -d 'data="PLPC"' -X GET
-curl http://127.0.0.1:5000/lynx/api/0.1/converter/list/ -d 'data=["PAPE", "PE 36:4"]' -X GET
-curl http://127.0.0.1:5000/lynx/api/0.1/converter/dict/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2"]}' -X GET
+curl http://127.0.0.1:1399api/0.1/converter/str/ -d 'data="PLPC"' -X GET
+curl http://127.0.0.1:1399api/0.1/converter/list/ -d 'data=["PAPE", "PE 36:4"]' -X GET
+curl http://127.0.0.1:1399api/0.1/converter/dict/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2"]}' -X GET
 ```
 
 - **LipidLynxX Equalizer API Examples**
 
 ```bash
-curl http://127.0.0.1:5000/lynx/api/0.1/equalizer/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)", "DPPE"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2", "PG 18:0_18:3"]}&level=D0' -X GET
+curl http://127.0.0.1:1399api/0.1/equalizer/ -d 'data={"Sample1":["PAPC","PS 16:0/18:2(9Z,12Z)", "DPPE"],"SAMPLE2":["PC 16:0_20:4","PS 16:0_18:2", "PG 18:0_18:3"]}&level=D0' -X GET
 ```
 - **Screenshot**
 ![LipidLynxX_API](images/LipidLynxX_API.png)
