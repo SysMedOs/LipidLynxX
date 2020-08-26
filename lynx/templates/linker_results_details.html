@@ -19,11 +19,11 @@
                     </tr>
                     <tr>
                         <td><h5>Shorthand Notation: </h5></td>
-                        <td><h5>{{ shorthand_name }}</h5></td>
+                        <td class="monospace"><h5>{{ shorthand_name }}</h5></td>
                     </tr>
                     <tr>
                         <td><h5>LipidLynxX Notation: </h5></td>
-                        <td><h5>{{ lynx_name }}</h5></td>
+                        <td class="monospace"><h5>{{ lynx_name }}</h5></td>
                     </tr>
                 </table>
             </div>
@@ -32,9 +32,9 @@
                 {% for resource_group_db, resource_group_info in resource_data.items() %}
                     <h4># {{ resource_group_db }}</h4>
                     {% for resource_db, resource_info in resource_group_info.items() %}
-                        <h6>{{ resource_db }}</h6>
+                        <h6>&bull; {{ resource_db }}</h6>
                         {% for resource_id, resource_url in resource_info.items() %}
-                            <p>{{ resource_id }} : <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></p>
+                            <p class="monospace">{{ resource_id }} : <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></p>
                         {% endfor %}
                     {% endfor %}
                     <div class="border-top my-3"></div>

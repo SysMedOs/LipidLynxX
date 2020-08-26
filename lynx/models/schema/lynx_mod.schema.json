@@ -115,10 +115,10 @@
             "uniqueItems": true,
             "minProperties": 0,
             "propertyNames": {
-              "pattern": "(^[COHNPKS]a?$)"
+              "pattern": "(^[COHNPKS]|Na$)"
             },
             "patternProperties": {
-              "(^[COHNPKS]a?$)": {
+              "(^[COHNPKS]|Na$)": {
                 "type": "integer",
                 "minimum": -99,
                 "maximum": 99}

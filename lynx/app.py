@@ -18,18 +18,27 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
 from lynx.routers import api, frontend
-from lynx.utils.cfg_reader import api_version, app_cfg_info, lynx_version
+from lynx.utils.cfg_reader import app_prefix, api_version, app_cfg_info, lynx_version
 
 
 app_url = app_cfg_info.get("app_url", "127.0.0.1")
 app_port = int(app_cfg_info.get("app_port", 1399))
 
-app = FastAPI(debug=True)
+app = FastAPI(
+    title="LipidLynxX",
+    debug=True,
+    openapi_url=f"{app_prefix}/openapi.json",
+    docs_url=f"{app_prefix}/docs",
+    redoc_url=f"{app_prefix}/redoc",
+    swagger_favicon_url=f"{app_prefix}/images/favicon.png",
+)
 
 
-app.include_router(api.router, prefix="/api", tags=["api"])
-app.include_router(frontend.router)
-app.mount("/images", StaticFiles(directory="lynx/static/images"), name="images")
+app.include_router(api.router, prefix=f"{app_prefix}/api", tags=["api"])
+app.include_router(frontend.router, prefix=f"{app_prefix}")
+app.mount(
+    f"{app_prefix}/images", StaticFiles(directory="lynx/static/images"), name="images"
+)
 
 
 def custom_openapi():
@@ -42,6 +51,12 @@ def custom_openapi():
         routes=app.routes,
     )
     openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
+    # openapi_schema["servers"] = [
+    #     {
+    #         "url": "https://www.example.org/",  # URL of the website root
+    #         "description": "example LipidLynxX Service",  # Description will de displayed on docs page
+    #     }
+    # ]
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
