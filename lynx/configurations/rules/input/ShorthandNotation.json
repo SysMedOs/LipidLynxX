@@ -97,8 +97,7 @@
       "BRACKET_RIGHT": "\\)",
       "EXAMPLES": [
         "(9Z)",
-        "(9Z,12Z)",
-        "(9OH,12OH)"
+        "(9Z,12Z)"
       ]
     }
   },

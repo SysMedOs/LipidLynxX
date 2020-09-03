@@ -21,6 +21,7 @@ import regex as re
 
 from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import res_schema, res_schema_path, default_output_rules
+from lynx.models.db import DB
 from lynx.models.modification import Modifications, merge_mods
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import check_json
@@ -44,16 +45,17 @@ class Residue(object):
         self.__replace_mdt__()
 
         self.schema = schema
-        self.type = "FattyAcid"
+        self.type = "Residue"
         resolver = RefResolver(
             referrer=res_schema, base_uri=f"file://{os.path.dirname(res_schema_path)}/"
         )
         self.validator = Draft7Validator(res_schema, resolver=resolver)
 
         mod_info = residue_info.get("MOD", {})
-
+        db_info = residue_info.get("DB", {})
+        self.db_obj = DB(db_info)
         self.mod_obj = Modifications(
-            mod_info, num_o=residue_info.get("NUM_O", 0), nomenclature=nomenclature
+            mod_info, num_o=residue_info.get("O_COUNT", 0), nomenclature=nomenclature
         )
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
@@ -74,28 +76,28 @@ class Residue(object):
         link = self.res_info.get("LINK", "")
         if link.lower() == "m":
             self.res_info["LINK"] = ""
-            self.res_info["NUM_O"] = 1 + self.res_info.get("NUM_O", 0)
+            self.res_info["O_COUNT"] = 1 + self.res_info.get("O_COUNT", 0)
         elif link.lower() == "d":
             self.res_info["LINK"] = ""
-            self.res_info["NUM_O"] = 2 + self.res_info.get("NUM_O", 0)
+            self.res_info["O_COUNT"] = 2 + self.res_info.get("O_COUNT", 0)
         elif link.lower() == "t":
             self.res_info["LINK"] = ""
-            self.res_info["NUM_O"] = 3 + self.res_info.get("NUM_O", 0)
+            self.res_info["O_COUNT"] = 3 + self.res_info.get("O_COUNT", 0)
         else:
             pass
 
     def __post_init__(self):
         res_str_dct = {}
-        num_o = self.res_info.get("NUM_O", 0)
+        num_o = self.res_info.get("O_COUNT", 0)
         for lv in self.linked_levels:
             res_str = ""
             for o in self.res_rule_orders:
                 if o in self.res_info or o in self.res_separators or o in ["SUM_MODS"]:
                     if o in ["SUM_MODS", "MODS", "MOD"]:
                         res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
-                    elif o == "NUM_O":
+                    elif o == "O_COUNT":
                         if num_o > 0:
-                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("O_COUNT")
                             if o_seg_rgx:
                                 if num_o == 1:
                                     if re.match(o_seg_rgx, str(num_o)):
@@ -174,7 +176,7 @@ def merge_residues(
         link = res_info.get("LINK")
         if res.upper().startswith("P-") and link == "P-":
             res_info["LINK"] = "O-"
-            res_info["NUM_DB"] = res_info.get("NUM_DB") + 1
+            res_info["DB_COUNT"] = res_info.get("DB_COUNT") + 1
         for res_seg in res_info:
             if re.search(r"MOD", res_seg):
                 pass
@@ -214,9 +216,9 @@ if __name__ == "__main__":
         "d18:1": {
             "LINK": "d",
             "MOD": {"MOD_LEVEL": 0, "MOD_INFO": {}},
-            "NUM_C": 18,
-            "NUM_DB": 1,
-            "NUM_O": 0,
+            "C_COUNT": 18,
+            "DB_COUNT": 1,
+            "O_COUNT": 0,
         },
         "18:2(9Z,11Z)(12OH)": {
             "LINK": "",
@@ -245,9 +247,9 @@ if __name__ == "__main__":
                     },
                 },
             },
-            "NUM_C": 18,
-            "NUM_DB": 2,
-            "NUM_O": 0,
+            "C_COUNT": 18,
+            "DB_COUNT": 2,
+            "O_COUNT": 0,
         },
     }
     # for r in usr_res_info:

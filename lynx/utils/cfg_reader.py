@@ -28,6 +28,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         "app_log_level",
         "app_url",
         "app_port",
+        "app_prefix",
         "cli_log_level",
         "controlled_vocabularies",
         "defined_alias",
@@ -69,12 +70,24 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
             ]:
                 cfg_dct[field] = get_abs_path(config.get(user_cfg, field))
             else:
-                cfg_dct[field] = config.get(user_cfg, field)
+                try:
+                    cfg_dct[field] = config.get(user_cfg, field)
+                except configparser.NoOptionError:
+                    pass
 
     if "app_url" not in cfg_dct:
         cfg_dct["app_url"] = "127.0.0.1"
     if "app_port" not in cfg_dct:
         cfg_dct["app_port"] = "1399"
+
+    usr_app_prefix = cfg_dct.get("app_prefix", "").strip("/")
+
+    if usr_app_prefix:
+        if re.match(r"^\s*None\s*$", usr_app_prefix, re.IGNORECASE):
+            usr_app_prefix = ""
+        else:
+            usr_app_prefix = f"/{usr_app_prefix}"
+    cfg_dct["app_prefix"] = usr_app_prefix
 
     return cfg_dct
 
@@ -120,5 +133,6 @@ app_cfg_info = load_cfg_info(cfg_path=default_cfg_path)
 
 lynx_version = "0.8.24"
 api_version = app_cfg_info.get("api_version", "1.0")
+app_prefix = app_cfg_info.get("app_prefix", "")
 app_log_level = get_log_level(app_cfg_info.get("app_log_level", "DEBUG"))
 cli_log_level = get_log_level(app_cfg_info.get("cli_log_level", "ERROR"))

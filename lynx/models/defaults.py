@@ -69,7 +69,7 @@ default_template_files = {
 
 lipid_level_lst = ["B", "D", "S"]
 mod_level_lst = ["0", "1", "2", "3", "4", "5"]
-db_level_lst = [".0", "0.1", "0.2"]
+db_level_lst = ["0.0", "0.1", "0.2"]
 mod_db_level_lst = [
     "0",
     "0.1",
@@ -134,6 +134,7 @@ supported_levels = [
 ]
 
 lynx_schema_cfg = {
+    "lynx_db": r"lynx/models/schema/lynx_db.schema.json",
     "lynx_mod": r"lynx/models/schema/lynx_mod.schema.json",
     "lynx_residue": r"lynx/models/schema/lynx_residue.schema.json",
     "lynx_lipidclass": r"lynx/models/schema/lynx_lipidclass.schema.json",

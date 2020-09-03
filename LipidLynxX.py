@@ -16,12 +16,12 @@
 import webbrowser
 import uvicorn
 
-from lynx.app import app, app_url, app_port
+from lynx.app import app, app_url, app_port, app_prefix
 
 
 def start_lynx():
     print("Start Browser: ")
-    webbrowser.open(f"http://{app_url}:{app_port}", new=1, autoraise=True)
+    webbrowser.open(f"http://{app_url}:{app_port}{app_prefix}", new=1, autoraise=True)
     print("Start LipidLynxX Server: ")
     uvicorn.run(app, host=app_url, port=app_port)
 

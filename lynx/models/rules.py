@@ -38,6 +38,11 @@ class InputRules(object):
         self.sources = self.raw_rules["SOURCES"]
         self.date = self.raw_rules.get("_DATE", 20200214)
         self.authors = self.raw_rules.get("_AUTHORS", ["example@uni-example.de"])
+        db_sites = self.raw_rules.get("DB_SITES", {})
+        if db_sites:
+            self.supported_db_sites = list(db_sites.keys())
+        else:
+            self.supported_db_sites = []
         mods = self.raw_rules.get("MODS", {})
         if mods:
             self.supported_mods = list(mods.keys())
@@ -46,7 +51,10 @@ class InputRules(object):
         self.supported_residues = list(self.raw_rules["RESIDUES"].keys())
         self.supported_classes = list(self.raw_rules["LIPID_CLASSES"].keys())
         self.supported_keys = (
-            self.supported_mods + self.supported_residues + self.supported_classes
+            self.supported_db_sites
+            + self.supported_mods
+            + self.supported_residues
+            + self.supported_classes
         )
         self.separators = self.raw_rules["SEPARATORS"]
         self.rules = {}
@@ -255,7 +263,8 @@ class InputRules(object):
         return rules
 
     def build(self) -> dict:
-        sum_rules = self.__build__(self.supported_mods, "MODS")
+        sum_rules = self.__build__(self.supported_db_sites, "DB_SITES")
+        sum_rules.update(self.__build__(self.supported_mods, "MODS"))
         sum_rules.update(self.__build__(self.supported_residues, "RESIDUES"))
         # sum_rules = self.__replace_refs__(sum_rules)
         sum_rules.update(self.__build__(self.supported_classes, "LIPID_CLASSES"))
@@ -281,6 +290,9 @@ class InputRules(object):
         for c in self.supported_keys:
 
             if c in self.supported_mods:
+                temp_c_dct = self.raw_rules.get("DB_SITES", {}).get(c, {})
+                seg_typ = "DB_SITES"
+            elif c in self.supported_mods:
                 temp_c_dct = self.raw_rules.get("MODS", {}).get(c, {})
                 seg_typ = "MODS"
             elif c in self.supported_residues:
@@ -380,6 +392,7 @@ class OutputRules(object):
         self.nomenclature = self.raw_rules.get("NOMENCLATURE", "LipidLynxX")
         self.supported_lmsd_classes = list(self.raw_rules["LMSD_CLASSES"].keys())
         self.separators = self.raw_rules["SEPARATORS"]
+        self.db_sites = self.raw_rules.get("DB_SITES", {})
         self.mods = self.raw_rules.get("MODS", {})
         self.residues = self.raw_rules.get("RESIDUES", {})
         self.rules = self.build()
@@ -405,6 +418,7 @@ class OutputRules(object):
         rules = {
             "LMSD_CLASSES": {},
             "RESIDUES": self.residues,
+            "DB_SITES": self.db_sites,
             "MODS": self.mods,
             "SEPARATORS": self.separators,
         }

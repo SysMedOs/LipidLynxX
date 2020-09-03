@@ -44,7 +44,9 @@ class Converter:
         )
         self.logger = logger
 
-    def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
+    def convert_str(
+        self, input_str: str, level: str = None, default_na: str = ""
+    ) -> ConvertedStrData:
         output_dct = {}
         # Set COMP_DB to max level B2
         if re.search(r"COMP\\s*[_]?\\s*(DB)?", self.style):
@@ -59,21 +61,23 @@ class Converter:
                 output_dct["skipped"] = input_str
         converted_str_obj = ConvertedStrData(
             input=output_dct.get("input", input_str),
-            output=output_dct.get("output", ""),
+            output=output_dct.get("output", default_na),
             converted=output_dct.get("converted", tuple()),
             skipped=output_dct.get("skipped", ""),
         )
         return converted_str_obj
 
     def convert_list(
-        self, input_list: List[str], level: str = None
+        self, input_list: List[str], level: str = None, default_na: str = ""
     ) -> ConvertedListData:
         output_dct = {"input": [], "output": [], "converted": [], "skipped": []}
         abbr_result_lst = []
         if input_list and isinstance(input_list, list):
             input_list = keep_string_only(input_list, self.logger)
             for abbr in input_list:
-                abbr_result_lst.append(self.convert_str(abbr, level=level).dict())
+                abbr_result_lst.append(
+                    self.convert_str(abbr, level=level, default_na=default_na).dict()
+                )
         for abbr_result in abbr_result_lst:
             for k in output_dct:
                 output_dct[k].append(abbr_result.get(k, ""))
@@ -93,7 +97,10 @@ class Converter:
         return converted_lst_obj
 
     def convert_dict(
-        self, input_dct: Dict[str, Union[str, List[str]]], level: str = None
+        self,
+        input_dct: Dict[str, Union[str, List[str]]],
+        level: str = None,
+        default_na: str = "",
     ) -> Dict[str, ConvertedListData]:
         output_dct = {}
         if input_dct and isinstance(input_dct, dict):
@@ -105,7 +112,9 @@ class Converter:
                     else:
                         in_lst = [k_val]
                     if in_lst:
-                        output_dct[k] = self.convert_list(in_lst, level=level)
+                        output_dct[k] = self.convert_list(
+                            in_lst, level=level, default_na=default_na
+                        )
 
         return output_dct
 

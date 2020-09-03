@@ -264,7 +264,10 @@ class Modifications(object):
                 "MOD_SITE",
                 "SITE_BRACKET_RIGHT",
             ]
-        return self.to_mod_base(mod_seg_lst=mod_segments, get_db_only=get_db_only,)
+        return self.to_mod_base(
+            mod_seg_lst=mod_segments,
+            get_db_only=get_db_only,
+        )
 
     def to_mod_site_info(self, get_db_only: bool = False):
         return self.to_mod_base(
@@ -417,7 +420,7 @@ class Modifications(object):
 
         if check_json(
             validator=self.validator,
-            json_obj=json.loads(mod_json_str, logger=self.logger),
+            json_obj=json.loads(mod_json_str),
         ):
             return mod_json_str
         else:
