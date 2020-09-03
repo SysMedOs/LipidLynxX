@@ -392,6 +392,7 @@ class OutputRules(object):
         self.nomenclature = self.raw_rules.get("NOMENCLATURE", "LipidLynxX")
         self.supported_lmsd_classes = list(self.raw_rules["LMSD_CLASSES"].keys())
         self.separators = self.raw_rules["SEPARATORS"]
+        self.db_sites = self.raw_rules.get("DB_SITES", {})
         self.mods = self.raw_rules.get("MODS", {})
         self.residues = self.raw_rules.get("RESIDUES", {})
         self.rules = self.build()
@@ -417,6 +418,7 @@ class OutputRules(object):
         rules = {
             "LMSD_CLASSES": {},
             "RESIDUES": self.residues,
+            "DB_SITES": self.db_sites,
             "MODS": self.mods,
             "SEPARATORS": self.separators,
         }
