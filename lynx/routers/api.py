@@ -16,7 +16,7 @@
 import re
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.controllers.converter import Converter
@@ -28,6 +28,7 @@ from lynx.models.api_models import (
     InputDictData,
     InputListData,
     InputStrData,
+    JobStatus,
     LvType,
     LevelsData,
     StyleType,
@@ -40,6 +41,7 @@ from lynx.models.defaults import (
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
+from lynx.utils.job_manager import create_job_token, is_job_finished, get_job_output
 
 router = APIRouter()
 
@@ -140,10 +142,50 @@ async def parse_lipid(lipid_name: str = "PLPC"):
     return parse_lipid(lipid_name)
 
 
+@router.get(
+    "/converter/jobs/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def check_converter_job(
+    token: str,
+):
+    """"""
+    if is_job_finished(token):
+        job_data = get_job_output(token)
+        job_status = "finished"
+    else:
+        job_data = {}
+        job_status = "working"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    return job_info
+
+
 # Post APIs
-@router.post("/convert/str/")
+@router.post(
+    "/convert/jobs/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
+)
+async def create_converter_job(
+    style: StyleType,
+    data: InputStrData,
+    level: Optional[LvType] = "MAX",
+):
+    """"""
+    job_data = {"data": data.dict()}
+    token = create_job_token(job_data)
+    job_status = "created"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+
+    return job_info
+
+
+@router.post(
+    "/convert/str/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
+)
 async def convert_str(
-    style: StyleType, data: InputStrData, level: Optional[LvType] = "MAX"
+    style: StyleType,
+    data: InputStrData,
+    level: Optional[LvType] = "MAX",
 ):
     """
     Convert one lipid name into supported levels and export to supported style
@@ -155,7 +197,11 @@ async def convert_str(
     return converted_results
 
 
-@router.post("/convert/list/", response_model=ConverterExportData)
+@router.post(
+    "/convert/list/",
+    response_model=ConverterExportData,
+    status_code=status.HTTP_201_CREATED,
+)
 async def convert_list(
     style: str, data: InputListData, level: Optional[LvType] = "MAX"
 ):
@@ -171,7 +217,11 @@ async def convert_list(
     return converted_results
 
 
-@router.post("/convert/dict/", response_model=ConverterExportData)
+@router.post(
+    "/convert/dict/",
+    response_model=ConverterExportData,
+    status_code=status.HTTP_201_CREATED,
+)
 async def convert_dict(
     style: StyleType, data: InputDictData, level: Optional[LvType] = "MAX"
 ):
@@ -185,7 +235,11 @@ async def convert_dict(
     return converted_results
 
 
-@router.post("/equalize/single-level/", response_model=EqualizerExportData)
+@router.post(
+    "/equalize/single-level/",
+    response_model=EqualizerExportData,
+    status_code=status.HTTP_201_CREATED,
+)
 async def equalize_single_level(
     data: InputDictData, level: Optional[str] = "B1"
 ) -> EqualizerExportData:
@@ -197,7 +251,11 @@ async def equalize_single_level(
     return equalizer_data
 
 
-@router.post("/equalize/multiple-levels/", response_model=EqualizerExportData)
+@router.post(
+    "/equalize/multiple-levels/",
+    response_model=EqualizerExportData,
+    status_code=status.HTTP_201_CREATED,
+)
 async def equalize_multiple_levels(
     data: InputDictData, levels: Optional[LevelsData] = default_levels
 ) -> EqualizerExportData:
@@ -215,6 +273,7 @@ async def link_str(
     lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
     export_url: bool = False,
     export_names: bool = True,
+    status_code=status.HTTP_201_CREATED,
 ) -> dict:
     """
     link one lipid to related resources from posted lipid name
@@ -224,7 +283,10 @@ async def link_str(
 
 @router.post("/link/list/")
 async def link_list(
-    lipid_names: list, export_url: bool = False, export_names: bool = True,
+    lipid_names: list,
+    export_url: bool = False,
+    export_names: bool = True,
+    status_code=status.HTTP_201_CREATED,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -239,7 +301,10 @@ async def link_list(
 
 @router.post("/link/dict/")
 async def link_dict(
-    lipid_names: dict, export_url: bool = False, export_names: bool = True,
+    lipid_names: dict,
+    export_url: bool = False,
+    export_names: bool = True,
+    status_code=status.HTTP_201_CREATED,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -257,7 +322,7 @@ async def link_dict(
 
 
 @router.post("/parse/str/")
-async def parse_str(data: InputStrData):
+async def parse_str(data: InputStrData, status_code=status.HTTP_201_CREATED):
     """
     Parse one lipid name from data
     """

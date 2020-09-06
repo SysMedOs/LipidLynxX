@@ -18,7 +18,7 @@ import json
 import os
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, Request, UploadFile, HTTPException
+from fastapi import APIRouter, BackgroundTasks, File, Form, Request, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 
