@@ -16,7 +16,7 @@
 import re
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.controllers.converter import Converter
@@ -41,7 +41,7 @@ from lynx.models.defaults import (
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
-from lynx.utils.job_manager import create_job_token, is_job_finished, get_job_output
+from lynx.utils.job_manager import create_job_token, is_job_finished, get_job_output, save_session
 
 router = APIRouter()
 
@@ -161,6 +161,39 @@ async def check_converter_job(
     return job_info
 
 
+@router.get(
+    "/linker/jobs/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def check_linker_job(
+    token: str,
+):
+    """"""
+    if is_job_finished(token):
+        job_data = get_job_output(token)
+        job_status = "finished"
+    else:
+        job_data = {}
+        job_status = "working"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    return job_info
+
+
+@router.get(
+    "/linker/jobs/{token}/output"
+)
+async def check_linker_job(
+    token: str,
+):
+    """"""
+    if is_job_finished(token):
+
+        return get_job_output(token)
+    else:
+        return "job is not finished."
+
+
 # Post APIs
 @router.post(
     "/convert/jobs/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
@@ -268,12 +301,52 @@ async def equalize_multiple_levels(
     return equalizer_data
 
 
-@router.post("/link/str/")
+async def run_linker(
+        token: str,
+        lipid_names: list,
+        export_url: bool = False,
+        export_names: bool = True,
+):
+    """
+    link a list of lipids to related resources from posted lipid name list
+    """
+    linked_info = {}
+    for lipid_name in lipid_names:
+        linked_info[lipid_name] = await link_one_lipid(
+            lipid_name, export_url, export_names
+        )
+    save_session(token, data=linked_info)
+
+
+@router.post(
+    "/link/jobs/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
+)
+async def create_linker_job(
+    lipid_names: list,
+    background_tasks: BackgroundTasks,
+    export_url: bool = False,
+    export_names: bool = True,
+):
+    """"""
+    job_data = {
+        "data": lipid_names,
+        "export_url": export_url,
+        "export_names": export_names,
+    }
+    token = create_job_token(job_data)
+    job_status = "created"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    background_tasks.add_task(
+        run_linker, token, lipid_names, export_url=export_url, export_names=export_names
+    )
+    return job_info
+
+
+@router.post("/link/str/", status_code=status.HTTP_201_CREATED)
 async def link_str(
     lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
     export_url: bool = False,
     export_names: bool = True,
-    status_code=status.HTTP_201_CREATED,
 ) -> dict:
     """
     link one lipid to related resources from posted lipid name
@@ -281,12 +354,11 @@ async def link_str(
     return await link_one_lipid(lipid_name, export_url, export_names)
 
 
-@router.post("/link/list/")
+@router.post("/link/list/", status_code=status.HTTP_201_CREATED)
 async def link_list(
     lipid_names: list,
     export_url: bool = False,
     export_names: bool = True,
-    status_code=status.HTTP_201_CREATED,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -299,12 +371,9 @@ async def link_list(
     return linked_info
 
 
-@router.post("/link/dict/")
+@router.post("/link/dict/", status_code=status.HTTP_201_CREATED)
 async def link_dict(
-    lipid_names: dict,
-    export_url: bool = False,
-    export_names: bool = True,
-    status_code=status.HTTP_201_CREATED,
+    lipid_names: dict, export_url: bool = False, export_names: bool = True
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -321,8 +390,8 @@ async def link_dict(
     return linked_info
 
 
-@router.post("/parse/str/")
-async def parse_str(data: InputStrData, status_code=status.HTTP_201_CREATED):
+@router.post("/parse/str/", status_code=status.HTTP_201_CREATED)
+async def parse_str(data: InputStrData):
     """
     Parse one lipid name from data
     """
