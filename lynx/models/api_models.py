@@ -15,7 +15,7 @@
 
 from enum import Enum
 import re
-from typing import Dict, List
+from typing import Dict, List, Literal
 
 from pydantic import BaseModel, constr
 
@@ -137,6 +137,10 @@ class InputDictData(BaseModel):
                 }
             }
         }
+
+
+class JobType(BaseModel):
+    job: Literal['convert', 'equalize', "link", "parse"]
 
 
 class JobStatus(BaseModel):

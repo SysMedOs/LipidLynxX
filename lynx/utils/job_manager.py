@@ -19,15 +19,17 @@ import os
 import time
 from typing import Union
 
+from lynx.models.api_models import JobType
 from lynx.models.defaults import default_temp_folder
 
 
-def create_job_token(data: Union[str, dict]) -> str:
+def create_job_token(job_type: JobType) -> str:
     time_tag = str(time.time())
-    if isinstance(data, dict):
-        data = json.dumps(data)
-    data_to_hash = "|".join([time_tag, data])
-    hash_obj = hashlib.sha1(data_to_hash.encode())
+    # print(job_type.job, type(job_type.job))
+    if not isinstance(job_type, JobType):
+        raise TypeError(f"Required type: JobType, received type: {type(job_type)}")
+    code_to_hash = "@".join([job_type.job, time_tag])
+    hash_obj = hashlib.sha1(code_to_hash.encode())
     job_token = hash_obj.hexdigest()
 
     return job_token
@@ -72,16 +74,19 @@ def get_job_output(job_token: str) -> dict:
 
 
 if __name__ == "__main__":
-    test_dct = {"x": 123}
-    test_text = json.dumps(test_dct)
-    test_js = json.loads(test_text)
+    # test_dct = {"x": 123}
+    # test_text = json.dumps(test_dct)
+    # test_js = json.loads(test_text)
+    # s1_id = create_job_token(test_dct)
+    # save_session(s1_id, test_dct)
+    # s2_id = create_job_token(test_text)
+    # save_session(s2_id, test_text)
+    test_dct = JobType(job="convert")
     s1_id = create_job_token(test_dct)
-    save_session(s1_id, test_dct)
-    s2_id = create_job_token(test_text)
-    save_session(s2_id, test_text)
+    # save_session(s1_id, test_dct)
 
     print(s1_id)
     print(get_job_output(s1_id))
 
-    print(s2_id)
-    print(get_job_output(s2_id))
+    # print(s2_id)
+    # print(get_job_output(s2_id))

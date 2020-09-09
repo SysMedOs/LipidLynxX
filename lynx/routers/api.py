@@ -16,7 +16,7 @@
 import re
 from typing import Optional
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
 from lynx.controllers.converter import Converter
@@ -41,7 +41,6 @@ from lynx.models.defaults import (
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
-from lynx.utils.job_manager import create_job_token, is_job_finished, get_job_output, save_session
 
 router = APIRouter()
 
@@ -142,76 +141,7 @@ async def parse_lipid(lipid_name: str = "PLPC"):
     return parse_lipid(lipid_name)
 
 
-@router.get(
-    "/converter/jobs/{token}",
-    response_model=JobStatus,
-    status_code=status.HTTP_202_ACCEPTED,
-)
-async def check_converter_job(
-    token: str,
-):
-    """"""
-    if is_job_finished(token):
-        job_data = get_job_output(token)
-        job_status = "finished"
-    else:
-        job_data = {}
-        job_status = "working"
-    job_info = JobStatus(token=token, status=job_status, data=job_data)
-    return job_info
-
-
-@router.get(
-    "/linker/jobs/{token}",
-    response_model=JobStatus,
-    status_code=status.HTTP_202_ACCEPTED,
-)
-async def check_linker_job(
-    token: str,
-):
-    """"""
-    if is_job_finished(token):
-        job_data = get_job_output(token)
-        job_status = "finished"
-    else:
-        job_data = {}
-        job_status = "working"
-    job_info = JobStatus(token=token, status=job_status, data=job_data)
-    return job_info
-
-
-@router.get(
-    "/linker/jobs/{token}/output"
-)
-async def check_linker_job(
-    token: str,
-):
-    """"""
-    if is_job_finished(token):
-
-        return get_job_output(token)
-    else:
-        return "job is not finished."
-
-
 # Post APIs
-@router.post(
-    "/convert/jobs/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
-)
-async def create_converter_job(
-    style: StyleType,
-    data: InputStrData,
-    level: Optional[LvType] = "MAX",
-):
-    """"""
-    job_data = {"data": data.dict()}
-    token = create_job_token(job_data)
-    job_status = "created"
-    job_info = JobStatus(token=token, status=job_status, data=job_data)
-
-    return job_info
-
-
 @router.post(
     "/convert/str/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
 )
@@ -236,7 +166,7 @@ async def convert_str(
     status_code=status.HTTP_201_CREATED,
 )
 async def convert_list(
-    style: str, data: InputListData, level: Optional[LvType] = "MAX"
+    data: InputListData, style: str, level: Optional[LvType] = "MAX"
 ):
     """
     Convert a list of lipid names into supported levels and export to supported style
@@ -256,7 +186,7 @@ async def convert_list(
     status_code=status.HTTP_201_CREATED,
 )
 async def convert_dict(
-    style: StyleType, data: InputDictData, level: Optional[LvType] = "MAX"
+    data: InputDictData, style: StyleType, level: Optional[LvType] = "MAX"
 ):
     """
     Convert a dict of lipid names into supported levels and export to supported style
@@ -299,47 +229,6 @@ async def equalize_multiple_levels(
     equalizer = Equalizer(data.data, level=levels.levels)
     equalizer_data = equalizer.cross_match()
     return equalizer_data
-
-
-async def run_linker(
-        token: str,
-        lipid_names: list,
-        export_url: bool = False,
-        export_names: bool = True,
-):
-    """
-    link a list of lipids to related resources from posted lipid name list
-    """
-    linked_info = {}
-    for lipid_name in lipid_names:
-        linked_info[lipid_name] = await link_one_lipid(
-            lipid_name, export_url, export_names
-        )
-    save_session(token, data=linked_info)
-
-
-@router.post(
-    "/link/jobs/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
-)
-async def create_linker_job(
-    lipid_names: list,
-    background_tasks: BackgroundTasks,
-    export_url: bool = False,
-    export_names: bool = True,
-):
-    """"""
-    job_data = {
-        "data": lipid_names,
-        "export_url": export_url,
-        "export_names": export_names,
-    }
-    token = create_job_token(job_data)
-    job_status = "created"
-    job_info = JobStatus(token=token, status=job_status, data=job_data)
-    background_tasks.add_task(
-        run_linker, token, lipid_names, export_url=export_url, export_names=export_names
-    )
-    return job_info
 
 
 @router.post("/link/str/", status_code=status.HTTP_201_CREATED)
