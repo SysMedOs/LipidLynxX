@@ -146,9 +146,7 @@ async def parse_lipid(lipid_name: str = "PLPC"):
     "/convert/str/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
 )
 async def convert_str(
-    style: StyleType,
-    data: InputStrData,
-    level: Optional[LvType] = "MAX",
+    style: StyleType, data: InputStrData, level: Optional[LvType] = "MAX",
 ):
     """
     Convert one lipid name into supported levels and export to supported style
@@ -245,9 +243,7 @@ async def link_str(
 
 @router.post("/link/list/", status_code=status.HTTP_201_CREATED)
 async def link_list(
-    lipid_names: list,
-    export_url: bool = False,
-    export_names: bool = True,
+    lipid_names: list, export_url: bool = False, export_names: bool = True,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list

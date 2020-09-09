@@ -21,11 +21,26 @@ from starlette import status
 from starlette.background import BackgroundTasks
 
 from lynx import Converter
-from lynx.models.api_models import JobStatus, InputDictData, InputListData, InputStrData, StyleType, LvType, \
-    ConverterExportData, JobType
+from lynx.models.api_models import (
+    JobStatus,
+    InputDictData,
+    InputListData,
+    InputStrData,
+    StyleType,
+    LvType,
+    ConverterExportData,
+    JobType,
+)
 from lynx.routers.api import link_one_lipid
-from lynx.utils.job_manager import is_job_finished, get_job_output, save_session, create_job_token
+from lynx.utils.job_manager import (
+    is_job_finished,
+    get_job_output,
+    save_session,
+    create_job_token,
+)
 from lynx.utils.toolbox import get_level
+
+from starlette.concurrency import run_in_threadpool
 
 
 router = APIRouter()
@@ -36,9 +51,7 @@ router = APIRouter()
     response_model=JobStatus,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_converter_job(
-    token: str,
-):
+async def check_converter_job(token: str,):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -51,13 +64,9 @@ async def check_converter_job(
 
 
 @router.get(
-    "/linker/{token}",
-    response_model=JobStatus,
-    status_code=status.HTTP_202_ACCEPTED,
+    "/linker/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_linker_job(
-    token: str,
-):
+async def check_linker_job(token: str,):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -86,11 +95,17 @@ async def run_converter(
         )  # ConverterExportData
         save_session(token, data=converted_results.dict())
     elif isinstance(data, InputListData):
-        converted_results = ConverterExportData(
-            data={
-                "TextInput": lynx_converter.convert_list(data.data, level=get_level(level))
-            }
+        results = await run_in_threadpool(
+            lynx_converter.convert_list, data.data, level=get_level(level)
         )
+        converted_results = ConverterExportData(data={"TextInput": results})
+        # converted_results = ConverterExportData(
+        #     data={
+        #         "TextInput": lynx_converter.convert_list(
+        #             data.data, level=get_level(level)
+        #         )
+        #     }
+        # )
         save_session(token, data=converted_results.dict())
     elif isinstance(data, InputDictData):
         converted_results = ConverterExportData(
@@ -99,9 +114,7 @@ async def run_converter(
         save_session(token, data=converted_results.dict())
 
 
-@router.post(
-    "/convert/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
-)
+@router.post("/convert/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_convert_job(
     background_tasks: BackgroundTasks,
     data: Union[InputDictData, InputListData, InputStrData],
@@ -128,10 +141,7 @@ async def create_convert_job(
 
 
 async def run_linker(
-    token: str,
-    lipid_names: list,
-    export_url: bool = False,
-    export_names: bool = True,
+    token: str, lipid_names: list, export_url: bool = False, export_names: bool = True,
 ):
     """
     link a list of lipids to related resources from posted lipid name list
@@ -144,9 +154,7 @@ async def run_linker(
     save_session(token, data=linked_info)
 
 
-@router.post(
-    "/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED
-)
+@router.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_linker_job(
     lipid_names: list,
     background_tasks: BackgroundTasks,
