@@ -13,12 +13,14 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from multiprocessing import Process
 import time
 from typing import Union, Optional
 
 from fastapi import APIRouter, HTTPException, status
 from starlette import status
 from starlette.background import BackgroundTasks
+from starlette.concurrency import run_in_threadpool
 
 from lynx import Converter
 from lynx.models.api_models import (
@@ -39,8 +41,7 @@ from lynx.utils.job_manager import (
     create_job_token,
 )
 from lynx.utils.toolbox import get_level
-
-from starlette.concurrency import run_in_threadpool
+from lynx.tasks.client import converter_client
 
 
 router = APIRouter()
@@ -123,6 +124,19 @@ async def create_convert_job(
 ):
     """"""
     token = create_job_token(JobType(job="convert"))
+
+    client_data = {
+        "names": data.data,
+        "export_style": style,
+        "export_level": level,
+    }
+    Process(
+        target=converter_client,
+        args=(
+            token,
+            client_data
+        ),
+    ).start()
 
     job_status_data = {
         "data": data.dict(),

@@ -36,7 +36,7 @@ def create_job_token(job_type: JobType) -> str:
 
 
 def save_session(job_token: str, data: Union[str, dict]):
-    if len(job_token) == 40:
+    if len(job_token) > 5:
         job_file = os.path.join(default_temp_folder, f"{job_token}.json")
         if isinstance(data, dict):
             with open(job_file, mode="w", encoding="utf-8") as s_obj:

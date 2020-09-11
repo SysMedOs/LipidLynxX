@@ -13,6 +13,7 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from multiprocessing import Process
 import re
 from typing import Optional
 
@@ -29,6 +30,7 @@ from lynx.models.api_models import (
     InputListData,
     InputStrData,
     JobStatus,
+    JobType,
     LvType,
     LevelsData,
     StyleType,
@@ -41,6 +43,9 @@ from lynx.models.defaults import (
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
+from lynx.tasks.client import converter_client
+from lynx.utils.job_manager import create_job_token
+
 
 router = APIRouter()
 
@@ -163,19 +168,30 @@ async def convert_str(
     response_model=ConverterExportData,
     status_code=status.HTTP_201_CREATED,
 )
-async def convert_list(
+def convert_list(
     data: InputListData, style: str, level: Optional[LvType] = "MAX"
 ):
     """
     Convert a list of lipid names into supported levels and export to supported style
     """
-    lynx_converter = Converter(style=style)
-    converted_results = ConverterExportData(
-        data={
-            "TextInput": lynx_converter.convert_list(data.data, level=get_level(level))
-        }
-    )
-    return converted_results
+    token = create_job_token(JobType(job="convert"))
+    client_data = {
+
+    }
+    Process(
+        target=converter_client,
+        args=(
+            token,
+            client_data
+        ),
+    ).start()
+    # lynx_converter = Converter(style=style)
+    # converted_results = ConverterExportData(
+    #     data={
+    #         "TextInput": lynx_converter.convert_list(data.data, level=get_level(level))
+    #     }
+    # )
+    # return converted_results
 
 
 @router.post(

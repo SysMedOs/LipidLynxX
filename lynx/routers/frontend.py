@@ -16,6 +16,8 @@
 import base64
 import json
 import os
+from multiprocessing import Process
+import uuid
 from pathlib import Path
 
 from fastapi import (
@@ -37,6 +39,7 @@ from lynx.models.api_models import (
     InputDictData,
     EqualizerExportData,
     LevelsData,
+    JobType,
 )
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.routers.api as api
@@ -55,7 +58,8 @@ from lynx.utils.frontend_tools import (
     get_linker_response_data,
 )
 from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
-
+from lynx.tasks.client import converter_client
+from lynx.utils.job_manager import create_job_token
 
 # upload file size check
 # async def valid_content_length(content_length: int = Header(..., lt=10240_000)):
@@ -106,7 +110,9 @@ def levels(request: Request):
 
 
 @router.get("/linker/", include_in_schema=False)
-async def linker(request: Request,):
+async def linker(
+    request: Request,
+):
     return templates.TemplateResponse(
         "linker.html", {"request": request, "all_resources": {}}
     )
@@ -151,10 +157,11 @@ async def converter_text(
     export_style: StyleType = Form(...),
     file_type: FileType = Form(...),
 ):
+
     names = lipid_names.splitlines()
     input_data = InputListData(data=names)
     export_style, export_level = get_style_level(export_style, export_level)
-    converted_data = await api.convert_list(export_style, input_data, export_level)
+    converted_data = api.convert_list(input_data, export_style, export_level)
     converted_html, not_converted_html = table2html(converted_data)
     response_data = {
         "request": request,
@@ -183,7 +190,7 @@ async def converter_file(
     if table_info:
         export_style, export_level = get_style_level(export_style, export_level)
         input_data = InputDictData(data=table_info)
-        converted_data = await api.convert_dict(export_style, input_data, export_level)
+        converted_data = await api.convert_dict(input_data, export_style, export_level)
         converted_html, not_converted_html = table2html(converted_data)
         response_data = {
             "request": request,
