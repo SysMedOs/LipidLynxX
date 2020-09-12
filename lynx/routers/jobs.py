@@ -33,7 +33,7 @@ from lynx.models.api_models import (
     ConverterExportData,
     JobType,
 )
-from lynx.routers.api import link_one_lipid
+from lynx.routers.linker import link_one_lipid
 from lynx.utils.job_manager import (
     is_job_finished,
     get_job_output,
@@ -44,15 +44,17 @@ from lynx.utils.toolbox import get_level
 from lynx.tasks.client import converter_client
 
 
-router = APIRouter()
+jobs = APIRouter()
 
 
-@router.get(
+@jobs.get(
     "/converter/{token}",
     response_model=JobStatus,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_converter_job(token: str,):
+async def check_converter_job(
+    token: str,
+):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -64,10 +66,14 @@ async def check_converter_job(token: str,):
     return job_info
 
 
-@router.get(
-    "/linker/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
+@jobs.get(
+    "/linker/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_linker_job(token: str,):
+async def check_linker_job(
+    token: str,
+):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -115,7 +121,7 @@ async def run_converter(
         save_session(token, data=converted_results.dict())
 
 
-@router.post("/convert/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+@jobs.post("/convert/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_convert_job(
     background_tasks: BackgroundTasks,
     data: Union[InputDictData, InputListData, InputStrData],
@@ -132,10 +138,7 @@ async def create_convert_job(
     }
     Process(
         target=converter_client,
-        args=(
-            token,
-            client_data
-        ),
+        args=(token, client_data),
     ).start()
 
     job_status_data = {
@@ -155,7 +158,10 @@ async def create_convert_job(
 
 
 async def run_linker(
-    token: str, lipid_names: list, export_url: bool = False, export_names: bool = True,
+    token: str,
+    lipid_names: list,
+    export_url: bool = False,
+    export_names: bool = True,
 ):
     """
     link a list of lipids to related resources from posted lipid name list
@@ -168,7 +174,7 @@ async def run_linker(
     save_session(token, data=linked_info)
 
 
-@router.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+@jobs.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_linker_job(
     lipid_names: list,
     background_tasks: BackgroundTasks,

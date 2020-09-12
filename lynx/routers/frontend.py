@@ -16,13 +16,9 @@
 import base64
 import json
 import os
-from multiprocessing import Process
-import uuid
-from pathlib import Path
 
 from fastapi import (
     APIRouter,
-    BackgroundTasks,
     File,
     Form,
     Request,
@@ -39,17 +35,13 @@ from lynx.models.api_models import (
     InputDictData,
     EqualizerExportData,
     LevelsData,
-    JobType,
 )
 from lynx.models.defaults import default_temp_folder, default_template_files
-import lynx.routers.api as api
+import lynx.api as api
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
-    create_converter_output,
     create_equalizer_output,
-    create_linker_output,
     get_table,
-    get_file_type,
     get_output_name,
     table2html,
 )
@@ -58,15 +50,13 @@ from lynx.utils.frontend_tools import (
     get_linker_response_data,
 )
 from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
-from lynx.tasks.client import converter_client
-from lynx.utils.job_manager import create_job_token
 
 # upload file size check
 # async def valid_content_length(content_length: int = Header(..., lt=10240_000)):
 #     return content_length
 
 
-router = APIRouter()
+frontend = APIRouter()
 templates = Jinja2Templates(directory="lynx/templates")
 
 
@@ -74,7 +64,7 @@ templates = Jinja2Templates(directory="lynx/templates")
 
 # get methods
 # top-level pages
-@router.get("/about", include_in_schema=False)
+@frontend.get("/about", include_in_schema=False)
 def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
@@ -82,21 +72,21 @@ def about(request: Request):
     )
 
 
-@router.get("/converter/", include_in_schema=False)
+@frontend.get("/converter/", include_in_schema=False)
 async def converter(request: Request):
     return templates.TemplateResponse(
         "converter.html", {"request": request, "out_dct": {}}
     )
 
 
-@router.get("/equalizer/", include_in_schema=False)
+@frontend.get("/equalizer/", include_in_schema=False)
 async def equalizer(request: Request):
     return templates.TemplateResponse(
         "equalizer.html", {"request": request, "out_dct": {}}
     )
 
 
-@router.get(f"/", include_in_schema=False)
+@frontend.get(f"/", include_in_schema=False)
 async def home(request: Request):
     return templates.TemplateResponse(
         "home.html",
@@ -104,12 +94,12 @@ async def home(request: Request):
     )
 
 
-@router.get("/levels", include_in_schema=False)
+@frontend.get("/levels", include_in_schema=False)
 def levels(request: Request):
     return templates.TemplateResponse("levels.html", {"request": request})
 
 
-@router.get("/linker/", include_in_schema=False)
+@frontend.get("/linker/", include_in_schema=False)
 async def linker(
     request: Request,
 ):
@@ -118,12 +108,12 @@ async def linker(
     )
 
 
-@router.get("/nomenclature", include_in_schema=False)
+@frontend.get("/nomenclature", include_in_schema=False)
 def nomenclature(request: Request):
     return templates.TemplateResponse("nomenclature.html", {"request": request})
 
 
-@router.get("/user-guide", include_in_schema=False)
+@frontend.get("/user-guide", include_in_schema=False)
 def user_guide(request: Request):
     return templates.TemplateResponse(
         "guide.html",
@@ -132,7 +122,9 @@ def user_guide(request: Request):
 
 
 # other functions
-@router.get("/downloads/{file_name}", name="get_download_file", include_in_schema=False)
+@frontend.get(
+    "/downloads/{file_name}", name="get_download_file", include_in_schema=False
+)
 async def get_download_file(file_name: str):
     if file_name in default_template_files:
         file_path = default_template_files.get(file_name)
@@ -149,7 +141,7 @@ async def get_download_file(file_name: str):
 
 
 # post methods
-@router.post("/converter/text/", include_in_schema=False)
+@frontend.post("/converter/text/", include_in_schema=False)
 async def converter_text(
     request: Request,
     lipid_names: str = Form(...),
@@ -178,7 +170,7 @@ async def converter_text(
     return templates.TemplateResponse("converter.html", response_data)
 
 
-@router.post("/converter/file/", include_in_schema=False)
+@frontend.post("/converter/file/", include_in_schema=False)
 async def converter_file(
     request: Request,
     file_obj: UploadFile = File(...),
@@ -214,7 +206,7 @@ async def converter_file(
     return templates.TemplateResponse("converter.html", response_data)
 
 
-@router.post("/equalizer/file/", include_in_schema=False)
+@frontend.post("/equalizer/file/", include_in_schema=False)
 async def equalizer_file(
     request: Request, file_obj: UploadFile = File(...), match_levels: str = Form(...)
 ):
@@ -271,7 +263,7 @@ async def equalizer_file(
     return templates.TemplateResponse("equalizer.html", render_data_dct)
 
 
-@router.post("/linker/text", include_in_schema=False)
+@frontend.post("/linker/text", include_in_schema=False)
 async def linker_text(
     request: Request,
     lipid_names: str = Form(...),
@@ -311,7 +303,7 @@ async def linker_text(
     return templates.TemplateResponse("linker.html", response_data)
 
 
-@router.post("/linker/file", include_in_schema=False)
+@frontend.post("/linker/file", include_in_schema=False)
 async def linker_file(
     request: Request,
     file_obj: UploadFile = File(...),
@@ -356,7 +348,7 @@ async def linker_file(
 
 
 # direct fast link of one lipid on the home page
-@router.post("/linker/results/details", include_in_schema=False)
+@frontend.post("/linker/results/details", include_in_schema=False)
 async def linker_lipid(
     request: Request, lipid_name: str = Form(...), resource_data: str = Form(...)
 ):
@@ -369,7 +361,7 @@ async def linker_lipid(
     return templates.TemplateResponse("linker_results_details.html", resource_info)
 
 
-@router.post("/linker/results/summary", include_in_schema=False)
+@frontend.post("/linker/results/summary", include_in_schema=False)
 async def view_resource_summary(
     request: Request,
     display_data: str = Form(...),

@@ -44,7 +44,11 @@ class Converter:
         )
         self.logger = logger
 
-    def convert_str(self, input_str: str, level: str = None,) -> ConvertedStrData:
+    def convert_str(
+        self,
+        input_str: str,
+        level: str = None,
+    ) -> ConvertedStrData:
         output_dct = {}
         # Set COMP_DB to max level B2
         if re.search(r"COMP\\s*[_]?\\s*(DB)?", self.style):

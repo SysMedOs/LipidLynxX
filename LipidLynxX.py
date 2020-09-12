@@ -38,6 +38,5 @@ def start_lynx():
     # ).start()
 
 
-
 if __name__ == "__main__":
     start_lynx()

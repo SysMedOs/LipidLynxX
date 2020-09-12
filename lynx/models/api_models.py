@@ -160,7 +160,9 @@ class ConvertedStrData(BaseModel):
             "example": {
                 "input": "PLPC",
                 "output": "PC(16:0/18:2)",
-                "converted": [["PLPC", "PC(16:0/18:2)"],],
+                "converted": [
+                    ["PLPC", "PC(16:0/18:2)"],
+                ],
                 "skipped": "",
             }
         }
@@ -229,7 +231,12 @@ class EqualizedLevelData(BaseModel):
     unmatched: Dict[str, dict]
 
     class Config:
-        schema_extra = {"example": {"matched": {}, "unmatched": {},}}
+        schema_extra = {
+            "example": {
+                "matched": {},
+                "unmatched": {},
+            }
+        }
 
 
 class EqualizedData(BaseModel):
@@ -239,7 +246,12 @@ class EqualizedData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "equalized": {"B1": {"matched": {}, "unmatched": {},},},
+                "equalized": {
+                    "B1": {
+                        "matched": {},
+                        "unmatched": {},
+                    },
+                },
                 "skipped": {"Source01": ["bad_ID", "Unknown_id"]},
             }
         }
@@ -251,7 +263,12 @@ class EqualizerExportData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "data": {"equalized": {"B1": None,}, "skipped": ["UNKNOWN_LIPID_1"],},
+                "data": {
+                    "equalized": {
+                        "B1": None,
+                    },
+                    "skipped": ["UNKNOWN_LIPID_1"],
+                },
             }
         }
 

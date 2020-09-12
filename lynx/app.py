@@ -14,11 +14,11 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-from lynx.routers import api, frontend, jobs
-from lynx.utils.cfg_reader import api_version, app_cfg_info, lynx_version
+from lynx.api import api
+from lynx.routers.frontend import frontend
+from lynx.utils.cfg_reader import app_cfg_info
 
 
 app_url = app_cfg_info.get("app_url", "127.0.0.1")
@@ -26,27 +26,13 @@ app_port = int(app_cfg_info.get("app_port", 1399))
 
 app = FastAPI(debug=True)
 
-app.include_router(api.router, prefix="/api", tags=["api"])
-app.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
-app.include_router(frontend.router)
 app.mount("/images", StaticFiles(directory="lynx/static/images"), name="images")
+# load lynx.api.py as sub-app to provide API service for the frontend
+# api.py can be started separately to provide API service only
+app.mount("/api", api)
+# load frontend from lynx.router.frontend to provide GUI for users
+app.include_router(frontend)
 
-
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="LipidLynxX API",
-        version=api_version,
-        description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
-        routes=app.routes,
-    )
-    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-
-app.openapi = custom_openapi
 
 if __name__ == "__main__":
     import uvicorn

@@ -19,17 +19,9 @@ import time
 import zmq
 
 from lynx.controllers.converter import Converter
-from lynx.controllers.equalizer import Equalizer
-from lynx.models.api_models import (InputListData, ConverterExportData)
-import lynx.routers.api as api
-from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
+from lynx.models.api_models import ConverterExportData
+from lynx.utils.toolbox import get_style_level
 from lynx.utils.file_handler import (
-    create_converter_output,
-    create_equalizer_output,
-    create_linker_output,
-    get_table,
-    get_file_type,
-    get_output_name,
     table2html,
 )
 from lynx.utils.job_manager import save_session
@@ -73,9 +65,7 @@ def converter_worker(worker_id: int):
             style, level = get_style_level(export_style, export_level)
             lynx_converter = Converter(style=style)
             converted_results = ConverterExportData(
-                data={
-                    "TextInput": lynx_converter.convert_list(data_lst, level=level)
-                }
+                data={"TextInput": lynx_converter.convert_list(data_lst, level=level)}
             )
             converted_html, not_converted_html = table2html(converted_results)
             response_data = {
