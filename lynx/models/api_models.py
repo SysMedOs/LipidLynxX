@@ -15,7 +15,7 @@
 
 from enum import Enum
 import re
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Union
 
 from pydantic import BaseModel, constr
 
@@ -143,8 +143,12 @@ class JobType(BaseModel):
     job: Literal["convert", "equalize", "link", "parse"]
 
 
+class JobStatusType(BaseModel):
+    status: Literal["created", "working", "finished", "error", "not found"]
+
+
 class JobStatus(BaseModel):
-    status: str
+    status: Union[JobStatusType, str]
     token: str
     data: dict
 
@@ -276,3 +280,7 @@ class EqualizerExportData(BaseModel):
 if __name__ == "__main__":
     a = StyleType.use("ShortHand")
     print(a)
+    j = JobType(job="convert")
+    print(j)
+    print(j.job)
+    print(type(j.job))

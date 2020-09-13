@@ -13,24 +13,14 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import webbrowser
-import uvicorn
+from multiprocessing.context import Process
 
-from lynx.app import app, app_url, app_port
-from lynx.mq import start_zmq
-
-
-def start_lynx():
-
-    print("Start Browser: ")
-    webbrowser.open(
-        f"http://{app_url}:{app_port}", new=1, autoraise=True
-    )  # launch default web browser
-    # Start message queue powered by ZeroMQ.
-    start_zmq()
-    print("Start LipidLynxX Application...")
-    uvicorn.run(app, host=app_url, port=app_port)
+from lynx.mq.broker import default_broker
+from lynx.mq.worker import converter_worker
 
 
-if __name__ == "__main__":
-    start_lynx()
+def start_zmq():
+    Process(target=default_broker).start()
+    for w in range(1, 5):
+        print(f"Start LipidLynxX ZMQ Worker#{w}: ")
+        Process(target=converter_worker, args=(w,)).start()

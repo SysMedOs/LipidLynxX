@@ -43,7 +43,7 @@ from lynx.models.defaults import (
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
 from lynx.utils.file_handler import clean_temp_folder
-from lynx.tasks.client import converter_client
+from lynx.mq.client import converter_client
 from lynx.utils.job_manager import create_job_token
 
 router = APIRouter()

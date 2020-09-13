@@ -16,30 +16,34 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from lynx.routers import converter, equalizer, linker  # , parser
+from lynx.routers import api_converter, api_equalizer, api_linker  # , parser
 from lynx.utils.cfg_reader import api_version, lynx_version
 
-api = FastAPI()
+# create API as a sub-app for lynx.app.py
+api = FastAPI(
+    debug=True,
+    title="LipidLynxX API",
+    description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
+)
 # load APIs from sub-routers
-api.include_router(converter.router, prefix="/converter", tags=["converter"])
-api.include_router(equalizer.router, prefix="/equalizer", tags=["equalizer"])
-api.include_router(linker.router, prefix="/linker", tags=["linker"])
+api.include_router(api_converter.router, prefix="/converter", tags=["converter"])
+api.include_router(api_equalizer.router, prefix="/equalizer", tags=["equalizer"])
+api.include_router(api_linker.router, prefix="/linker", tags=["linker"])
 # api.include_router(parser.router, prefix="/parser", tags=["parser"])
 # api.include_router(jobs.jobs, prefix="/jobs", tags=["jobs"])
 
+if __name__ == "__main__":
+    import uvicorn
 
-def custom_openapi():
-    if api.openapi_schema:
-        return api.openapi_schema
-    openapi_schema = get_openapi(
-        title="LipidLynxX API",
-        version=api_version,
-        description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
-        routes=api.routes,
-    )
-    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
-    api.openapi_schema = openapi_schema
-    return api.openapi_schema
+    from lynx.mq import start_zmq
+    from lynx.utils.cfg_reader import app_cfg_info
 
+    # Start message queue powered by ZeroMQ.
+    start_zmq()
 
-api.openapi = custom_openapi
+    # load app_url and app_port here
+    app_url = app_cfg_info.get("app_url", "127.0.0.1")
+    app_port = int(app_cfg_info.get("app_port", 1399))
+
+    print("Start LipidLynxX Main Application...")
+    uvicorn.run(api, host=app_url, port=app_port)

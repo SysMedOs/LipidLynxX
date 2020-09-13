@@ -14,8 +14,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import time
-import uuid
+
 import zmq
 
 
@@ -46,8 +45,6 @@ def converter_client(token: str, data: str):
     }
     send_msg = json.dumps(msg)
     socket.send(send_msg.encode())
-    print(send_msg)
     message = socket.recv()
     print(f"Received reply UUID {token} Message: [{message}]")
     socket.close()
-    print(f"Client closed: {token}")

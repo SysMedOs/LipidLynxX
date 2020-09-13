@@ -4,6 +4,10 @@
     Converter @ LipidLynxX
 {% endblock %}
 
+{% block js_code %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
 {% block body %}
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="False">
@@ -30,7 +34,8 @@
                             <form action="/converter/text/" method="post">
                                 <p><label>
                                     lipid_names <br>
-                                    <textarea type="text" name="lipid_names" class="form-control"  style="width:100%;" rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
+                                    <textarea type="text" name="lipid_names" class="form-control" style="width:100%;"
+                                              rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
                                 </label></p>
                                 <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
@@ -49,9 +54,12 @@
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
                                     <ul>
-                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level only.</small></li>
-                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and <strong>sn specific species</strong>.</small></li>
-                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
+                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
+                                            only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and
+                                            <strong>sn specific species</strong>.</small></li>
+                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level
+                                            only.</small></li>
                                     </ul>
                                 </div>
                                 <p><label for="file_type">Choose the export format:
@@ -61,11 +69,13 @@
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
                                     <ul>
-                                        <li><small>LipidCreator export supports <strong>.csv</strong> format only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>.csv</strong> format
+                                            only.</small></li>
                                         <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
                                     </ul>
                                 </div>
-                                <button type="submit" class="btn btn-primary" id="run_text_converter">Convert</button></form>
+                                <button type="submit" class="btn btn-primary" id="run_text_converter">Convert</button>
+                            </form>
                         </div>
                         <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
                             <p></p>
@@ -92,9 +102,12 @@
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
                                     <ul>
-                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level only.</small></li>
-                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and <strong>sn specific species</strong>.</small></li>
-                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level only.</small></li>
+                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
+                                            only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and
+                                            <strong>sn specific species</strong>.</small></li>
+                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level
+                                            only.</small></li>
                                     </ul>
                                 </div>
                                 <p><label for="file_type">Choose the export format:
@@ -104,11 +117,14 @@
                                     </select></label></p>
                                 <div class="alert alert-warning" role="alert">
                                     <ul>
-                                        <li><small>LipidCreator export supports <strong>.csv</strong> format only.</small></li>
+                                        <li><small>LipidCreator export supports <strong>.csv</strong> format
+                                            only.</small></li>
                                         <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
                                     </ul>
                                 </div>
-                                <button type="submit" class="btn btn-primary" id="run_file_converter">Convert file</button></form>
+                                <button type="submit" class="btn btn-primary" id="run_file_converter">Convert file
+                                </button>
+                            </form>
                         </div>
                     </div>
                     <div><p>&nbsp;</p></div>
@@ -116,14 +132,14 @@
                         <strong>LipidLynxX is running...</strong>
                         <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
                         <script type="application/javascript">
-                            $(document).ready(function(){
-                                $("#run_file_converter").click(function(){
+                            $(document).ready(function () {
+                                $("#run_file_converter").click(function () {
                                     let spinner = document.getElementById("spinner");
                                     spinner.style.visibility = 'visible';
                                     let results_info = document.getElementById("results_info");
                                     results_info.style.visibility = 'hidden';
                                 });
-                                $("#run_text_converter").click(function(){
+                                $("#run_text_converter").click(function () {
                                     let spinner = document.getElementById("spinner");
                                     spinner.style.visibility = 'visible';
                                     let results_info = document.getElementById("results_info");
@@ -134,39 +150,57 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" id="results_info">
-                    {% if err_msgs %}
-                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
-                        {% for err_msg in err_msgs %}
-                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
-                        {% endfor %}
-                    {% endif %}
-                    {% if converted_html %}
-                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>
-                        <div class="alert alert-info" role="alert">
-                            Converted to level: <strong>{{ export_level }}</strong>
-                            using style:<strong>{{ export_style }}</strong>
-                        </div>
-                        <div>
-                            <a class="btn btn-block btn-success"
-                               href="{{ url_for('get_download_file', file_name=output_file_name) }}">
-                                Save output as:<br>{{ output_file_name }}
-                            </a>
+                    {#                    {% if err_msgs %}#}
+                    {#                        <div><h2>LipidLynxX output</h2><h4>&nbsp;</h4></div>#}
+                    {#                        {% for err_msg in err_msgs %}#}
+                    {#                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>#}
+                    {#                        {% endfor %}#}
+                    {#                    {% endif %}#}
+                    {% if token %}
+                        <h2>LipidLynxX Converter output</h2>
+                        <sub> Job created with token: {{ token }}</sub>
+                        <div id="run_status">
+                            <p id="run_time">LipidLynxX just started ...</p>
+                            <p id="run_result"></p>
                         </div>
                         <p>&nbsp;</p>
-                        <div class="alert alert-success" role="alert">
-                            <h4>Converted abbreviations</h4>
-                        </div>
-                        <div class="table-responsive table-wrapper-scroll-y my-custom-scrollbar">
-                            {{ converted_html|safe }}
-                        </div>
-                        {% if not_converted_html %}
-                            <div class="alert alert-warning" role="alert">
-                                <h4>NOT Converted abbreviations</h4>
-                            </div>
-                            <div class="table-responsive">
-                                {{ not_converted_html|safe }}
-                            </div>
-                        {% endif %}
+                        <div class="result"></div>
+                        <script>
+
+                            let d0 = new Date();
+                            let t0 = d0.getTime()
+                            let deltaTime = 5000
+                            let interval = setInterval(doAjax, deltaTime);
+
+                            function doAjax() {
+                                let d1 = new Date();
+                                let t = Math.floor((d1.getTime() - t0) / 1000)
+                                let get_url = "../../api/converter/jobs/{{token}}"
+                                $.ajax({
+                                    url: get_url,
+                                    type: 'get',
+                                    success: function(data){
+                                        {#document.getElementById("run_result").innerHTML = status.toString() + ":" + JSON.stringify(data);#}
+                                        {#let outputData = JSON.stringify(data)#}
+                                        {#let results = JSON.parse(data)#}
+
+                                        if ( data.status.toString() === 'finished' ) {
+                                            {#alert('FINISHED' + data.status.toString())#}
+                                            document.getElementById("run_time").innerHTML = "LipidLynxX finished in" + t.toString() + "s"
+                                            document.getElementById("run_result").innerHTML = JSON.stringify(data)
+                                            clearInterval(interval);
+                                        } else{
+                                            {#alert('WORKING' + data.status.toString())#}
+                                            document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s";
+                                        }
+                                    },
+                                });
+                            }
+
+                            function stopAjax() {
+                                clearInterval(interval);
+                            }
+                        </script>
                     {% endif %}
                 </div>
             </div>

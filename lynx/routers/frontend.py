@@ -35,9 +35,11 @@ from lynx.models.api_models import (
     InputDictData,
     EqualizerExportData,
     LevelsData,
+    JobStatus,
 )
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
+from lynx.routers.api_converter import create_convert_list_job
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
     create_equalizer_output,
@@ -153,19 +155,28 @@ async def converter_text(
     names = lipid_names.splitlines()
     input_data = InputListData(data=names)
     export_style, export_level = get_style_level(export_style, export_level)
-    converted_data = api.convert_list(input_data, export_style, export_level)
-    converted_html, not_converted_html = table2html(converted_data)
-    response_data = {
-        "request": request,
-        "err_msgs": [],
-        "export_level": export_level,
-        "export_style": export_style,
-        "converted_html": converted_html,
-        "not_converted_html": not_converted_html,
-    }
-    response_data = get_converter_response_data(
-        converted_data.dict(), file_type, response_data
-    )
+
+    # converted_html, not_converted_html = table2html(converted_data)
+    # response_data = {
+    #     "request": request,
+    #     "err_msgs": [],
+    #     "export_level": export_level,
+    #     "export_style": export_style,
+    #     "converted_html": converted_html,
+    #     "not_converted_html": not_converted_html,
+    # }
+    # response_data = get_converter_response_data(
+    #     converted_data.dict(), file_type, response_data
+    # )
+
+    job_info = await create_convert_list_job(
+        data=input_data, style=export_style, level=export_level
+    )  # type: JobStatus
+    response_data = job_info.dict()
+    response_data["request"] = request
+    response_data["export_level"] = export_level
+    response_data["export_style"] = export_style
+    response_data["err_msgs"] = []
 
     return templates.TemplateResponse("converter.html", response_data)
 

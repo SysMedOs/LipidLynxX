@@ -15,37 +15,22 @@
 
 from multiprocessing import Process
 import re
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
-from lynx.controllers.converter import Converter
-from lynx.controllers.equalizer import Equalizer
-from lynx.controllers.parser import parse_lipid
 from lynx.models.api_models import (
-    ConverterExportData,
-    EqualizerExportData,
-    InputDictData,
-    InputListData,
-    InputStrData,
     JobStatus,
     JobType,
-    LvType,
     LevelsData,
-    StyleType,
 )
-from lynx.models.defaults import (
-    default_temp_folder,
-    default_temp_max_days,
-    default_temp_max_files,
+from lynx.routers.api_converter import convert_lipid
+from lynx.utils.job_manager import (
+    is_job_finished,
+    get_job_output,
+    save_session,
+    create_job_token,
 )
-from lynx.utils.log import app_logger
-from lynx.utils.toolbox import get_level
-from lynx.utils.file_handler import clean_temp_folder
-from lynx.tasks.client import converter_client
-from lynx.utils.job_manager import create_job_token
-
 
 router = APIRouter()
 
@@ -105,6 +90,25 @@ async def link_lipid(
     return await link_one_lipid(lipid_name, export_url, export_names)
 
 
+@router.get(
+    "/linker/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def check_linker_job(
+    token: str,
+):
+    """"""
+    if is_job_finished(token):
+        job_data = get_job_output(token)
+        job_status = "finished"
+    else:
+        job_data = {}
+        job_status = "working"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    return job_info
+
+
 # Post APIs
 @router.post("/str/", status_code=status.HTTP_201_CREATED)
 async def link_str(
@@ -152,3 +156,22 @@ async def link_dict(
             )
         linked_info[col] = linked_col_info
     return linked_info
+
+
+@router.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+async def create_linker_job(
+    lipid_names: list,
+    export_url: bool = False,
+    export_names: bool = True,
+):
+    """"""
+    token = create_job_token(JobType(job="link"))
+    job_data = {
+        "data": lipid_names,
+        "export_url": export_url,
+        "export_names": export_names,
+    }
+    job_status = "created"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+
+    return job_info

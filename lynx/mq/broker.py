@@ -35,6 +35,7 @@ def default_broker():
     poller.register(backend, zmq.POLLIN)
 
     # Switch messages between sockets
+    print("ZMQ Broker started")
     while True:
         socks = dict(poller.poll())
 

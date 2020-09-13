@@ -54,10 +54,9 @@ def converter_worker(worker_id: int):
     while True:
         message = socket.recv()
         print(f"Worker #{worker_id} Received Job: {message}")
-
         try:
             data = json.loads(message.decode()).get("data")
-            token = data.get("token", "Temp_token")
+            token = json.loads(message.decode()).get("token", "Temp_token")
             # input_data = InputListData(data=data.get("names", []))
             data_lst = data.get("names", [])
             export_style = data.get("export_style")
@@ -67,15 +66,15 @@ def converter_worker(worker_id: int):
             converted_results = ConverterExportData(
                 data={"TextInput": lynx_converter.convert_list(data_lst, level=level)}
             )
-            converted_html, not_converted_html = table2html(converted_results)
+            # converted_html, not_converted_html = table2html(converted_results)
             response_data = {
                 "token": token,
                 "err_msgs": [],
                 "export_level": export_level,
                 "export_style": export_style,
                 "converted_results": converted_results.dict(),
-                "converted_html": converted_html,
-                "not_converted_html": not_converted_html,
+                # "converted_html": converted_html,
+                # "not_converted_html": not_converted_html,
             }
             save_session(token, response_data)
         except Exception as e:
