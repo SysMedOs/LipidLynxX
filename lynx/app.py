@@ -14,6 +14,7 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from fastapi import FastAPI
+
 # from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
@@ -25,17 +26,11 @@ from lynx.utils.cfg_reader import app_prefix, app_cfg_info, api_version, lynx_ve
 app_url = app_cfg_info.get("app_url", "127.0.0.1")
 app_port = int(app_cfg_info.get("app_port", 1399))
 
-app = FastAPI(
-    title="LipidLynxX",
-    debug=True,
-    openapi_url=f"{app_prefix}/openapi.json",
-    docs_url=f"{app_prefix}/docs",
-    redoc_url=f"{app_prefix}/redoc",
-    swagger_favicon_url=f"{app_prefix}/images/favicon.png",
+app = FastAPI(title="LipidLynxX", debug=True)
+
+app.mount(
+    f"{app_prefix}/images", StaticFiles(directory="lynx/static/images"), name="images"
 )
-
-
-app.mount(f"{app_prefix}/images", StaticFiles(directory="lynx/static/images"), name="images")
 # load lynx.api.py as sub-app to provide API service for the frontend
 # load frontend from lynx.router.frontend to provide GUI for users
 app.include_router(frontend, prefix=f"{app_prefix}")

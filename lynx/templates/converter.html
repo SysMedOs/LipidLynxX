@@ -128,26 +128,26 @@
                         </div>
                     </div>
                     <div><p>&nbsp;</p></div>
-                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
-                        <strong>LipidLynxX is running...</strong>
-                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
-                        <script type="application/javascript">
-                            $(document).ready(function () {
-                                $("#run_file_converter").click(function () {
-                                    let spinner = document.getElementById("spinner");
-                                    spinner.style.visibility = 'visible';
-                                    let results_info = document.getElementById("results_info");
-                                    results_info.style.visibility = 'hidden';
-                                });
-                                $("#run_text_converter").click(function () {
-                                    let spinner = document.getElementById("spinner");
-                                    spinner.style.visibility = 'visible';
-                                    let results_info = document.getElementById("results_info");
-                                    results_info.style.visibility = 'hidden';
-                                });
-                            });
-                        </script>
-                    </div>
+{#                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">#}
+{#                        <strong>LipidLynxX is running...</strong>#}
+{#                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>#}
+{#                        <script type="application/javascript">#}
+{#                            $(document).ready(function () {#}
+{#                                $("#run_file_converter").click(function () {#}
+{#                                    let spinner = document.getElementById("spinner");#}
+{#                                    spinner.style.visibility = 'visible';#}
+{#                                    let results_info = document.getElementById("results_info");#}
+{#                                    results_info.style.visibility = 'hidden';#}
+{#                                });#}
+{#                                $("#run_text_converter").click(function () {#}
+{#                                    let spinner = document.getElementById("spinner");#}
+{#                                    spinner.style.visibility = 'visible';#}
+{#                                    let results_info = document.getElementById("results_info");#}
+{#                                    results_info.style.visibility = 'hidden';#}
+{#                                });#}
+{#                            });#}
+{#                        </script>#}
+{#                    </div>#}
                 </div>
                 <div class="col-12 col-md-6 col-lg-5 ml-md-auto text-left" id="results_info">
                     {#                    {% if err_msgs %}#}
@@ -156,12 +156,36 @@
                     {#                            <div class="alert alert-danger" role="alert">{{ err_msg }}</div>#}
                     {#                        {% endfor %}#}
                     {#                    {% endif %}#}
+{#                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">#}
+{#                        <strong>LipidLynxX is running...</strong>#}
+{#                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>#}
+{#                        <script type="application/javascript">#}
+{#                            $(document).ready(function () {#}
+{#                                $("#run_file_converter").click(function () {#}
+{#                                    let spinner = document.getElementById("spinner");#}
+{#                                    spinner.style.visibility = 'visible';#}
+{#                                    let results_info = document.getElementById("results_info");#}
+{#                                    results_info.style.visibility = 'hidden';#}
+{#                                });#}
+{#                                $("#run_text_converter").click(function () {#}
+{#                                    let spinner = document.getElementById("spinner");#}
+{#                                    spinner.style.visibility = 'visible';#}
+{#                                    let results_info = document.getElementById("results_info");#}
+{#                                    results_info.style.visibility = 'hidden';#}
+{#                                });#}
+{#                            });#}
+{#                        </script>#}
+{#                    </div>#}
                     {% if token %}
                         <h2>LipidLynxX Converter output</h2>
                         <sub> Job created with token: {{ token }}</sub>
                         <div id="run_status">
                             <p id="run_time">LipidLynxX just started ...</p>
                             <p id="run_result"></p>
+                            <div class="d-flex align-items-center alert alert-info" id="spinner">
+                                <strong>LipidLynxX is running...</strong>
+                                <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                            </div>
                         </div>
                         <p>&nbsp;</p>
                         <div class="result"></div>
@@ -186,12 +210,16 @@
 
                                         if ( data.status.toString() === 'finished' ) {
                                             {#alert('FINISHED' + data.status.toString())#}
-                                            document.getElementById("run_time").innerHTML = "LipidLynxX finished in" + t.toString() + "s"
+                                            let spinner = document.getElementById("spinner");
+                                            spinner.style.visibility = 'hidden';
+                                            document.getElementById("run_time").innerHTML = "LipidLynxX finished in " + t.toString() + "s."
                                             document.getElementById("run_result").innerHTML = JSON.stringify(data)
                                             clearInterval(interval);
                                         } else{
                                             {#alert('WORKING' + data.status.toString())#}
-                                            document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s";
+                                            document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s.";
+                                            let spinner = document.getElementById("spinner");
+                                            spinner.style.visibility = 'visible';
                                         }
                                     },
                                 });

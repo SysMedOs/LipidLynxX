@@ -14,7 +14,6 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
 
 from lynx.routers import api_converter, api_equalizer, api_linker  # , parser
 from lynx.utils.cfg_reader import api_version, lynx_version
