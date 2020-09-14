@@ -16,7 +16,7 @@
 import webbrowser
 import uvicorn
 
-from lynx.app import app, app_url, app_port
+from lynx.app import app, app_url, app_port, app_prefix
 from lynx.mq import start_zmq
 
 
@@ -24,7 +24,7 @@ def start_lynx():
 
     print("Start Browser: ")
     webbrowser.open(
-        f"http://{app_url}:{app_port}", new=1, autoraise=True
+        f"http://{app_url}:{app_port}{app_prefix}", new=1, autoraise=True
     )  # launch default web browser
     # Start message queue powered by ZeroMQ.
     start_zmq()

@@ -14,25 +14,33 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
+# from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
 from lynx.api import api
 from lynx.routers.frontend import frontend
-from lynx.utils.cfg_reader import app_cfg_info, api_version, lynx_version
+from lynx.utils.cfg_reader import app_prefix, app_cfg_info, api_version, lynx_version
 
 # load app_url and app_port here to simplify the LipidLynxX.py file
 app_url = app_cfg_info.get("app_url", "127.0.0.1")
 app_port = int(app_cfg_info.get("app_port", 1399))
 
-app = FastAPI(debug=True, title="LipidLynxX")
+app = FastAPI(
+    title="LipidLynxX",
+    debug=True,
+    openapi_url=f"{app_prefix}/openapi.json",
+    docs_url=f"{app_prefix}/docs",
+    redoc_url=f"{app_prefix}/redoc",
+    swagger_favicon_url=f"{app_prefix}/images/favicon.png",
+)
 
-app.mount("/images", StaticFiles(directory="lynx/static/images"), name="images")
+
+app.mount(f"{app_prefix}/images", StaticFiles(directory="lynx/static/images"), name="images")
 # load lynx.api.py as sub-app to provide API service for the frontend
 # load frontend from lynx.router.frontend to provide GUI for users
-app.include_router(frontend)
+app.include_router(frontend, prefix=f"{app_prefix}")
 # api.py can be started separately to provide API service only
-app.mount("/api", api, name="api")
+app.mount(f"{app_prefix}/api", api, name="api")
 
 
 # def custom_openapi():

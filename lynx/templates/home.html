@@ -5,45 +5,46 @@
 {% endblock %}
 
 {% block body %}
+    <header class="masthead text-white text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-9 mx-auto" style="padding: 36px;">
+                    <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
+                    &nbsp;&nbsp;
+                    <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96"></div>
+                <div class="row d-flex justify-content-center"><p>&nbsp;</p></div>
+                <div class="col-md-10 col-lg-8 col-xl-8 mx-auto">
+                    <form action="{{ url_for('home') }}linker/results/details" method="post" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="col-9 col-md-9 mx-auto">
+                                <input class="form-control" name="lipid_name" id="lipid_name" type="text" placeholder="PLPC" value="PLPC"></div>
+                            <div class="col-3 col-md-3">
+                                <button class="btn btn-info" type="submit" id="link_lipid">Check resources &nbsp;🔍</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data"/>&nbsp;</p>
+                        </div>
+                        <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
+                            <strong>LipidLynxX is running...</strong>
+                            <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                            <script type="application/javascript">
+                                $(document).ready(function () {
+                                    $("#link_lipid").click(function () {
+                                        let spinner = document.getElementById("spinner");
+                                        spinner.style.visibility = 'visible';
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="false">
         <div class="container">
-            <div class="row">&nbsp;</div>
-            <div class="row d-flex justify-content-center">
-                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96">
-            </div>
-            <div class="row d-flex justify-content-center">&nbsp;</div>
-            <form class="d-flex justify-content-center" action="/linker/results/details" method="post"
-                  enctype="multipart/form-data">
-                <div>
-                    <label>
-                        <input type="text" class="form-control" name="lipid_name" id="lipid_name"
-                               placeholder="PLPC" value="PLPC">
-                    </label>
-                </div>
-                <div>
-                    <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data"/>&nbsp;</p>
-                </div>
-                <div>
-                    <button type="submit" class="btn btn-info" id="link_lipid">
-                       Check resources &nbsp;&#128269;
-                    </button>
-                </div>
-            </form>
-            <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
-                <strong>LipidLynxX is running...</strong>
-                <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
-                <script type="application/javascript">
-                    $(document).ready(function () {
-                        $("#link_lipid").click(function () {
-                            let spinner = document.getElementById("spinner");
-                            spinner.style.visibility = 'visible';
-                        });
-                    });
-                </script>
-            </div>
             <div class="row justify-content-center">
                 <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
                     <li class="nav-item">
@@ -59,23 +60,23 @@
                 <div class="tab-content " id="levelsTabContent">
                     <div class="tab-pane fade show active" id="tools" role="tabpanel"
                          aria-labelledby="tools-tab">
-                        <div class="row"><h2>&nbsp;<br></h2></div>
-                        <div class="row">
+                        <div class="row d-flex justify-content-center">
                             <div class="col-4">
-                                <div class="row">
-                                    <div class="col-3">
+                                <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                    <div class="col-4">
                                         <a href="{{ url_for('converter') }}"><img alt="image" class="img-fluid"
                                                                                   src="images/converter_logo.png"></a>
                                     </div>
+                                </div><div class="row d-flex justify-content-center">
                                     <div class="col-9">
                                         <div class="row">
-                                            <h4>LipidLynxX Converter</h4>
+                                            <h3>Lipid ID Converter</h3>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
                                             </p>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block"
                                                    href="{{ url_for('converter') }}">
@@ -85,21 +86,22 @@
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="row">
-                                    <div class="col-3">
+                                <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                    <div class="col-4">
                                         <a href="{{ url_for('equalizer') }}">
                                             <img alt="image" class="img-fluid"
                                                  src="images/equalizer_logo.png"></a>
                                     </div>
+                                </div><div class="row d-flex justify-content-center">
                                     <div class="col-9">
                                         <div class="row">
-                                            <h4>LipidLynxX ID Equalizer</h4>
+                                            <h3>Lipid ID Equalizer</h3>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <p>Bring lipid identifiers to the same level of annotation and perform
                                                 cross-level matching between different datasets.</p>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block"
                                                    href="{{ url_for('equalizer') }}">
@@ -109,20 +111,20 @@
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <a href="{{ url_for('equalizer') }}">
+                                <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                    <div class="col-4">
+                                        <a href="{{ url_for('linker') }}">
                                             <img alt="image" class="img-fluid"
                                                  src="images/linker_logo.png"></a>
                                     </div>
                                     <div class="col-9">
                                         <div class="row">
-                                            <h4>Lipid Resource Linker</h4>
+                                            <h3>Lipid Resource Linker</h3>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <p>Collect available resources across databases.<br><br></p>
                                         </div>
-                                        <div class="row">
+                                        <div class="row d-flex justify-content-center">
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block" href="{{ url_for('linker') }}">
                                                     Run Linker</a><br></div>
