@@ -50,7 +50,7 @@ def converter_worker(worker_id: int):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
     socket.connect("tcp://localhost:5560")
-
+    print(f"Worker#{worker_id} started.")
     while True:
         message = socket.recv()
         print(f"Worker #{worker_id} Received Job: {message}")

@@ -39,7 +39,7 @@ from lynx.models.api_models import (
 )
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
-from lynx.routers.api_converter import create_convert_list_job
+from lynx.routers.api_converter import create_convert_list_job, create_convert_dict_job
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
     create_equalizer_output,
@@ -143,7 +143,7 @@ async def get_download_file(file_name: str):
 
 
 # post methods
-@frontend.post("/converter/text/", include_in_schema=False)
+@frontend.post("/converter/text/results/", include_in_schema=False)
 async def converter_text(
     request: Request,
     lipid_names: str = Form(...),
@@ -178,10 +178,10 @@ async def converter_text(
     response_data["export_style"] = export_style
     response_data["err_msgs"] = []
 
-    return templates.TemplateResponse("converter.html", response_data)
+    return templates.TemplateResponse("converter_results.html", response_data)
 
 
-@frontend.post("/converter/file/", include_in_schema=False)
+@frontend.post("/converter/file/results/", include_in_schema=False)
 async def converter_file(
     request: Request,
     file_obj: UploadFile = File(...),
@@ -193,28 +193,18 @@ async def converter_file(
     if table_info:
         export_style, export_level = get_style_level(export_style, export_level)
         input_data = InputDictData(data=table_info)
-        converted_data = await api.convert_dict(input_data, export_style, export_level)
-        converted_html, not_converted_html = table2html(converted_data)
-        response_data = {
-            "request": request,
-            "err_msgs": [],
-            "export_level": export_level,
-            "export_style": export_style,
-            "converted_html": converted_html,
-            "not_converted_html": not_converted_html,
-        }
-        response_data = get_converter_response_data(
-            converted_data.dict(), file_type, response_data
-        )
-
+        job_info = await create_convert_dict_job(
+            data=input_data, style=export_style, level=export_level
+        )  # type: JobStatus
+        response_data = job_info.dict()
+        response_data["err_msgs"] = []
     else:
-        response_data = {
-            "request": request,
-            "err_msgs": err_lst,
-            "output_generated": False,
-        }
+        response_data = {"err_msgs": [f"Failed to read file: {file_obj.filename}"]}
+    response_data["request"] = request
+    response_data["export_level"] = export_level
+    response_data["export_style"] = export_style
 
-    return templates.TemplateResponse("converter.html", response_data)
+    return templates.TemplateResponse("converter_results.html", response_data)
 
 
 @frontend.post("/equalizer/file/", include_in_schema=False)

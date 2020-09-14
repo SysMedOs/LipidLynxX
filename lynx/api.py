@@ -34,11 +34,11 @@ api.include_router(api_linker.router, prefix="/linker", tags=["linker"])
 if __name__ == "__main__":
     import uvicorn
 
-    from lynx.mq import start_zmq
+    from lynx.daemon import daemon_lynx
     from lynx.utils.cfg_reader import app_cfg_info
 
     # Start message queue powered by ZeroMQ.
-    start_zmq()
+    daemon_lynx()
 
     # load app_url and app_port here
     app_url = app_cfg_info.get("app_url", "127.0.0.1")

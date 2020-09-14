@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Converter Results @ LipidLynxX
+{% endblock %}
+
+{% block js_code %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
+             draggable="False">
+        <p></p>
+        <h1>LipidLynxX Converter</h1>
+        <div class="container">
+            <h2>LipidLynxX Converter output</h2>
+            {% if token %}
+                <div id="run_status">
+                    <p id="run_time">LipidLynxX just started ...</p>
+                    <sub>Job created with token: {{ token }}</sub>
+                    <p id="run_result"></p>
+                    <div class="d-flex align-items-center alert alert-info" id="spinner">
+                        <strong>LipidLynxX is running...</strong>
+                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                    </div>
+                </div>
+                <p>&nbsp;</p>
+                <div class="result"></div>
+                <script>
+                    let d0 = new Date();
+                    let t0 = d0.getTime()
+                    let deltaTime = 5000
+                    let interval = setInterval(getResultsAjax, deltaTime);
+
+                    function getResultsAjax() {
+                        let d1 = new Date();
+                        let t = Math.floor((d1.getTime() - t0) / 1000)
+                        let get_url = "{{ url_for('home') }}api/converter/jobs/{{token}}"
+                        $.ajax({
+                            url: get_url,
+                            type: 'get',
+                            success: function (data) {
+                                if (data.status.toString() === 'finished') {
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'hidden';
+                                    document.getElementById("run_time").innerHTML = "LipidLynxX finished in " + t.toString() + "s."
+                                    document.getElementById("run_result").innerHTML = JSON.stringify(data)
+                                    clearInterval(interval);
+                                } else {
+                                    document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s.";
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'visible';
+                                }
+                            },
+                        });
+                    }
+
+                    function stopAjax() {
+                        clearInterval(interval);
+                    }
+                </script>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

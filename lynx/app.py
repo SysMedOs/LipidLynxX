@@ -19,7 +19,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from lynx.api import api
-from lynx.routers.frontend import frontend
+from lynx.routers.app_frontend import frontend
 from lynx.utils.cfg_reader import app_prefix, app_cfg_info, api_version, lynx_version
 
 # load app_url and app_port here to simplify the LipidLynxX.py file
@@ -61,10 +61,10 @@ app.mount(f"{app_prefix}/api", api, name="api")
 if __name__ == "__main__":
     import uvicorn
 
-    from lynx.mq import start_zmq
+    from lynx.daemon import daemon_lynx
 
     # Start message queue powered by ZeroMQ.
-    start_zmq()
+    daemon_lynx()
 
     print("Start LipidLynxX Main Application...")
     uvicorn.run(app, host=app_url, port=app_port)

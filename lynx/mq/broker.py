@@ -13,11 +13,6 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
-import time
-import zmq
-from zmq.devices.basedevice import ProcessDevice
-from multiprocessing import Process
-
 import zmq
 
 
@@ -35,7 +30,7 @@ def default_broker():
     poller.register(backend, zmq.POLLIN)
 
     # Switch messages between sockets
-    print("ZMQ Broker started")
+    print("ZMQ Broker started.")
     while True:
         socks = dict(poller.poll())
 
