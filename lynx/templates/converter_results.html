@@ -12,13 +12,13 @@
     <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
              draggable="False">
         <p></p>
-        <h1>LipidLynxX Converter</h1>
+        <h1>LipidLynxX Converter Results</h1>
         <div class="container">
-            <h2>LipidLynxX Converter output</h2>
+            <h2>&nbsp;</h2>
             {% if token %}
+                <p>Job token: {{ token }}</p>
                 <div id="run_status">
                     <p id="run_time">LipidLynxX just started ...</p>
-                    <sub>Job created with token: {{ token }}</sub>
                     <p id="run_result"></p>
                     <div class="d-flex align-items-center alert alert-info" id="spinner">
                         <strong>LipidLynxX is running...</strong>

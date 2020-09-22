@@ -43,6 +43,7 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         "temp_max_files",
         "zmq_client_port",
         "zmq_worker_port",
+        "zmq_worker_runner",
     ]
     config = configparser.ConfigParser()
     if cfg_path and isinstance(cfg_path, str):
@@ -86,6 +87,8 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
         cfg_dct["zmq_client_port"] = 5559
     if "zmq_worker_port" not in cfg_dct:
         cfg_dct["zmq_worker_port"] = 5560
+    if "zmq_worker_runner" not in cfg_dct:
+        cfg_dct["zmq_worker_runner"] = 5
 
     usr_app_prefix = cfg_dct.get("app_prefix", "").strip("/")
 

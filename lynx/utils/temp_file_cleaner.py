@@ -60,3 +60,8 @@ def remove_temp_file():
         )
         for removed_file in removed_files:
             app_logger.info(f"File removed: {removed_file}")
+    else:
+        app_logger.debug(
+            f"No outdated temporary files to be removed."
+        )
+

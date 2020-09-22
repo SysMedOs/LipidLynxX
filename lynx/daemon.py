@@ -15,17 +15,18 @@
 
 from multiprocessing.context import Process
 
+from lynx.models.defaults import default_zmq_worker_runner
 from lynx.mq.broker import default_broker
-from lynx.mq.worker import converter_worker
+from lynx.mq.worker import general_worker
 
 
 def daemon_lynx():
 
     print("Start ZMQ Broker...")
     Process(target=default_broker).start()
-    for w in range(1, 5):
+    for w in range(1, default_zmq_worker_runner + 1):
         print(f"Start LipidLynxX ZMQ Worker#{w}...")
-        Process(target=converter_worker, args=(w,)).start()
+        Process(target=general_worker, args=(w,)).start()
 
 
 if __name__ == "__main__":
