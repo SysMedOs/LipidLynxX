@@ -24,13 +24,16 @@ from lynx.utils.toolbox import get_style_level
 from lynx.utils.file_handler import (
     table2html,
 )
-from lynx.utils.job_manager import save_session
+from lynx.utils.job_manager import save_job
+from lynx.utils.temp_file_cleaner import remove_temp_file
+
+from lynx.models.defaults import zmq_worker_port
 
 
 def default_worker(worker_id: int):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.connect("tcp://localhost:5560")
+    socket.connect(f"tcp://localhost:{zmq_worker_port}")
 
     while True:
         message = socket.recv()
@@ -49,7 +52,7 @@ def default_worker(worker_id: int):
 def converter_worker(worker_id: int):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.connect("tcp://localhost:5560")
+    socket.connect(f"tcp://localhost:{zmq_worker_port}")
     print(f"Worker#{worker_id} started.")
     while True:
         message = socket.recv()
@@ -76,7 +79,8 @@ def converter_worker(worker_id: int):
                 # "converted_html": converted_html,
                 # "not_converted_html": not_converted_html,
             }
-            save_session(token, response_data)
+            save_job(token, response_data)
+            remove_temp_file()
         except Exception as e:
             response_data = {"Error": e, "Passed": False}
 

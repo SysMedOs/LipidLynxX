@@ -28,7 +28,7 @@ from lynx.routers.api_converter import convert_lipid
 from lynx.utils.job_manager import (
     is_job_finished,
     get_job_output,
-    save_session,
+    save_job,
     create_job_token,
 )
 

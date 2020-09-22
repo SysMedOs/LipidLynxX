@@ -14,12 +14,15 @@
                     <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96"></div>
                 <div class="row d-flex justify-content-center"><p>&nbsp;</p></div>
                 <div class="col-md-10 col-lg-8 col-xl-8 mx-auto">
-                    <form action="{{ url_for('home') }}linker/results/details" method="post" enctype="multipart/form-data">
+                    <form action="{{ url_for('home') }}linker/results/details" method="post"
+                          enctype="multipart/form-data">
                         <div class="form-row">
-                            <div class="col-9 col-md-9 mx-auto">
-                                <input class="form-control" name="lipid_name" id="lipid_name" type="text" placeholder="PLPC" value="PLPC"></div>
-                            <div class="col-3 col-md-3">
-                                <button class="btn btn-info" type="submit" id="link_lipid">Check resources &nbsp;🔍</button>
+                            <div class="col-8 col-md-8 mx-auto">
+                                <input class="form-control" name="lipid_name" id="lipid_name" type="text"
+                                       placeholder="PLPC" value="PLPC">
+                            </div>
+                            <div class="col-4 col-md-4">
+                                <button class="btn btn-info" type="submit" id="link_lipid">Check resources</button>
                             </div>
                         </div>
                         <div>
@@ -64,13 +67,15 @@
                             <div class="col-4">
                                 <div class="row d-flex justify-content-center" style="padding: 16px;">
                                     <div class="col-4">
-                                        <a href="{{ url_for('converter') }}"><img alt="image" class="img-fluid"
-                                                                                  src="images/converter_logo.png"></a>
+                                        <a href="{{ url_for('converter') }}">
+                                            <img alt="image" class="img-fluid"
+                                                 src="images/converter_logo.png"></a>
                                     </div>
-                                </div><div class="row d-flex justify-content-center">
+                                </div>
+                                <div class="row d-flex justify-content-center">
                                     <div class="col-9">
                                         <div class="row">
-                                            <h3>Lipid ID Converter</h3>
+                                            <h4>Lipid ID Converter</h4>
                                         </div>
                                         <div class="row d-flex justify-content-center">
                                             <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
@@ -80,7 +85,7 @@
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block"
                                                    href="{{ url_for('converter') }}">
-                                                    Run Converter</a><br></div>
+                                                    Run Converter</a></div>
                                         </div>
                                     </div>
                                 </div>
@@ -92,10 +97,11 @@
                                             <img alt="image" class="img-fluid"
                                                  src="images/equalizer_logo.png"></a>
                                     </div>
-                                </div><div class="row d-flex justify-content-center">
+                                </div>
+                                <div class="row d-flex justify-content-center">
                                     <div class="col-9">
                                         <div class="row">
-                                            <h3>Lipid ID Equalizer</h3>
+                                            <h4>Lipid ID Equalizer</h4>
                                         </div>
                                         <div class="row d-flex justify-content-center">
                                             <p>Bring lipid identifiers to the same level of annotation and perform
@@ -105,7 +111,7 @@
                                             <div class="col-8">
                                                 <a class="btn btn-info mt-4 btn-block"
                                                    href="{{ url_for('equalizer') }}">
-                                                    Run Equalizer</a><br></div>
+                                                    Run Equalizer</a></div>
                                         </div>
                                     </div>
                                 </div>
@@ -117,17 +123,20 @@
                                             <img alt="image" class="img-fluid"
                                                  src="images/linker_logo.png"></a>
                                     </div>
+                                </div>
+                                <div class="row d-flex justify-content-center">
                                     <div class="col-9">
                                         <div class="row">
-                                            <h3>Lipid Resource Linker</h3>
+                                            <h4>Lipid Resource Linker</h4>
                                         </div>
                                         <div class="row d-flex justify-content-center">
                                             <p>Collect available resources across databases.<br><br></p>
                                         </div>
                                         <div class="row d-flex justify-content-center">
                                             <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('linker') }}">
-                                                    Run Linker</a><br></div>
+                                                <a class="btn btn-info mt-4 btn-block"
+                                                   href="{{ url_for('linker') }}">
+                                                    Run Linker</a></div>
                                         </div>
                                     </div>
                                 </div>

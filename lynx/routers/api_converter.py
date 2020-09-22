@@ -43,12 +43,12 @@ from lynx.models.defaults import (
 from lynx.utils.job_manager import (
     is_job_finished,
     get_job_output,
-    save_session,
+    save_job,
     create_job_token,
 )
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import get_level
-from lynx.utils.file_handler import clean_temp_folder
+from lynx.utils.temp_file_cleaner import clean_temp_folder
 from lynx.mq.client import converter_client
 from lynx.utils.job_manager import create_job_token
 

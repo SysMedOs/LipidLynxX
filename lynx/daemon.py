@@ -13,12 +13,14 @@
 # For more info please contact:
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
+from multiprocessing.context import Process
+
 from lynx.mq.broker import default_broker
 from lynx.mq.worker import converter_worker
-from multiprocessing.context import Process
 
 
 def daemon_lynx():
+
     print("Start ZMQ Broker...")
     Process(target=default_broker).start()
     for w in range(1, 5):

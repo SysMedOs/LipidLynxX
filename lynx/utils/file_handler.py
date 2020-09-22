@@ -17,9 +17,7 @@ from datetime import datetime
 import json
 from io import BytesIO
 import os
-import re
 from pathlib import Path
-import time
 from typing import List, Union
 
 from fastapi import File
@@ -467,29 +465,3 @@ def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
         abs_output_path = get_abs_path(file_name)
 
     return is_output, abs_output_path
-
-
-def clean_temp_folder(
-    temp_dir: str = r"lynx/temp", max_days: float = 7.0, max_files: int = 99
-) -> list:
-    current_time = time.time()
-    earliest_unix_time = current_time - max_days * 86400  # 24 * 60 * 60 == 86400
-    removed_files = []
-    temp_files_lst = os.listdir(temp_dir)
-    file_suffix_rgx = re.compile(r"^(.*)(\.)(csv|xlsx?)$", re.IGNORECASE)
-    temp_file_path_lst = [
-        os.path.join(temp_dir, f) for f in temp_files_lst if file_suffix_rgx.match(f)
-    ]
-    temp_file_ctime_lst = [os.path.getctime(p) for p in temp_file_path_lst]
-    temp_file_info_lst = list(zip(temp_file_ctime_lst, temp_file_path_lst))
-    if len(temp_file_info_lst) > max_files:
-        temp_file_info_lst.sort(key=lambda tup: tup[0], reverse=True)
-        removed_files = temp_file_info_lst[max_files:]
-    for temp_file_info in temp_file_info_lst:
-        if temp_file_info[0] < earliest_unix_time:
-            removed_files.append(temp_file_info)
-    for temp in removed_files:
-        if os.path.isfile(temp[1]):
-            os.remove(temp[1])
-
-    return removed_files

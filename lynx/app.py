@@ -20,11 +20,7 @@ from fastapi.staticfiles import StaticFiles
 
 from lynx.api import api
 from lynx.routers.app_frontend import frontend
-from lynx.utils.cfg_reader import app_prefix, app_cfg_info, api_version, lynx_version
-
-# load app_url and app_port here to simplify the LipidLynxX.py file
-app_url = app_cfg_info.get("app_url", "127.0.0.1")
-app_port = int(app_cfg_info.get("app_port", 1399))
+from lynx.utils.cfg_reader import app_prefix, app_url, app_port
 
 app = FastAPI(title="LipidLynxX", debug=True)
 
@@ -36,26 +32,6 @@ app.mount(
 app.include_router(frontend, prefix=f"{app_prefix}")
 # api.py can be started separately to provide API service only
 app.mount(f"{app_prefix}/api", api, name="api")
-
-
-# def custom_openapi():
-#     """
-#     Settings for the API documentation.
-#     """
-#     if api.openapi_schema:
-#         return api.openapi_schema
-#     openapi_schema = get_openapi(
-#         title="LipidLynxX API",
-#         version=api_version,
-#         description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
-#         routes=api.routes,
-#     )
-#     openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
-#     api.openapi_schema = openapi_schema
-#     return api.openapi_schema
-#
-#
-# api.openapi = custom_openapi
 
 
 if __name__ == "__main__":

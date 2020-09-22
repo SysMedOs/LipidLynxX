@@ -17,11 +17,13 @@ import json
 
 import zmq
 
+from lynx.models.defaults import zmq_client_port
+
 
 def default_client(data: str, token: str, task: str):
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5559")
+    socket.connect(f"tcp://localhost:{zmq_client_port}")
     msg = {
         "token": token,
         "job": task,
@@ -37,7 +39,7 @@ def default_client(data: str, token: str, task: str):
 def converter_client(token: str, data: str):
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5559")
+    socket.connect(f"tcp://localhost:{zmq_client_port}")
     msg = {
         "token": token,
         "job": "converter",

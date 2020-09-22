@@ -35,7 +35,7 @@ def create_job_token(job_type: JobType) -> str:
     return job_token
 
 
-def save_session(job_token: str, data: Union[str, dict]):
+def save_job(job_token: str, data: Union[str, dict]):
     if len(job_token) > 5:
         job_file = os.path.join(default_temp_folder, f"{job_token}.json")
         print(f"Try to save: {job_file}")

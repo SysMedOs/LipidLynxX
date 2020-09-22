@@ -16,13 +16,14 @@
 import json
 import os
 
+from lynx.utils.basics import get_abs_path
 from lynx.utils.cfg_reader import app_cfg_info
 from lynx.utils.params_loader import (
     build_mod_parser,
     build_input_rules,
     build_output_rules,
 )
-from lynx.utils.basics import get_abs_path
+from lynx.utils.ports import check_port
 
 # Define default values across LipidLynx
 # load default values from files defined in config.ini
@@ -37,6 +38,8 @@ default_lion_file = get_abs_path(app_cfg_info["resource_lion"])
 default_temp_folder = app_cfg_info.get("temp_folder", r"lynx/temp")
 default_temp_max_days = int(app_cfg_info.get("temp_max_days", "3"))
 default_temp_max_files = int(app_cfg_info.get("temp_max_files", "99"))
+zmq_client_port = check_port(int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client")
+zmq_worker_port = check_port(int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker")
 
 if os.path.isdir(default_temp_folder):
     pass
@@ -62,6 +65,7 @@ with open(default_kegg_file, "r") as kegg_json_obj:
 
 with open(default_lion_file, "r") as lion_json_obj:
     lion_ids = json.load(lion_json_obj)
+
 
 default_template_files = {
     "LipidLynxX_Linker_Template.csv": "lynx/static/files/LipidLynxX_Linker_Template.csv"
