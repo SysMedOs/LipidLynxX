@@ -21,9 +21,7 @@ import zmq
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
 from lynx.utils.toolbox import get_style_level
-from lynx.utils.file_handler import (
-    table2html,
-)
+from lynx.utils.file_handler import table2html
 from lynx.utils.job_manager import save_job
 from lynx.utils.temp_file_cleaner import remove_temp_file
 
@@ -49,11 +47,14 @@ from lynx.models.defaults import default_zmq_worker_port
 #         socket.send(json.dumps(msg).encode())
 
 
-def run_convert_list(token: str, data: dict) -> dict:
-    data_lst = data.get("names", [])
-    export_style = data.get("export_style")
-    export_level = data.get("export_level")
+def run_convert_list(token: str, data: dict, job_name: str) -> dict:
+    data_lst = data.get("data", [])
+    export_style = data.get("style")
+    export_level = data.get("level")
+    file_type = data.get("file_type")
     style, level = get_style_level(export_style, export_level)
+    time_tag = time.strftime("%Y%m%d-%H%M%S")
+    export_name = f"LipidLynxX-{job_name}-{time_tag}-{token[:4]}.{file_type}"
     lynx_converter = Converter(style=style)
     converted_results = ConverterExportData(
         data={"TextInput": lynx_converter.convert_list(data_lst, level=level)}
@@ -64,6 +65,7 @@ def run_convert_list(token: str, data: dict) -> dict:
         "err_msgs": [],
         "export_level": export_level,
         "export_style": export_style,
+        "export_name": export_name,
         "converted_results": converted_results.dict(),
         # "converted_html": converted_html,
         # "not_converted_html": not_converted_html,
@@ -88,7 +90,7 @@ def general_worker(worker_id: int):
             job = JobType(job=job_name)
             # input_data = InputListData(data=data.get("names", []))
             if job.job == "converter":
-                response_data = run_convert_list(token, data)
+                response_data = run_convert_list(token, data, job_name)
             else:
                 response_data = {"token": token, "err_msgs": []}
             remove_temp_file()

@@ -33,23 +33,25 @@ def check_port(port: int, task_name: str = None) -> int:
     is_port_available = False
     tmp_port = port
     if task_name:
-        task_info = f' for {task_name}'
+        task_info = f" for {task_name}"
     else:
-        task_info = ''
+        task_info = ""
     while is_port_available is False:
         is_port_available = try_port(tmp_port)
         if is_port_available:
             if tmp_port == port:
                 print(f"Port: [{port}] is available{task_info}.")
             else:
-                print(f"Port: [{port}] already in use, switch to next available port: [{tmp_port}]{task_info}.")
+                print(
+                    f"Port: [{port}] already in use, switch to next available port: [{tmp_port}]{task_info}."
+                )
         else:
             tmp_port += 3
 
     return tmp_port
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     usr_port = 1399
     available_port = check_port(usr_port, "LipidLynxX")
     print(available_port)

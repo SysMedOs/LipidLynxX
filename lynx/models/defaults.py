@@ -38,8 +38,14 @@ default_lion_file = get_abs_path(app_cfg_info["resource_lion"])
 default_temp_folder = app_cfg_info.get("temp_folder", r"lynx/temp")
 default_temp_max_days = int(app_cfg_info.get("temp_max_days", "3"))
 default_temp_max_files = int(app_cfg_info.get("temp_max_files", "99"))
-default_zmq_client_port = check_port(int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client")
-default_zmq_worker_port = check_port(int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker")
+checked_zmq_client_port = check_port(
+    int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client"
+)
+checked_zmq_worker_port = check_port(
+    int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
+)
+default_zmq_client_port = checked_zmq_client_port
+default_zmq_worker_port = checked_zmq_worker_port
 default_zmq_worker_runner = int(app_cfg_info.get("zmq_worker_runner", 5))
 
 if os.path.isdir(default_temp_folder):

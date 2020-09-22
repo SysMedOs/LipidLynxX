@@ -91,13 +91,9 @@ async def link_lipid(
 
 
 @router.get(
-    "/linker/{token}",
-    response_model=JobStatus,
-    status_code=status.HTTP_202_ACCEPTED,
+    "/linker/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_linker_job(
-    token: str,
-):
+async def check_linker_job(token: str,):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -124,9 +120,7 @@ async def link_str(
 
 @router.post("/list/", status_code=status.HTTP_201_CREATED)
 async def link_list(
-    lipid_names: list,
-    export_url: bool = False,
-    export_names: bool = True,
+    lipid_names: list, export_url: bool = False, export_names: bool = True,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -160,9 +154,7 @@ async def link_dict(
 
 @router.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_linker_job(
-    lipid_names: list,
-    export_url: bool = False,
-    export_names: bool = True,
+    lipid_names: list, export_url: bool = False, export_names: bool = True,
 ):
     """"""
     token = create_job_token(JobType(job="link"))

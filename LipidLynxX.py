@@ -16,8 +16,9 @@
 import webbrowser
 import uvicorn
 
-from lynx.app import app, app_url, app_port, app_prefix
+from lynx.app import app
 from lynx.daemon import daemon_lynx
+from lynx.utils.cfg_reader import app_prefix, app_url, app_port
 
 
 def start_lynx():

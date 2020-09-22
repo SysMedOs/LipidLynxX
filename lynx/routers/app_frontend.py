@@ -43,6 +43,7 @@ from lynx.routers.api_converter import create_convert_list_job, create_convert_d
 from lynx.utils.cfg_reader import api_version, lynx_version
 from lynx.utils.file_handler import (
     create_equalizer_output,
+    get_file_type,
     get_table,
     get_output_name,
     table2html,
@@ -102,9 +103,7 @@ def levels(request: Request):
 
 
 @frontend.get("/linker/", include_in_schema=False)
-async def linker(
-    request: Request,
-):
+async def linker(request: Request,):
     return templates.TemplateResponse(
         "linker.html", {"request": request, "all_resources": {}}
     )
@@ -168,9 +167,12 @@ async def converter_text(
     # response_data = get_converter_response_data(
     #     converted_data.dict(), file_type, response_data
     # )
-
+    export_file_type = get_file_type(file_type)
     job_info = await create_convert_list_job(
-        data=input_data, style=export_style, level=export_level
+        data=input_data,
+        style=export_style,
+        level=export_level,
+        file_type=export_file_type,
     )  # type: JobStatus
     response_data = job_info.dict()
     response_data["request"] = request
