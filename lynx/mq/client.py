@@ -42,7 +42,7 @@ def converter_client(token: str, data: str):
     socket.connect(f"tcp://localhost:{default_zmq_client_port}")
     msg = {
         "token": token,
-        "job": "converter",
+        "job": "convert",
         "data": data,
     }
     send_msg = json.dumps(msg)

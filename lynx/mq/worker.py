@@ -14,18 +14,19 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
+import os
 import time
 
 import zmq
 
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
-from lynx.utils.toolbox import get_style_level
-from lynx.utils.file_handler import table2html
+from lynx.models.defaults import default_temp_folder, default_zmq_worker_port
+from lynx.utils.cfg_reader import app_prefix
+from lynx.utils.file_handler import create_converter_output, table2html
 from lynx.utils.job_manager import save_job
 from lynx.utils.temp_file_cleaner import remove_temp_file
-
-from lynx.models.defaults import default_zmq_worker_port
+from lynx.utils.toolbox import get_style_level
 
 
 # def default_worker(worker_id: int):
@@ -47,18 +48,25 @@ from lynx.models.defaults import default_zmq_worker_port
 #         socket.send(json.dumps(msg).encode())
 
 
-def run_convert_list(token: str, data: dict, job_name: str) -> dict:
+def run_convert_list(token: str, data: dict) -> dict:
     data_lst = data.get("data", [])
-    export_style = data.get("style")
-    export_level = data.get("level")
-    file_type = data.get("file_type")
+    params = data.get("params", {})
+    export_style = params.get("style", "ShortHand")
+    export_level = params.get("level", "B1")
+    file_type = params.get("file_type", 'csv')
     style, level = get_style_level(export_style, export_level)
     time_tag = time.strftime("%Y%m%d-%H%M%S")
-    export_name = f"LipidLynxX-{job_name}-{time_tag}-{token[:4]}.{file_type}"
+    export_name = f"LipidLynxX-Converter-{time_tag}-{token[:4]}.{file_type}"
     lynx_converter = Converter(style=style)
+    converter_results = lynx_converter.convert_list(data_lst, level=level)
     converted_results = ConverterExportData(
-        data={"TextInput": lynx_converter.convert_list(data_lst, level=level)}
+        data={"TextInput": converter_results}
     )
+    output_path = os.path.join(default_temp_folder, export_name)
+    export_abs_path = create_converter_output(
+        converter_results.dict(), output_name=output_path
+    )
+    export_url = f"{app_prefix}/downloads/{export_name}"
     # converted_html, not_converted_html = table2html(converted_results)
     response_data = {
         "token": token,
@@ -66,6 +74,7 @@ def run_convert_list(token: str, data: dict, job_name: str) -> dict:
         "export_level": export_level,
         "export_style": export_style,
         "export_name": export_name,
+        "export_url": export_url,
         "converted_results": converted_results.dict(),
         # "converted_html": converted_html,
         # "not_converted_html": not_converted_html,
@@ -89,12 +98,12 @@ def general_worker(worker_id: int):
             job_name = json.loads(message.decode()).get("job", "").lower()
             job = JobType(job=job_name)
             # input_data = InputListData(data=data.get("names", []))
-            if job.job == "converter":
-                response_data = run_convert_list(token, data, job_name)
+            if job.job == "convert":
+                response_data = run_convert_list(token, data)
             else:
                 response_data = {"token": token, "err_msgs": []}
             remove_temp_file()
         except Exception as e:
-            response_data = {"Error": e, "Passed": False}
+            response_data = {"token": "unknown", "err_msgs": ["Cannot load job information.", str(e)]}
 
         socket.send(json.dumps(response_data).encode())

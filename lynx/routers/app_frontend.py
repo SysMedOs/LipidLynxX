@@ -40,7 +40,7 @@ from lynx.models.api_models import (
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
 from lynx.routers.api_converter import create_convert_list_job, create_convert_dict_job
-from lynx.utils.cfg_reader import api_version, lynx_version
+from lynx.utils.cfg_reader import api_version, lynx_version, app_prefix
 from lynx.utils.file_handler import (
     create_equalizer_output,
     get_file_type,
@@ -176,6 +176,7 @@ async def converter_text(
     )  # type: JobStatus
     response_data = job_info.dict()
     response_data["request"] = request
+    # rel link to get_download
     response_data["export_level"] = export_level
     response_data["export_style"] = export_style
     response_data["err_msgs"] = []
