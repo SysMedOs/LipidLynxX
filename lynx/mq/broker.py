@@ -15,16 +15,14 @@
 
 import zmq
 
-from lynx.models.defaults import default_zmq_worker_port, default_zmq_client_port
 
-
-def default_broker():
+def default_broker(zmq_client_port: int = 2409, zmq_worker_port: int = 2410):
     # Prepare our context and sockets
     context = zmq.Context()
     client = context.socket(zmq.ROUTER)
     worker = context.socket(zmq.DEALER)
-    client.bind(f"tcp://*:{default_zmq_client_port}")
-    worker.bind(f"tcp://*:{default_zmq_worker_port}")
+    client.bind(f"tcp://*:{zmq_client_port}")
+    worker.bind(f"tcp://*:{zmq_worker_port}")
 
     # Initialize poll set
     poller = zmq.Poller()

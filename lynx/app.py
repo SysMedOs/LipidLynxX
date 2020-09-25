@@ -20,7 +20,9 @@ from fastapi.staticfiles import StaticFiles
 
 from lynx.api import api
 from lynx.routers.app_frontend import frontend
-from lynx.utils.cfg_reader import app_prefix, app_url, app_port
+from lynx.utils.cfg_reader import app_prefix, app_cfg_info
+from lynx.utils.ports import check_port
+
 
 app = FastAPI(title="LipidLynxX", debug=True)
 
@@ -40,7 +42,24 @@ if __name__ == "__main__":
     from lynx.daemon import daemon_lynx
 
     # Start message queue powered by ZeroMQ.
+    # check ports
+    checked_zmq_client_port = check_port(
+        int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client"
+    )
+    checked_zmq_worker_port = check_port(
+        int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
+    )
+    # run zmq daemon
+    daemon_lynx(checked_zmq_client_port, checked_zmq_worker_port)
     daemon_lynx()
 
     print("Start LipidLynxX Main Application...")
+    # check port
+    app_url = app_cfg_info.get("app_url", "127.0.0.1")
+    app_port = int(app_cfg_info.get("app_port", 1399))
+    checked_app_port = check_port(app_port, task_name="LipidLynxX main app")
+    if app_port != int(checked_app_port):
+        print(f"Port: [{app_port}] in config.ini is already in use.")
+        app_port = int(checked_app_port)
+        print(f"[INFO] LipidLynxX is now running on port [{checked_app_port}].")
     uvicorn.run(app, host=app_url, port=app_port)

@@ -21,7 +21,7 @@ import zmq
 
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
-from lynx.models.defaults import default_temp_folder, default_zmq_worker_port
+from lynx.models.defaults import default_temp_folder
 from lynx.utils.cfg_reader import app_prefix
 from lynx.utils.file_handler import create_converter_output, table2html
 from lynx.utils.job_manager import save_job
@@ -48,20 +48,18 @@ from lynx.utils.toolbox import get_style_level
 #         socket.send(json.dumps(msg).encode())
 
 
-def run_convert_list(token: str, data: dict) -> dict:
+def run_convert_list(token: str, data: dict, zmq_worker_port: int = 2410) -> dict:
     data_lst = data.get("data", [])
     params = data.get("params", {})
     export_style = params.get("style", "ShortHand")
     export_level = params.get("level", "B1")
-    file_type = params.get("file_type", 'csv')
+    file_type = params.get("file_type", "csv")
     style, level = get_style_level(export_style, export_level)
     time_tag = time.strftime("%Y%m%d-%H%M%S")
     export_name = f"LipidLynxX-Converter-{time_tag}-{token[:4]}.{file_type}"
     lynx_converter = Converter(style=style)
     converter_results = lynx_converter.convert_list(data_lst, level=level)
-    converted_results = ConverterExportData(
-        data={"TextInput": converter_results}
-    )
+    converted_results = ConverterExportData(data={"TextInput": converter_results})
     output_path = os.path.join(default_temp_folder, export_name)
     export_abs_path = create_converter_output(
         converter_results.dict(), output_name=output_path
@@ -84,14 +82,14 @@ def run_convert_list(token: str, data: dict) -> dict:
     return response_data
 
 
-def general_worker(worker_id: int):
+def general_worker(worker_id: int, zmq_worker_port: int = 2410):
     context = zmq.Context()
     socket = context.socket(zmq.REP)
-    socket.connect(f"tcp://localhost:{default_zmq_worker_port}")
+    socket.connect(f"tcp://localhost:{zmq_worker_port}")
     print(f"Worker#{worker_id} started.")
     while True:
         message = socket.recv()
-        print(f"Worker #{worker_id} Received Job: {message}")
+        print(f"Worker #{worker_id} @[{zmq_worker_port}] Received Job: {message}")
         try:
             data = json.loads(message.decode()).get("data")
             token = json.loads(message.decode()).get("token", "Temp_token")
@@ -104,6 +102,9 @@ def general_worker(worker_id: int):
                 response_data = {"token": token, "err_msgs": []}
             remove_temp_file()
         except Exception as e:
-            response_data = {"token": "unknown", "err_msgs": ["Cannot load job information.", str(e)]}
+            response_data = {
+                "token": "unknown",
+                "err_msgs": ["Cannot load job information.", str(e)],
+            }
 
         socket.send(json.dumps(response_data).encode())
