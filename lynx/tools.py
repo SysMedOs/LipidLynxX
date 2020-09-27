@@ -103,7 +103,8 @@ def convert_lipid(
     else:
         converted_name = ""
         typer.secho(
-            'Please input a lipid name. e.g. "PLPC".', fg=typer.colors.YELLOW,
+            'Please input a lipid name. e.g. "PLPC".',
+            fg=typer.colors.YELLOW,
         )
         typer.echo(convert_lipid.__doc__)
 
@@ -215,7 +216,10 @@ def convert_lipids(
 def convert_file(
     file: Path = typer.Argument(None),
     column: str = typer.Option(
-        None, "--column", "-c", help="name of the column that contains lipid notations",
+        None,
+        "--column",
+        "-c",
+        help="name of the column that contains lipid notations",
     ),
     output_file: Path = typer.Option(
         None,
@@ -310,7 +314,10 @@ def convert_file(
 def convert(
     source: str = typer.Argument(None),
     column: str = typer.Option(
-        None, "--column", "-c", help="name of the column that contains lipid notations",
+        None,
+        "--column",
+        "-c",
+        help="name of the column that contains lipid notations",
     ),
     style: StyleType = typer.Option(
         "LipidLynxX",
@@ -414,7 +421,10 @@ def equalize(
     table_dct = cli_get_table(file)
     levels = get_levels(level)
     typer.echo(
-        typer.style(f"Equalize lipid names on {levels} level.", fg=typer.colors.CYAN,)
+        typer.style(
+            f"Equalize lipid names on {levels} level.",
+            fg=typer.colors.CYAN,
+        )
     )
     typer.echo(f"Processing file: {file.name} ...")
     with click_spinner.spinner():

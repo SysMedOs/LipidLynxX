@@ -38,5 +38,6 @@ if __name__ == "__main__":
     checked_zmq_worker_port = check_port(
         int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
     )
+    # checked_zmq_client_port, checked_zmq_worker_port = 2409, 2410
     # run zmq daemon
     daemon_lynx(checked_zmq_client_port, checked_zmq_worker_port)

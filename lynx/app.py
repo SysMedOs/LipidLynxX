@@ -39,19 +39,19 @@ app.mount(f"{app_prefix}/api", api, name="api")
 if __name__ == "__main__":
     import uvicorn
 
-    from lynx.daemon import daemon_lynx
-
-    # Start message queue powered by ZeroMQ.
-    # check ports
-    checked_zmq_client_port = check_port(
-        int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client"
-    )
-    checked_zmq_worker_port = check_port(
-        int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
-    )
-    # run zmq daemon
-    daemon_lynx(checked_zmq_client_port, checked_zmq_worker_port)
-    daemon_lynx()
+    # from lynx.daemon import daemon_lynx
+    #
+    # # Start message queue powered by ZeroMQ.
+    # # check ports
+    # checked_zmq_client_port = check_port(
+    #     int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client"
+    # )
+    # checked_zmq_worker_port = check_port(
+    #     int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
+    # )
+    # # run zmq daemon
+    # daemon_lynx(checked_zmq_client_port, checked_zmq_worker_port)
+    # daemon_lynx()
 
     print("Start LipidLynxX Main Application...")
     # check port

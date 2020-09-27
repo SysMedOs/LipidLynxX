@@ -20,7 +20,7 @@ from typing import Dict, List, Literal, Union
 from pydantic import BaseModel, constr
 
 
-lipid_name_rgx_str = r"^\s*.{2,512}\s*$"
+lipid_name_rgx_str = r"^\s*.{0,512}\s*$"
 LipidNameType = constr(regex=lipid_name_rgx_str)
 level_rgx_str = r"^\s*(?P<level>[Bb][0-3]?|^[MSms]([0-5](.[0-3])?)?|^[Mm][Aa][Xx])\s*$"
 level_rgx = re.compile(level_rgx_str)
@@ -164,7 +164,9 @@ class ConvertedStrData(BaseModel):
             "example": {
                 "input": "PLPC",
                 "output": "PC(16:0/18:2)",
-                "converted": [["PLPC", "PC(16:0/18:2)"],],
+                "converted": [
+                    ["PLPC", "PC(16:0/18:2)"],
+                ],
                 "skipped": "",
             }
         }
@@ -233,7 +235,12 @@ class EqualizedLevelData(BaseModel):
     unmatched: Dict[str, dict]
 
     class Config:
-        schema_extra = {"example": {"matched": {}, "unmatched": {},}}
+        schema_extra = {
+            "example": {
+                "matched": {},
+                "unmatched": {},
+            }
+        }
 
 
 class EqualizedData(BaseModel):
@@ -243,7 +250,12 @@ class EqualizedData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "equalized": {"B1": {"matched": {}, "unmatched": {},},},
+                "equalized": {
+                    "B1": {
+                        "matched": {},
+                        "unmatched": {},
+                    },
+                },
                 "skipped": {"Source01": ["bad_ID", "Unknown_id"]},
             }
         }
@@ -255,7 +267,12 @@ class EqualizerExportData(BaseModel):
     class Config:
         schema_extra = {
             "example": {
-                "data": {"equalized": {"B1": None,}, "skipped": ["UNKNOWN_LIPID_1"],},
+                "data": {
+                    "equalized": {
+                        "B1": None,
+                    },
+                    "skipped": ["UNKNOWN_LIPID_1"],
+                },
             }
         }
 

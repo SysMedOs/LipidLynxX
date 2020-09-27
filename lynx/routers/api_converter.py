@@ -83,9 +83,13 @@ async def convert_lipid(
 
 
 @router.get(
-    "/jobs/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
+    "/jobs/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_converter_job_status(token: str,):
+async def check_converter_job_status(
+    token: str,
+):
     """
     Check the status of a job submitted to converter module.
     """
@@ -102,7 +106,9 @@ async def check_converter_job_status(token: str,):
 # Post APIs
 @router.post("/str/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_convert_str_job(
-    data: InputStrData, style: StyleType, level: Optional[LvType] = "MAX",
+    data: InputStrData,
+    style: StyleType,
+    level: Optional[LvType] = "MAX",
 ):
     """
 
@@ -120,7 +126,10 @@ async def create_convert_str_job(
         "export_style": style,
         "export_level": level,
     }
-    Process(target=converter_client, args=(token, job_execute_data),).start()
+    Process(
+        target=converter_client,
+        args=(token, job_execute_data),
+    ).start()
 
     job_status_data = {
         "data": data.dict(),
@@ -154,14 +163,25 @@ async def create_convert_list_job(
     token = create_job_token(JobType(job="convert"))
     job_execute_data = {
         "data": data.data,
-        "params": {"style": style, "level": level, "file_type": file_type,},
+        "params": {
+            "style": style,
+            "level": level,
+            "file_type": file_type,
+        },
     }
     print(job_execute_data)
-    Process(target=converter_client, args=(token, job_execute_data),).start()
+    Process(
+        target=converter_client,
+        args=(token, job_execute_data),
+    ).start()
 
     job_status_data = {
         "data": data.dict(),
-        "params": {"style": style, "level": level, "file_type": file_type,},
+        "params": {
+            "style": style,
+            "level": level,
+            "file_type": file_type,
+        },
     }
     job_status = "created"
     job_info = JobStatus(token=token, status=job_status, data=job_status_data)
@@ -171,11 +191,15 @@ async def create_convert_list_job(
 
 @router.post("/dict/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_convert_dict_job(
-    data: InputDictData, style: StyleType, level: Optional[LvType] = "MAX",
+    data: InputDictData,
+    style: StyleType,
+    level: Optional[LvType] = "MAX",
+    file_type: str = "xlsx",
 ):
     """
 
     Args:
+        file_type:
         data:
         style:
         level:
@@ -185,16 +209,25 @@ async def create_convert_dict_job(
     """
     token = create_job_token(JobType(job="convert"))
     job_execute_data = {
-        "names": data.data,
-        "export_style": style,
-        "export_level": level,
+        "data": data.data,
+        "params": {
+            "style": style,
+            "level": level,
+            "file_type": file_type,
+        },
     }
-    Process(target=converter_client, args=(token, job_execute_data),).start()
+    Process(
+        target=converter_client,
+        args=(token, job_execute_data, "dict"),
+    ).start()
 
     job_status_data = {
         "data": data.dict(),
-        "style": style,
-        "level": level,
+        "params": {
+            "style": style,
+            "level": level,
+            "file_type": file_type,
+        },
     }
     job_status = "created"
     job_info = JobStatus(token=token, status=job_status, data=job_status_data)

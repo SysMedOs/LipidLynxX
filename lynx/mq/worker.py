@@ -14,58 +14,33 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 import json
-import os
 import time
 
 import zmq
 
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
-from lynx.models.defaults import default_temp_folder
+from lynx.routers.api_linker import link_lipid
 from lynx.utils.cfg_reader import app_prefix
-from lynx.utils.file_handler import create_converter_output, table2html
+from lynx.utils.file_handler import create_converter_output
 from lynx.utils.job_manager import save_job
 from lynx.utils.temp_file_cleaner import remove_temp_file
-from lynx.utils.toolbox import get_style_level
+from lynx.utils.toolbox import get_style_level, get_url_safe_str
 
 
-# def default_worker(worker_id: int):
-#     context = zmq.Context()
-#     socket = context.socket(zmq.REP)
-#     socket.connect(f"tcp://localhost:{default_zmq_worker_port}")
-#
-#     while True:
-#         message = socket.recv()
-#         print(f"Worker #{worker_id} Received request: {message}")
-#         print(message)
-#         time.sleep(60)
-#         try:
-#             msg = json.loads(message.decode())
-#         except:
-#             msg = {"Error": "Error", "Passed": False}
-#         msg["results"] = f"Finished by worker #{worker_id}"
-#         msg["time"] = time.time()
-#         socket.send(json.dumps(msg).encode())
-
-
-def run_convert_list(token: str, data: dict, zmq_worker_port: int = 2410) -> dict:
+def run_convert_list(token: str, data: dict) -> dict:
     data_lst = data.get("data", [])
     params = data.get("params", {})
     export_style = params.get("style", "ShortHand")
     export_level = params.get("level", "B1")
-    file_type = params.get("file_type", "csv")
+    file_type = params.get("file_type", "xlsx")
     style, level = get_style_level(export_style, export_level)
     time_tag = time.strftime("%Y%m%d-%H%M%S")
     export_name = f"LipidLynxX-Converter-{time_tag}-{token[:4]}.{file_type}"
     lynx_converter = Converter(style=style)
     converter_results = lynx_converter.convert_list(data_lst, level=level)
     converted_results = ConverterExportData(data={"TextInput": converter_results})
-    output_path = os.path.join(default_temp_folder, export_name)
-    export_abs_path = create_converter_output(
-        converter_results.dict(), output_name=output_path
-    )
     export_url = f"{app_prefix}/downloads/{export_name}"
-    # converted_html, not_converted_html = table2html(converted_results)
     response_data = {
         "token": token,
         "err_msgs": [],
@@ -73,34 +48,131 @@ def run_convert_list(token: str, data: dict, zmq_worker_port: int = 2410) -> dic
         "export_style": export_style,
         "export_name": export_name,
         "export_url": export_url,
-        "converted_results": converted_results.dict(),
-        # "converted_html": converted_html,
-        # "not_converted_html": not_converted_html,
+        "results": converted_results.dict(),
     }
     save_job(token, response_data)
 
     return response_data
 
 
+def run_convert_dict(token: str, data: dict) -> dict:
+    data_dct = data.get("data", {})
+    params = data.get("params", {})
+    export_style = params.get("style", "ShortHand")
+    export_level = params.get("level", "B1")
+    file_type = params.get("file_type", "xlsx")
+    style, level = get_style_level(export_style, export_level)
+
+    results_dct = {}
+    for col_name in data_dct:
+        print(col_name)
+        data_lst = data_dct[col_name]
+        lynx_converter = Converter(style=style)
+        converter_results = lynx_converter.convert_list(data_lst, level=level)
+        results_dct[col_name] = converter_results
+    time_tag = time.strftime("%Y%m%d-%H%M%S")
+    export_name = f"LipidLynxX-Converter-{time_tag}-{token[:4]}.{file_type}"
+    export_url = f"{app_prefix}/downloads/{export_name}"
+    converted_results = ConverterExportData(data=results_dct)
+    response_data = {
+        "token": token,
+        "err_msgs": [],
+        "export_level": export_level,
+        "export_style": export_style,
+        "export_name": export_name,
+        "export_url": export_url,
+        "results": converted_results.dict(),
+    }
+    save_job(token, response_data)
+
+    return response_data
+
+
+def run_equalize_list(token: str, data: dict) -> dict:
+    pass
+
+
+def run_link_list(token: str, data: dict) -> dict:
+
+    data_lst = data.get("data", [])
+    params = data.get("params", {})
+    file_type = params.get("file_type", "xlsx")
+    time_tag = time.strftime("%Y%m%d-%H%M%S")
+    export_name = f"LipidLynxX-Linker-{time_tag}-{token[:4]}.{file_type}"
+    export_url = f"{app_prefix}/downloads/{export_name}"
+    all_resources = {}
+    export_file_data = {}
+    lynx_names = {}
+    for lipid_name in data_lst:
+        resource_info = link_lipid(lipid_name, export_url=True)
+        all_resources[lipid_name] = get_url_safe_str(resource_info)
+        export_file_data[lipid_name] = resource_info
+        lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+    response_data = {
+        "token": token,
+        "err_msgs": [],
+        "export_name": export_name,
+        "export_url": export_url,
+        "results": {
+            "Text input": {
+                "all_resources": all_resources,
+                "export_file_data": export_file_data,
+                "lynx_names": lynx_names,
+            }
+        },
+    }
+    save_job(token, response_data)
+
+    return response_data
+
+
+def init_runner(job: JobType, token: str, data: dict, job_data_type: str):
+
+    if job.job == "convert":
+        if job_data_type == "list":
+            response_data = run_convert_list(token, data)
+        elif job_data_type == "dict":
+            print("data")
+            print(data)
+            response_data = run_convert_dict(token, data)
+        else:
+            response_data = run_convert_dict(token, data)
+    elif job.job == "equalize":
+        response_data = run_equalize_list(token, data)
+    elif job.job == "link":
+        response_data = run_link_list(token, data)
+    else:
+        response_data = {"token": token, "err_msgs": []}
+    remove_temp_file()
+
+    return response_data
+
+
 def general_worker(worker_id: int, zmq_worker_port: int = 2410):
     context = zmq.Context()
+    # Static analysis of Pycharm/PyLint cannot find runtime-defined names e.g. REP
+    # See: https://github.com/zeromq/pyzmq/issues/1018
     socket = context.socket(zmq.REP)
     socket.connect(f"tcp://localhost:{zmq_worker_port}")
-    print(f"Worker#{worker_id} started.")
+    print(f"Worker#{worker_id} started @[{zmq_worker_port}].")
     while True:
         message = socket.recv()
         print(f"Worker #{worker_id} @[{zmq_worker_port}] Received Job: {message}")
         try:
-            data = json.loads(message.decode()).get("data")
-            token = json.loads(message.decode()).get("token", "Temp_token")
-            job_name = json.loads(message.decode()).get("job", "").lower()
+            msg_dct = json.loads(message.decode())
+            data = msg_dct.get("data")
+            token = msg_dct.get("token", "Temp_token")
+            job_name = msg_dct.get("job", "").lower()
+            job_data_type = msg_dct.get("data_type", "").lower()
+            print("job_data_type", job_data_type)
             job = JobType(job=job_name)
-            # input_data = InputListData(data=data.get("names", []))
-            if job.job == "convert":
-                response_data = run_convert_list(token, data)
+            if job.job and token and isinstance(data, dict):
+                response_data = init_runner(job, token, data, job_data_type)
             else:
-                response_data = {"token": token, "err_msgs": []}
-            remove_temp_file()
+                response_data = {
+                    "token": token,
+                    "err_msgs": ["Cannot load job information."],
+                }
         except Exception as e:
             response_data = {
                 "token": "unknown",

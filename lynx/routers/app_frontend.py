@@ -46,7 +46,6 @@ from lynx.utils.file_handler import (
     get_file_type,
     get_table,
     get_output_name,
-    table2html,
 )
 from lynx.utils.frontend_tools import (
     get_converter_response_data,
@@ -103,7 +102,9 @@ def levels(request: Request):
 
 
 @frontend.get("/linker/", include_in_schema=False)
-async def linker(request: Request,):
+async def linker(
+    request: Request,
+):
     return templates.TemplateResponse(
         "linker.html", {"request": request, "all_resources": {}}
     )
@@ -154,19 +155,6 @@ async def converter_text(
     names = lipid_names.splitlines()
     input_data = InputListData(data=names)
     export_style, export_level = get_style_level(export_style, export_level)
-
-    # converted_html, not_converted_html = table2html(converted_data)
-    # response_data = {
-    #     "request": request,
-    #     "err_msgs": [],
-    #     "export_level": export_level,
-    #     "export_style": export_style,
-    #     "converted_html": converted_html,
-    #     "not_converted_html": not_converted_html,
-    # }
-    # response_data = get_converter_response_data(
-    #     converted_data.dict(), file_type, response_data
-    # )
     export_file_type = get_file_type(file_type)
     job_info = await create_convert_list_job(
         data=input_data,
@@ -193,11 +181,15 @@ async def converter_file(
     file_type: FileType = Form(...),
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
+    export_file_type = get_file_type(file_type)
+    export_style, export_level = get_style_level(export_style, export_level)
     if table_info:
-        export_style, export_level = get_style_level(export_style, export_level)
         input_data = InputDictData(data=table_info)
         job_info = await create_convert_dict_job(
-            data=input_data, style=export_style, level=export_level
+            data=input_data,
+            style=export_style,
+            level=export_level,
+            file_type=export_file_type,
         )  # type: JobStatus
         response_data = job_info.dict()
         response_data["err_msgs"] = []
@@ -264,7 +256,7 @@ async def equalizer_file(
             "output_generated": False,
         }
 
-    return templates.TemplateResponse("equalizer.html", render_data_dct)
+    return templates.TemplateResponse("equalizer_results.html", render_data_dct)
 
 
 @frontend.post("/linker/text", include_in_schema=False)
@@ -280,6 +272,7 @@ async def linker_text(
         export_url = True
     else:
         export_url = False
+
     names = lipid_names.splitlines()
     all_resources = {}
     export_file_data = {}
@@ -357,7 +350,7 @@ async def linker_lipid(
     request: Request, lipid_name: str = Form(...), resource_data: str = Form(...)
 ):
     if resource_data == "NO_RESOURCE_DATA":
-        resource_info = await api.link_lipid(lipid_name, export_url=True)
+        resource_info = await api.api_linker.link_lipid(lipid_name, export_url=True)
     else:
         decoded_data = base64.urlsafe_b64decode(resource_data.encode("utf-8"))
         resource_info = json.loads(decoded_data.decode("utf-8"))

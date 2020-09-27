@@ -19,6 +19,8 @@ import zmq
 def default_broker(zmq_client_port: int = 2409, zmq_worker_port: int = 2410):
     # Prepare our context and sockets
     context = zmq.Context()
+    # Static analysis of Pycharm/PyLint cannot find runtime-defined names e.g. ROUTER, DEALER & POLLIN
+    # See: https://github.com/zeromq/pyzmq/issues/1018
     client = context.socket(zmq.ROUTER)
     worker = context.socket(zmq.DEALER)
     client.bind(f"tcp://*:{zmq_client_port}")
@@ -31,6 +33,8 @@ def default_broker(zmq_client_port: int = 2409, zmq_worker_port: int = 2410):
 
     # Switch messages between sockets
     print("ZMQ Broker started.")
+    print(f"ZMQ Client Port @[{zmq_client_port}]")
+    print(f"ZMQ Worker Port @[{zmq_worker_port}]")
     while True:
         socks = dict(poller.poll())
 

@@ -19,11 +19,8 @@ import re
 from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
-from lynx.models.api_models import (
-    JobStatus,
-    JobType,
-    LevelsData,
-)
+from lynx.models.api_models import JobStatus, JobType, LevelsData, InputListData
+from lynx.mq.client import linker_client
 from lynx.routers.api_converter import convert_lipid
 from lynx.utils.job_manager import (
     is_job_finished,
@@ -91,9 +88,13 @@ async def link_lipid(
 
 
 @router.get(
-    "/linker/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
+    "/linker/{token}",
+    response_model=JobStatus,
+    status_code=status.HTTP_202_ACCEPTED,
 )
-async def check_linker_job(token: str,):
+async def check_linker_job(
+    token: str,
+):
     """"""
     if is_job_finished(token):
         job_data = get_job_output(token)
@@ -120,7 +121,9 @@ async def link_str(
 
 @router.post("/list/", status_code=status.HTTP_201_CREATED)
 async def link_list(
-    lipid_names: list, export_url: bool = False, export_names: bool = True,
+    lipid_names: list,
+    export_url: bool = False,
+    export_names: bool = True,
 ) -> dict:
     """
     link a list of lipids to related resources from posted lipid name list
@@ -152,18 +155,28 @@ async def link_dict(
     return linked_info
 
 
-@router.post("/link/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+@router.post("/list/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
 async def create_linker_job(
-    lipid_names: list, export_url: bool = False, export_names: bool = True,
+    data: InputListData,
+    export_url: bool = True,
+    export_names: bool = True,
+    file_type: str = "xlsx",
 ):
     """"""
     token = create_job_token(JobType(job="link"))
-    job_data = {
-        "data": lipid_names,
-        "export_url": export_url,
-        "export_names": export_names,
+    job_execute_data = {
+        "data": data.data,
+        "params": {
+            "export_url": export_url,
+            "export_names": export_names,
+            "file_type": file_type,
+        },
     }
+    Process(
+        target=linker_client,
+        args=(token, job_execute_data),
+    ).start()
     job_status = "created"
-    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    job_info = JobStatus(token=token, status=job_status, data=job_execute_data)
 
     return job_info
