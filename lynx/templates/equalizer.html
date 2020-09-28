@@ -1,125 +1,123 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Equalizer @ LipidLynxX
+Equalizer @ LipidLynxX
 {% endblock %}
 
 {% block body %}
-    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
-             draggable="False">
-        <p></p>
-        <h1>LipidLynxX ID Equalizer</h1>
-        <div class="container">
-            <div class="row align-items-center align-items-md-start">
-                <div class="col-5" style="z-index: 10000;">
-                    <p>&nbsp;</p>
-                    <div>
-                        <form action="{{ url_for('equalizer_file') }}" method="post" enctype="multipart/form-data">
-                            <h4><span class="badge badge-pill badge-info">#1. Select file:</span></h4>
-                            <div class="custom-file">
-                                <label class="custom-file-label">select file</label>
-                                <input type="file" name="file_obj" class="custom-file-input" id="file_obj">
-                                <label class="custom-file-label" for="file_obj">Choose .csv or .xlsx file...</label>
-                                <small>*. Support .csv and .xlsx file less than 10MB</small>
-                                <script type="application/javascript">
-                                    $('input[type="file"]').change(function (event) {
-                                        let fileName = event.target.files[0].name;
-                                        $('.custom-file-label').text(fileName);
-                                    });
-                                </script>
-                            </div>
-                            <p>&nbsp;</p>
-                            <h4><span class="badge badge-pill badge-info">#2. Set Lipid information level(s) for cross match:</span>
-                            </h4>
-                            <label for="match_levels">
-                                <textarea type="text" name="match_levels" style="width:100%;"
-                                          rows="1"> B1, D1</textarea>
-                                *. You can set on one level (e.g. B1) <br>
-                                &nbsp;&nbsp;&nbsp; or multiple levels separated by "," (e.g. B1, D1)</label>
-                            <button type="submit" class="btn btn-primary" id="run_equalizer">Run Equalizer</button>
-                        </form>
-                    </div>
-                    <div>
-                        <div><p>&nbsp;</p></div>
-                        <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
-                            <strong>LipidLynxX is running...</strong>
-                            <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+<section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="False">
+    <p></p>
+    <h1>LipidLynxX ID Equalizer</h1>
+    <div class="container">
+        <div class="row align-items-center align-items-md-start">
+            <div class="col-5" style="z-index: 10000;">
+                <p>&nbsp;</p>
+                <div>
+                    <form action="{{ url_for('equalizer_file') }}" method="post" enctype="multipart/form-data">
+                        <h4><span class="badge badge-pill badge-info">#1. Select file:</span></h4>
+                        <div class="custom-file">
+                            <label class="custom-file-label">select file</label>
+                            <input type="file" name="file_obj" class="custom-file-input" id="file_obj">
+                            <label class="custom-file-label" for="file_obj">Choose .csv or .xlsx file...</label>
+                            <small>*. Support .csv and .xlsx file less than 10MB</small>
                             <script type="application/javascript">
-                                $(document).ready(function(){
-                                    $("#run_equalizer").click(function(){
-                                        let spinner = document.getElementById("spinner");
-                                        spinner.style.visibility = 'visible';
-                                        let results_info = document.getElementById("results_info");
-                                        results_info.style.visibility = 'hidden';
-                                    });
+                                $('input[type="file"]').change(function (event) {
+                                    let fileName = event.target.files[0].name;
+                                    $('.custom-file-label').text(fileName);
                                 });
                             </script>
                         </div>
-                        <div id="results_info">
-                            {% if err_msgs %}
-                                {% for err_msg in err_msgs %}
-                                    <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
-                                {% endfor %}
-                            {% endif %}
-                            {% if output_generated %}
-                                <h2>LipidLynxX Equalizer output</h2>
-                                <h4>&nbsp;</h4>
-                                <div>
-                                    <a class="btn btn-block btn-success"
-                                       href="{{ url_for('get_download_file', file_name=output_file_name) }}">
-                                        Save output as:<br>{{ output_file_name }}
-                                    </a>
-                                </div>
-                                <p>&nbsp;</p>
-                            {% endif %}
-                        </div>
-                    </div>
+                        <p>&nbsp;</p>
+                        <h4><span class="badge badge-pill badge-info">#2. Set Lipid information level(s) for cross
+                                match:</span>
+                        </h4>
+                        <label for="match_levels">
+                            <textarea type="text" name="match_levels" style="width:100%;" rows="1"> B1, D1</textarea>
+                            *. You can set on one level (e.g. B1) <br>
+                            &nbsp;&nbsp;&nbsp; or multiple levels separated by "," (e.g. B1, D1)</label>
+                        <button type="submit" class="btn btn-primary" id="run_equalizer">Run Equalizer</button>
+                    </form>
                 </div>
-                <div class="col-7 text-left" style="z-index: 10000;">
-                    <div class="row">
+                <div>
+                    <div>
+                        <p>&nbsp;</p>
+                    </div>
+                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
+                        <strong>LipidLynxX is running...</strong>
+                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                        <script type="application/javascript">
+                            $(document).ready(function () {
+                                $("#run_equalizer").click(function () {
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'visible';
+                                    let results_info = document.getElementById("results_info");
+                                    results_info.style.visibility = 'hidden';
+                                });
+                            });
+                        </script>
+                    </div>
+                    <div id="results_info">
+                        {% if err_msgs %}
+                        {% for err_msg in err_msgs %}
+                        <div class="alert alert-danger" role="alert">{{ err_msg }}</div>
+                        {% endfor %}
+                        {% endif %}
+                        {% if output_generated %}
+                        <h2>LipidLynxX Equalizer output</h2>
                         <h4>&nbsp;</h4>
-                    </div>
-                    <div class="justify-content-center">
-                        <h4 class="text-center">LipidLynx ID Level Matrix</h4>
-                    </div>
-                    <ul class="nav nav-tabs" id="levelsTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="unmod-tab" data-toggle="tab" href="#unmod" role="tab"
-                               aria-controls="unmod" aria-selected="true">Unmodified Lipids</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="mod_lite-tab" data-toggle="tab" href="#mod_lite" role="tab"
-                               aria-controls="mod_lite" aria-selected="false">Modified Lipids</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
-                               aria-controls="mod_full" aria-selected="false">All Levels</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="levelsTabContent">
-                        <div class="tab-pane fade show active" id="unmod" role="tabpanel"
-                             aria-labelledby="unmod-tab">
-                            <h5 style="text-align: center; line-height: 2">Levels for unmodified lipids</h5>
-                            <img class="img-fluid" src="{{ url_for('home') }}images/levels_unmod.png" alt="levels_hint">
+                        <div>
+                            <a class="btn btn-block btn-success"
+                                href="{{ url_for('get_download_file', file_name=output_file_name) }}">
+                                Save output as:<br>{{ output_file_name }}
+                            </a>
                         </div>
-                        <div class="tab-pane fade" id="mod_lite" role="tabpanel" aria-labelledby="mod_lite-tab">
-                            <h5 style="text-align: center; line-height: 2">Main levels for modified lipids</h5>
-                            <img class="img-fluid" src="{{ url_for('home') }}images/levels_mod_lite.png"
-                                 alt="levels_hint">
-                        </div>
-                        <div class="tab-pane fade" id="mod_full" role="tabpanel" aria-labelledby="mod_full-tab">
-                            <h5 style="text-align: center; line-height: 2">Full matrix of levels</h5>
-                            <img class="img-fluid" src="{{ url_for('home') }}images/levels_mod_full.png"
-                                 alt="levels_hint">
-                        </div>
-                    </div>
-                    <div class="row">
-                        &nbsp;&nbsp;* Learn more about &nbsp;<a href="{{ url_for('levels') }}" target="_blank"> The
-                        LipidLynx ID Level Matrix </a>
+                        <p>&nbsp;</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            <div class="col-7 text-left" style="z-index: 10000;">
+                <div class="row">
+                    <h4>&nbsp;</h4>
+                </div>
+                <div class="justify-content-center">
+                    <h4 class="text-center">LipidLynx ID Level Matrix</h4>
+                </div>
+                <ul class="nav nav-tabs" id="levelsTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="unmod-tab" data-toggle="tab" href="#unmod" role="tab"
+                            aria-controls="unmod" aria-selected="true">Unmodified Lipids</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="mod_lite-tab" data-toggle="tab" href="#mod_lite" role="tab"
+                            aria-controls="mod_lite" aria-selected="false">Modified Lipids</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="mod_full-tab" data-toggle="tab" href="#mod_full" role="tab"
+                            aria-controls="mod_full" aria-selected="false">All Levels</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="levelsTabContent">
+                    <div class="tab-pane fade show active" id="unmod" role="tabpanel" aria-labelledby="unmod-tab">
+                        <h5 style="text-align: center; line-height: 2">Levels for unmodified lipids</h5>
+                        <img class="img-fluid" src="{{ url_for('home') }}images/levels_unmod.png" alt="levels_hint">
+                    </div>
+                    <div class="tab-pane fade" id="mod_lite" role="tabpanel" aria-labelledby="mod_lite-tab">
+                        <h5 style="text-align: center; line-height: 2">Main levels for modified lipids</h5>
+                        <img class="img-fluid" src="{{ url_for('home') }}images/levels_mod_lite.png" alt="levels_hint">
+                    </div>
+                    <div class="tab-pane fade" id="mod_full" role="tabpanel" aria-labelledby="mod_full-tab">
+                        <h5 style="text-align: center; line-height: 2">Full matrix of levels</h5>
+                        <img class="img-fluid" src="{{ url_for('home') }}images/levels_mod_full.png" alt="levels_hint">
+                    </div>
+                </div>
+                <div class="row">
+                    &nbsp;&nbsp;* Learn more about &nbsp;<a href="{{ url_for('levels') }}" target="_blank"> The
+                        LipidLynx ID Level Matrix </a>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
 
 {% endblock %}

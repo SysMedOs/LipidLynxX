@@ -1,43 +1,45 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Converter @ LipidLynxX
+Converter @ LipidLynxX
 {% endblock %}
 
 {% block js_code %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 {% endblock %}
 
 {% block body %}
-    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
-             draggable="False">
-        <p></p>
-        <h1>LipidLynxX Converter</h1>
-        <div class="container">
-            <div class="row align-items-center align-items-md-start">
-                <div class="col-12" style="z-index: 10000;">
-                    <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
-                               aria-controls="tools" aria-selected="true"><h4>Convert list</h4></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
-                               aria-controls="namesys" aria-selected="false"><h4>Convert file</h4></a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="levelsTabContent">
-                        <div class="tab-pane fade show active" id="tools" role="tabpanel"
-                             aria-labelledby="tools-tab">
-                            <p></p>
-                            <h4>Input lipid abbreviations</h4>
-                            <form action="{{ url_for('converter_text') }}" method="post">
-                                <p><label>
+<section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="False">
+    <p></p>
+    <h1>LipidLynxX Converter</h1>
+    <div class="container">
+        <div class="row align-items-center align-items-md-start">
+            <div class="col-12" style="z-index: 10000;">
+                <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
+                            aria-controls="tools" aria-selected="true">
+                            <h4>Convert list</h4>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
+                            aria-controls="namesys" aria-selected="false">
+                            <h4>Convert file</h4>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="levelsTabContent">
+                    <div class="tab-pane fade show active" id="tools" role="tabpanel" aria-labelledby="tools-tab">
+                        <p></p>
+                        <h4>Input lipid abbreviations</h4>
+                        <form action="{{ url_for('converter_text') }}" method="post">
+                            <p><label>
                                     lipid_names <br>
                                     <textarea type="text" name="lipid_names" class="form-control" style="width:100%;"
-                                              rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
+                                        rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
                                 </label></p>
-                                <p><label for="export_style">Choose the export style:
+                            <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
                                         <option value="LipidLynxX">LipidLynxX</option>
                                         <option value="ShorthandNotation">ShortHand Notation</option>
@@ -46,48 +48,49 @@
                                         <option value="LipidCreator">LipidCreator</option>
                                         <option value="LPPtiger">LPPtiger</option>
                                     </select></label></p>
-                                <p><label for="export_level">Choose the export Level:
+                            <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="M1">Molecular species level</option>
                                         <option value="MAX">Max level</option>
                                     </select></label></p>
-                                <div class="alert alert-warning" role="alert">
-                                    <ul>
-                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
+                            <div class="alert alert-warning" role="alert">
+                                <ul>
+                                    <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
                                             only.</small></li>
-                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and
+                                    <li><small>LipidCreator export supports <strong>Molecular species</strong> and
                                             <strong>sn specific species</strong>.</small></li>
-                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level
+                                    <li><small>LPPtiger export in <strong>sn specific species</strong> level
                                             only.</small></li>
-                                    </ul>
-                                </div>
-                                <p><label for="file_type">Choose the export format:
+                                </ul>
+                            </div>
+                            <p><label for="file_type">Choose the export format:
                                     <select id="file_type" name="file_type">
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
                                     </select></label></p>
-                                <div class="alert alert-warning" role="alert">
-                                    <ul>
-                                        <li><small>LipidCreator export supports <strong>.csv</strong> format
+                            <div class="alert alert-warning" role="alert">
+                                <ul>
+                                    <li><small>LipidCreator export supports <strong>.csv</strong> format
                                             only.</small></li>
-                                        <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <button type="submit" class="btn btn-lg btn-primary btn-block" id="run_text_converter">Convert</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
-                            <p></p>
-                            <h4>Upload file with lipid abbreviations</h4>
-                            <form action="{{ url_for('converter_file') }}" method="post" enctype="multipart/form-data">
-                                <p><label>
+                                    <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-lg btn-primary btn-block"
+                                    id="run_text_converter">Convert</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
+                        <p></p>
+                        <h4>Upload file with lipid abbreviations</h4>
+                        <form action="{{ url_for('converter_file') }}" method="post" enctype="multipart/form-data">
+                            <p><label>
                                     Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
                                     <input type="file" name="file_obj">
                                 </label></p>
-                                <p><label for="export_style">Choose the export style:
+                            <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
                                         <option value="LipidLynxX">LipidLynxX</option>
                                         <option value="ShorthandNotation">ShortHand Notation</option>
@@ -96,43 +99,44 @@
                                         <option value="LipidCreator">LipidCreator</option>
                                         <option value="LPPtiger">LPPtiger</option>
                                     </select></label></p>
-                                <p><label for="export_level">Choose the export Level:
+                            <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
                                         <option value="M1">Molecular species level</option>
                                         <option value="MAX">Max level</option>
                                     </select></label></p>
-                                <div class="alert alert-warning" role="alert">
-                                    <ul>
-                                        <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
+                            <div class="alert alert-warning" role="alert">
+                                <ul>
+                                    <li><small>COMP_DB and BioPAN export in <strong>Bulk</strong> level
                                             only.</small></li>
-                                        <li><small>LipidCreator export supports <strong>Molecular species</strong> and
+                                    <li><small>LipidCreator export supports <strong>Molecular species</strong> and
                                             <strong>sn specific species</strong>.</small></li>
-                                        <li><small>LPPtiger export in <strong>sn specific species</strong> level
+                                    <li><small>LPPtiger export in <strong>sn specific species</strong> level
                                             only.</small></li>
-                                    </ul>
-                                </div>
-                                <p><label for="file_type">Choose the export format:
+                                </ul>
+                            </div>
+                            <p><label for="file_type">Choose the export format:
                                     <select id="file_type" name="file_type">
                                         <option value="xlsx">.xlsx</option>
                                         <option value="csv">.csv</option>
                                     </select></label></p>
-                                <div class="alert alert-warning" role="alert">
-                                    <ul>
-                                        <li><small>LipidCreator export supports <strong>.csv</strong> format
+                            <div class="alert alert-warning" role="alert">
+                                <ul>
+                                    <li><small>LipidCreator export supports <strong>.csv</strong> format
                                             only.</small></li>
-                                        <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <button type="submit" class="btn btn-lg btn-primary btn-block" id="run_file_converter">Convert file
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                                    <li><small>LPPtiger export in <strong>.xlsx</strong> format only.</small></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-lg btn-primary btn-block"
+                                    id="run_file_converter">Convert file
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock %}

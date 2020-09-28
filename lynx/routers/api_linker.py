@@ -156,7 +156,7 @@ async def link_dict(
 
 
 @router.post("/list/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
-async def create_linker_job(
+async def create_link_list_job(
     data: InputListData,
     export_url: bool = True,
     export_names: bool = True,
@@ -174,7 +174,7 @@ async def create_linker_job(
     }
     Process(
         target=linker_client,
-        args=(token, job_execute_data),
+        args=(token, job_execute_data, "list"),
     ).start()
     job_status = "created"
     job_info = JobStatus(token=token, status=job_status, data=job_execute_data)

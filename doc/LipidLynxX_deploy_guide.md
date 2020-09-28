@@ -72,18 +72,28 @@ Restart linux server before going to following setps.
 + Edit following content accordingly especially content inside`{}` and save the file.
   
   + ```ini
-    [program:gunicorn]
-    directory={path_to_lipid_lynx_folder}
-    environment=PATH=/home/anaconda3/envs/{envlynx}/bin  # or your env path
-    command=/home/{user_name}/anaconda3/envs/{envlynx}/bin/gunicorn lynx.app:app -w 4 -k uvicorn.workers.UvicornWorker
+    [program:daemon_lynx]
+    directory=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}
+    environment=PATH=/home/anaconda3/envs/envlynx38/bin  # or your env path
+    command=/home/{USER_NAME}/anaconda3/envs/envlynx38/bin/python daemon_lynx.py
     autorestart=true
     redirect_stderr=true
-    stdout_logfile={path_to_lipid_lynx_folder}/stdout.log
-    stderr_logfile={path_to_lipid_lynx_folder}/error.log
+    stdout_logfile=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}/daemon_lynx_stdout.log
+    stderr_logfile=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}/daemon_lynx_error.log
     
+    [program:lynx_app]
+    directory=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}
+    environment=PATH=/home/anaconda3/envs/envlynx38/bin  # or your env path
+    command=/home/{USER_NAME}/anaconda3/envs/envlynx38/bin/gunicorn lynx.app:app -w 4 -k uvicorn.workers.UvicornWorker
+    autorestart=true
+    redirect_stderr=true
+    stdout_logfile=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}/lynx_app_stdout.log
+    stderr_logfile=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}/lynx_app_error.log
+
     [supervisord]
-    logfile={path_to_lipid_lynx_folder}/supervisord.log
+    logfile=/home/{USER_NAME}/{PATH_TO_LipidLynxX_FOLDER}/supervisord.log
     logfile_maxbytes=50MB
+
     ```
     
     + if you use miniconda, then replace anaconda3 by miniconda/miniconda3
@@ -112,8 +122,11 @@ After updating LipidLynxX, you have to restart the web service.
 
 You can reboot the server or run following two commands to restart `supervisor` and `nginx` service.
 
-+ `sudo service supervisor restart`
-
-+ `sudo service nginx restart`
++ stop supervisor `sudo supervisorctl stop lynx_app lynx_daemon`
++ check supervisor status `sudo supervisorctl status`
++ kill rest of daemon `sudo pkill -f daemon_lynx`
++ start supervisor `sudo supervisorctl start lynx_app lynx_daemon`
++ check supervisor status `sudo supervisorctl status`
++ restart nginx `sudo service nginx restart`
 
 LipidLynxX should then run with the new version.

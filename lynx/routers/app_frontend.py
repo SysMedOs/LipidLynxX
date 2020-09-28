@@ -40,6 +40,7 @@ from lynx.models.api_models import (
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
 from lynx.routers.api_converter import create_convert_list_job, create_convert_dict_job
+from lynx.routers.api_linker import create_link_list_job
 from lynx.utils.cfg_reader import api_version, lynx_version, app_prefix
 from lynx.utils.file_handler import (
     create_equalizer_output,
@@ -274,30 +275,18 @@ async def linker_text(
         export_url = False
 
     names = lipid_names.splitlines()
-    all_resources = {}
-    export_file_data = {}
-    lynx_names = {}
-    for lipid_name in names:
-        resource_info = await api.link_lipid(lipid_name, export_url=True)
-        all_resources[lipid_name] = get_url_safe_str(resource_info)
-        export_file_data[lipid_name] = resource_info
-        lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+    export_file_type = get_file_type(file_type)
+    input_data = InputListData(data=names)
+    job_info = await create_link_list_job(
+        data=input_data,
+        file_type=export_file_type,
+    )  # type: JobStatus
+    response_data = job_info.dict()
+    response_data["request"] = request
+    # rel link to get_download
+    response_data["err_msgs"] = []
 
-    response_data = {
-        "request": request,
-        "export_url": export_url,
-        "data": {
-            "List input": {
-                "all_resources": all_resources,
-                "export_file_data": export_file_data,
-                "lynx_names": lynx_names,
-            }
-        },
-        "submitted": True,
-    }
-    response_data = get_linker_response_data(response_data, file_type)
-
-    return templates.TemplateResponse("linker.html", response_data)
+    return templates.TemplateResponse("converter_results.html", response_data)
 
 
 @frontend.post("/linker/file", include_in_schema=False)

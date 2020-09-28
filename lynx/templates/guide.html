@@ -1,107 +1,116 @@
 {% extends "base.html" %}
 
 {% block title %}
-    User Guide @ LipidLynxX
+User Guide @ LipidLynxX
 {% endblock %}
 
 {% block body %}
-    <h4>&nbsp;</h4>
-    <h3>LipidLynxX User Guide</h3>
+<h4>&nbsp;</h4>
+<h3>LipidLynxX User Guide</h3>
 
-    <h4>&nbsp;</h4>
-    <h5>LipidLynxX allows conversion of diverse lipid annotations to unified identifiers and perform cross-ID matching
-        to support lipidomics data integration and usability of publicly available lipid identification dataset.</h5>
-    <h4>&nbsp;</h4>
-    <h5>Key Features</h5>
-    <ul>
-        <li>Optimized for manual interpretation and computer processing</li>
-        <li>Covert multiple lipid annotations to unique identifier</li>
-        <li>Cross level matching for annotations at different identity levels</li>
-        <li>Suitable for both unmodified lipids and modified lipids</li>
-        <li>Unified controlled vocabulary for lipid modification</li>
-        <li>Strictly controlled format using JSON schema</li>
-        <li>Easy to use Graphic User Interface</li>
-        <li>API access for professional users</li>
-    </ul>
-    <h5>Main Modules</h5>
-    <ul>
-        <li><p><strong>LipidLynxX Converter</strong></p>
-            <ul>
-                <li>Convert different annotations to uniform LipidLynxX ID</li>
-            </ul>
-        </li>
-        <li><p><strong>LipidLynxX Equalizer</strong></p>
-            <ul>
-                <li>Bring lipid identifiers to the same level of annotation and perform cross-level matching between
-                    different dataset
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <h5>This user guide is designed for:</h5>
-    <ul>
-        <li><h6>LipidLynxX version: {{ lynx_version }}</h6></li>
-        <li><h6>API version: {{ api_version }}</h6></li>
-    </ul>
-    <h5>Instructions:</h5>
+<h4>&nbsp;</h4>
+<h5>LipidLynxX allows conversion of diverse lipid annotations to unified identifiers and perform cross-ID matching
+    to support lipidomics data integration and usability of publicly available lipid identification dataset.</h5>
+<h4>&nbsp;</h4>
+<h5>Key Features</h5>
+<ul>
+    <li>Optimized for manual interpretation and computer processing</li>
+    <li>Covert multiple lipid annotations to unique identifier</li>
+    <li>Cross level matching for annotations at different identity levels</li>
+    <li>Suitable for both unmodified lipids and modified lipids</li>
+    <li>Unified controlled vocabulary for lipid modification</li>
+    <li>Strictly controlled format using JSON schema</li>
+    <li>Easy to use Graphic User Interface</li>
+    <li>API access for professional users</li>
+</ul>
+<h5>Main Modules</h5>
+<ul>
+    <li>
+        <p><strong>LipidLynxX Converter</strong></p>
+        <ul>
+            <li>Convert different annotations to uniform LipidLynxX ID</li>
+        </ul>
+    </li>
+    <li>
+        <p><strong>LipidLynxX Equalizer</strong></p>
+        <ul>
+            <li>Bring lipid identifiers to the same level of annotation and perform cross-level matching between
+                different dataset
+            </li>
+        </ul>
+    </li>
+</ul>
+<h5>This user guide is designed for:</h5>
+<ul>
+    <li>
+        <h6>LipidLynxX version: {{ lynx_version }}</h6>
+    </li>
+    <li>
+        <h6>API version: {{ api_version }}</h6>
+    </li>
+</ul>
+<h5>Instructions:</h5>
 
-    <ul>
-        <li>Test input file: "LipidLynxX\doc\sample_data\input"</li>
-        <li>Test output file: "LipidLynxX\doc\sample_data\output"</li>
-    </ul>
+<ul>
+    <li>Test input file: "LipidLynxX\doc\sample_data\input"</li>
+    <li>Test output file: "LipidLynxX\doc\sample_data\output"</li>
+</ul>
 
-    <h5>Converter</h5>
-    <p>For Conversion, type/paste your lipid annotations or choose your .xlsx or .csv files. Press “convert
-        abbreviations” or “convert table”, wait for results. You will see the output on the right-hand side
-        or just download the table with converted IDs.</p>
-    <ul>
-        <li><p>Convert by text input</p>
-            <ul>
-                <li>Paste list of abbreviations in the text input field and press “convert abbreviations”.
-                    <br>
-                    <img src="images/user_guide_converter_01.png" alt="user_guide_converter_01" width="600">
-                </li>
+<h5>Converter</h5>
+<p>For Conversion, type/paste your lipid annotations or choose your .xlsx or .csv files. Press “convert
+    abbreviations” or “convert table”, wait for results. You will see the output on the right-hand side
+    or just download the table with converted IDs.</p>
+<ul>
+    <li>
+        <p>Convert by text input</p>
+        <ul>
+            <li>Paste list of abbreviations in the text input field and press “convert abbreviations”.
+                <br>
+                <img src="images/user_guide_converter_01.png" alt="user_guide_converter_01" width="600">
+            </li>
 
-                <li>You will see the output on the right-hand side
-                    or just download the table with converted IDs.<br>
-                    <img src="images/user_guide_converter_02.png" alt="user_guide_converter_02" width="600">
-                </li>
+            <li>You will see the output on the right-hand side
+                or just download the table with converted IDs.<br>
+                <img src="images/user_guide_converter_02.png" alt="user_guide_converter_02" width="600">
+            </li>
 
-            </ul>
-        </li>
-        <li><p>Convert by table input</p>
-            <ul>
-                <li>Press "Choose file"<br>
-                    <img src="images/user_guide_converter_03.png" alt="user_guide_converter_03" width="600">
-                </li>
-                <li>Select the input file in .xlsx or .csv format and press “Convert table”<br>
-                    <img src="images/user_guide_converter_04.png" alt="user_guide_converter_04" width="600">
-                </li>
-                <li>You will see the output on the right-hand side or just download the table with converted IDs.<br>
-                    <img src="images/user_guide_converter_05.png" alt="user_guide_converter_05" width="600">
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <h5>Equalizer</h5>
-    <p>To Equalize, select LipidLynxX Equalizer tab from Home page. Select the level of annotations to which you would
-        like to cross-match your lipid annotations (you can select more than one). For details on annotation levels see
-        the tables on the right hand-side. Choose you datafile and press “Equalize”. Download your results as .xlsx
-        file. </p>
-    <ul>
-        <li><p>Convert by table input</p>
-            <ul>
-                <li>Press "Choose file" and select the input file in .xlsx or .csv format. Then select the level of
-                    annotations to which you would like to cross-match your lipid annotations
-                    (you can select more than one), in this case levels B0, D0 and D1 are chosen. Then you can press
-                    “Equalize” to start processing.<br>
-                    <img src="images/user_guide_equalizer_01.png" alt="user_guide_equalizer_01" width="600">
-                </li>
-                <li>You will see the output when the processing is finished and you can download the file in .xlsx
-                    format.<br>
-                    <img src="images/user_guide_equalizer_02.png" alt="user_guide_equalizer_02" width="600">
-                </li>
-            </ul>
-        </li>
-    </ul>
+        </ul>
+    </li>
+    <li>
+        <p>Convert by table input</p>
+        <ul>
+            <li>Press "Choose file"<br>
+                <img src="images/user_guide_converter_03.png" alt="user_guide_converter_03" width="600">
+            </li>
+            <li>Select the input file in .xlsx or .csv format and press “Convert table”<br>
+                <img src="images/user_guide_converter_04.png" alt="user_guide_converter_04" width="600">
+            </li>
+            <li>You will see the output on the right-hand side or just download the table with converted IDs.<br>
+                <img src="images/user_guide_converter_05.png" alt="user_guide_converter_05" width="600">
+            </li>
+        </ul>
+    </li>
+</ul>
+<h5>Equalizer</h5>
+<p>To Equalize, select LipidLynxX Equalizer tab from Home page. Select the level of annotations to which you would
+    like to cross-match your lipid annotations (you can select more than one). For details on annotation levels see
+    the tables on the right hand-side. Choose you datafile and press “Equalize”. Download your results as .xlsx
+    file. </p>
+<ul>
+    <li>
+        <p>Convert by table input</p>
+        <ul>
+            <li>Press "Choose file" and select the input file in .xlsx or .csv format. Then select the level of
+                annotations to which you would like to cross-match your lipid annotations
+                (you can select more than one), in this case levels B0, D0 and D1 are chosen. Then you can press
+                “Equalize” to start processing.<br>
+                <img src="images/user_guide_equalizer_01.png" alt="user_guide_equalizer_01" width="600">
+            </li>
+            <li>You will see the output when the processing is finished and you can download the file in .xlsx
+                format.<br>
+                <img src="images/user_guide_equalizer_02.png" alt="user_guide_equalizer_02" width="600">
+            </li>
+        </ul>
+    </li>
+</ul>
 {% endblock %}

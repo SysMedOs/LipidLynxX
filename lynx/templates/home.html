@@ -1,192 +1,193 @@
 {% extends "base.html" %}
 
 {% block title %}
-    LipidLynxX
+LipidLynxX
 {% endblock %}
 
 {% block body %}
-    <header class="masthead text-white text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-9 mx-auto" style="padding: 36px;">
-                    <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
-                    &nbsp;&nbsp;
-                    <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96"></div>
-                <div class="row d-flex justify-content-center"><p>&nbsp;</p></div>
-                <div class="col-md-10 col-lg-8 col-xl-8 mx-auto">
-                    <form action="{{ url_for('home') }}linker/results/details" method="post"
-                          enctype="multipart/form-data">
-                        <div class="form-row">
-                            <div class="col-8 col-md-8 mx-auto">
-                                <input class="form-control" name="lipid_name" id="lipid_name" type="text"
-                                       placeholder="PLPC" value="PLPC">
-                            </div>
-                            <div class="col-4 col-md-4">
-                                <button class="btn btn-info" type="submit" id="link_lipid">Check resources</button>
-                            </div>
-                        </div>
-                        <div>
-                            <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data"/>&nbsp;</p>
-                        </div>
-                        <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
-                            <strong>LipidLynxX is running...</strong>
-                            <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
-                            <script type="application/javascript">
-                                $(document).ready(function () {
-                                    $("#link_lipid").click(function () {
-                                        let spinner = document.getElementById("spinner");
-                                        spinner.style.visibility = 'visible';
-                                    });
-                                });
-                            </script>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </header>
-    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
-             draggable="false">
-        <div class="container">
-            <div class="row justify-content-center">
-                <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
-                           aria-controls="tools" aria-selected="true">LipidLynxX Tools</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
-                           aria-controls="namesys" aria-selected="false">Nomenclature & Levels</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content " id="levelsTabContent">
-                    <div class="tab-pane fade show active" id="tools" role="tabpanel"
-                         aria-labelledby="tools-tab">
-                        <div class="row d-flex justify-content-center">
-                            <div class="col-4">
-                                <div class="row d-flex justify-content-center" style="padding: 16px;">
-                                    <div class="col-4">
-                                        <a href="{{ url_for('converter') }}">
-                                            <img alt="image" class="img-fluid"
-                                                 src="{{ url_for('home') }}images/converter_logo.png"></a>
-                                    </div>
-                                </div>
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col-9">
-                                        <div class="row">
-                                            <h4>Lipid ID Converter</h4>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
-                                            </p>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block"
-                                                   href="{{ url_for('converter') }}">
-                                                    Run Converter</a></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="row d-flex justify-content-center" style="padding: 16px;">
-                                    <div class="col-4">
-                                        <a href="{{ url_for('equalizer') }}">
-                                            <img alt="image" class="img-fluid"
-                                                 src="{{ url_for('home') }}images/equalizer_logo.png"></a>
-                                    </div>
-                                </div>
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col-9">
-                                        <div class="row">
-                                            <h4>Lipid ID Equalizer</h4>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <p>Bring lipid identifiers to the same level of annotation and perform
-                                                cross-level matching between different datasets.</p>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block"
-                                                   href="{{ url_for('equalizer') }}">
-                                                    Run Equalizer</a></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="row d-flex justify-content-center" style="padding: 16px;">
-                                    <div class="col-4">
-                                        <a href="{{ url_for('linker') }}">
-                                            <img alt="image" class="img-fluid"
-                                                 src="{{ url_for('home') }}images/linker_logo.png"></a>
-                                    </div>
-                                </div>
-                                <div class="row d-flex justify-content-center">
-                                    <div class="col-9">
-                                        <div class="row">
-                                            <h4>Lipid Resource Linker</h4>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <p>Collect available resources across databases.<br><br></p>
-                                        </div>
-                                        <div class="row d-flex justify-content-center">
-                                            <div class="col-8">
-                                                <a class="btn btn-info mt-4 btn-block"
-                                                   href="{{ url_for('linker') }}">
-                                                    Run Linker</a></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
-                        <div class="row"><h2>&nbsp;<br></h2></div>
-                        <div class="row">
-                            <div class="col-9">
-                                <div class="row">
-                                    <h4>Nomenclature used by LipidLynxX</h4>
-                                    <p>LipidLynxX Converter tool convert different lipid annotations to unified
-                                        identifier based on a community accepted shorthand notation system
-                                        introduced by Liebisch et al.<a
-                                                href="https://www.jlr.org/content/54/6/1523"
-                                                target="_blank">link to the paper.</a></p>
-                                    <a class="btn btn-info mt-4 btn-block"
-                                       href="{{ url_for('nomenclature') }}" target="_blank">
-                                        Read more about nomenclature used by LipidLynxX</a><br>
-                                </div>
-                                <div class="row"><p>&nbsp;</p></div>
-                                <div class="row">
-                                    <h4>Lipid Level Matrix</h4>
-                                    <p>Lipid levels defined by three sub levels allow cross level matching
-                                        of lipids including residues levels, modification levels, and double bond
-                                        levels .</p>
-                                    <a class="btn btn-info mt-4 btn-block"
-                                       href="{{ url_for('levels') }}" target="_blank">
-                                        Read more about lipid level matrix</a><br>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="row"><p>&nbsp;</p></div>
-                                <a href="{{ url_for('nomenclature') }}" target="_blank">
-                                    <img alt="image" class="img-fluid" src="{{ url_for('home') }}images/nomenclatue_logo.png"></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">&nbsp;</div>
-            </div>
-            <div class="border-top my-3"></div>
+<header class="masthead text-white text-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-9 mx-auto" style="padding: 36px;">
+                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
+                &nbsp;&nbsp;
+                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96"></div>
             <div class="row d-flex justify-content-center">
-                <ul>
-                    <li>LipidLynxX version: {{ lynx_version }}</li>
-                    <li>API version: {{ api_version }}</li>
-                </ul>
+                <p>&nbsp;</p>
+            </div>
+            <div class="col-md-10 col-lg-8 col-xl-8 mx-auto">
+                <form action="{{ url_for('home') }}linker/results/details" method="post" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="col-8 col-md-8 mx-auto">
+                            <input class="form-control" name="lipid_name" id="lipid_name" type="text" placeholder="PLPC"
+                                value="PLPC">
+                        </div>
+                        <div class="col-4 col-md-4">
+                            <button class="btn btn-info" type="submit" id="link_lipid">Check resources</button>
+                        </div>
+                    </div>
+                    <div>
+                        <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data" />&nbsp;</p>
+                    </div>
+                    <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
+                        <strong>LipidLynxX is running...</strong>
+                        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+                        <script type="application/javascript">
+                            $(document).ready(function () {
+                                $("#link_lipid").click(function () {
+                                    let spinner = document.getElementById("spinner");
+                                    spinner.style.visibility = 'visible';
+                                });
+                            });
+                        </script>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+</header>
+<section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="false">
+    <div class="container">
+        <div class="row justify-content-center">
+            <ul class="nav nav-tabs justify-content-center" id="levelsTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tools-tab" data-toggle="tab" href="#tools" role="tab"
+                        aria-controls="tools" aria-selected="true">LipidLynxX Tools</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="namesys-tab" data-toggle="tab" href="#namesys" role="tab"
+                        aria-controls="namesys" aria-selected="false">Nomenclature & Levels</a>
+                </li>
+            </ul>
+
+            <div class="tab-content " id="levelsTabContent">
+                <div class="tab-pane fade show active" id="tools" role="tabpanel" aria-labelledby="tools-tab">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-4">
+                            <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                <div class="col-4">
+                                    <a href="{{ url_for('converter') }}">
+                                        <img alt="image" class="img-fluid"
+                                            src="{{ url_for('home') }}images/converter_logo.png"></a>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-9">
+                                    <div class="row">
+                                        <h4>Lipid ID Converter</h4>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
+                                        </p>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-8">
+                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('converter') }}">
+                                                Run Converter</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                <div class="col-4">
+                                    <a href="{{ url_for('equalizer') }}">
+                                        <img alt="image" class="img-fluid"
+                                            src="{{ url_for('home') }}images/equalizer_logo.png"></a>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-9">
+                                    <div class="row">
+                                        <h4>Lipid ID Equalizer</h4>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <p>Bring lipid identifiers to the same level of annotation and perform
+                                            cross-level matching between different datasets.</p>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-8">
+                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('equalizer') }}">
+                                                Run Equalizer</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                <div class="col-4">
+                                    <a href="{{ url_for('linker') }}">
+                                        <img alt="image" class="img-fluid"
+                                            src="{{ url_for('home') }}images/linker_logo.png"></a>
+                                </div>
+                            </div>
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-9">
+                                    <div class="row">
+                                        <h4>Lipid Resource Linker</h4>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <p>Collect available resources across databases.<br><br></p>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-8">
+                                            <a class="btn btn-info mt-4 btn-block" href="{{ url_for('linker') }}">
+                                                Run Linker</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="namesys" role="tabpanel" aria-labelledby="namesys-tab">
+                    <div class="row">
+                        <h2>&nbsp;<br></h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="row">
+                                <h4>Nomenclature used by LipidLynxX</h4>
+                                <p>LipidLynxX Converter tool convert different lipid annotations to unified
+                                    identifier based on a community accepted shorthand notation system
+                                    introduced by Liebisch et al.<a href="https://www.jlr.org/content/54/6/1523"
+                                        target="_blank">link to the paper.</a></p>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('nomenclature') }}"
+                                    target="_blank">
+                                    Read more about nomenclature used by LipidLynxX</a><br>
+                            </div>
+                            <div class="row">
+                                <p>&nbsp;</p>
+                            </div>
+                            <div class="row">
+                                <h4>Lipid Level Matrix</h4>
+                                <p>Lipid levels defined by three sub levels allow cross level matching
+                                    of lipids including residues levels, modification levels, and double bond
+                                    levels .</p>
+                                <a class="btn btn-info mt-4 btn-block" href="{{ url_for('levels') }}" target="_blank">
+                                    Read more about lipid level matrix</a><br>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="row">
+                                <p>&nbsp;</p>
+                            </div>
+                            <a href="{{ url_for('nomenclature') }}" target="_blank">
+                                <img alt="image" class="img-fluid"
+                                    src="{{ url_for('home') }}images/nomenclatue_logo.png"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">&nbsp;</div>
+        </div>
+        <div class="border-top my-3"></div>
+        <div class="row d-flex justify-content-center">
+            <ul>
+                <li>LipidLynxX version: {{ lynx_version }}</li>
+                <li>API version: {{ api_version }}</li>
+            </ul>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
