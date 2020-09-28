@@ -130,17 +130,14 @@ async def link_list(data: list, export_path: str, file_type: str):
         lynx_names[lipid_name] = resource_info.get("lynx_name", "")
 
     export_data = {
-        "Text_input": {
+        "text_input": {
             "all_resources": all_resources,
             "export_file_data": export_file_data,
             "lynx_names": lynx_names,
         }
     }
     output_info = create_linker_output(
-        export_data,
-        output_name=export_path,
-        file_type=file_type,
-        export_url=True,
+        export_data, output_name=export_path, file_type=file_type, export_url=True,
     )
     data = {}
     for col in export_data:

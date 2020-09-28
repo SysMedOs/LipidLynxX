@@ -19,11 +19,7 @@ import zmq
 
 
 def init_client(
-    token: str,
-    job: str,
-    data: str,
-    data_type: str = "list",
-    port: int = 2409,
+    token: str, job: str, data: str, data_type: str = "list", port: int = 2409,
 ):
     context = zmq.Context()
     # Static analysis of Pycharm/PyLint cannot find runtime-defined names e.g. REQ
@@ -46,29 +42,17 @@ def init_client(
 
 def converter_client(token: str, data: str, data_type: str = "list", port: int = 2409):
     init_client(
-        token=token,
-        job="convert",
-        data=data,
-        data_type=data_type,
-        port=port,
+        token=token, job="convert", data=data, data_type=data_type, port=port,
     )
 
 
 def equalizer_client(token: str, data: str, data_type: str = "dict", port: int = 2409):
     init_client(
-        token=token,
-        job="equalize",
-        data=data,
-        data_type=data_type,
-        port=port,
+        token=token, job="equalize", data=data, data_type=data_type, port=port,
     )
 
 
 def linker_client(token: str, data: str, data_type: str = "list", port: int = 2409):
     init_client(
-        token=token,
-        job="link",
-        data=data,
-        data_type=data_type,
-        port=port,
+        token=token, job="link", data=data, data_type=data_type, port=port,
     )

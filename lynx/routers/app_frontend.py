@@ -103,9 +103,7 @@ def levels(request: Request):
 
 
 @frontend.get("/linker/", include_in_schema=False)
-async def linker(
-    request: Request,
-):
+async def linker(request: Request,):
     return templates.TemplateResponse(
         "linker.html", {"request": request, "all_resources": {}}
     )
@@ -278,15 +276,14 @@ async def linker_text(
     export_file_type = get_file_type(file_type)
     input_data = InputListData(data=names)
     job_info = await create_link_list_job(
-        data=input_data,
-        file_type=export_file_type,
+        data=input_data, file_type=export_file_type,
     )  # type: JobStatus
     response_data = job_info.dict()
     response_data["request"] = request
     # rel link to get_download
     response_data["err_msgs"] = []
 
-    return templates.TemplateResponse("converter_results.html", response_data)
+    return templates.TemplateResponse("linker_results_summary.html", response_data)
 
 
 @frontend.post("/linker/file", include_in_schema=False)

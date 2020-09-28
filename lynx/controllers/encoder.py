@@ -330,9 +330,7 @@ class Encoder(object):
         return best_id
 
     def export_level(
-        self,
-        lipid_name: str,
-        level: str = "B1",
+        self, lipid_name: str, level: str = "B1",
     ):
 
         lv_id = ""
