@@ -17,89 +17,118 @@ Linker Results @ LipidLynxX
     <p></p>
     <h1>LipidLynxX Linker Results: </h1>
     <div class="container">
-    {% if token %}
-    <p>Job token: {{ token }}</p>
-    <div id="run_status">
-        <p id="run_time">LipidLynxX just started ...</p>
-        <div id="download_info">
-            <p id="download_button"></p>
+        {% if token %}
+        <p>Job token: {{ token }}</p>
+        <div id="run_status">
+            <p id="run_time">LipidLynxX just started ...</p>
+            <div id="download_info">
+                <p id="download_button"></p>
+            </div>
+            <div id="result_info"></div>
         </div>
-        <div id="result_info"></div>
-    </div>
-    <div class="result">
-        <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
-            <table class="table table-hover table-bordered">
-                <tr>
-                    <th scope="col">Input Lipid</th>
-                    <th scope="col">Converted Notation</th>
-                    <th scope="col">Resources</th>
-                </tr>
-{#                    {% for lipid_name, resource_info in results.items() %}#}
-{#                    <tr>#}
-{#                        <th scope="row">{{ lipid_name }}</th>#}
-{#                        <td class="monospace">{{ lynx_names[lipid_name] }}</td>#}
-{#                        <td>#}
-{#                            <form action="/linker/results/details" method="post" enctype="multipart/form-data"#}
-{#                                target="_blank">#}
-{#                                <input type="hidden" value={{ lipid_name }} name="lipid_name" />#}
-{#                                <input type="hidden" value={{ resource_info }} name="resource_data" />#}
-{#                                <button type="submit" class="btn btn-info" id="view_resource_details">View resource details#}
-{#                                </button>#}
-{#                            </form>#}
-{#                        </td>#}
-{#                    </tr>#}
-{#                    {% endfor %}#}
-            </table>
+        <div class="result">
+            <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
+                <table class="table table-hover table-bordered" id="result_table" aria-hidden="true">
+
+                    {#                    {% for lipid_name, resource_info in results.items() %}#}
+                    {#                    <tr>#}
+                    {#                        <th scope="row">{{ lipid_name }}</th>#}
+                    {#                        <td class="monospace">{{ lynx_names[lipid_name] }}</td>#}
+                    {#                        <td>#}
+                    {#                            <form action="/linker/results/details" method="post" enctype="multipart/form-data"#}
+                    {#                                target="_blank">#}
+                    {#                                <input type="hidden" value={{ lipid_name }} name="lipid_name" />#}
+                    {#                                <input type="hidden" value={{ resource_info }} name="resource_data" />#}
+                    {#                                <button type="submit" class="btn btn-info" id="view_resource_details">View resource details#}
+                    {#                                </button>#}
+                    {#                            </form>#}
+                    {#                        </td>#}
+                    {#                    </tr>#}
+                    {#                    {% endfor %}#}
+                </table>
+            </div>
         </div>
-    </div>
-    <div class="d-flex align-items-center alert alert-info" id="spinner">
-        <p id="spinner_text">LipidLynxX is running </p>
-        <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
-    </div>
-    <script>
-        let d0 = new Date();
-        let t0 = d0.getTime()
-        let deltaTime = 5000
-        let interval = setInterval(getResultsAjax, deltaTime);
+        <div class="d-flex align-items-center alert alert-info" id="spinner">
+            <p id="spinner_text">LipidLynxX is running </p>
+            <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+        </div>
+        <script>
+            let d0 = new Date();
+            let t0 = d0.getTime()
+            let deltaTime = 5000
+            let interval = setInterval(getResultsAjax, deltaTime);
+            let linker_url = "{{ url_for('linker_lipid') }}"
 
-        function getResultsAjax() {
-            let d1 = new Date();
-            let t = Math.floor((d1.getTime() - t0) / 1000)
-            let get_url = "{{ url_for('home') }}api/linker/jobs/{{token}}"
-            $.ajax({
-                url: get_url,
-                type: 'get',
-                success: function (data) {
-                    if (data.status.toString() === 'finished') {
-                        clearInterval(interval);
-                        let spinner = document.getElementById("spinner");
-                        spinner.style.visibility = 'hidden';
-                        document.getElementById("run_time").innerHTML = "LipidLynxX finished in " + t.toString() + "s."
-                        let download_info = document.getElementById("download_info");
-                        let old_download_info = document.getElementById("download_button");
-                        let download_button = document.createElement("a")
-                        download_button.setAttribute("id", "download_button")
-                        download_button.setAttribute("href", data.data.export_url)
-                        download_button.setAttribute("class", "btn btn-block btn-success")
-                        download_button.innerHTML = "Save output: " + data.data.export_name;
-                        download_info.replaceChild(download_button, old_download_info)
+            function getResultsAjax() {
+                let d1 = new Date();
+                let t = Math.floor((d1.getTime() - t0) / 1000)
+                let get_url = "{{ url_for('home') }}api/linker/jobs/{{token}}"
+                $.ajax({
+                    url: get_url,
+                    type: 'get',
+                    success: function (data) {
+                        if (data.status.toString() === 'finished') {
+                            clearInterval(interval);
+                            let spinner = document.getElementById("spinner");
+                            spinner.style.visibility = 'hidden';
+                            document.getElementById("run_time").innerHTML = "LipidLynxX finished in " + t.toString() + "s."
+                            let download_info = document.getElementById("download_info");
+                            let old_download_info = document.getElementById("download_button");
+                            let download_button = document.createElement("a");
+                            download_button.setAttribute("id", "download_button")
+                            download_button.setAttribute("href", data.data.export_url);
+                            download_button.setAttribute("class", "btn btn-block btn-success");
+                            download_button.innerHTML = "Save output: " + data.data.export_name;
+                            download_info.replaceChild(download_button, old_download_info);
+                            let result_table = document.getElementById("result_table");
+                            result_table.style.visibility = 'visible';
+                            result_table.innerHTML = "<tr>\n" +
+                                "<th scope=\"col\">Input Lipid</th>\n" +
+                                "<th scope=\"col\">Converted Notation</th>\n" +
+                                "<th scope=\"col\">Resources</th>\n" +
+                                "</tr>";
+                            let results = data.data.results
+                            for (let lipid_col in results) {
+                                let col_results = results[lipid_col];
+                                let lynx_names = col_results.lynx_names;
+                                let all_resources = col_results.all_resources;
+                                for (let lipid_name in lynx_names) {
+                                    let resource_info = all_resources[lipid_name]
+                                    console.log(lipid_name)
+                                    console.log(resource_info)
+                                    let row = document.createElement("tr")
+                                    row.innerHTML = "<tr>\n" +
+                                        "<th scope=\"row\">"+ lipid_name + "</th>\n" +
+                                        "<td class=\"monospace\">"+ lynx_names[lipid_name] +"</td>\n" +
+                                        "<td>\n" +
+                                        "<form action=\"" + linker_url+ "\" method=\"post\" enctype=\"multipart/form-data\"\n" +
+                                        "target=\"_blank\">\n" +
+                                        "<input type=\"hidden\" value="+ lipid_name + " name=\"lipid_name\" />\n" +
+                                        "<input type=\"hidden\" value="+ resource_info + " name=\"resource_data\" />\n" +
+                                        "<button type=\"submit\" class=\"btn btn-info\" id=\"view_resource_details\">View resource details\n" +
+                                        "</button>\n" +
+                                        "</form>\n" +
+                                        "</td>\n" +
+                                        "</tr>";
+                                    result_table.appendChild(row)
+                                }
+                            }
+                        } else {
+                            document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s.";
+                            let spinner = document.getElementById("spinner");
+                            spinner.style.visibility = 'visible';
+                            let spinner_text = document.getElementById("spinner_text");
+                            spinner_text.textContent += " " + String.fromCodePoint("0x" + "🐾".codePointAt(0).toString(16));
+                        }
+                    },
+                });
+            }
 
-                    } else {
-                        document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s.";
-                        let spinner = document.getElementById("spinner");
-                        spinner.style.visibility = 'visible';
-                        let spinner_text = document.getElementById("spinner_text");
-                        spinner_text.textContent += " " + String.fromCodePoint("0x" + "🐾".codePointAt(0).toString(16));
-                    }
-                },
-            });
-        }
-
-        function stopAjax() {
-            clearInterval(interval);
-        }
-    </script>
-    {% endif %}
+            function stopAjax() {
+                clearInterval(interval);
+            }
+        </script>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
