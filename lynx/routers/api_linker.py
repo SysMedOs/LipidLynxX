@@ -52,6 +52,54 @@ async def link_one_lipid(
     search_name = await convert_lipid(
         safe_lipid_name, level="MAX", style="BracketsShorthand"
     )
+    if (
+        search_name.startswith("SM(")
+        and not search_name.startswith("SM(d")
+        and not search_name.startswith("SM(m")
+    ):
+        search_name = re.sub(r"SM\(", "SM(d", search_name)
+    elif (
+        search_name.startswith("SM ")
+        and not search_name.startswith("SM d")
+        and not search_name.startswith("SM m")
+    ):
+        search_name = re.sub(r"SM ", "SM d", search_name)
+    elif (
+        search_name.startswith("Cer(")
+        and not search_name.startswith("Cer(d")
+        and not search_name.startswith("Cer(m")
+    ):
+        search_name = re.sub(r"Cer\(", "Cer(d", search_name)
+    elif (
+        search_name.startswith("Cer ")
+        and not search_name.startswith("Cer d")
+        and not search_name.startswith("Cer m")
+    ):
+        search_name = re.sub(r"Cer ", "Cer d", search_name)
+    elif (
+        search_name.startswith("HexCer(")
+        and not search_name.startswith("HexCer(d")
+        and not search_name.startswith("HexCer(m")
+    ):
+        search_name = re.sub(r"HexCer\(", "HexCer(d", search_name)
+    elif (
+        search_name.startswith("HexCer ")
+        and not search_name.startswith("HexCer d")
+        and not search_name.startswith("HexCer m")
+    ):
+        search_name = re.sub(r"HexCer ", "HexCer d", search_name)
+    elif (
+        search_name.startswith("Hex2Cer(")
+        and not search_name.startswith("Hex2Cer(d")
+        and not search_name.startswith("Hex2Cer(m")
+    ):
+        search_name = re.sub(r"Hex2Cer\(", "Hex2Cer(d", search_name)
+    elif (
+        search_name.startswith("Hex2Cer ")
+        and not search_name.startswith("Hex2Cer d")
+        and not search_name.startswith("Hex2Cer m")
+    ):
+        search_name = re.sub(r"Hex2Cer ", "Hex2Cer d", search_name)
     resource_data = await get_cross_links(search_name, export_url=export_url)
     if resource_data:
         if export_names:
@@ -76,7 +124,7 @@ async def link_one_lipid(
 
 
 @router.get("/lipid/")
-async def link_lipid(
+async def get_link_lipid(
     lipid_name: str = "PC(16:0/18:2(9Z,12Z))",
     export_url: bool = False,
     export_names: bool = True,

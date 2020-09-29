@@ -96,7 +96,7 @@
       "SITE_BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",
       "EXAMPLES": [
         "(9,12)",
-        "({)9Z,12Z)",
+        "(9Z,12Z)",
         "OH",
         "2OH",
         "OH[8R]",
@@ -169,8 +169,9 @@
     "FA01": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -183,8 +184,9 @@
     "FA02": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -197,8 +199,9 @@
     "FA03": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -211,8 +214,9 @@
     "FA04": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -225,8 +229,9 @@
     "FA05": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -240,8 +245,9 @@
     "FA06": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -255,8 +261,9 @@
     "FA0705": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -270,8 +277,9 @@
     "FA0707": {
       "ORDER": [
         "CLASS",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -721,8 +729,9 @@
       "ORDER": [
         "CLASS",
         "SUFFIX",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {
@@ -737,8 +746,9 @@
       "ORDER": [
         "CLASS",
         "SUFFIX",
-        "RESIDUE_SEPARATOR",
-        "SUM_RESIDUES"
+        "RESIDUE_BRACKET_LEFT",
+        "SUM_RESIDUES",
+        "RESIDUE_BRACKET_RIGHT"
       ],
       "MAX_RESIDUES": 1,
       "CLASS": {

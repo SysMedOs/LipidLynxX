@@ -23,7 +23,7 @@ import zmq
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
 from lynx.models.defaults import default_temp_folder
-from lynx.routers.api_linker import link_lipid
+from lynx.routers.api_linker import get_link_lipid
 from lynx.utils.cfg_reader import app_prefix
 from lynx.utils.file_handler import (
     create_converter_output,
@@ -124,7 +124,7 @@ async def link_list(data: list, export_path: str, file_type: str):
     export_file_data = {}
     lynx_names = {}
     for lipid_name in data:
-        resource_info = await link_lipid(lipid_name, export_url=True)
+        resource_info = await get_link_lipid(lipid_name, export_url=True)
         all_resources[lipid_name] = get_url_safe_str(resource_info)
         export_file_data[lipid_name] = resource_info
         lynx_names[lipid_name] = resource_info.get("lynx_name", "")

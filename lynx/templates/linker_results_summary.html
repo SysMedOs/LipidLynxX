@@ -82,13 +82,15 @@ Linker Results @ LipidLynxX
                                     console.log(resource_info)
                                     let row = document.createElement("tr")
                                     row.innerHTML = "<tr>\n" +
-                                        "<th scope=\"row\">"+ $('<span>').text(lipid_name).html() + "</th>\n" +
-                                        "<td class=\"monospace\">"+ $('<span>').text(lynx_names[lipid_name]).html() +"</td>\n" +
+                                        "<th scope=\"row\">" + $('<span>').text(lipid_name).html() + "</th>\n" +
+                                        "<td class=\"monospace\">" + $('<span>').text(lynx_names[lipid_name]).html() + "</td>\n" +
                                         "<td>\n" +
-                                        "<form action=\"" + linker_url+ "\" method=\"post\" enctype=\"multipart/form-data\"\n" +
+                                        "<form action=\"" + linker_url + "\" method=\"post\" enctype=\"multipart/form-data\"\n" +
                                         "target=\"_blank\">\n" +
-                                        "<input type=\"hidden\" value="+ lipid_name + " name=\"lipid_name\" />\n" +
-                                        "<input type=\"hidden\" value="+ resource_info + " name=\"resource_data\" />\n" +
+                                        "<input type=\"hidden\" value=" + lipid_name + " name=\"lipid_name\" />\n" +
+                                        "<input type=\"hidden\" value=" + resource_info + " name=\"resource_data\" />\n" +
+                                        "<input type=\"hidden\" value=" + $('<span>').text(data.data.export_name).html() + " name=\"export_name\" />\n" +
+                                        "<input type=\"hidden\" value=" + $('<span>').text(data.data.export_url).html() + " name=\"export_url\" />\n" +
                                         "<button type=\"submit\" class=\"btn btn-info\" id=\"view_resource_details\">View resource details\n" +
                                         "</button>\n" +
                                         "</form>\n" +

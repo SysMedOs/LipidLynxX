@@ -27,7 +27,10 @@ LipidLynxX
                         </div>
                     </div>
                     <div>
-                        <p><input type="hidden" value="NO_RESOURCE_DATA" name="resource_data" />&nbsp;</p>
+                        <input type="hidden" value="NO_RESOURCE_DATA" name="resource_data" />
+                        <input type="hidden" value="NO_EXPORT_NAME" name="export_name" />
+                        <input type="hidden" value="NO_EXPORT_URL" name="export_url" />
+                        <p>&nbsp;</p>
                     </div>
                     <div class="d-flex align-items-center alert alert-info" id="spinner" style="visibility: hidden">
                         <strong>LipidLynxX is running...</strong>
@@ -184,7 +187,7 @@ LipidLynxX
         <div class="row d-flex justify-content-center">
             <ul>
                 <li>LipidLynxX version: {{ lynx_version }}</li>
-                <li>API version: {{ api_version }}</li>
+{#                <li>API version: {{ api_version }}</li>#}
             </ul>
         </div>
     </div>

@@ -333,14 +333,21 @@ async def linker_file(
 # direct fast link of one lipid on the home page
 @frontend.post("/linker/results/details", include_in_schema=False)
 async def linker_lipid(
-    request: Request, lipid_name: str = Form(...), resource_data: str = Form(...)
+    request: Request,
+    lipid_name: str = Form(...),
+    resource_data: str = Form(...),
+    export_name: str = Form(...),
+    export_url: str = Form(...),
 ):
     if resource_data == "NO_RESOURCE_DATA":
-        resource_info = await api.api_linker.link_lipid(lipid_name, export_url=True)
+        resource_info = await api.api_linker.get_link_lipid(lipid_name, export_url=True)
     else:
         decoded_data = base64.urlsafe_b64decode(resource_data.encode("utf-8"))
         resource_info = json.loads(decoded_data.decode("utf-8"))
     resource_info["request"] = request
+    if export_name.lower().endswith("xlsx") and export_url.lower().endswith("xlsx"):
+        resource_info["export_name"] = export_name
+        resource_info["export_url"] = export_url
     return templates.TemplateResponse("linker_results_details.html", resource_info)
 
 
