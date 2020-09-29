@@ -24,27 +24,11 @@ Linker Results @ LipidLynxX
             <div id="download_info">
                 <p id="download_button"></p>
             </div>
-            <div id="result_info"></div>
         </div>
+        <div>&nbsp;</div>
         <div class="result">
             <div class="table-responsive-lg table-wrapper-scroll-y my-custom-scrollbar">
                 <table class="table table-hover table-bordered" id="result_table" aria-hidden="true">
-
-                    {#                    {% for lipid_name, resource_info in results.items() %}#}
-                    {#                    <tr>#}
-                    {#                        <th scope="row">{{ lipid_name }}</th>#}
-                    {#                        <td class="monospace">{{ lynx_names[lipid_name] }}</td>#}
-                    {#                        <td>#}
-                    {#                            <form action="/linker/results/details" method="post" enctype="multipart/form-data"#}
-                    {#                                target="_blank">#}
-                    {#                                <input type="hidden" value={{ lipid_name }} name="lipid_name" />#}
-                    {#                                <input type="hidden" value={{ resource_info }} name="resource_data" />#}
-                    {#                                <button type="submit" class="btn btn-info" id="view_resource_details">View resource details#}
-                    {#                                </button>#}
-                    {#                            </form>#}
-                    {#                        </td>#}
-                    {#                    </tr>#}
-                    {#                    {% endfor %}#}
                 </table>
             </div>
         </div>
@@ -84,7 +68,7 @@ Linker Results @ LipidLynxX
                             result_table.style.visibility = 'visible';
                             result_table.innerHTML = "<tr>\n" +
                                 "<th scope=\"col\">Input Lipid</th>\n" +
-                                "<th scope=\"col\">Converted Notation</th>\n" +
+                                "<th scope=\"col\">Converted Notation <small>(LipidLynxX)</small></th>\n" +
                                 "<th scope=\"col\">Resources</th>\n" +
                                 "</tr>";
                             let results = data.data.results
@@ -98,8 +82,8 @@ Linker Results @ LipidLynxX
                                     console.log(resource_info)
                                     let row = document.createElement("tr")
                                     row.innerHTML = "<tr>\n" +
-                                        "<th scope=\"row\">"+ lipid_name + "</th>\n" +
-                                        "<td class=\"monospace\">"+ lynx_names[lipid_name] +"</td>\n" +
+                                        "<th scope=\"row\">"+ $('<span>').text(lipid_name).html() + "</th>\n" +
+                                        "<td class=\"monospace\">"+ $('<span>').text(lynx_names[lipid_name]).html() +"</td>\n" +
                                         "<td>\n" +
                                         "<form action=\"" + linker_url+ "\" method=\"post\" enctype=\"multipart/form-data\"\n" +
                                         "target=\"_blank\">\n" +
@@ -123,7 +107,6 @@ Linker Results @ LipidLynxX
                     },
                 });
             }
-
             function stopAjax() {
                 clearInterval(interval);
             }

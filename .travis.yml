@@ -6,23 +6,6 @@ jobs:
       python: 3.8.5
       before_install:
         - pip3 install -r requirements.txt
-    - name: "Python 3.8 on macOS"
-      os: osx
-      osx_image: xcode12
-      language: shell
-      before_install:
-        - brew update
-        - brew install pyenv
-        - brew install pyenv
-        - brew install pyenv-virtualenv
-        - echo 'eval "$(pyenv init -)"' >> ~/.zshrc
-        - echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
-        - source ~/.zshrc
-        - pyenv install 3.8.3
-        - pyenv virtualenv 3.8.3 envlynx
-        - pyenv activate envlynx
-        - python -m pip install --upgrade pip
-        - pip3 install --user -r requirements.txt
     - name: "Python 3.8 on Windows"
       os: windows
       language: shell
