@@ -23,7 +23,7 @@ import zmq
 from lynx.controllers.converter import Converter
 from lynx.models.api_models import ConverterExportData, JobType
 from lynx.models.defaults import default_temp_folder
-from lynx.routers.api_linker import get_link_lipid
+from lynx.routers.api_linker import link_one_lipid
 from lynx.utils.cfg_reader import app_prefix
 from lynx.utils.file_handler import (
     create_converter_output,
@@ -124,7 +124,7 @@ async def link_list(data: list, export_path: str, file_type: str):
     export_file_data = {}
     lynx_names = {}
     for lipid_name in data:
-        resource_info = await get_link_lipid(lipid_name, export_url=True)
+        resource_info = await link_one_lipid(lipid_name, export_url=True)
         all_resources[lipid_name] = get_url_safe_str(resource_info)
         export_file_data[lipid_name] = resource_info
         lynx_names[lipid_name] = resource_info.get("lynx_name", "")
@@ -221,6 +221,21 @@ def general_worker(worker_id: int, zmq_worker_port: int = 2410):
     while True:
         message = socket.recv()
         print(f"Worker #{worker_id} @[{zmq_worker_port}] Received Job: {message}")
+
+        # msg_dct = json.loads(message.decode())
+        # data = msg_dct.get("data")
+        # token = msg_dct.get("token", "Temp_token")
+        # job_name = msg_dct.get("job", "").lower()
+        # job_data_type = msg_dct.get("data_type", "").lower()
+        # job = JobType(job=job_name)
+        # if job.job and token and isinstance(data, dict):
+        #     response_data = init_runner(job, token, data, job_data_type)
+        # else:
+        #     response_data = {
+        #         "token": token,
+        #         "err_msgs": ["Cannot load job information."],
+        #     }
+
         try:
             msg_dct = json.loads(message.decode())
             data = msg_dct.get("data")

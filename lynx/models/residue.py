@@ -91,11 +91,10 @@ class Residue(object):
             res_str = ""
             for o in self.res_rule_orders:
                 if o in self.res_info or o in self.res_separators or o in ["SUM_MODS"]:
-                    if o in ["SUM_MODS", "MODS", "MOD"]:
-                        res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
-                    elif o == "NUM_O":
+                    if o == "NUM_O":
                         if num_o > 0:
                             o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            # print("o_seg_rgx", o_seg_rgx)
                             if o_seg_rgx:
                                 if num_o == 1:
                                     if re.match(o_seg_rgx, str(num_o)):
@@ -119,6 +118,7 @@ class Residue(object):
                                 res_str += str(num_o)
                         else:
                             pass
+
                     elif o.upper().endswith("_SEPARATOR"):
                         res_str += self.res_separators.get(o, "")
                         if num_o == 0:
@@ -127,6 +127,14 @@ class Residue(object):
                             )
                     elif re.search("BRACKET", o.upper()):
                         res_str += self.res_separators.get(o, "")
+                    elif o in ["MODS", "MOD"]:
+                        res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
+                    elif o in ["SUM_MODS"]:
+                        sum_o_seg = self.sum_mod_info.get("linked_ids", {}).get(lv, "")
+                        if num_o > 0 and re.match(r'\d?O\d?', sum_o_seg):
+                            pass
+                        else:
+                            res_str += sum_o_seg
                     else:
                         res_str += str(self.res_info.get(o, ""))
             na_brackets_lst = [r"\<\>", r"\{\}", r"\[\]", r"\(\)"]

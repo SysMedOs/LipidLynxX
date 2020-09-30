@@ -56,55 +56,81 @@ async def link_one_lipid(
         search_name.startswith("SM(")
         and not search_name.startswith("SM(d")
         and not search_name.startswith("SM(m")
+        and not search_name.startswith("SM(t")
     ):
-        search_name = re.sub(r"SM\(", "SM(d", search_name)
-    elif (
-        search_name.startswith("SM ")
-        and not search_name.startswith("SM d")
-        and not search_name.startswith("SM m")
-    ):
-        search_name = re.sub(r"SM ", "SM d", search_name)
+        if ";O" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";O", "", search_name)
+        elif ";1" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";1", "", search_name)
+        elif ";2" in search_name:
+            search_name = re.sub(r"\(", "(d", search_name)
+            search_name = re.sub(r";2", "", search_name)
+        elif ";3" in search_name:
+            search_name = re.sub(r"\(", "(t", search_name)
+            search_name = re.sub(r";3", "", search_name)
     elif (
         search_name.startswith("Cer(")
         and not search_name.startswith("Cer(d")
         and not search_name.startswith("Cer(m")
+        and not search_name.startswith("Cer(t")
     ):
-        search_name = re.sub(r"Cer\(", "Cer(d", search_name)
-    elif (
-        search_name.startswith("Cer ")
-        and not search_name.startswith("Cer d")
-        and not search_name.startswith("Cer m")
-    ):
-        search_name = re.sub(r"Cer ", "Cer d", search_name)
+        if ";O" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";O", "", search_name)
+        elif ";1" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";1", "", search_name)
+        elif ";2" in search_name:
+            search_name = re.sub(r"\(", "(d", search_name)
+            search_name = re.sub(r";2", "", search_name)
+        elif ";3" in search_name:
+            search_name = re.sub(r"\(", "(t", search_name)
+            search_name = re.sub(r";3", "", search_name)
     elif (
         search_name.startswith("HexCer(")
         and not search_name.startswith("HexCer(d")
         and not search_name.startswith("HexCer(m")
+        and not search_name.startswith("HexCer(t")
     ):
-        search_name = re.sub(r"HexCer\(", "HexCer(d", search_name)
-    elif (
-        search_name.startswith("HexCer ")
-        and not search_name.startswith("HexCer d")
-        and not search_name.startswith("HexCer m")
-    ):
-        search_name = re.sub(r"HexCer ", "HexCer d", search_name)
+        if ";O" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";O", "", search_name)
+        elif ";1" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";1", "", search_name)
+        elif ";2" in search_name:
+            search_name = re.sub(r"\(", "(d", search_name)
+            search_name = re.sub(r";2", "", search_name)
+        elif ";3" in search_name:
+            search_name = re.sub(r"\(", "(t", search_name)
+            search_name = re.sub(r";3", "", search_name)
     elif (
         search_name.startswith("Hex2Cer(")
         and not search_name.startswith("Hex2Cer(d")
         and not search_name.startswith("Hex2Cer(m")
+        and not search_name.startswith("Hex2Cer(t")
     ):
-        search_name = re.sub(r"Hex2Cer\(", "Hex2Cer(d", search_name)
-    elif (
-        search_name.startswith("Hex2Cer ")
-        and not search_name.startswith("Hex2Cer d")
-        and not search_name.startswith("Hex2Cer m")
-    ):
-        search_name = re.sub(r"Hex2Cer ", "Hex2Cer d", search_name)
+        if ";O" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";O", "", search_name)
+        elif ";1" in search_name:
+            search_name = re.sub(r"\(", "(m", search_name)
+            search_name = re.sub(r";1", "", search_name)
+        elif ";2" in search_name:
+            search_name = re.sub(r"\(", "(d", search_name)
+            search_name = re.sub(r";2", "", search_name)
+        elif ";3" in search_name:
+            search_name = re.sub(r"\(", "(t", search_name)
+            search_name = re.sub(r";3", "", search_name)
+    print("search_name", search_name)
     resource_data = await get_cross_links(search_name, export_url=export_url)
     if resource_data:
         if export_names:
             render_data_dct = {
                 "lipid_name": lipid_name,
+                "search_name": search_name,
                 "shorthand_name": await convert_lipid(
                     safe_lipid_name, level="MAX", style="ShorthandNotation"
                 ),

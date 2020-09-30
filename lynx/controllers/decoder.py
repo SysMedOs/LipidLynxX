@@ -85,6 +85,14 @@ class Decoder(object):
                     matched_info_dct["LINK"] = "O-"
                 elif links.lower().startswith("p"):
                     matched_info_dct["LINK"] = "P-"
+                elif links.lower().startswith("m"):
+                    matched_info_dct["LINK"] = "m"
+                elif links.lower().startswith("d"):
+                    matched_info_dct["LINK"] = "d"
+                elif links.lower().startswith("t"):
+                    matched_info_dct["LINK"] = "t"
+                elif links.lower().startswith("h"):
+                    matched_info_dct["LINK"] = "h"
                 else:
                     pass
             elif isinstance(links, list):
@@ -94,6 +102,14 @@ class Decoder(object):
                         std_links.append("O-")
                     elif link.lower().startswith("p"):
                         std_links.append("P-")
+                    elif link.lower().startswith("m"):
+                        std_links.append("m")
+                    elif link.lower().startswith("d"):
+                        std_links.append("d")
+                    elif link.lower().startswith("t"):
+                        std_links.append("t")
+                    elif link.lower().startswith("h"):
+                        std_links.append("t")
                 matched_info_dct["LINK"] = std_links
             else:
                 pass

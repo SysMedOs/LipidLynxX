@@ -171,11 +171,14 @@ if __name__ == "__main__":
         # "Cer 24:2",
         # "LMGP01010594",
         # "lid",
-        "PLPC"
+        # "PLPC",
+        "SM d18:1/24:0",
+        "DHA"
     ]
     lv = "M1"
     # test_out_rule = "COMP_DB"
     test_out_rule = "LipidLynxX"
+    # test_out_rule = "BracketsShorthand"
     lynx_converter = Converter(style=test_out_rule, logger=app_logger)
     for t_in in t_in_lst:
         t1_out = lynx_converter.convert(t_in, level="M1")

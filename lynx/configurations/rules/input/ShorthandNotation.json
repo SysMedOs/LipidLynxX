@@ -128,7 +128,7 @@
         "SUM_MODS": [0, 10]
       },
       "RESIDUE_SEPARATOR": "$.SEPARATORS.RESIDUE_SEPARATOR.0",
-      "LINK": "[OP]-|C|[mdt]|h",
+      "LINK": "[OPCmdth]-?",
       "NUM_C": "[0-9]{1,2}",
       "DB_SEPARATOR": "$.SEPARATORS.COLON.0",
       "DB": "[1,2]?[0-9]",
