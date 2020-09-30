@@ -152,17 +152,75 @@ async def link_list(data: list, export_path: str, file_type: str):
     return export_data
 
 
+async def link_dict(data: dict, export_path: str, file_type: str):
+
+    export_data = {}
+    for col in data:
+        lipid_col = data[col]
+        linked_col_info = {}
+        all_resources = {}
+        export_file_data = {}
+        lynx_names = {}
+        for lipid_name in lipid_col:
+            resource_info = await link_one_lipid(lipid_name, export_url=True)
+            all_resources[lipid_name] = get_url_safe_str(resource_info)
+            export_file_data[lipid_name] = resource_info
+            lynx_names[lipid_name] = resource_info.get("lynx_name", "")
+        export_data[col] = {
+            "all_resources": all_resources,
+            "export_file_data": export_file_data,
+            "lynx_names": lynx_names,
+        }
+
+    output_info = create_linker_output(
+        export_data, output_name=export_path, file_type=file_type, export_url=True,
+    )
+    data = {}
+    for col in export_data:
+        col_data = export_data.get(col, {})
+        all_resources = col_data.get("all_resources", {})
+        lynx_names = col_data.get("lynx_names", {})
+        data[col] = {
+            "display_data": get_url_safe_str(all_resources),
+            "lynx_names": get_url_safe_str(lynx_names),
+        }
+
+    return export_data
+
+
 def run_linker(token: str, data: dict, job_data_type: str):
-    data_to_run = data.get("data", [])
     params = data.get("params", {})
     file_type = params.get("file_type", "xlsx")
     export_name, export_path, export_url = get_export_file_info(
         token, file_type, client_name="Linker"
     )
-    loop = asyncio.get_event_loop()
-    export_data = loop.run_until_complete(
-        link_list(data_to_run, export_path=export_path, file_type=file_type)
-    )
+    if job_data_type == "list":
+        data_to_run = data.get("data", [])
+        loop = asyncio.get_event_loop()
+        export_data = loop.run_until_complete(
+            link_list(data_to_run, export_path=export_path, file_type=file_type)
+        )
+    elif job_data_type == "dict":
+        data_to_run = data.get("data", {})
+        loop = asyncio.get_event_loop()
+        export_data = loop.run_until_complete(
+            link_dict(data_to_run, export_path=export_path, file_type=file_type)
+        )
+    else:
+        data_to_run = data.get("data")
+        if isinstance(data_to_run, list):
+            loop = asyncio.get_event_loop()
+            export_data = loop.run_until_complete(
+                link_list(data_to_run, export_path=export_path, file_type=file_type)
+            )
+        elif isinstance(data_to_run, dict):
+            loop = asyncio.get_event_loop()
+            export_data = loop.run_until_complete(
+                link_dict(data_to_run, export_path=export_path, file_type=file_type)
+            )
+        else:
+            export_data = {}
+
     response_data = {
         "token": token,
         "err_msgs": [],
@@ -170,20 +228,6 @@ def run_linker(token: str, data: dict, job_data_type: str):
         "export_url": export_url,
         "results": export_data,
     }
-    # if job_data_type == "list":
-    #     data_to_run = data.get("data", [])
-    #     converted_results = convert_list(data_to_run, style=style, level=level)
-    # elif job_data_type == "dict":
-    #     data_to_run = data.get("data", {})
-    #     converted_results = convert_dict(data_to_run, style=style, level=level)
-    # else:
-    #     data_to_run = data.get("data")
-    #     if isinstance(data_to_run, list):
-    #         converted_results = convert_list(data_to_run, style=style, level=level)
-    #     elif isinstance(data_to_run, dict):
-    #         converted_results = convert_dict(data_to_run, style=style, level=level)
-    #     else:
-    #         converted_results = ConverterExportData(data={})
 
     if os.path.isfile(export_path):
         pass

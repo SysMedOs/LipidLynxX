@@ -39,18 +39,14 @@ from lynx.models.api_models import (
 )
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
-from lynx.routers.api_converter import create_convert_list_job, create_convert_dict_job
-from lynx.routers.api_linker import create_link_list_job
+from lynx.routers.api_converter import create_convert_dict_job, create_convert_list_job
+from lynx.routers.api_linker import create_link_dict_job, create_link_list_job
 from lynx.utils.cfg_reader import api_version, lynx_version, app_prefix
 from lynx.utils.file_handler import (
     create_equalizer_output,
     get_file_type,
     get_table,
     get_output_name,
-)
-from lynx.utils.frontend_tools import (
-    get_converter_response_data,
-    get_linker_response_data,
 )
 from lynx.utils.toolbox import get_levels, get_style_level, get_url_safe_str
 
@@ -260,17 +256,10 @@ async def equalizer_file(
 
 @frontend.post("/linker/text", include_in_schema=False)
 async def linker_text(
-    request: Request,
-    lipid_names: str = Form(...),
-    export_url: str = Form(...),
-    file_type: FileType = Form(...),
+    request: Request, lipid_names: str = Form(...), file_type: FileType = Form(...),
 ):
     if not lipid_names:
         raise HTTPException(status_code=404)
-    if export_url == "include":
-        export_url = True
-    else:
-        export_url = False
 
     names = lipid_names.splitlines()
     export_file_type = get_file_type(file_type)
@@ -288,46 +277,42 @@ async def linker_text(
 
 @frontend.post("/linker/file", include_in_schema=False)
 async def linker_file(
-    request: Request,
-    file_obj: UploadFile = File(...),
-    export_url: str = Form(...),
-    file_type: FileType = Form(...),
+    request: Request, file_obj: UploadFile = File(...), file_type: FileType = Form(...),
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
-    if export_url == "include":
-        export_url = True
-    else:
-        export_url = False
-    sum_all_resources = {}
+    export_file_type = get_file_type(file_type)
+    print(table_info)
     if table_info:
-        resource_info = await api.link_dict(table_info, export_url=True)
-        for k in resource_info:
-            if len(k) > 16:
-                display_k = f"{k[:15]}~{k[-1]}"
-            else:
-                display_k = k
-            col_resource_info = resource_info.get(k, [])
-            lynx_names = {}
-            all_resources = {}
-            for lipid_name in col_resource_info:
-                lipid_name_info = col_resource_info.get(lipid_name, {})
-                all_resources[lipid_name] = get_url_safe_str(lipid_name_info)
-                lynx_names[lipid_name] = lipid_name_info.get("lynx_name")
-            sum_all_resources[display_k] = {
-                "all_resources": all_resources,
-                "export_file_data": col_resource_info,
-                "lynx_names": lynx_names,
-            }
-
-    response_data = {
-        "request": request,
-        "export_url": export_url,
-        "data": sum_all_resources,
-        "submitted": True,
-    }
-    response_data = get_linker_response_data(response_data, file_type)
-
-    return templates.TemplateResponse("linker.html", response_data)
+        input_data = InputDictData(data=table_info)
+        job_info = await create_link_dict_job(
+            data=input_data, file_type=export_file_type,
+        )  # type: JobStatus
+        response_data = job_info.dict()
+        response_data["request"] = request
+        # rel link to get_download
+        response_data["err_msgs"] = []
+        # resource_info = await api.link_dict(table_info, export_url=True)
+        # for k in resource_info:
+        #     if len(k) > 16:
+        #         display_k = f"{k[:15]}~{k[-1]}"
+        #     else:
+        #         display_k = k
+        #     col_resource_info = resource_info.get(k, [])
+        #     lynx_names = {}
+        #     all_resources = {}
+        #     for lipid_name in col_resource_info:
+        #         lipid_name_info = col_resource_info.get(lipid_name, {})
+        #         all_resources[lipid_name] = get_url_safe_str(lipid_name_info)
+        #         lynx_names[lipid_name] = lipid_name_info.get("lynx_name")
+        #     sum_all_resources[display_k] = {
+        #         "all_resources": all_resources,
+        #         "export_file_data": col_resource_info,
+        #         "lynx_names": lynx_names,
+        #     }
+    else:
+        response_data = {"err_msgs": [f"Failed to read file: {file_obj.filename}"]}
+    response_data["request"] = request
+    return templates.TemplateResponse("linker_results_summary.html", response_data)
 
 
 # direct fast link of one lipid on the home page
@@ -351,21 +336,21 @@ async def linker_lipid(
     return templates.TemplateResponse("linker_results_details.html", resource_info)
 
 
-@frontend.post("/linker/results/summary", include_in_schema=False)
-async def view_resource_summary(
-    request: Request,
-    display_data: str = Form(...),
-    lynx_names: str = Form(...),
-    file_name: str = Form(...),
-    export_url: bool = Form(...),
-):
-    decoded_data = base64.urlsafe_b64decode(display_data.encode("utf-8"))
-    decoded_lynx_names = base64.urlsafe_b64decode(lynx_names.encode("utf-8"))
-    resource_info = {
-        "data": json.loads(decoded_data.decode("utf-8")),
-        "lynx_names": json.loads(decoded_lynx_names.decode("utf-8")),
-        "file_name": file_name,
-        "export_url": export_url,
-        "request": request,
-    }
-    return templates.TemplateResponse("linker_results_summary.html", resource_info)
+# @frontend.post("/linker/results/summary", include_in_schema=False)
+# async def view_resource_summary(
+#     request: Request,
+#     display_data: str = Form(...),
+#     lynx_names: str = Form(...),
+#     file_name: str = Form(...),
+#     export_url: bool = Form(...),
+# ):
+#     decoded_data = base64.urlsafe_b64decode(display_data.encode("utf-8"))
+#     decoded_lynx_names = base64.urlsafe_b64decode(lynx_names.encode("utf-8"))
+#     resource_info = {
+#         "data": json.loads(decoded_data.decode("utf-8")),
+#         "lynx_names": json.loads(decoded_lynx_names.decode("utf-8")),
+#         "file_name": file_name,
+#         "export_url": export_url,
+#         "request": request,
+#     }
+#     return templates.TemplateResponse("linker_results_summary.html", resource_info)

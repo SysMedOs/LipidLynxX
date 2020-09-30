@@ -131,7 +131,7 @@ class Residue(object):
                         res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
                     elif o in ["SUM_MODS"]:
                         sum_o_seg = self.sum_mod_info.get("linked_ids", {}).get(lv, "")
-                        if num_o > 0 and re.match(r'\d?O\d?', sum_o_seg):
+                        if num_o > 0 and re.match(r"\d?O\d?", sum_o_seg):
                             pass
                         else:
                             res_str += sum_o_seg

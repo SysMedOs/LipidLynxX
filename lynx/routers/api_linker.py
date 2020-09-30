@@ -19,7 +19,7 @@ import re
 from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
-from lynx.models.api_models import JobStatus, JobType, LevelsData, InputListData
+from lynx.models.api_models import JobStatus, JobType, LevelsData, InputDictData, InputListData
 from lynx.mq.client import linker_client
 from lynx.routers.api_converter import convert_lipid
 from lynx.utils.job_manager import (
@@ -241,6 +241,30 @@ async def create_link_list_job(
         },
     }
     Process(target=linker_client, args=(token, job_execute_data, "list"),).start()
+    job_status = "created"
+    job_info = JobStatus(token=token, status=job_status, data=job_execute_data)
+
+    return job_info
+
+
+@router.post("/dict/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+async def create_link_dict_job(
+    data: InputDictData,
+    export_url: bool = True,
+    export_names: bool = True,
+    file_type: str = "xlsx",
+):
+    """"""
+    token = create_job_token(JobType(job="link"))
+    job_execute_data = {
+        "data": data.data,
+        "params": {
+            "export_url": export_url,
+            "export_names": export_names,
+            "file_type": file_type,
+        },
+    }
+    Process(target=linker_client, args=(token, job_execute_data, "dict"),).start()
     job_status = "created"
     job_info = JobStatus(token=token, status=job_status, data=job_execute_data)
 

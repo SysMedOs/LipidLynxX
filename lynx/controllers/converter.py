@@ -173,7 +173,7 @@ if __name__ == "__main__":
         # "lid",
         # "PLPC",
         "SM d18:1/24:0",
-        "DHA"
+        "DHA",
     ]
     lv = "M1"
     # test_out_rule = "COMP_DB"
