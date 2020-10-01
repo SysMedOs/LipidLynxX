@@ -1,0 +1,4 @@
+Sample1,Reference1,Reference2
+PC(16:0_18:2),PLPC,PC O-16:0_18:2
+PE(16:0_20:4),PLPE,C18 Sphingomyelin
+PC(16:0_22:5),,Cer(d14:0/26:0)
