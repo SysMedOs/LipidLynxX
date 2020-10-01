@@ -14,29 +14,46 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from multiprocessing import Process
-import re
 from typing import Optional, Union, List
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from lynx.controllers.equalizer import Equalizer
 from lynx.models.api_models import (
     EqualizerExportData,
     InputDictData,
-    InputListData,
-    InputStrData,
     JobStatus,
     JobType,
-    LvType,
     LevelsData,
-    StyleType,
 )
 from lynx.mq.client import equalizer_client
-from lynx.utils.job_manager import create_job_token
+from lynx.utils.job_manager import (
+    create_job_token,
+    is_job_finished,
+    get_job_output
+)
 
 router = APIRouter()
 
 default_levels = LevelsData(levels=["B1", "D1"])
+
+
+# GET APIs
+@router.get(
+    "/jobs/{token}", response_model=JobStatus, status_code=status.HTTP_202_ACCEPTED,
+)
+async def check_equalizer_job_status(token: str,):
+    """
+    Check the status of a job submitted to converter module.
+    """
+    if is_job_finished(token):
+        job_data = get_job_output(token)
+        job_status = "finished"
+    else:
+        job_data = {}
+        job_status = "working"
+    job_info = JobStatus(token=token, status=job_status, data=job_data)
+    return job_info
 
 
 # POST APIs

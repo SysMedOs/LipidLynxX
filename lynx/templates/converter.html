@@ -34,20 +34,42 @@ Converter @ LipidLynxX
                         <p></p>
                         <h4>Input lipid abbreviations</h4>
                         <form action="{{ url_for('converter_text') }}" method="post">
-                            <p><label>
-                                    lipid_names <br>
-                                    <textarea type="text" name="lipid_names" class="form-control" style="width:100%;"
-                                        rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
-                                </label></p>
-                            <p><label for="export_style">Choose the export style:
-                                    <select id="export_style" name="export_style">
-                                        <option value="LipidLynxX">LipidLynxX</option>
-                                        <option value="ShorthandNotation">ShortHand Notation</option>
-                                        <option value="COMP_DB">COMP_DB</option>
-                                        <option value="BioPAN">BioPAN</option>
-                                        <option value="LipidCreator">LipidCreator</option>
-                                        <option value="LPPtiger">LPPtiger</option>
-                                    </select></label></p>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><label>
+                                        lipid_names <br>
+                                        <textarea type="text" name="lipid_names" class="form-control" style="width:100%;"
+                                                  rows="8">palmitic acid&#10;DHA&#10;HETE&#10;PLPE&#10;PC O-16:0_18:2&#10;FaCoA 18:2;O&#10;C18 Sphingomyelin</textarea>
+                                    </label></p>
+                                    <p><label for="export_style">Choose the export style:
+                                        <select id="export_style" name="export_style">
+                                            <option value="LipidLynxX">LipidLynxX</option>
+                                            <option value="ShorthandNotation">ShortHand Notation</option>
+                                            <option value="COMP_DB">COMP_DB</option>
+                                            <option value="BioPAN">BioPAN</option>
+                                            <option value="LipidCreator">LipidCreator</option>
+                                            <option value="LPPtiger">LPPtiger</option>
+                                        </select></label></p>
+                                </div>
+                                <div class="col-6">
+                                    <div class="row d-flex justify-content-center" style="padding: 16px;">
+                                        <div class="col-4">
+                                                <img alt="image" class="img-fluid" src="{{ url_for('home') }}images/converter_logo.png"></a>
+                                        </div>
+                                    </div>
+                                    <div class="row d-flex justify-content-center">
+                                        <div class="col-9">
+                                            <div class="row">
+                                                <h4>Lipid ID Converter</h4>
+                                            </div>
+                                            <div class="row">
+                                                <p>Convert different abbreviations to unified LipidLynxX identifier.<br><br>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <p><label for="export_level">Choose the export Level:
                                     <select id="export_level" name="export_level">
                                         <option value="B1">Bulk</option>
