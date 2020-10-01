@@ -63,42 +63,6 @@
       "S": "/"
     }
   },
-  "DB_SITES": {
-    "DB_INFO": {
-      "ORDER": [
-        "DB_SITE",
-        "DB_SITE_INFO"
-      ],
-      "OPTIONAL": [
-        "DB_SITE_INFO"
-      ],
-      "DB_SITE": "(\\s?,)?([0-9]{1,2})",
-      "DB_SITE_INFO": "([EZ])",
-      "EXAMPLES": [
-        "9",
-        "9Z",
-        "9OH",
-        "9S-OH"
-      ]
-    },
-    "SUM_DB_SITES": {
-      "ORDER": [
-        "SITE_BRACKET_LEFT",
-        "DB_INFO",
-        "SITE_BRACKET_RIGHT"
-      ],
-      "REPEAT": {
-        "DB_INFO": [0, 10]
-      },
-      "BRACKET_LEFT": "$.SEPARATORS.SITE_BRACKET_LEFT.0",
-      "DB_INFO": "$.DB_SITES.DB_INFO.0",
-      "BRACKET_RIGHT": "$.SEPARATORS.SITE_BRACKET_RIGHT.0",
-      "EXAMPLES": [
-        "(9Z)",
-        "(9Z,12Z)"
-      ]
-    }
-  },
   "MODS": {
     "MOD": {
       "ORDER": [
@@ -165,22 +129,20 @@
     "RESIDUE": {
       "ORDER": [
         "LINK",
-        "C_COUNT",
+        "NUM_C",
         "DB_SEPARATOR",
-        "DB_COUNT",
-        "SUM_DB_SITES",
+        "NUM_DB",
         "O_SEPARATOR",
-        "O_COUNT",
+        "NUM_O",
         "MOD_BRACKET_LEFT",
         "SUM_MODS",
         "MOD_BRACKET_RIGHT"
       ],
       "OPTIONAL": [
         "LINK",
-        "DB_COUNT",
-        "SUM_DB_SITES",
+        "DB",
         "O_SEPARATOR",
-        "O_COUNT",
+        "NUM_O",
         "MOD_BRACKET_LEFT",
         "SUM_MODS",
         "MOD_BRACKET_RIGHT"
@@ -192,12 +154,11 @@
         ]
       },
       "LINK": "[OP]-|C|[mdt]|h",
-      "C_COUNT": "[0-9]{1,2}",
+      "NUM_C": "[0-9]{1,2}",
       "DB_SEPARATOR": ":",
-      "DB_COUNT": "[1,2]?[0-9]",
-      "SUM_DB_SITES": "$.DB_SITES.SUM_DB_SITES.0",
+      "NUM_DB": "[1,2]?[0-9]",
       "O_SEPARATOR": ";",
-      "O_COUNT": "O[2-3]?",
+      "NUM_O": "O[2-3]?",
       "MOD_BRACKET_LEFT": "$.SEPARATORS.MOD_BRACKET_LEFT.0",
       "SUM_MODS": "$.MODS.SUM_MODS.0",
       "MOD_BRACKET_RIGHT": "$.SEPARATORS.MOD_BRACKET_LEFT.0"

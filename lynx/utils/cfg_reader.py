@@ -98,15 +98,6 @@ def load_cfg_info(cfg_path: str = None) -> Dict[str, str]:
             usr_app_prefix = f"/{usr_app_prefix}"
     cfg_dct["app_prefix"] = usr_app_prefix
 
-    usr_app_prefix = cfg_dct.get("app_prefix", "").strip("/")
-
-    if usr_app_prefix:
-        if re.match(r"^\s*None\s*$", usr_app_prefix, re.IGNORECASE):
-            usr_app_prefix = ""
-        else:
-            usr_app_prefix = f"/{usr_app_prefix}"
-    cfg_dct["app_prefix"] = usr_app_prefix
-
     return cfg_dct
 
 

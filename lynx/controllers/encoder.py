@@ -413,10 +413,9 @@ if __name__ == "__main__":
         # "PGF2α",
         # "8-iso PGF2a III",
         # "palmitoleic acid",
-        # "FA 16:1(9Z)",
-        "20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH)"
+        "FA 16:1(9Z)"
     ]
-    lynx_gen = Encoder(style="LipidLynxX")
+    lynx_gen = Encoder(style="ShorthandNotation")
     for t_in in t_in_lst:
         t1_out = lynx_gen.convert(t_in)
         app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")

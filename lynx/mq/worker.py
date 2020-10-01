@@ -306,38 +306,38 @@ def general_worker(worker_id: int, zmq_worker_port: int = 2410):
         message = socket.recv()
         print(f"Worker #{worker_id} @[{zmq_worker_port}] Received Job: {message}")
 
-        msg_dct = json.loads(message.decode())
-        data = msg_dct.get("data")
-        token = msg_dct.get("token", "Temp_token")
-        job_name = msg_dct.get("job", "").lower()
-        job_data_type = msg_dct.get("data_type", "").lower()
-        job = JobType(job=job_name)
-        if job.job and token and isinstance(data, dict):
-            response_data = init_runner(job, token, data, job_data_type)
-        else:
-            response_data = {
-                "token": token,
-                "err_msgs": ["Cannot load job information."],
-            }
-
-        # try:
-        #     msg_dct = json.loads(message.decode())
-        #     data = msg_dct.get("data")
-        #     token = msg_dct.get("token", "Temp_token")
-        #     job_name = msg_dct.get("job", "").lower()
-        #     job_data_type = msg_dct.get("data_type", "").lower()
-        #     job = JobType(job=job_name)
-        #     if job.job and token and isinstance(data, dict):
-        #         response_data = init_runner(job, token, data, job_data_type)
-        #     else:
-        #         response_data = {
-        #             "token": token,
-        #             "err_msgs": ["Cannot load job information."],
-        #         }
-        # except Exception as e:
+        # msg_dct = json.loads(message.decode())
+        # data = msg_dct.get("data")
+        # token = msg_dct.get("token", "Temp_token")
+        # job_name = msg_dct.get("job", "").lower()
+        # job_data_type = msg_dct.get("data_type", "").lower()
+        # job = JobType(job=job_name)
+        # if job.job and token and isinstance(data, dict):
+        #     response_data = init_runner(job, token, data, job_data_type)
+        # else:
         #     response_data = {
-        #         "token": "unknown",
-        #         "err_msgs": ["Cannot load job information.", str(e)],
+        #         "token": token,
+        #         "err_msgs": ["Cannot load job information."],
         #     }
+
+        try:
+            msg_dct = json.loads(message.decode())
+            data = msg_dct.get("data")
+            token = msg_dct.get("token", "Temp_token")
+            job_name = msg_dct.get("job", "").lower()
+            job_data_type = msg_dct.get("data_type", "").lower()
+            job = JobType(job=job_name)
+            if job.job and token and isinstance(data, dict):
+                response_data = init_runner(job, token, data, job_data_type)
+            else:
+                response_data = {
+                    "token": token,
+                    "err_msgs": ["Cannot load job information."],
+                }
+        except Exception as e:
+            response_data = {
+                "token": "unknown",
+                "err_msgs": ["Cannot load job information.", str(e)],
+            }
 
         socket.send(json.dumps(response_data).encode())

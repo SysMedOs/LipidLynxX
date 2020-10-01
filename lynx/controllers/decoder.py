@@ -369,8 +369,7 @@ if __name__ == "__main__":
     # t_in = "TG(16:0/18:2/20:4<OH>)"
     # t_in = "TG(16:0/18:2/HETE)"
     # RefMet
-    # t_in = "PC(36:2e)"
-    t_in = "20:4(5Z,8Z,11Z,14Z)(7R-OH,12S-OH)"
+    t_in = "PC(36:2e)"
 
     extractor = Decoder(rules=default_input_rules)
     t_out = extractor.extract(t_in)

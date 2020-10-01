@@ -46,7 +46,7 @@ cli_app = typer.Typer(
     f"Developed by team SysMedOs @ University of Leipzig "
     f"Please cite our publication in an appropriate form. "
     f"LipidLynxX preprint on bioRxiv.org. Zhixu Ni, Maria Fedorova. "
-    f"'LipidLynxX: a data transfer hub to support integration of large scale lipidomics datasets' "
+    f"'LipidLynxX: lipid annotations converter for large scale lipidomics and epilipidomics datasets' "
     f"DOI: 10.1101/2020.04.09.033894"
 )
 
@@ -282,7 +282,7 @@ def convert_file(
         if use_one_col:
             lipid_list = table_dct.get(lipid_col_name)
             converted_obj = lynx_converter.convert_list(
-                input_list=lipid_list, level=level, default_na="UNPROCESSED"
+                input_list=lipid_list, level=level
             )
             converted_names = converted_obj.output
             converted_dct = {f"Converted_{lipid_col_name}": converted_names}

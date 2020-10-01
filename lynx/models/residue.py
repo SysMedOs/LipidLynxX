@@ -21,7 +21,6 @@ import regex as re
 
 from lynx.utils.params_loader import load_output_rule
 from lynx.models.defaults import res_schema, res_schema_path, default_output_rules
-from lynx.models.db import DB
 from lynx.models.modification import Modifications, merge_mods
 from lynx.utils.log import app_logger
 from lynx.utils.toolbox import check_json
@@ -191,10 +190,9 @@ def merge_residues(
                 if res_seg not in sum_res_dct:
                     sum_res_dct[res_seg] = res_info[res_seg]
                 else:
-                    existed_count = sum_res_dct.get(res_seg, 0)
-                    res_seg_count = res_info.get(res_seg, 0)
+                    existed_count = sum_res_dct.get(res_seg, None)
+                    res_seg_count = res_info.get(res_seg, None)
                     if res_seg_count:
-                        print("existed_count", existed_count, type(existed_count))
                         if isinstance(existed_count, int) and isinstance(
                             res_seg_count, int
                         ):
