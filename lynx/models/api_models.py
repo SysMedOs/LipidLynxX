@@ -15,14 +15,14 @@
 
 from enum import Enum
 import re
-from typing import Dict, List
+from typing import Dict, List, Literal, Union
 
 from pydantic import BaseModel, constr
 
 
-lipid_name_rgx_str = r"^\s*.{2,512}\s*$"
+lipid_name_rgx_str = r"^\s*.{0,512}\s*$"
 LipidNameType = constr(regex=lipid_name_rgx_str)
-level_rgx_str = r"^\s*(?P<level>[Bb][0-3]?|^[DSds]([0-5](.[0-3])?)?|^[Mm][Aa][Xx])\s*$"
+level_rgx_str = r"^\s*(?P<level>[Bb][0-3]?|^[MSms]([0-5](.[0-3])?)?|^[Mm][Aa][Xx])\s*$"
 level_rgx = re.compile(level_rgx_str)
 
 
@@ -61,7 +61,7 @@ class LevelsType(BaseModel):
     levels: List[LvType]
 
     class Config:
-        schema_extra = {"example": ["B1", "D1"]}
+        schema_extra = {"example": ["B1", "M1"]}
 
 
 class LevelsData(BaseModel):
@@ -72,7 +72,7 @@ class LevelsData(BaseModel):
     levels: List[str]
 
     class Config:
-        schema_extra = {"example": {"levels": ["B1", "D1"]}}
+        schema_extra = {"example": {"levels": ["B1", "M1"]}}
 
 
 class FileType(str, Enum):
@@ -137,6 +137,20 @@ class InputDictData(BaseModel):
                 }
             }
         }
+
+
+class JobType(BaseModel):
+    job: Literal["convert", "equalize", "link", "parse"]
+
+
+class JobStatusType(BaseModel):
+    status: Literal["created", "working", "finished", "error", "not found"]
+
+
+class JobStatus(BaseModel):
+    status: Union[JobStatusType, str]
+    token: str
+    data: dict
 
 
 class ConvertedStrData(BaseModel):
@@ -249,3 +263,11 @@ class EqualizerExportData(BaseModel):
 if __name__ == "__main__":
     a = StyleType.use("ShortHand")
     print(a)
+    j = JobType(job="convert")
+    print(j)
+    print(j.job)
+    print(type(j.job))
+    f = "xlsx"
+    jo = FileType(f)
+    print(type(jo))
+    print(jo.xlsx)

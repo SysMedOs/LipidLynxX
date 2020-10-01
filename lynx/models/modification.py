@@ -103,7 +103,7 @@ class Modifications(object):
         sum_mod_elem_dct = {}
         for mod in self.mod_info:
             mod_cv = mod["MOD_CV"]
-            mod_count = mod["MOD_COUNT"]
+            mod_count = int(mod["MOD_COUNT"])
             mod_elem_dct = mod["MOD_ELEMENTS"]
             if mod_cv != "DB":
                 for elem in mod_elem_dct:
@@ -117,7 +117,7 @@ class Modifications(object):
     def to_mass_shift(self) -> str:
         mass_shift = 0
         for mod in self.mod_info:
-            mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
+            mod_count = int(self.mod_info[mod].get("MOD_COUNT", 1))
             mass_shift += self.mod_info[mod].get("MOD_MASS_SHIFT", 0) * mod_count
         mass_shift_str = f"{mass_shift:+}"
 
@@ -132,7 +132,7 @@ class Modifications(object):
         for mod in self.mod_info:
             if self.mod_info[mod].get("MOD_CV", "") not in ["", "DB"]:
                 mod_elements = self.mod_info[mod].get("MOD_ELEMENTS", 0)
-                mod_count = self.mod_info[mod].get("MOD_COUNT", 1)
+                mod_count = int(self.mod_info[mod].get("MOD_COUNT", 1))
                 for elem in mod_elements:
                     sum_elements[elem] = (
                         sum_elements.get(elem, 0)
@@ -264,10 +264,7 @@ class Modifications(object):
                 "MOD_SITE",
                 "SITE_BRACKET_RIGHT",
             ]
-        return self.to_mod_base(
-            mod_seg_lst=mod_segments,
-            get_db_only=get_db_only,
-        )
+        return self.to_mod_base(mod_seg_lst=mod_segments, get_db_only=get_db_only,)
 
     def to_mod_site_info(self, get_db_only: bool = False):
         return self.to_mod_base(
@@ -420,7 +417,7 @@ class Modifications(object):
 
         if check_json(
             validator=self.validator,
-            json_obj=json.loads(mod_json_str),
+            json_obj=json.loads(mod_json_str, logger=self.logger),
         ):
             return mod_json_str
         else:

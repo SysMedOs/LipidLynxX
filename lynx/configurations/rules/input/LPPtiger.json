@@ -20,7 +20,7 @@
     "SITE_BRACKET_RIGHT": "\\>",
     "SEPARATOR_LEVELS": {
       "B": "",
-      "D": "_",
+      "M": "_",
       "S": "/"
     }
   },

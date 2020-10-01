@@ -86,7 +86,7 @@ class Encoder(object):
 
         # add levels for B0, D0, S0 lipids
         if best_id_dct and all(
-            [re.match(r"^[BDS]0(.[12])?$", lv) for lv in best_id_dct]
+            [re.match(r"^[BMS]0(.[12])?$", lv) for lv in best_id_dct]
         ):
             for add_lv in supported_levels:
                 from_lv = f"{add_lv[0]}0{add_lv[2:]}"
@@ -97,7 +97,7 @@ class Encoder(object):
         if (
             best_id_dct
             and sum_db == 0
-            and all([re.match(r"^[BDS][0-5]$", lv) for lv in best_id_dct])
+            and all([re.match(r"^[BMS][0-5]$", lv) for lv in best_id_dct])
         ):
             for from_lv in best_id_dct:
                 updated_best_id_dct[from_lv] = best_id_dct.get(from_lv, "")
@@ -110,10 +110,10 @@ class Encoder(object):
         ):
             best_id_dct = updated_best_id_dct
 
-        if best_id_dct.get("D1") and not best_id_dct.get("B1"):
-            best_id_dct["B1"] = best_id_dct["D1"]
-        if best_id_dct.get("D2") and not best_id_dct.get("B2"):
-            best_id_dct["B2"] = best_id_dct["D2"]
+        if best_id_dct.get("M1") and not best_id_dct.get("B1"):
+            best_id_dct["B1"] = best_id_dct["M1"]
+        if best_id_dct.get("M2") and not best_id_dct.get("B2"):
+            best_id_dct["B2"] = best_id_dct["M2"]
 
         return best_id_dct
 
@@ -180,9 +180,9 @@ class Encoder(object):
                 residues_sep_level = "S"
 
         if residues_sep_level == "S":
-            sum_res_sep_lv_lst = ["B", "D", "S"]
-        elif residues_sep_level == "D":
-            sum_res_sep_lv_lst = ["B", "D"]
+            sum_res_sep_lv_lst = ["B", "M", "S"]
+        elif residues_sep_level == "M":
+            sum_res_sep_lv_lst = ["B", "M"]
         elif residues_sep_level == "B":
             sum_res_sep_lv_lst = ["B"]
 

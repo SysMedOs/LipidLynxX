@@ -446,15 +446,15 @@ def link_lipid(
     url: bool = typer.Option(False, "--url", "-u"),
 ):
     """
-    Convert one LIPID name into supported levels and export to supported style
+    Link one LIPID name into public available databases and resources
 
     LIPID: lipid abbreviation
 
-    --style: Export style. LipidLynxX, COMP_DB, or ShorthandNotation. Default value: LipidLynxX
+    --formatted: Group results by types of resources
 
-    --level: LipidLynxX lipid information levels. e.g. B0, D1, S4.1 or MAX for Maximum level. Default value: MAX
+    --url: export URL of the resources
 
-    e.g. convert "PLPC" --style LipidLynxX --level S1
+    e.g. link-lipid "PLPC" --formatted --url
 
     """
     if lipid:

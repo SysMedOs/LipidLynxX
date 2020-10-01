@@ -14,56 +14,52 @@
 #     Developer Zhixu Ni zhixu.ni@uni-leipzig.de
 
 from fastapi import FastAPI
-from fastapi.openapi.utils import get_openapi
+
+# from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-from lynx.routers import api, frontend
-from lynx.utils.cfg_reader import app_prefix, api_version, app_cfg_info, lynx_version
+from lynx.api import api
+from lynx.routers.app_frontend import frontend
+from lynx.utils.cfg_reader import app_prefix, app_cfg_info
+from lynx.utils.ports import check_port
 
 
-app_url = app_cfg_info.get("app_url", "127.0.0.1")
-app_port = int(app_cfg_info.get("app_port", 1399))
+app = FastAPI(title="LipidLynxX", debug=True)
 
-app = FastAPI(
-    title="LipidLynxX",
-    debug=True,
-    openapi_url=f"{app_prefix}/openapi.json",
-    docs_url=f"{app_prefix}/docs",
-    redoc_url=f"{app_prefix}/redoc",
-    swagger_favicon_url=f"{app_prefix}/images/favicon.png",
-)
-
-
-app.include_router(api.router, prefix=f"{app_prefix}/api", tags=["api"])
-app.include_router(frontend.router, prefix=f"{app_prefix}")
 app.mount(
     f"{app_prefix}/images", StaticFiles(directory="lynx/static/images"), name="images"
 )
+# load lynx.api.py as sub-app to provide API service for the frontend
+# load frontend from lynx.router.frontend to provide GUI for users
+app.include_router(frontend, prefix=f"{app_prefix}")
+# api.py can be started separately to provide API service only
+app.mount(f"{app_prefix}/api", api, name="api")
 
-
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="LipidLynxX API",
-        version=api_version,
-        description=f"This is the api (V{api_version}) used in LipidLynxX (V{lynx_version})",
-        routes=app.routes,
-    )
-    openapi_schema["info"]["x-logo"] = {"url": "images/LipidLynxX_icon.png"}
-    # openapi_schema["servers"] = [
-    #     {
-    #         "url": "https://www.example.org/",  # URL of the website root
-    #         "description": "example LipidLynxX Service",  # Description will de displayed on docs page
-    #     }
-    # ]
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-
-app.openapi = custom_openapi
 
 if __name__ == "__main__":
     import uvicorn
 
+    # from lynx.daemon import daemon_lynx
+    #
+    # # Start message queue powered by ZeroMQ.
+    # # check ports
+    # checked_zmq_client_port = check_port(
+    #     int(app_cfg_info.get("zmq_client_port", 2409)), task_name="ZMQ client"
+    # )
+    # checked_zmq_worker_port = check_port(
+    #     int(app_cfg_info.get("zmq_worker_port", 2410)), task_name="ZMQ worker"
+    # )
+    # # run zmq daemon
+    # daemon_lynx(checked_zmq_client_port, checked_zmq_worker_port)
+    # daemon_lynx()
+
+    print("Start LipidLynxX Main Application...")
+    # check port
+    app_url = app_cfg_info.get("app_url", "127.0.0.1")
+    app_port = int(app_cfg_info.get("app_port", 1399))
+    checked_app_port = check_port(app_port, task_name="LipidLynxX main app")
+    if app_port != int(checked_app_port):
+        print(f"Port: [{app_port}] in config.ini is already in use.")
+        app_port = int(checked_app_port)
+        print(f"[INFO] LipidLynxX is now running on port [{checked_app_port}].")
     uvicorn.run(app, host=app_url, port=app_port)

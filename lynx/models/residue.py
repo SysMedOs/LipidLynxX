@@ -45,17 +45,16 @@ class Residue(object):
         self.__replace_mdt__()
 
         self.schema = schema
-        self.type = "Residue"
+        self.type = "FattyAcid"
         resolver = RefResolver(
             referrer=res_schema, base_uri=f"file://{os.path.dirname(res_schema_path)}/"
         )
         self.validator = Draft7Validator(res_schema, resolver=resolver)
 
         mod_info = residue_info.get("MOD", {})
-        db_info = residue_info.get("DB", {})
-        self.db_obj = DB(db_info)
+
         self.mod_obj = Modifications(
-            mod_info, num_o=residue_info.get("O_COUNT", 0), nomenclature=nomenclature
+            mod_info, num_o=residue_info.get("NUM_O", 0), nomenclature=nomenclature
         )
         self.sum_mod_info = self.mod_obj.sum_mod_info
         self.mod_level = self.mod_obj.mod_level
@@ -76,28 +75,27 @@ class Residue(object):
         link = self.res_info.get("LINK", "")
         if link.lower() == "m":
             self.res_info["LINK"] = ""
-            self.res_info["O_COUNT"] = 1 + self.res_info.get("O_COUNT", 0)
+            self.res_info["NUM_O"] = 1 + self.res_info.get("NUM_O", 0)
         elif link.lower() == "d":
             self.res_info["LINK"] = ""
-            self.res_info["O_COUNT"] = 2 + self.res_info.get("O_COUNT", 0)
+            self.res_info["NUM_O"] = 2 + self.res_info.get("NUM_O", 0)
         elif link.lower() == "t":
             self.res_info["LINK"] = ""
-            self.res_info["O_COUNT"] = 3 + self.res_info.get("O_COUNT", 0)
+            self.res_info["NUM_O"] = 3 + self.res_info.get("NUM_O", 0)
         else:
             pass
 
     def __post_init__(self):
         res_str_dct = {}
-        num_o = self.res_info.get("O_COUNT", 0)
+        num_o = self.res_info.get("NUM_O", 0)
         for lv in self.linked_levels:
             res_str = ""
             for o in self.res_rule_orders:
                 if o in self.res_info or o in self.res_separators or o in ["SUM_MODS"]:
-                    if o in ["SUM_MODS", "MODS", "MOD"]:
-                        res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
-                    elif o == "O_COUNT":
+                    if o == "NUM_O":
                         if num_o > 0:
-                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("O_COUNT")
+                            o_seg_rgx = self.res_rule.get("RESIDUE", {}).get("NUM_O")
+                            # print("o_seg_rgx", o_seg_rgx)
                             if o_seg_rgx:
                                 if num_o == 1:
                                     if re.match(o_seg_rgx, str(num_o)):
@@ -121,6 +119,7 @@ class Residue(object):
                                 res_str += str(num_o)
                         else:
                             pass
+
                     elif o.upper().endswith("_SEPARATOR"):
                         res_str += self.res_separators.get(o, "")
                         if num_o == 0:
@@ -129,6 +128,14 @@ class Residue(object):
                             )
                     elif re.search("BRACKET", o.upper()):
                         res_str += self.res_separators.get(o, "")
+                    elif o in ["MODS", "MOD"]:
+                        res_str += self.sum_mod_info.get("linked_ids", {}).get(lv, "")
+                    elif o in ["SUM_MODS"]:
+                        sum_o_seg = self.sum_mod_info.get("linked_ids", {}).get(lv, "")
+                        if num_o > 0 and re.match(r"\d?O\d?", sum_o_seg):
+                            pass
+                        else:
+                            res_str += sum_o_seg
                     else:
                         res_str += str(self.res_info.get(o, ""))
             na_brackets_lst = [r"\<\>", r"\{\}", r"\[\]", r"\(\)"]
@@ -176,7 +183,7 @@ def merge_residues(
         link = res_info.get("LINK")
         if res.upper().startswith("P-") and link == "P-":
             res_info["LINK"] = "O-"
-            res_info["DB_COUNT"] = res_info.get("DB_COUNT") + 1
+            res_info["NUM_DB"] = res_info.get("NUM_DB") + 1
         for res_seg in res_info:
             if re.search(r"MOD", res_seg):
                 pass
@@ -184,9 +191,10 @@ def merge_residues(
                 if res_seg not in sum_res_dct:
                     sum_res_dct[res_seg] = res_info[res_seg]
                 else:
-                    existed_count = sum_res_dct.get(res_seg, None)
-                    res_seg_count = res_info.get(res_seg, None)
+                    existed_count = sum_res_dct.get(res_seg, 0)
+                    res_seg_count = res_info.get(res_seg, 0)
                     if res_seg_count:
+                        print("existed_count", existed_count, type(existed_count))
                         if isinstance(existed_count, int) and isinstance(
                             res_seg_count, int
                         ):
@@ -216,9 +224,9 @@ if __name__ == "__main__":
         "d18:1": {
             "LINK": "d",
             "MOD": {"MOD_LEVEL": 0, "MOD_INFO": {}},
-            "C_COUNT": 18,
-            "DB_COUNT": 1,
-            "O_COUNT": 0,
+            "NUM_C": 18,
+            "NUM_DB": 1,
+            "NUM_O": 0,
         },
         "18:2(9Z,11Z)(12OH)": {
             "LINK": "",
@@ -247,9 +255,9 @@ if __name__ == "__main__":
                     },
                 },
             },
-            "C_COUNT": 18,
-            "DB_COUNT": 2,
-            "O_COUNT": 0,
+            "NUM_C": 18,
+            "NUM_DB": 2,
+            "NUM_O": 0,
         },
     }
     # for r in usr_res_info:
