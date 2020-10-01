@@ -156,28 +156,32 @@ if __name__ == "__main__":
 
     t_in_lst = [
         # "GM3(d18:1/18:2(9Z,11Z)(12OH))",
-        "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
-        "TG P-18:1_18:2(9Z,11Z)_18:1(9)",
-        "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
-        "TG(16:0/18:2/9:0<oxo{9}>)",
-        "HETE",
-        "HETE",
-        "SPBP 18:0;O",
-        "SPBP 18:0;O3",
-        "Cer 18:1;3O/20:4",
-        "CoA(20:3(11Z,14Z,17Z))",
-        "CoA 18:2;O",
-        "FACoA 18:0",
-        "Cer 24:2",
-        "LMGP01010594",
-        "lid",
+        # "TG P-18:1_18:2(9Z,11Z)(12OH)_18:1(9)(11OH)",
+        # "TG P-18:1_18:2(9Z,11Z)_18:1(9)",
+        # "CL(1'-[18:1(9Z)/18:2(9Z,12Z)],3'-[18:2(9Z,12Z)/18:2(9Z,12Z)])",
+        # "TG(16:0/18:2/9:0<oxo{9}>)",
+        # "HETE",
+        # "HETE",
+        # "SPBP 18:0;O",
+        # "SPBP 18:0;O3",
+        # "Cer 18:1;3O/20:4",
+        # "CoA(20:3(11Z,14Z,17Z))",
+        # "CoA 18:2;O",
+        # "FACoA 18:0",
+        # "Cer 24:2",
+        # "LMGP01010594",
+        # "lid",
+        # "PLPC",
+        "SM d18:1/24:0",
+        "DHA",
     ]
-    lv = "B1"
+    lv = "M1"
     # test_out_rule = "COMP_DB"
     test_out_rule = "LipidLynxX"
+    # test_out_rule = "BracketsShorthand"
     lynx_converter = Converter(style=test_out_rule, logger=app_logger)
     for t_in in t_in_lst:
-        t1_out = lynx_converter.convert(t_in, level="B1")
+        t1_out = lynx_converter.convert(t_in, level="M1")
         app_logger.info(f"Input: {t_in} -> Best Output: {t1_out}")
 
     t2_out = lynx_converter.convert(t_in_lst)

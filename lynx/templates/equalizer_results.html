@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}
+Equalizer Results @ LipidLynxX
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript" charset="utf8"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+{% endblock %}
+
+{% block body %}
+<section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="False">
+    <p></p>
+    <h1>LipidLynxX Equalizer Results</h1>
+    <div class="container">
+        <h2>&nbsp;</h2>
+        {% if token %}
+        <p>Job token: {{ token }}</p>
+        <div id="run_status">
+            <p id="run_time">LipidLynxX just started ...</p>
+            <div id="download_info">
+                <p id="download_button"></p>
+            </div>
+            <div>
+                <p>&nbsp;</p>
+            </div>
+            <div id="result_info"></div>
+            <div class="d-flex align-items-center alert alert-info" id="spinner">
+                <p id="spinner_text">LipidLynxX is running </p>
+                <div class="spinner-border  text-warning ml-auto" role="status" aria-hidden="true"></div>
+            </div>
+        </div>
+        <p>&nbsp;</p>
+        <div class="result"></div>
+        <script>
+            let d0 = new Date();
+            let t0 = d0.getTime()
+            let deltaTime = 5000
+            let interval = setInterval(getResultsAjax, deltaTime);
+
+            function getResultsAjax() {
+                let d1 = new Date();
+                let t = Math.floor((d1.getTime() - t0) / 1000)
+                let get_url = "{{ url_for('home') }}api/equalizer/jobs/{{token}}"
+                $.ajax({
+                    url: get_url,
+                    type: 'get',
+                    success: function (data) {
+                        if (data.status.toString() === 'finished') {
+                            clearInterval(interval);
+                            let spinner = document.getElementById("spinner");
+                            spinner.style.visibility = 'hidden';
+                            document.getElementById("run_time").innerHTML = "LipidLynxX finished in " + t.toString() + "s."
+                            let download_info = document.getElementById("download_info");
+                            let old_download_info = document.getElementById("download_button");
+                            let download_button = document.createElement("a")
+                            download_button.setAttribute("id", "download_button")
+                            download_button.setAttribute("href", data.data.export_url)
+                            download_button.setAttribute("class", "btn btn-block btn-success")
+                            download_button.innerHTML = "Save output: " + data.data.export_name;
+                            download_info.replaceChild(download_button, old_download_info)
+                            let result_info = document.getElementById("result_info")
+                            let results = data.data.results
+                            let equalized_results = document.getElementById("equalized");
+                            if (typeof (equalized_results) != 'undefined' && equalized_results != null) {
+                                {#console.log("Element exists!")#}
+                            } else {
+                                let result_title = document.createElement("h3")
+                                let result_title_text = document.createTextNode("Equalized results")
+                                result_title.setAttribute("id", "equalized")
+                                result_title.appendChild(result_title_text)
+                                result_info.appendChild(result_title)
+                                let equalized_results = results.equalized
+                                for (let lv in equalized_results) {
+                                    let sep_line = document.createElement("hr")
+                                    sep_line.setAttribute("class", "mt-4 mb-4")
+                                    sep_line.setAttribute("style", "height:2px;border-width:0;color:#17a2b8;background-color:#17a2b8")
+                                    result_info.appendChild(sep_line)
+                                    let lv_title = document.createElement("h4")
+                                    let lv_title_text = document.createTextNode(lv)
+                                    lv_title.appendChild(lv_title_text)
+                                    result_info.appendChild(lv_title)
+                                    let lv_table_html = equalized_results[lv]
+                                    console.log(lv_table_html)
+                                    let lv_table = document.createElement("div")
+                                    lv_table.innerHTML = lv_table_html
+                                    result_info.appendChild(lv_table)
+                                    $("#" + lv).dataTable({
+                                        retrieve: true,
+                                    });
+
+                                }
+                                let skipped_results_html = results.skipped.skipped
+                                if (skipped_results_html.length > 0) {
+                                    let sep_line = document.createElement("hr")
+                                    sep_line.setAttribute("class", "mt-4 mb-4")
+                                    sep_line.setAttribute("style", "height:2px;border-width:0;color:#17a2b8;background-color:#17a2b8")
+                                    result_info.appendChild(sep_line)
+                                    let skipped_title = document.createElement("h4")
+                                    let skipped_title_text = document.createTextNode("Skipped")
+                                    skipped_title.appendChild(skipped_title_text)
+                                    result_info.appendChild(skipped_title)
+                                    let skipped_table = document.createElement("div")
+                                    skipped_table.innerHTML = skipped_results_html
+                                    result_info.appendChild(skipped_table)
+                                    $("#skipped").dataTable({
+                                        retrieve: true,
+                                    });
+                                }
+                            }
+                        } else {
+                            document.getElementById("run_time").innerHTML = "LipidLynxX is running for " + t.toString() + "s.";
+                            let spinner = document.getElementById("spinner");
+                            spinner.style.visibility = 'visible';
+                            let spinner_text = document.getElementById("spinner_text");
+                            spinner_text.textContent += " " + String.fromCodePoint("0x" + "🐾".codePointAt(0).toString(16));
+                        }
+                    },
+                });
+            }
+
+            function stopAjax() {
+                clearInterval(interval);
+            }
+
+        </script>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

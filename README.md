@@ -1,5 +1,4 @@
-![LipidLynx_icon_Logo](doc/images/LipidLynxX_icon_128.jpg) 
-![LipidLynx_text_Logo](lynx/static/images/LipidLynxX_logo_color.png)
+![LipidLynx_Logo](doc/images/LipidLynxX_Logo_merged.png) 
 
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg?color=orange)
 ![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=green)
@@ -10,7 +9,7 @@
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
 
-![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Chromium.png)
+![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Firefox.png)
 
 ## Main Modules
 
@@ -117,7 +116,7 @@ And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for 
 ### Screenshots
 
 - **GUI**
-    ![LipidLynx_02_Converter](doc/images/LipidLynxX_01_Converter_text_output.png)
+    ![LipidLynx_01_Converter](doc/images/LipidLynxX_01_Converter_text_input.png)
 - **API**
     - LipidLynxX provides API documentation using both OpenAI (left) and ReDoc (right)
     ![LipidLynxX_API](doc/images/LipidLynxX_API.png)
@@ -188,7 +187,7 @@ And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for 
 
   - Example
 
-    ![LipidLynx_01_Home](lynx/static/images/levels_mod_full.png)
+    ![LipidLynx_levels](lynx/static/images/levels_mod_full.png)
 
 - Currently supported modification controlled vocabularies
     ![LipidLynx_01_Home](doc/images/nomenclature_cv.png)

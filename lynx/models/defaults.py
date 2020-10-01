@@ -16,13 +16,14 @@
 import json
 import os
 
+from lynx.utils.basics import get_abs_path
 from lynx.utils.cfg_reader import app_cfg_info
 from lynx.utils.params_loader import (
     build_mod_parser,
     build_input_rules,
     build_output_rules,
 )
-from lynx.utils.basics import get_abs_path
+from lynx.utils.ports import check_port
 
 # Define default values across LipidLynx
 # load default values from files defined in config.ini
@@ -37,6 +38,7 @@ default_lion_file = get_abs_path(app_cfg_info["resource_lion"])
 default_temp_folder = app_cfg_info.get("temp_folder", r"lynx/temp")
 default_temp_max_days = int(app_cfg_info.get("temp_max_days", "3"))
 default_temp_max_files = int(app_cfg_info.get("temp_max_files", "99"))
+default_zmq_worker_runner = int(app_cfg_info.get("zmq_worker_runner", 5))
 
 if os.path.isdir(default_temp_folder):
     pass
@@ -63,11 +65,14 @@ with open(default_kegg_file, "r") as kegg_json_obj:
 with open(default_lion_file, "r") as lion_json_obj:
     lion_ids = json.load(lion_json_obj)
 
+
 default_template_files = {
+    "LipidLynxX_Converter_Template.csv": "lynx/static/files/LipidLynxX_Converter_Template.csv",
+    "LipidLynxX_Equalizer_Template.csv": "lynx/static/files/LipidLynxX_Equalizer_Template.csv",
     "LipidLynxX_Linker_Template.csv": "lynx/static/files/LipidLynxX_Linker_Template.csv"
 }
 
-lipid_level_lst = ["B", "D", "S"]
+lipid_level_lst = ["B", "M", "S"]
 mod_level_lst = ["0", "1", "2", "3", "4", "5"]
 db_level_lst = [".0", "0.1", "0.2"]
 mod_db_level_lst = [
@@ -95,24 +100,24 @@ supported_levels = [
     "B1",
     "B2",
     "B3",
-    "D0",
-    "D0.1",
-    "D0.2",
-    "D1",
-    "D1.1",
-    "D1.2",
-    "D2",
-    "D2.1",
-    "D2.2",
-    "D3",
-    "D3.1",
-    "D3.2",
-    "D4",
-    "D4.1",
-    "D4.2",
-    "D5",
-    "D5.1",
-    "D5.2",
+    "M0",
+    "M0.1",
+    "M0.2",
+    "M1",
+    "M1.1",
+    "M1.2",
+    "M2",
+    "M2.1",
+    "M2.2",
+    "M3",
+    "M3.1",
+    "M3.2",
+    "M4",
+    "M4.1",
+    "M4.2",
+    "M5",
+    "M5.1",
+    "M5.2",
     "S0",
     "S0.1",
     "S0.2",
