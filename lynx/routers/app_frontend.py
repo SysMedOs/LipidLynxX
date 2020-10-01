@@ -40,6 +40,7 @@ from lynx.models.api_models import (
 from lynx.models.defaults import default_temp_folder, default_template_files
 import lynx.api as api
 from lynx.routers.api_converter import create_convert_dict_job, create_convert_list_job
+from lynx.routers.api_equalizer import create_equalize_job
 from lynx.routers.api_linker import create_link_dict_job, create_link_list_job
 from lynx.utils.cfg_reader import api_version, lynx_version, app_prefix
 from lynx.utils.file_handler import (
@@ -202,56 +203,22 @@ async def equalizer_file(
     request: Request, file_obj: UploadFile = File(...), match_levels: str = Form(...)
 ):
     table_info, err_lst = get_table(file_obj, err_lst=[])
+
     if table_info:
         input_data = InputDictData(data=table_info)
         usr_levels = get_levels(match_levels)
         if isinstance(usr_levels, str):
-            export_data = await api.equalize_single_level(input_data, usr_levels)
-        elif isinstance(usr_levels, list):
-            levels_data = LevelsData(levels=usr_levels)
-            export_data = await api.equalize_multiple_levels(input_data, levels_data)
-        else:
-            export_data = None
-            err_lst.append(f"Invalid levels: {match_levels}")
-        if isinstance(export_data, EqualizerExportData):
-            # data_encoded = get_url_safe_str(export_data.dict().get("data"))
-            file_type = "xlsx"
-            output_name = get_output_name("Equalizer", file_type)
-            output_path = os.path.join(default_temp_folder, output_name)
-            output_info = create_equalizer_output(
-                export_data.dict().get("data"), output_name=output_path
-            )
-            if (
-                isinstance(output_info, str)
-                and output_info == output_path
-                and os.path.isfile(output_path)
-            ):
-                render_data_dct = {
-                    "request": request,
-                    "err_msgs": err_lst,
-                    "output_file_name": output_name,
-                    "output_generated": True,
-                }
-            else:
-                render_data_dct = {
-                    "request": request,
-                    "err_msgs": err_lst,
-                    "output_generated": False,
-                }
-        else:
-            render_data_dct = {
-                "request": request,
-                "err_msgs": err_lst,
-                "output_generated": False,
-            }
+            usr_levels = [usr_levels]
+        job_info = await create_equalize_job(
+            data=input_data, levels=usr_levels, file_type="xlsx"
+        )  # type: JobStatus
+        response_data = job_info.dict()
+        response_data["err_msgs"] = []
     else:
-        render_data_dct = {
-            "request": request,
-            "err_msgs": err_lst,
-            "output_generated": False,
-        }
+        response_data = {"err_msgs": [f"Failed to read file: {file_obj.filename}"]}
+    response_data["request"] = request
 
-    return templates.TemplateResponse("equalizer_results.html", render_data_dct)
+    return templates.TemplateResponse("equalizer_results.html", response_data)
 
 
 @frontend.post("/linker/text", include_in_schema=False)

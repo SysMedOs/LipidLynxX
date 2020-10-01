@@ -19,7 +19,13 @@ import re
 from fastapi import APIRouter, HTTPException, status
 
 from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
-from lynx.models.api_models import JobStatus, JobType, LevelsData, InputDictData, InputListData
+from lynx.models.api_models import (
+    JobStatus,
+    JobType,
+    LevelsData,
+    InputDictData,
+    InputListData,
+)
 from lynx.mq.client import linker_client
 from lynx.routers.api_converter import convert_lipid
 from lynx.utils.job_manager import (

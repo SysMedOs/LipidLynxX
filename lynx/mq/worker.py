@@ -21,7 +21,8 @@ import time
 import zmq
 
 from lynx.controllers.converter import Converter
-from lynx.models.api_models import ConverterExportData, JobType
+from lynx.controllers.equalizer import Equalizer
+from lynx.models.api_models import ConverterExportData, EqualizerExportData, JobType
 from lynx.models.defaults import default_temp_folder
 from lynx.routers.api_linker import link_one_lipid
 from lynx.utils.cfg_reader import app_prefix
@@ -110,12 +111,31 @@ def run_converter(token: str, data: dict, job_data_type: str) -> dict:
 
 
 def run_equalizer(token: str, data: dict, job_data_type: str) -> dict:
-    data_lst = data.get("data", [])
+    data_to_run = data.get("data", {})
     params = data.get("params", {})
+    level = params.get("levels", "B1")
     file_type = params.get("file_type", "xlsx")
     export_name, export_path, export_url = get_export_file_info(
-        token, file_type, client_name="Linker"
+        token, file_type, client_name="Equalizer"
     )
+    equalizer = Equalizer(data_to_run, level=level)
+    export_data = equalizer.cross_match()
+    export_abs_path = create_equalizer_output(
+        export_data.dict().get("data"), output_name=export_path
+    )
+    response_data = {
+        "token": token,
+        "err_msgs": [],
+        "export_name": export_name,
+        "export_url": export_url,
+    }
+    if os.path.isfile(export_abs_path):
+        pass
+    else:
+        response_data["err_msgs"] = [f"Cannot create output {export_name}"]
+    save_job(token, response_data)
+
+    return response_data
 
 
 async def link_list(data: list, export_path: str, file_type: str):
@@ -157,7 +177,6 @@ async def link_dict(data: dict, export_path: str, file_type: str):
     export_data = {}
     for col in data:
         lipid_col = data[col]
-        linked_col_info = {}
         all_resources = {}
         export_file_data = {}
         lynx_names = {}

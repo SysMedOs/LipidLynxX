@@ -15,16 +15,12 @@
 
 from multiprocessing import Process
 import re
-from typing import Optional
+from typing import Optional, Union, List
 
 from fastapi import APIRouter, HTTPException, status
 
-from lynx.controllers.linker import get_cross_links, get_lmsd_name, get_swiss_name
-from lynx.controllers.converter import Converter
 from lynx.controllers.equalizer import Equalizer
-from lynx.controllers.parser import parse_lipid
 from lynx.models.api_models import (
-    ConverterExportData,
     EqualizerExportData,
     InputDictData,
     InputListData,
@@ -35,15 +31,7 @@ from lynx.models.api_models import (
     LevelsData,
     StyleType,
 )
-from lynx.models.defaults import (
-    default_temp_folder,
-    default_temp_max_days,
-    default_temp_max_files,
-)
-from lynx.utils.log import app_logger
-from lynx.utils.toolbox import get_level
-from lynx.utils.temp_file_cleaner import clean_temp_folder
-from lynx.mq.client import converter_client
+from lynx.mq.client import equalizer_client
 from lynx.utils.job_manager import create_job_token
 
 router = APIRouter()
@@ -83,3 +71,26 @@ async def equalize_multiple_levels(
     equalizer = Equalizer(data.data, level=levels.levels)
     equalizer_data = equalizer.cross_match()
     return equalizer_data
+
+
+@router.post("/dict/", response_model=JobStatus, status_code=status.HTTP_201_CREATED)
+async def create_equalize_job(
+    data: InputDictData, levels: Union[str, List[str]] = "B1", file_type: str = "xlsx",
+):
+    """
+    """
+    token = create_job_token(JobType(job="convert"))
+    job_execute_data = {
+        "data": data.data,
+        "params": {"levels": levels, "file_type": file_type},
+    }
+    Process(target=equalizer_client, args=(token, job_execute_data, "dict"),).start()
+
+    job_status_data = {
+        "data": data.dict(),
+        "params": {"levels": levels, "file_type": file_type},
+    }
+    job_status = "created"
+    job_info = JobStatus(token=token, status=job_status, data=job_status_data)
+
+    return job_info
