@@ -1,45 +1,136 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Linked Resources of {{ lipid_name }} @ LipidLynxX
+Linked Resources of {{ lipid_name }} @ LipidLynxX
+{% endblock %}
+
+{% block js_code %}
+<script type="text/javascript" charset="utf8"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<style type="text/css">
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc_disabled:after,
+    table.dataTable thead .sorting_asc_disabled:before,
+    table.dataTable thead .sorting_desc:after,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc_disabled:after,
+    table.dataTable thead .sorting_desc_disabled:before {
+        bottom: .5em;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
-    <section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1"
-             draggable="False">
+<section class="fdb-block" data-block-type="contents" data-id="6" data-vivaldi-spatnav-clickable="1" draggable="False">
+    <p></p>
+    <h3>LipidLynxX Cross reference check result:</h3>
+    <div class="container">
         <p></p>
-        <h3>LipidLynxX Cross reference check result:</h3>
-        <div class="container">
-            <p></p>
-            <div class="alert alert-success" role="alert">
-                <table class="table table-hover table-responsive">
-                    <tr>
-                        <td><h5>Input Lipid: </h5></td>
-                        <td><h5>{{ lipid_name }}</h5></td>
-                    </tr>
-                    <tr>
-                        <td><h5>Shorthand Notation: </h5></td>
-                        <td><h5>{{ shorthand_name }}</h5></td>
-                    </tr>
-                    <tr>
-                        <td><h5>LipidLynxX Notation: </h5></td>
-                        <td><h5>{{ lynx_name }}</h5></td>
-                    </tr>
-                </table>
+        {% if export_url %}
+            <div id="download_info">
+                <a id="download_button" href="{{ export_url }}" class="btn btn-block btn-success">Save output: {{ export_name }}</a>
+            <p>&nbsp;</p>
             </div>
-            <div>
-{#            {% resource_data = resource_info['resource_data'] %}#}
-                {% for resource_group_db, resource_group_info in resource_data.items() %}
-                    <h4># {{ resource_group_db }}</h4>
-                    {% for resource_db, resource_info in resource_group_info.items() %}
-                        <h6>{{ resource_db }}</h6>
-                        {% for resource_id, resource_url in resource_info.items() %}
-                            <p>{{ resource_id }} : <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></p>
-                        {% endfor %}
-                    {% endfor %}
-                    <div class="border-top my-3"></div>
-                {% endfor %}
-            </div>
+        {%  endif %}
+        <div class="alert alert-info" role="alert">
+            <table class="table table-hover table-responsive">
+                <tr>
+                    <th>
+                        <strong>Input Lipid: </strong>
+                    </th>
+                    <td class="monospace">
+                        <strong>{{ lipid_name }}</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <strong>Shorthand Notation: </strong>
+                    </th>
+                    <td class="monospace">
+                        <strong>{{ shorthand_name }}</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <strong>LipidLynxX Notation: </strong>
+                    </th>
+                    <td class="monospace">
+                        <strong>{{ lynx_name }}</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <strong>BioPAN Notation: </strong>
+                    </th>
+                    <td class="monospace">
+                        <strong>{{ biopan_name }}</strong>
+                    </td>
+                </tr>
+            </table>
         </div>
-    </section>
+        <div>
+            <ul class="nav justify-content-center">
+                {% for resource_group_db, resource_group_info in resource_data.items() %}
+                <li class="nav-item active">
+                    &nbsp;
+                    <a class="btn btn-outline-info" role="button"
+                        href="#{{ resource_group_db }}">{{ resource_group_db }}</a>
+                    &nbsp;
+                </li>
+                {% endfor %}
+            </ul>
+            <p>&nbsp;</p>
+        </div>
+        <div>
+            {% for resource_group_db, resource_group_info in resource_data.items() %}
+            <h4 id="{{ resource_group_db }}" style="color:#17a2b8">&sect; {{ resource_group_db }}</h4>
+            {% if resource_group_db in ["Reactions", "Related database"] %}
+            {% for resource_db, resource_info in resource_group_info.items() %}
+            <h5 style="color:#fd7e14"> &rlarr; {{ resource_db }}</h5>
+            <div>
+                <table id="{{ resource_db }}">
+                    <thead>
+                        <tr>
+                            <th scope="col">Resource ID</th>
+                            <th scope="col">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resource_id, resource_url in resource_info.items() %}
+                        <tr>
+                            <td>{{ resource_id }}</td>
+                            <td> <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <script>
+                    $('#' + "{{ resource_db }}").DataTable({
+                        "scrollY": "200px",
+                        "scrollCollapse": true,
+                    });
+                    $('.dataTables_length').addClass('bs-select');
+                </script>
+            </div>
+            {% endfor %}
+            {% else %}
+            {% for resource_db, resource_info in resource_group_info.items() %}
+            <h5 style="color:#fd7e14"> &rlarr; {{ resource_db }}</h5>
+            {% for resource_id, resource_url in resource_info.items() %}
+            <p>{{ resource_id }} : <a href="{{ resource_url }}" target="_blank">{{ resource_url }}</a></p>
+            {% endfor %}
+            {% endfor %}
+            {% endif %}
+            <hr class="mt-4 mb-4" style="height:2px;border-width:0;color:#17a2b8;background-color:#17a2b8">
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
 {% endblock %}

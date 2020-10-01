@@ -1,122 +1,129 @@
 {% extends "base.html" %}
 
 {% block title %}
-    About LipidLynxX
+About LipidLynxX
 {% endblock %}
 
 {% block body %}
-    <h4>&nbsp;</h4>
-    <div class="row">
-        <img alt="image" src="images/LipidLynxX_icon_128.jpg" height="96">
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <img alt="image" src="images/LipidLynxX_logo_color.png" height="96">
-    </div>
-    <h5>&nbsp;</h5>
-    <h3>About LipidLynxX</h3>
-    <p>&nbsp;</p>
-    <ul>
-        <li><h5>LipidLynxX version: {{ lynx_version }}</h5></li>
-        <li><h5>API version: {{ api_version }}</h5></li>
-    </ul>
-    <a href="https://github.com/SysMedOs/LipidLynxX" class="text-dark" target="_blank">
-        Check latest version of LipidLynxX on GitHub
-        <img src="{{ url_for('home') }}images/icons/cloud-download.svg" alt="external_link">
-    </a>
-    <h4>&nbsp;</h4>
-    <h4>Developed by Team SysMedOs</h4>
-    <p class="text-dark">
-        <a href="https://home.uni-leipzig.de/fedorova/sysmedos/" class="text-dark">Team SysMedOs
-            <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
-        <a href="https://home.uni-leipzig.de/fedorova/" class="text-dark">Fedorova Research Group
-            <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
-        <a href="https://research.uni-leipzig.de/bioanalytik/index_en.html" class="text-dark">AG Bioanalytik
-            <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
-        <a href="https://www.uni-leipzig.de" class="text-dark">University of Leipzig
-            <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
-    </p>
-    <h4>&nbsp;</h4>
-    <h4>License</h4>
-    <ul>
-        <li>
-            <p>LipidLynxX is using <code>GPLv3 License</code>:</p>
-            <ul>
-                <li><a href="https://www.gnu.org/licenses/gpl-3.0.en.html" rel="nofollow" target="_blank">The GNU
+<h4>&nbsp;</h4>
+<div class="row">
+    <img alt="image" src="images/LipidLynxX_icon_128.jpg" height="96">
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <img alt="image" src="images/LipidLynxX_logo_color.png" height="96">
+</div>
+<h5>&nbsp;</h5>
+<h3>About LipidLynxX</h3>
+<p>&nbsp;</p>
+<ul>
+    <li>
+        <h5>LipidLynxX version: {{ lynx_version }}</h5>
+    </li>
+    <li>
+        <h5>API version: {{ api_version }}</h5>
+    </li>
+</ul>
+<a href="https://github.com/SysMedOs/LipidLynxX" class="text-dark" target="_blank">
+    Check latest version of LipidLynxX on GitHub
+    <img src="{{ url_for('home') }}images/icons/cloud-download.svg" alt="external_link">
+</a>
+<h4>&nbsp;</h4>
+<h4>Developed by Team SysMedOs</h4>
+<p class="text-dark">
+    <a href="https://home.uni-leipzig.de/fedorova/sysmedos/" class="text-dark">Team SysMedOs
+        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+    <a href="https://home.uni-leipzig.de/fedorova/" class="text-dark">Fedorova Research Group
+        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+    <a href="https://research.uni-leipzig.de/bioanalytik/index_en.html" class="text-dark">AG Bioanalytik
+        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+    <a href="https://www.uni-leipzig.de" class="text-dark">University of Leipzig
+        <img src="{{ url_for('home') }}images/icons/link-45deg.svg" alt="external_link"></a><br>
+</p>
+<h4>&nbsp;</h4>
+<h4>License</h4>
+<ul>
+    <li>
+        <p>LipidLynxX is using <code>GPLv3 License</code>:</p>
+        <ul>
+            <li><a href="https://www.gnu.org/licenses/gpl-3.0.en.html" rel="nofollow" target="_blank">The GNU
                     General Public License version 3</a></li>
-            </ul>
+        </ul>
 
-        </li>
-        <li>
-            <p>Please cite our publication in an appropriate form.</p>
-            <ul>
-                <li>
-                    <p>LipidLynxX preprint on <code>bioRxiv.org</code></p>
-                    <ul>
-                        <li>
-                            <p>Zhixu Ni, Maria Fedorova.
-                                "LipidLynxX: a data transfer hub to support integration of large scale lipidomics
-                                datasets"</p>
-                            <ul>
-                                <li>DOI: <a href="https://www.biorxiv.org/content/10.1101/2020.04.09.033894v1"
-                                            rel="nofollow">10.1101/2020.04.09.033894</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <h4>&nbsp;</h4>
-    <h4>Report issues</h4>
-    <ul>
-        <li>Report any issues here: <a href="https://github.com/SysMedOs/LipidLynxX/issues">https://github.com/SysMedOs/LipidLynxX/issues</a>
-        </li>
-    </ul>
-    <h4>&nbsp;</h4>
-    <h4>Funding</h4>
-    <p>We acknowledge all projects that supports the development of LipidLynxX:</p>
-    <ul>
-        <li>
-            <p>BMBF - Federal Ministry of Education and Research Germany:</p>
-            <p><a href="https://www.bmbf.de/en/" rel="nofollow">https://www.bmbf.de/en/</a></p>
-        </li>
-        <li>
-            <p>e:Med Systems Medicine Network:</p>
-            <p><a href="http://www.sys-med.de/en/" rel="nofollow">http://www.sys-med.de/en/</a></p>
-        </li>
-        <li>
-            <p>SysMedOS Project :</p>
-            <p><a href="https://home.uni-leipzig.de/fedorova/sysmedos/" rel="nofollow">https://home.uni-leipzig.de/fedorova/sysmedos/</a>
-            </p>
-        </li>
-    </ul>
-    <h4>&nbsp;</h4>
-    <h4>Powered by open-source software:</h4>
-    <p>We acknowledge all open-source projects that used by LipidLynxX:</p>
-    <ul>
-        <li>
-            <p>LipidLynxX is powered by open-source projects, main dependencies are:</p>
-            <ul>
-                <li>
-                    <p><code>FastAPI</code>, <code>starlette</code>, <code>Typer</code> & <code>uvicorn</code></p>
-                </li>
-                <li>
-                    <p><code>jsonschema</code>, <code>pandas</code> & <code>regex</code></p>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <p>LipidLynxX is based on the previous project <a href="https://github.com/SysMedOs/epiLION">epiLION</a></p>
-            <ul>
-                <li>Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
-                    "Computational solutions in redox lipidomics–Current strategies and future perspectives."
-                    Free Radical Biology and Medicine (2019).
-                    <ul>
-                        <li>DOI: <a href="https://www.sciencedirect.com/science/article/pii/S0891584919303466" rel="nofollow">10.1016/j.freeradbiomed.2019.04.027</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <h4>&nbsp;</h4>
+    </li>
+    <li>
+        <p>Please cite our publication in an appropriate form.</p>
+        <ul>
+            <li>
+                <p>LipidLynxX preprint on <code>bioRxiv.org</code></p>
+                <ul>
+                    <li>
+                        <p>Zhixu Ni, Maria Fedorova.
+                            "LipidLynxX: a data transfer hub to support integration of large scale lipidomics
+                            datasets"</p>
+                        <ul>
+                            <li>DOI: <a href="https://www.biorxiv.org/content/10.1101/2020.04.09.033894v1"
+                                    rel="nofollow">10.1101/2020.04.09.033894</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<h4>&nbsp;</h4>
+<h4>Report issues</h4>
+<ul>
+    <li>Report any issues here: <a
+            href="https://github.com/SysMedOs/LipidLynxX/issues">https://github.com/SysMedOs/LipidLynxX/issues</a>
+    </li>
+</ul>
+<h4>&nbsp;</h4>
+<h4>Funding</h4>
+<p>We acknowledge all projects that supports the development of LipidLynxX:</p>
+<ul>
+    <li>
+        <p>BMBF - Federal Ministry of Education and Research Germany:</p>
+        <p><a href="https://www.bmbf.de/en/" rel="nofollow">https://www.bmbf.de/en/</a></p>
+    </li>
+    <li>
+        <p>e:Med Systems Medicine Network:</p>
+        <p><a href="http://www.sys-med.de/en/" rel="nofollow">http://www.sys-med.de/en/</a></p>
+    </li>
+    <li>
+        <p>SysMedOS Project :</p>
+        <p><a href="https://home.uni-leipzig.de/fedorova/sysmedos/"
+                rel="nofollow">https://home.uni-leipzig.de/fedorova/sysmedos/</a>
+        </p>
+    </li>
+</ul>
+<h4>&nbsp;</h4>
+<h4>Powered by open-source software:</h4>
+<p>We acknowledge all open-source projects that used by LipidLynxX:</p>
+<ul>
+    <li>
+        <p>LipidLynxX is powered by open-source projects, main dependencies are:</p>
+        <ul>
+            <li>
+                <p><code>FastAPI</code>, <code>starlette</code>, <code>Typer</code> & <code>uvicorn</code></p>
+            </li>
+            <li>
+                <p><code>jsonschema</code>, <code>pandas</code> & <code>regex</code></p>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p>LipidLynxX is based on the previous project <a href="https://github.com/SysMedOs/epiLION">epiLION</a></p>
+        <ul>
+            <li>Ni, Zhixu, Laura Goracci, Gabriele Cruciani, and Maria Fedorova.
+                "Computational solutions in redox lipidomics–Current strategies and future perspectives."
+                Free Radical Biology and Medicine (2019).
+                <ul>
+                    <li>DOI: <a href="https://www.sciencedirect.com/science/article/pii/S0891584919303466"
+                            rel="nofollow">10.1016/j.freeradbiomed.2019.04.027</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<h4>&nbsp;</h4>
 
 {% endblock %}

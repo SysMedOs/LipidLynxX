@@ -17,9 +17,7 @@ from datetime import datetime
 import json
 from io import BytesIO
 import os
-import re
 from pathlib import Path
-import time
 from typing import List, Union
 
 from fastapi import File
@@ -44,16 +42,16 @@ def get_json(file: str) -> dict:
 
 def load_folder(folder: str, file_type: str = "", logger=app_logger) -> List[str]:
     """
-     Load all files under given folder, optional with selected file suffix
-     Args:
-         folder: path of the folder.
-         file_type: type of the file, default value is "" for no file type filter.
-         logger: logger for logging.
+    Load all files under given folder, optional with selected file suffix
+    Args:
+        folder: path of the folder.
+        file_type: type of the file, default value is "" for no file type filter.
+        logger: logger for logging.
 
-     Returns:
-         file_abs_path_lst: the list of files under given folder in absolute path
+    Returns:
+        file_abs_path_lst: the list of files under given folder in absolute path
 
-     """
+    """
     abs_path = get_abs_path(folder)
     file_lst = os.listdir(abs_path)
     file_abs_path_lst = [os.path.join(abs_path, x) for x in file_lst]
@@ -428,34 +426,34 @@ def get_output_name(tool: str = "", file_type: str = "xlsx") -> str:
     return output_name
 
 
-def table2html(converter_data: ConverterExportData):
-    data = converter_data.data
-    converted_html = ""
-    not_converted_html = ""
-    if data:
-        not_converted_dct = {}
-        df_lst = []
-        for k in data:
-            print(type(data[k]))
-            if isinstance(data[k], ConvertedListData):
-                k_pairs = data[k].converted
-                if k_pairs and isinstance(k, str):
-                    df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
-                k_not_converted = data[k].skipped
-                if k_not_converted:
-                    not_converted_dct[f"{k}_skipped"] = k_not_converted
-
-        if df_lst:
-            converted_df = pd.concat(df_lst, axis=1)
-            converted_df.index = converted_df.index + 1
-            converted_html = converted_df.to_html()
-        if not_converted_dct:
-            not_converted_df = pd.DataFrame.from_dict(
-                not_converted_dct, orient="index"
-            ).T
-            not_converted_df.index = not_converted_df.index + 1
-            not_converted_html = not_converted_df.to_html()
-    return converted_html, not_converted_html
+# def table2html(converter_data: ConverterExportData):
+#     data = converter_data.data
+#     converted_html = ""
+#     not_converted_html = ""
+#     if data:
+#         not_converted_dct = {}
+#         df_lst = []
+#         for k in data:
+#             print(type(data[k]))
+#             if isinstance(data[k], ConvertedListData):
+#                 k_pairs = data[k].converted
+#                 if k_pairs and isinstance(k, str):
+#                     df_lst.append(pd.DataFrame(k_pairs, columns=[k, f"{k}_converted"]))
+#                 k_not_converted = data[k].skipped
+#                 if k_not_converted:
+#                     not_converted_dct[f"{k}_skipped"] = k_not_converted
+#
+#         if df_lst:
+#             converted_df = pd.concat(df_lst, axis=1)
+#             converted_df.index = converted_df.index + 1
+#             converted_html = converted_df.to_html()
+#         if not_converted_dct:
+#             not_converted_df = pd.DataFrame.from_dict(
+#                 not_converted_dct, orient="index"
+#             ).T
+#             not_converted_df.index = not_converted_df.index + 1
+#             not_converted_html = not_converted_df.to_html()
+#     return converted_html, not_converted_html
 
 
 def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
@@ -467,29 +465,3 @@ def save_table(df: pd.DataFrame, file_name: str) -> (bool, str):
         abs_output_path = get_abs_path(file_name)
 
     return is_output, abs_output_path
-
-
-def clean_temp_folder(
-    temp_dir: str = r"lynx/temp", max_days: float = 7.0, max_files: int = 99
-) -> list:
-    current_time = time.time()
-    earliest_unix_time = current_time - max_days * 86400  # 24 * 60 * 60 == 86400
-    removed_files = []
-    temp_files_lst = os.listdir(temp_dir)
-    file_suffix_rgx = re.compile(r"^(.*)(\.)(csv|xlsx?)$", re.IGNORECASE)
-    temp_file_path_lst = [
-        os.path.join(temp_dir, f) for f in temp_files_lst if file_suffix_rgx.match(f)
-    ]
-    temp_file_ctime_lst = [os.path.getctime(p) for p in temp_file_path_lst]
-    temp_file_info_lst = list(zip(temp_file_ctime_lst, temp_file_path_lst))
-    if len(temp_file_info_lst) > max_files:
-        temp_file_info_lst.sort(key=lambda tup: tup[0], reverse=True)
-        removed_files = temp_file_info_lst[max_files:]
-    for temp_file_info in temp_file_info_lst:
-        if temp_file_info[0] < earliest_unix_time:
-            removed_files.append(temp_file_info)
-    for temp in removed_files:
-        if os.path.isfile(temp[1]):
-            os.remove(temp[1])
-
-    return removed_files

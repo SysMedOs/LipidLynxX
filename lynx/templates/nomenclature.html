@@ -1,48 +1,53 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Nomenclature @ LipidLynxX
+Nomenclature @ LipidLynxX
 {% endblock %}
 
 {% block body %}
-    <h4>&nbsp;</h4>
-    <h3>Nomenclature used by LipidLynxX</h3>
-    <h5>&nbsp;</h5>
-    <p>The Nomenclature used by LipidLynxX is based on the widely used "Shorthand notation for lipid structures"
-        published by <a href="https://www.jlr.org/content/54/6/1523" target="_blank">Gerhard Liebisch, et al. (2013)*</a></p>
-    <p>Additional features for modified lipids including ordered controlled vocabularies and lipid levels matrix are
-        introduced by LipidLynxX to perform cross level matching.</p>
-    <p> *.<a href="https://www.jlr.org/content/54/6/1523" target="_blank">Liebisch, Gerhard, Juan
+<h4>&nbsp;</h4>
+<h3>Nomenclature used by LipidLynxX</h3>
+<h5>&nbsp;</h5>
+<p>The Nomenclature used by LipidLynxX is based on the widely used "Shorthand notation for lipid structures"
+    published by <a href="https://www.jlr.org/content/54/6/1523" target="_blank">Gerhard Liebisch, et al. (2013)*</a>
+</p>
+<p>Additional features for modified lipids including ordered controlled vocabularies and lipid levels matrix are
+    introduced by LipidLynxX to perform cross level matching.</p>
+<p> *.<a href="https://www.jlr.org/content/54/6/1523" target="_blank">Liebisch, Gerhard, Juan
         Antonio Vizcaíno, Harald Köfeler, Martin Trötzmüller, William J. Griffiths, Gerd Schmitz, Friedrich Spener, and
         Michael JO Wakelam. "Shorthand notation for lipid structures derived from mass spectrometry." Journal of lipid
         research 54, no. 6 (2013): 1523-1530.</a></p>
-    <ul>
-        <li><p>
+<ul>
+    <li>
+        <p>
             <span>Preserved characters: </span>
         </p>
-            <img class="img-fluid" src="images/nomenclature_char.png" alt="levels_hint">
-{#            <img class="img-fluid" src="{{ url_for('static', filename='images/nomenclature_char.png') }}" alt="levels_hint">#}
-        </li>
-        <li><p>
+        <img class="img-fluid" src="images/nomenclature_char.png" alt="levels_hint">
+        {#            <img class="img-fluid" src="{{ url_for('static', filename='images/nomenclature_char.png') }}" alt="levels_hint">#}
+    </li>
+    <li>
+        <p>
             <span>Controlled vocabularies (CV): </span>
         </p>
-            <img class="img-fluid" src="images/nomenclature_cv.png" alt="levels_hint">
-        </li>
-        <li><p>
+        <img class="img-fluid" src="images/nomenclature_cv.png" alt="levels_hint">
+    </li>
+    <li>
+        <p>
             <span>Basic examples of the nomenclature: </span>
         </p>
-            <a href="#"><img class="img-fluid" src="images/nomenclature_basics.png" alt="levels_hint">
-            </a>
-            </li>
-        <li><p>
+        <a href="#"><img class="img-fluid" src="images/nomenclature_basics.png" alt="levels_hint">
+        </a>
+    </li>
+    <li>
+        <p>
             <span>Lipid nomenclature levels: </span>
         </p>
-            <img class="img-fluid" src="images/nomenclature_levels.png" alt="levels_hint">
-            <div>
-                * Learn more about &nbsp;<a href="{{ url_for('levels') }}" target="_blank"> the
+        <img class="img-fluid" src="images/nomenclature_levels.png" alt="levels_hint">
+        <div>
+            * Learn more about &nbsp;<a href="{{ url_for('levels') }}" target="_blank"> the
                 LipidLynx Nomenclature Level Matrix </a>
-            </div>
-        </li>
-    </ul>
+        </div>
+    </li>
+</ul>
 
 {% endblock %}

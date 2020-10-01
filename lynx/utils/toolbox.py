@@ -108,7 +108,7 @@ def get_level(lv: Union[str, LvType], default_level: str = "MAX") -> str:
     return use_level
 
 
-def get_levels(lv: Union[str, list, LvType]) -> List[str]:
+def get_levels(lv: Union[str, list, tuple, LvType]) -> List[str]:
     levels = []
     if isinstance(lv, LvType):
         levels = [lv]
@@ -116,14 +116,14 @@ def get_levels(lv: Union[str, list, LvType]) -> List[str]:
         if re.match(level_rgx_str, lv):
             levels = [get_level(lv, default_level="B2")]
         else:
-            levels = re.split(r", |; |\s+|\n", lv)
+            levels = re.split(r",\s*|;\s*|\s+|\n", lv)
             levels = [
                 get_level(seg, default_level="B2")
                 for seg in levels
                 if re.match(level_rgx_str, seg)
             ]
             levels = list(set(levels))
-    elif isinstance(lv, list):
+    elif isinstance(lv, list) or isinstance(lv, tuple):
         for temp_lv in lv:
             temp_lv = temp_lv.strip()
             if re.match(level_rgx_str, temp_lv):
@@ -168,3 +168,9 @@ def get_url_safe_str(data: Union[str, list, dict]) -> str:
     data_str: str = data_bytes.decode("utf-8")
 
     return data_str
+
+
+if __name__ == "__main__":
+    usr_lv = "B1, M1"
+    e_lvs = get_levels(usr_lv)
+    print(e_lvs)
