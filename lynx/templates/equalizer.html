@@ -26,6 +26,17 @@ Equalizer @ LipidLynxX
                                     $('.custom-file-label').text(fileName);
                                 });
                             </script>
+                            <h4>&nbsp;</h4>
+                        </div>
+                        <div class="row">
+                            {# get default templates file from default_template_files #}
+                            <h6>
+                                <a href="{{ url_for('get_download_file', file_name='LipidLynxX_Equalizer_Template.csv') }}">
+                                    <img src="{{ url_for('home') }}images/icons/file-earmark-arrow-down.svg"
+                                         alt="download_template">
+                                    Download example template.
+                                </a>
+                            </h6>
                         </div>
                         <p>&nbsp;</p>
                         <h4><span class="badge badge-pill badge-info">#2. Set Lipid information level(s) for cross

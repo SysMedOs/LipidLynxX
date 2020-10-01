@@ -112,6 +112,17 @@ Converter @ LipidLynxX
                                     Select file: <br><small>support .csv and .xlsx file less than 10MB</small>
                                     <input type="file" name="file_obj">
                                 </label></p>
+                            <div class="row">
+                                {# get default templates file from default_template_files #}
+                                <h6>
+                                    <a href="{{ url_for('get_download_file', file_name='LipidLynxX_Converter_Template.csv') }}">
+                                        <img src="{{ url_for('home') }}images/icons/file-earmark-arrow-down.svg"
+                                             alt="download_template">
+                                        Download example template.
+                                    </a>
+                                </h6>
+                                <h4>&nbsp;</h4>
+                            </div>
                             <p><label for="export_style">Choose the export style:
                                     <select id="export_style" name="export_style">
                                         <option value="LipidLynxX">LipidLynxX</option>
@@ -158,6 +169,9 @@ Converter @ LipidLynxX
                     </div>
                 </div>
             </div>
+        </div>
+        <div>
+            <h6>&nbsp;</h6>
         </div>
     </div>
 </section>
