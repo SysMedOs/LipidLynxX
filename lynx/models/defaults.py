@@ -67,6 +67,8 @@ with open(default_lion_file, "r") as lion_json_obj:
 
 
 default_template_files = {
+    "LipidLynxX_Converter_Template.csv": "lynx/static/files/LipidLynxX_Converter_Template.csv",
+    "LipidLynxX_Equalizer_Template.csv": "lynx/static/files/LipidLynxX_Equalizer_Template.csv",
     "LipidLynxX_Linker_Template.csv": "lynx/static/files/LipidLynxX_Linker_Template.csv"
 }
 

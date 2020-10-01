@@ -8,15 +8,14 @@ LipidLynxX
 <header class="masthead text-white text-center">
     <div class="container">
         <div class="row">
-            <div class="col-xl-9 mx-auto" style="padding: 36px;">
-                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_icon_128.jpg" height="96">
-                &nbsp;&nbsp;
-                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_logo_color.png" height="96"></div>
-            <div class="row d-flex justify-content-center">
-                <p>&nbsp;</p>
+            <div class="col-md-10 col-lg-8 col-xl-8 mx-auto" style="padding: 36px;">
+                <img alt="image" src="{{ url_for('home') }}images/LipidLynxX_Logo_merged.png" height="96">
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-10 col-lg-8 col-xl-8 mx-auto">
                 <form action="{{ url_for('home') }}linker/results/details" method="post" enctype="multipart/form-data">
+
                     <div class="form-row">
                         <div class="col-8 col-md-8 mx-auto">
                             <input class="form-control" name="lipid_name" id="lipid_name" type="text" placeholder="PLPC"
