@@ -3,11 +3,14 @@
 ![Platforms](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg?color=orange)
 ![total downloads](https://img.shields.io/github/downloads/SysMedOs/LipidLynxX/total.svg?color=green)
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/SysMedOs/LipidLynxX.svg)
-![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.4.12-beta.svg?color=green)
+![GitHub commits since latest release](https://img.shields.io/github/commits-since/SysMedOs/LipidLynxX/v0.9.24.svg?color=green)
 ![GitHub last commit](https://img.shields.io/github/last-commit/SysMedOs/LipidLynxX.svg)
 
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
+
+### latest release: [v0.9.24](https://github.com/SysMedOs/LipidLynxX/releases)
+
 
 ![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Firefox.png)
 
@@ -70,10 +73,14 @@ here](https://github.com/SysMedOs/LipidLynxX/issues)
 ### Notice to general users
 
 An easy to use .exe version for Windows platform users is available for test purpose only.
-[LipidLynxX v0.4.12-beta preview release for Windows 10.](https://github.com/SysMedOs/LipidLynxX/releases/tag/v0.4.12-beta)
-
-For macOS users, a installation pack is under development and will be ready in approximately end of May 2020.
-If you really want to have an early access to the exe version, please contact us by email.
+- Download [LipidLynxX_v0-9-24.zip ~125MB](https://github.com/SysMedOs/LipidLynxX/releases/download/v0.9.24/LipidLynxX_v0-9-24.zip)
+- Unzip it to a folder
+- Find the `LipidLynxX.exe` and double click
+- LipidLynxX backend will pop-up a webpage in your default web browser e.g. Chrome, and a command line window for debug information.
+- Please allow LipidLynxX to pass firewall for the Linker module to access databases
+- Just close the command line debug window to quit LipidLynxX
+- Due to limitations of packaging, please run max 3 tasks at the same time.
+- Known issues: if Linker runs more than 300s or more than 30s/per ID, please restart LipidLynxX and try again. 
 
 ### Additional notice to developers
 
@@ -81,6 +88,11 @@ Since the code is still changing rapidly, the definitions of API and documentati
 We kindly ask if you have any plans to use LipidLynxX API contact us first, or follow this repository to get timely notifications when new changes are introduced.
 
 New features of LipidLynxX is generally developed using repository [https://github.com/ZhixuNi/LipidLynxX](https://github.com/ZhixuNi/LipidLynxX).
+
+- Please use python 3.8.5 and run from source code.
+- Recommend to use "pip install -r requirements.txt" in an virtual env to install the dependencies
+- run `python LipidLynxX.py` to start.
+- please check `lib\lynx\config.ini` for more settings of ports and max clients/workers
 
 
 ## Instructions
