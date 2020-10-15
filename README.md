@@ -9,8 +9,15 @@
 The LipidLynxX project is aimed to provide a unified identifier for major lipids, especially oxidized lipids
 in the epilipidome.
 
-### latest release: [v0.9.24](https://github.com/SysMedOs/LipidLynxX/releases)
+## LipidLynxX on LIPID MAPS® Lipidomics Gateway
+Thanks to LIPID MAPS, you can now use [LipidLynxX on LIPID MAPS® Lipidomics Gateway](http://lipidmaps.org/lipidlynxx/)
 
+[http://lipidmaps.org/lipidlynxx/](http://lipidmaps.org/lipidlynxx/)
+
+### latest client release: [v0.9.24](https://github.com/SysMedOs/LipidLynxX/releases)
+- Download Windows version: [LipidLynxX_v0-9-24.zip ~125MB](https://github.com/SysMedOs/LipidLynxX/releases/download/v0.9.24/LipidLynxX_v0-9-24.zip)
+- Unzip it to a folder e.g. `D:\LipidLynxX`
+- Find and double click the `LipidLynxX.exe` to run!
 
 ![LipidLynx_01_Home](doc/images/LipidLynxX_Start_Firefox.png)
 
@@ -91,8 +98,9 @@ New features of LipidLynxX is generally developed using repository [https://gith
 
 - Please use python 3.8.5 and run from source code.
 - Recommend to use "pip install -r requirements.txt" in an virtual env to install the dependencies
-- run `python LipidLynxX.py` to start.
-- please check `lib\lynx\config.ini` for more settings of ports and max clients/workers
+- run `python LipidLynxX.py` to start GUI.
+- run `python cli_lynx.py` to start GUI.
+- please check `lynx\config.ini` for more settings of ports and max clients/workers
 
 
 ## Instructions
@@ -138,7 +146,7 @@ And wait a bit ☕ Binder and Jupyter Notebook will prepare LipidLynxX demo for 
     
     - LipidLynxX provide the same function in command line.
         ```bash
-            python cli-lynx.py
+            python cli_lynx.py
         ```
         ![LipidLynxX_API](doc/images/LipidLynxX_Start_cli.png)
 
